@@ -48,7 +48,9 @@ export default function StatsPage() {
         const catName = cat?.name ?? 'Other';
         if (selectedCategory !== 'all' && cat?.id !== selectedCategory) continue;
         const sets = allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted);
-        catMap[catName] = (catMap[catName] || 0) + sets.length;
+        if (sets.length > 0) {
+          catMap[catName] = (catMap[catName] || 0) + sets.length;
+        }
       }
     }
     return Object.entries(catMap).map(([name, sets]) => ({ name, sets })).sort((a, b) => b.sets - a.sets);
