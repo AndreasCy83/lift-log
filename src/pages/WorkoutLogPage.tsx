@@ -172,7 +172,7 @@ export default function WorkoutLogPage() {
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
                     <div>Set</div>
                     <div>Type</div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
