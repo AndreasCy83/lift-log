@@ -18,6 +18,11 @@ const STORAGE_KEYS = {
   settings: 'gym-settings',
 };
 
+export function resetExerciseDefaults() {
+  localStorage.removeItem(STORAGE_KEYS.exercises);
+  localStorage.removeItem(STORAGE_KEYS.categories);
+}
+
 function get<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);

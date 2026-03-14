@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sun, Moon, Monitor } from 'lucide-react';
-import { getSettings, saveSettings, getProfile, saveProfile, generateId, type AppSettings } from '@/lib/storage';
+import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -157,6 +157,17 @@ export default function SettingsPage() {
             <Button onClick={handleExport} variant="outline" size="sm" className="flex-1">Export Backup</Button>
             <Button onClick={handleImport} variant="outline" size="sm" className="flex-1">Import Backup</Button>
           </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              resetExerciseDefaults();
+              window.location.reload();
+            }}
+          >
+            Reset Exercises to Defaults
+          </Button>
         </div>
       </div>
     </div>
