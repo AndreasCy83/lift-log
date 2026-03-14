@@ -116,8 +116,8 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Exercise List */}
-      <ScrollArea className="flex-1 -mx-1">
-        <div className="space-y-1 px-1">
+      <ScrollArea className="flex-1 min-h-0">
+        <div className="space-y-1 px-2">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
             return (
