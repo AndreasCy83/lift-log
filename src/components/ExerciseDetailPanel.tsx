@@ -64,8 +64,6 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
     });
   }, [filteredHistory]);
 
-  if (history.length === 0 && !pr) return null;
-
   const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
   const periods: { key: Period; label: string }[] = [
     { key: '30d', label: '30D' },
