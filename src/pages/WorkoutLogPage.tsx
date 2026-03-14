@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Check, Timer } from 'lucide-react';
 import { format } from 'date-fns';
@@ -9,9 +9,10 @@ import {
   getPersonalRecord, updateWorkout
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import RestTimer from '@/components/RestTimer';
+import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
+import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
 import type { Workout, WorkoutSet } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
@@ -35,39 +36,42 @@ export default function WorkoutLogPage() {
   );
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [showAddExercise, setShowAddExercise] = useState(false);
-  const [search, setSearch] = useState('');
   const [showTimer, setShowTimer] = useState(false);
   const [, forceUpdate] = useState(0);
+
+  // Re-read exercises after custom creation
+  const [exercises, setExercisesState] = useState(() => getExercises());
 
   const refresh = useCallback(() => {
     if (workout) {
       setWorkoutExercises(getExercisesForWorkout(workout.id));
+      setExercisesState(getExercises());
       forceUpdate(n => n + 1);
     }
   }, [workout]);
 
   if (!date || !workout) return <div className="p-4">Invalid date</div>;
 
-  const filteredExercises = allExercises.filter(ex =>
-    ex.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleAddExercise = (exerciseId: string) => {
-    const we = {
-      id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length, notes: ''
-    };
-    addWorkoutExercise(we);
-    // Add one empty set
-    const ex = allExercises.find(e => e.id === exerciseId);
-    addWorkoutSet({
-      id: generateId(), workoutExerciseId: we.id, setIndex: 0,
-      weightKg: null, reps: ex?.defaultRepsMin ?? null, distanceKm: null, durationMinutes: null,
-      rpe: null, isWarmup: false, isCompleted: false, notes: ''
+  const handleAddExercises = (exerciseIds: string[]) => {
+    const currentExercises = getExercises();
+    exerciseIds.forEach((exerciseId, i) => {
+      const we = {
+        id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length + i, notes: ''
+      };
+      addWorkoutExercise(we);
+      const ex = currentExercises.find(e => e.id === exerciseId);
+      addWorkoutSet({
+        id: generateId(), workoutExerciseId: we.id, setIndex: 0,
+        weightKg: null, reps: ex?.defaultRepsMin ?? null, distanceKm: null, durationMinutes: null,
+        rpe: null, isWarmup: false, isCompleted: false, notes: ''
+      });
     });
     refresh();
     setShowAddExercise(false);
-    setSearch('');
-    setExpandedExercise(we.id);
+    if (exerciseIds.length === 1) {
+      const wes = getExercisesForWorkout(workout.id);
+      setExpandedExercise(wes[wes.length - 1]?.id ?? null);
+    }
   };
 
   const handleRemoveExercise = (weId: string) => {
@@ -80,8 +84,8 @@ export default function WorkoutLogPage() {
     const last = sets[sets.length - 1];
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
-      weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: null,
-      durationMinutes: null, rpe: null, isWarmup: false, isCompleted: false, notes: ''
+      weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: last?.distanceKm ?? null,
+      durationMinutes: last?.durationMinutes ?? null, rpe: null, isWarmup: false, isCompleted: false, notes: ''
     });
     forceUpdate(n => n + 1);
   };
@@ -106,10 +110,10 @@ export default function WorkoutLogPage() {
     navigate('/');
   };
 
-  const getExName = (exId: string) => allExercises.find(e => e.id === exId)?.name ?? 'Unknown';
-  const getExType = (exId: string) => allExercises.find(e => e.id === exId)?.type ?? 'RESISTANCE';
+  const getEx = (exId: string) => exercises.find(e => e.id === exId);
+  const getExName = (exId: string) => getEx(exId)?.name ?? 'Unknown';
   const getCatName = (exId: string) => {
-    const ex = allExercises.find(e => e.id === exId);
+    const ex = getEx(exId);
     return ex ? categories.find(c => c.id === ex.categoryId)?.name ?? '' : '';
   };
 
@@ -143,7 +147,9 @@ export default function WorkoutLogPage() {
         {workoutExercises.map(we => {
           const sets = getSetsForWorkoutExercise(we.id);
           const isExpanded = expandedExercise === we.id;
-          const exType = getExType(we.exerciseId);
+          const ex = getEx(we.exerciseId);
+          const exSetType = ex?.setType ?? 'WEIGHT_REPS';
+          const exWeightUnit = ex?.weightUnit ?? 'kg';
           const pr = getPersonalRecord(we.exerciseId);
 
           return (
@@ -155,7 +161,7 @@ export default function WorkoutLogPage() {
                     <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground">{getCatName(we.exerciseId)}</span>
                   </div>
                   {pr && (
-                    <p className="text-[10px] text-gym-pr mt-0.5">PR: {pr.weight}kg × {pr.reps}</p>
+                    <p className="text-[10px] text-gym-pr mt-0.5">PR: {pr.weight}{exWeightUnit} × {pr.reps}</p>
                   )}
                 </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
@@ -165,22 +171,10 @@ export default function WorkoutLogPage() {
 
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
-                  {/* Header */}
+                  {/* Dynamic Headers */}
                   <div className="grid grid-cols-12 gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1">
                     <div className="col-span-1">Set</div>
-                    {exType === 'RESISTANCE' ? (
-                      <>
-                        <div className="col-span-3">Weight</div>
-                        <div className="col-span-3">Reps</div>
-                        <div className="col-span-2">RPE</div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="col-span-3">Dist (km)</div>
-                        <div className="col-span-3">Time (min)</div>
-                        <div className="col-span-2"></div>
-                      </>
-                    )}
+                    <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
                     <div className="col-span-2 text-center">✓</div>
                     <div className="col-span-1"></div>
                   </div>
@@ -188,49 +182,12 @@ export default function WorkoutLogPage() {
                   {sets.map(s => (
                     <div key={s.id} className={`grid grid-cols-12 gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`}>
                       <div className="col-span-1 text-xs text-muted-foreground">{s.setIndex + 1}</div>
-                      {exType === 'RESISTANCE' ? (
-                        <>
-                          <div className="col-span-3">
-                            <Input
-                              type="number" placeholder="0" value={s.weightKg ?? ''}
-                              onChange={e => handleUpdateSet(s, 'weightKg', e.target.value ? parseFloat(e.target.value) : null)}
-                              className="h-8 text-xs text-center bg-secondary border-0"
-                            />
-                          </div>
-                          <div className="col-span-3">
-                            <Input
-                              type="number" placeholder="0" value={s.reps ?? ''}
-                              onChange={e => handleUpdateSet(s, 'reps', e.target.value ? parseInt(e.target.value) : null)}
-                              className="h-8 text-xs text-center bg-secondary border-0"
-                            />
-                          </div>
-                          <div className="col-span-2">
-                            <Input
-                              type="number" placeholder="-" value={s.rpe ?? ''}
-                              onChange={e => handleUpdateSet(s, 'rpe', e.target.value ? parseFloat(e.target.value) : null)}
-                              className="h-8 text-xs text-center bg-secondary border-0"
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="col-span-3">
-                            <Input
-                              type="number" placeholder="0" value={s.distanceKm ?? ''}
-                              onChange={e => handleUpdateSet(s, 'distanceKm', e.target.value ? parseFloat(e.target.value) : null)}
-                              className="h-8 text-xs text-center bg-secondary border-0"
-                            />
-                          </div>
-                          <div className="col-span-3">
-                            <Input
-                              type="number" placeholder="0" value={s.durationMinutes ?? ''}
-                              onChange={e => handleUpdateSet(s, 'durationMinutes', e.target.value ? parseFloat(e.target.value) : null)}
-                              className="h-8 text-xs text-center bg-secondary border-0"
-                            />
-                          </div>
-                          <div className="col-span-2" />
-                        </>
-                      )}
+                      <DynamicSetInputs
+                        set={s}
+                        setType={exSetType}
+                        weightUnit={exWeightUnit}
+                        onUpdate={(field, value) => handleUpdateSet(s, field, value)}
+                      />
                       <div className="col-span-2 flex justify-center">
                         <button
                           onClick={() => handleToggleComplete(s)}
@@ -264,27 +221,22 @@ export default function WorkoutLogPage() {
           );
         })}
 
+        {/* Add Exercise Button */}
+        <button
+          onClick={() => setShowAddExercise(true)}
+          className="w-full gym-card flex items-center justify-center gap-2 py-4 text-sm font-medium text-primary border-dashed border-2 border-primary/30 hover:border-primary/50 transition-colors"
+        >
+          <Plus className="h-4 w-4" /> Add Exercise
+        </button>
+
+        {/* Exercise Selection Dialog */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
-          <DialogTrigger asChild>
-            <button className="w-full gym-card flex items-center justify-center gap-2 py-4 text-sm font-medium text-primary border-dashed border-2 border-primary/30 hover:border-primary/50 transition-colors">
-              <Plus className="h-4 w-4" /> Add Exercise
-            </button>
-          </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md max-h-[85vh]">
             <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
-            <Input placeholder="Search exercises..." value={search} onChange={e => setSearch(e.target.value)} className="mb-3" />
-            <div className="max-h-64 overflow-y-auto space-y-1">
-              {filteredExercises.map(ex => (
-                <button
-                  key={ex.id}
-                  onClick={() => handleAddExercise(ex.id)}
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary transition-colors"
-                >
-                  <div className="text-sm font-medium">{ex.name}</div>
-                  <div className="text-xs text-muted-foreground">{categories.find(c => c.id === ex.categoryId)?.name} · {ex.type}</div>
-                </button>
-              ))}
-            </div>
+            <ExerciseSelectionScreen
+              onSelect={handleAddExercises}
+              onClose={() => setShowAddExercise(false)}
+            />
           </DialogContent>
         </Dialog>
       </div>
