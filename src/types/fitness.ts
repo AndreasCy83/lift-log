@@ -1,5 +1,17 @@
 export type ExerciseType = 'RESISTANCE' | 'CARDIO';
 
+export type SetType = 'WEIGHT_REPS' | 'WEIGHT_TIME' | 'REPS_DISTANCE' | 'REPS_TIME' | 'WEIGHT_ONLY';
+
+export type WeightUnit = 'kg' | 'lb';
+
+export const SET_TYPE_LABELS: Record<SetType, string> = {
+  WEIGHT_REPS: 'Weight + Reps',
+  WEIGHT_TIME: 'Weight + Time',
+  REPS_DISTANCE: 'Reps + Distance',
+  REPS_TIME: 'Reps + Time',
+  WEIGHT_ONLY: 'Weight Only',
+};
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -26,6 +38,8 @@ export interface Exercise {
   name: string;
   categoryId: string;
   type: ExerciseType;
+  setType: SetType;
+  weightUnit: WeightUnit;
   defaultRepsMin: number | null;
   defaultRepsMax: number | null;
   defaultSets: number | null;
@@ -37,7 +51,7 @@ export interface Exercise {
 
 export interface Workout {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   startTime: string | null;
   endTime: string | null;
   notes: string;

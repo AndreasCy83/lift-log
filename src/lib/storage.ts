@@ -51,7 +51,12 @@ export function saveCategories(cats: ExerciseCategory[]) { set(STORAGE_KEYS.cate
 export function getExercises(): Exercise[] {
   const exs = get<Exercise[]>(STORAGE_KEYS.exercises, []);
   if (exs.length === 0) { set(STORAGE_KEYS.exercises, DEFAULT_EXERCISES); return DEFAULT_EXERCISES; }
-  return exs;
+  // Migrate old exercises missing new fields
+  return exs.map(ex => ({
+    ...ex,
+    setType: ex.setType ?? (ex.type === 'CARDIO' ? 'REPS_DISTANCE' : 'WEIGHT_REPS'),
+    weightUnit: ex.weightUnit ?? 'kg',
+  }));
 }
 export function saveExercises(exs: Exercise[]) { set(STORAGE_KEYS.exercises, exs); }
 export function addExercise(ex: Exercise) { const all = getExercises(); all.push(ex); saveExercises(all); }
