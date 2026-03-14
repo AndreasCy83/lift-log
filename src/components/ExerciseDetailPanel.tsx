@@ -50,19 +50,29 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
   }, [history, period]);
 
   const chartData = useMemo(() => {
-    return [...filteredHistory].reverse().map(session => {
-      const bestSet = session.sets.reduce((best, s) => {
-        if (!s.weightKg) return best;
-        if (!best || s.weightKg > best.weightKg!) return s;
-        return best;
-      }, null as WorkoutSet | null);
-      const maxReps = Math.max(...session.sets.map(s => s.reps ?? 0));
-      return {
-        date: format(new Date(session.date), 'MMM d'),
-        weight: bestSet?.weightKg ?? 0,
-        reps: maxReps,
-      };
-    });
+    return [...filteredHistory]
+      .reverse()
+      .map((session) => {
+        const weightValues = session.sets
+          .map((s) => s.weightKg)
+          .filter((value): value is number => typeof value === 'number' && value > 0);
+
+        const repValues = session.sets
+          .map((s) => s.reps)
+          .filter((value): value is number => typeof value === 'number' && value > 0);
+
+        const maxWeight = weightValues.length > 0 ? Math.max(...weightValues) : null;
+        const maxReps = repValues.length > 0 ? Math.max(...repValues) : null;
+
+        if (maxWeight === null && maxReps === null) return null;
+
+        return {
+          date: format(new Date(session.date), 'MMM d'),
+          weight: maxWeight,
+          reps: maxReps,
+        };
+      })
+      .filter((point): point is { date: string; weight: number | null; reps: number | null } => point !== null);
   }, [filteredHistory]);
 
   const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
@@ -196,39 +206,57 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
 
               {/* History List - Date grouped with sets detail */}
               <div className="max-h-60 overflow-y-auto space-y-2">
-                {filteredHistory.map((session, i) => (
-                  <div key={`${session.date}-${i}`} className="rounded-lg bg-secondary/50 px-3 py-2">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold">{format(new Date(session.date), 'EEE, MMM d, yyyy')}</span>
-                      <button
-                        onClick={() => {
-                          const best = session.sets.reduce((b, s) => (s.weightKg ?? 0) > (b.weightKg ?? 0) ? s : b, session.sets[0]);
-                          if (best) onPrefill(best.weightKg ?? 0, best.reps ?? 0);
-                        }}
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                        title="Copy best set to today"
-                      >
-                        <Copy className="h-3 w-3" />
-                      </button>
+                {filteredHistory.map((session, i) => {
+                  const bestSet = session.sets
+                    .filter(
+                      (s) =>
+                        typeof s.weightKg === 'number' &&
+                        s.weightKg > 0 &&
+                        typeof s.reps === 'number' &&
+                        s.reps > 0,
+                    )
+                    .reduce((best, current) => {
+                      if (!best) return current;
+                      return current.weightKg! > best.weightKg! ? current : best;
+                    }, null as WorkoutSet | null);
+
+                  return (
+                    <div key={`${session.date}-${i}`} className="rounded-lg bg-secondary/50 px-3 py-2">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-semibold">{format(new Date(session.date), 'EEE, MMM d, yyyy')}</span>
+                        <button
+                          onClick={() => {
+                            if (bestSet) onPrefill(bestSet.weightKg!, bestSet.reps!);
+                          }}
+                          className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          title="Copy best set to today"
+                          disabled={!bestSet}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
+                      </div>
+                      <div className="space-y-0.5">
+                        {session.sets.map((s, si) => (
+                          <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
+                            <span className="font-medium text-foreground">
+                              {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
+                              {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
+                            </span>
+                            {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
+                            {s.setTag && s.setTag !== 'N' && (
+                              <span className={`text-[10px] rounded px-1 ${
+                                s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
+                                s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
+                                'bg-red-500/20 text-red-500'
+                              }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-0.5">
-                      {session.sets.map((s, si) => (
-                        <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
-                          <span className="font-medium text-foreground">{s.weightKg ?? 0}{unitLabel} × {s.reps ?? 0}</span>
-                          {s.rpe && <span className="text-[10px]">RPE {s.rpe}</span>}
-                          {s.setTag && s.setTag !== 'N' && (
-                            <span className={`text-[10px] rounded px-1 ${
-                              s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
-                              s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
-                              'bg-red-500/20 text-red-500'
-                            }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {filteredHistory.length === 0 && (
                   <p className="text-xs text-muted-foreground text-center py-2">No data for this period</p>
                 )}

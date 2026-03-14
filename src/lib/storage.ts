@@ -172,32 +172,54 @@ export function getSettings(): AppSettings {
 export function saveSettings(s: AppSettings) { set(STORAGE_KEYS.settings, s); }
 
 // Utility: calculate stats
+function hasMeaningfulSetData(set: WorkoutSet): boolean {
+  return [set.weightKg, set.reps, set.distanceKm, set.durationMinutes].some(
+    (value) => typeof value === 'number' && value > 0,
+  );
+}
+
 export function getExerciseHistory(exerciseId: string) {
   const workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
-  const wes = getWorkoutExercises().filter(we => we.exerciseId === exerciseId);
+  const wes = getWorkoutExercises().filter((we) => we.exerciseId === exerciseId);
   const allSets = getWorkoutSets();
 
-  return workouts.map(w => {
-    const we = wes.find(x => x.workoutId === w.id);
-    if (!we) return null;
-    const sets = allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted && !s.isWarmup);
-    return { date: w.date, sets };
-  }).filter(Boolean) as { date: string; sets: WorkoutSet[] }[];
+  return workouts
+    .map((w) => {
+      const we = wes.find((x) => x.workoutId === w.id);
+      if (!we) return null;
+
+      const sessionSets = allSets
+        .filter((s) => s.workoutExerciseId === we.id && !s.isWarmup)
+        .sort((a, b) => a.setIndex - b.setIndex);
+
+      const completedSets = sessionSets.filter((s) => s.isCompleted && hasMeaningfulSetData(s));
+      const fallbackSets = sessionSets.filter(hasMeaningfulSetData);
+      const sets = completedSets.length > 0 ? completedSets : fallbackSets;
+
+      if (sets.length === 0) return null;
+      return { date: w.date, sets };
+    })
+    .filter(Boolean) as { date: string; sets: WorkoutSet[] }[];
 }
 
 export function getPersonalRecord(exerciseId: string): { weight: number; reps: number; date: string } | null {
   const history = getExerciseHistory(exerciseId);
   let best: { weight: number; reps: number; date: string } | null = null;
+
   for (const session of history) {
     for (const s of session.sets) {
-      if (s.weightKg && s.reps) {
-        const e1rm = s.weightKg * (1 + s.reps / 30); // Epley
-        const bestE1rm = best ? best.weight * (1 + best.reps / 30) : 0;
-        if (e1rm > bestE1rm) {
-          best = { weight: s.weightKg, reps: s.reps, date: session.date };
-        }
+      const hasValidWeight = typeof s.weightKg === 'number' && s.weightKg > 0;
+      const hasValidReps = typeof s.reps === 'number' && s.reps > 0;
+      if (!hasValidWeight || !hasValidReps) continue;
+
+      const e1rm = s.weightKg * (1 + s.reps / 30); // Epley
+      const bestE1rm = best ? best.weight * (1 + best.reps / 30) : 0;
+
+      if (e1rm > bestE1rm) {
+        best = { weight: s.weightKg, reps: s.reps, date: session.date };
       }
     }
   }
+
   return best;
 }
