@@ -231,7 +231,7 @@ export default function WorkoutLogPage() {
 
         {/* Exercise Selection Dialog */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
-          <DialogContent className="max-w-md max-h-[85vh]">
+          <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
             <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
             <ExerciseSelectionScreen
               onSelect={handleAddExercises}
