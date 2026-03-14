@@ -64,7 +64,7 @@ export default function RoutinesPage() {
         addWorkoutSet({
           id: generateId(), workoutExerciseId: weId, setIndex: i,
           weightKg: null, reps: re.repsMin, distanceKm: null, durationMinutes: null,
-          rpe: null, isWarmup: false, isCompleted: false, notes: ''
+          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
         });
       }
     });
