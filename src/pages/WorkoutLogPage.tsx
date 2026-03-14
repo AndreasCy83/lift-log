@@ -202,6 +202,7 @@ export default function WorkoutLogPage() {
                           {tag === 'N' ? '–' : tag}
                         </button>
                       </div>
+                      <div></div>
                       <DynamicSetInputs
                         set={s}
                         setType={exSetType}
