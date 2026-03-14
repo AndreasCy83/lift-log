@@ -172,16 +172,35 @@ export default function WorkoutLogPage() {
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
                   {/* Dynamic Headers */}
-                  <div className="grid grid-cols-12 gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1">
+                  <div className="grid grid-cols-14 gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1">
                     <div className="col-span-1">Set</div>
+                    <div className="col-span-1">Type</div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
                     <div className="col-span-2 text-center">✓</div>
                     <div className="col-span-1"></div>
                   </div>
 
-                  {sets.map(s => (
-                    <div key={s.id} className={`grid grid-cols-12 gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`}>
+                  {sets.map(s => {
+                    const tag = s.setTag ?? 'N';
+                    const tagColors: Record<SetTag, string> = {
+                      N: 'bg-secondary text-muted-foreground',
+                      W: 'bg-yellow-500/20 text-yellow-500',
+                      D: 'bg-blue-500/20 text-blue-500',
+                      F: 'bg-red-500/20 text-red-500',
+                    };
+                    const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
+                    return (
+                    <div key={s.id} className={`grid grid-cols-14 gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`}>
                       <div className="col-span-1 text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                      <div className="col-span-1 flex justify-center">
+                        <button
+                          onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
+                          className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
+                          title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                        >
+                          {tag === 'N' ? '' : tag}
+                        </button>
+                      </div>
                       <DynamicSetInputs
                         set={s}
                         setType={exSetType}
