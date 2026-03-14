@@ -172,9 +172,10 @@ export default function WorkoutLogPage() {
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
                     <div>Set</div>
                     <div>Type</div>
+                    <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
                     <div className="text-center">✓</div>
                     <div></div>
@@ -190,7 +191,7 @@ export default function WorkoutLogPage() {
                     };
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     return (
-                    <div key={s.id} className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
+                    <div key={s.id} className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
                       <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                       <div className="flex justify-center">
                         <button
@@ -201,6 +202,7 @@ export default function WorkoutLogPage() {
                           {tag === 'N' ? '–' : tag}
                         </button>
                       </div>
+                      <div></div>
                       <DynamicSetInputs
                         set={s}
                         setType={exSetType}
