@@ -116,7 +116,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Exercise List */}
-      <ScrollArea className="flex-1 min-h-0 max-h-[50vh]">
+      <div className="flex-1 min-h-0 max-h-[50vh] overflow-y-auto">
         <div className="space-y-1 px-2">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
@@ -165,7 +165,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
             <div className="py-8 text-center text-sm text-muted-foreground">No exercises found</div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Bottom Actions */}
       <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 px-2">
