@@ -15,21 +15,21 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
     case 'WEIGHT_REPS':
       return (
         <>
-          <div className="col-span-3">
+          <div>
             <Input
               type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
               onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
-          <div className="col-span-3">
+          <div>
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
-          <div className="col-span-2">
+          <div>
             <Input
               type="number" placeholder="RPE" value={set.rpe ?? ''}
               onChange={e => onUpdate('rpe', e.target.value ? parseFloat(e.target.value) : null)}
@@ -42,72 +42,79 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
     case 'WEIGHT_TIME':
       return (
         <>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
               onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder="Sec" value={set.durationMinutes ?? ''}
               onChange={e => onUpdate('durationMinutes', e.target.value ? parseFloat(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
+          <div />
         </>
       );
 
     case 'REPS_DISTANCE':
       return (
         <>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder="km" value={set.distanceKm ?? ''}
               onChange={e => onUpdate('distanceKm', e.target.value ? parseFloat(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
+          <div />
         </>
       );
 
     case 'REPS_TIME':
       return (
         <>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
-          <div className="col-span-4">
+          <div>
             <Input
               type="number" placeholder="Min" value={set.durationMinutes ?? ''}
               onChange={e => onUpdate('durationMinutes', e.target.value ? parseFloat(e.target.value) : null)}
               className="h-8 text-xs text-center bg-secondary border-0"
             />
           </div>
+          <div />
         </>
       );
 
     case 'WEIGHT_ONLY':
       return (
-        <div className="col-span-8">
-          <Input
-            type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
-            onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
-            className="h-8 text-xs text-center bg-secondary border-0"
-          />
-        </div>
+        <>
+          <div>
+            <Input
+              type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
+              onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
+              className="h-8 text-xs text-center bg-secondary border-0"
+            />
+          </div>
+          <div />
+          <div />
+        </>
       );
 
     default:
@@ -122,34 +129,43 @@ export function SetColumnHeaders({ setType, weightUnit }: { setType: SetType; we
     case 'WEIGHT_REPS':
       return (
         <>
-          <div className="col-span-3">{unitLabel}</div>
-          <div className="col-span-3">REPS</div>
-          <div className="col-span-2">RPE</div>
+          <div>{unitLabel}</div>
+          <div>REPS</div>
+          <div>RPE</div>
         </>
       );
     case 'WEIGHT_TIME':
       return (
         <>
-          <div className="col-span-4">{unitLabel}</div>
-          <div className="col-span-4">SEC</div>
+          <div>{unitLabel}</div>
+          <div>SEC</div>
+          <div />
         </>
       );
     case 'REPS_DISTANCE':
       return (
         <>
-          <div className="col-span-4">REPS</div>
-          <div className="col-span-4">KM</div>
+          <div>REPS</div>
+          <div>KM</div>
+          <div />
         </>
       );
     case 'REPS_TIME':
       return (
         <>
-          <div className="col-span-4">REPS</div>
-          <div className="col-span-4">MIN</div>
+          <div>REPS</div>
+          <div>MIN</div>
+          <div />
         </>
       );
     case 'WEIGHT_ONLY':
-      return <div className="col-span-8">{unitLabel}</div>;
+      return (
+        <>
+          <div>{unitLabel}</div>
+          <div />
+          <div />
+        </>
+      );
     default:
       return null;
   }
