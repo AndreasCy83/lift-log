@@ -85,7 +85,7 @@ export default function WorkoutLogPage() {
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
       weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: last?.distanceKm ?? null,
-      durationMinutes: last?.durationMinutes ?? null, rpe: null, isWarmup: false, isCompleted: false, notes: ''
+      durationMinutes: last?.durationMinutes ?? null, rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
     });
     forceUpdate(n => n + 1);
   };
