@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
-import type { Workout, WorkoutSet } from '@/types/fitness';
+import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
@@ -63,7 +63,7 @@ export default function WorkoutLogPage() {
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
         weightKg: null, reps: ex?.defaultRepsMin ?? null, distanceKm: null, durationMinutes: null,
-        rpe: null, isWarmup: false, isCompleted: false, notes: ''
+        rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
       });
     });
     refresh();
@@ -85,7 +85,7 @@ export default function WorkoutLogPage() {
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
       weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: last?.distanceKm ?? null,
-      durationMinutes: last?.durationMinutes ?? null, rpe: null, isWarmup: false, isCompleted: false, notes: ''
+      durationMinutes: last?.durationMinutes ?? null, rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
     });
     forceUpdate(n => n + 1);
   };
@@ -172,23 +172,42 @@ export default function WorkoutLogPage() {
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
                   {/* Dynamic Headers */}
-                  <div className="grid grid-cols-12 gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1">
-                    <div className="col-span-1">Set</div>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
+                    <div>Set</div>
+                    <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
-                    <div className="col-span-2 text-center">✓</div>
-                    <div className="col-span-1"></div>
+                    <div className="text-center">✓</div>
+                    <div></div>
                   </div>
 
-                  {sets.map(s => (
-                    <div key={s.id} className={`grid grid-cols-12 gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`}>
-                      <div className="col-span-1 text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                  {sets.map(s => {
+                    const tag = s.setTag ?? 'N';
+                    const tagColors: Record<SetTag, string> = {
+                      N: 'bg-secondary text-muted-foreground',
+                      W: 'bg-yellow-500/20 text-yellow-500',
+                      D: 'bg-blue-500/20 text-blue-500',
+                      F: 'bg-red-500/20 text-red-500',
+                    };
+                    const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
+                    return (
+                    <div key={s.id} className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
+                      <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
+                          className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
+                          title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                        >
+                          {tag === 'N' ? '–' : tag}
+                        </button>
+                      </div>
                       <DynamicSetInputs
                         set={s}
                         setType={exSetType}
                         weightUnit={exWeightUnit}
                         onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                       />
-                      <div className="col-span-2 flex justify-center">
+                      <div className="flex justify-center">
                         <button
                           onClick={() => handleToggleComplete(s)}
                           className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${s.isCompleted ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground'}`}
@@ -196,13 +215,14 @@ export default function WorkoutLogPage() {
                           <Check className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="col-span-1 flex justify-center">
+                      <div className="flex justify-center">
                         <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
                           <Trash2 className="h-3 w-3" />
                         </button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
 
                   <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="w-full text-xs text-primary">
                     <Plus className="h-3 w-3 mr-1" /> Add Set

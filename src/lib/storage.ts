@@ -105,7 +105,9 @@ export function removeWorkoutExercise(id: string) {
 }
 
 // WorkoutSets
-export function getWorkoutSets(): WorkoutSet[] { return get<WorkoutSet[]>(STORAGE_KEYS.workoutSets, []); }
+export function getWorkoutSets(): WorkoutSet[] {
+  return get<WorkoutSet[]>(STORAGE_KEYS.workoutSets, []).map(s => ({ ...s, setTag: s.setTag ?? 'N' }));
+}
 export function saveWorkoutSets(s: WorkoutSet[]) { set(STORAGE_KEYS.workoutSets, s); }
 export function getSetsForWorkoutExercise(weId: string): WorkoutSet[] {
   return getWorkoutSets().filter(s => s.workoutExerciseId === weId).sort((a, b) => a.setIndex - b.setIndex);

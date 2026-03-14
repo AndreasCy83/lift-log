@@ -65,10 +65,13 @@ export interface WorkoutExercise {
   notes: string;
 }
 
+export type SetTag = 'N' | 'W' | 'D' | 'F'; // Normal, Warmup, Dropset, Failure
+
 export interface WorkoutSet {
   id: string;
   workoutExerciseId: string;
   setIndex: number;
+  setTag: SetTag;
   weightKg: number | null;
   reps: number | null;
   distanceKm: number | null;
