@@ -177,7 +177,7 @@ export default function WorkoutLogPage() {
                     exerciseId={we.exerciseId}
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={exWeightUnit}
-                    refreshKey={forceUpdate.length}
+                    refreshKey={updateKey}
                     onPrefill={(weight, reps) => {
                       const currentSets = getSetsForWorkoutExercise(we.id);
                       const lastSet = currentSets[currentSets.length - 1];
