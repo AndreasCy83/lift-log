@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
+import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
 import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
 
@@ -171,6 +172,27 @@ export default function WorkoutLogPage() {
 
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
+                  {/* Exercise Detail Panel */}
+                  <ExerciseDetailPanel
+                    exerciseId={we.exerciseId}
+                    exerciseName={getExName(we.exerciseId)}
+                    weightUnit={exWeightUnit}
+                    onPrefill={(weight, reps) => {
+                      const currentSets = getSetsForWorkoutExercise(we.id);
+                      const lastSet = currentSets[currentSets.length - 1];
+                      if (lastSet && !lastSet.isCompleted && lastSet.weightKg === null) {
+                        handleUpdateSet(lastSet, 'weightKg', weight);
+                        handleUpdateSet({ ...lastSet, weightKg: weight }, 'reps', reps);
+                      } else {
+                        addWorkoutSet({
+                          id: generateId(), workoutExerciseId: we.id, setIndex: currentSets.length,
+                          weightKg: weight, reps, distanceKm: null, durationMinutes: null,
+                          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+                        });
+                        forceUpdate(n => n + 1);
+                      }
+                    }}
+                  />
                   {/* Dynamic Headers */}
                   <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
                     <div>Set</div>
