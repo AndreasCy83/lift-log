@@ -168,7 +168,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </ScrollArea>
 
       {/* Bottom Actions */}
-      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3">
+      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 px-2">
         <Button variant="outline" size="sm" onClick={() => setShowCustomForm(true)} className="gap-1.5">
           <Plus className="h-3.5 w-3.5" /> Custom Exercise
         </Button>
