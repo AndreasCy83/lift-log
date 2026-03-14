@@ -165,7 +165,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
             <div className="py-8 text-center text-sm text-muted-foreground">No exercises found</div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Bottom Actions */}
       <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 px-2">
