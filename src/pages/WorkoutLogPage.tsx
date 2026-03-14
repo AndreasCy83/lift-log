@@ -192,13 +192,13 @@ export default function WorkoutLogPage() {
                     return (
                     <div key={s.id} className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 1.5rem 1fr 1fr 1fr 2rem 1rem' }}>
                       <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
-                      <div className="col-span-1 flex justify-center">
+                      <div className="flex justify-center">
                         <button
                           onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
                           className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
                           title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
                         >
-                          {tag === 'N' ? '' : tag}
+                          {tag === 'N' ? '–' : tag}
                         </button>
                       </div>
                       <DynamicSetInputs
