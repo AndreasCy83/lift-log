@@ -170,7 +170,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
               </div>
 
               {/* Graph */}
-              {showGraph && chartData.length > 1 && (
+              {showGraph && chartData.length > 0 && (
                 <div className="rounded-lg bg-secondary/50 p-2">
                   <ResponsiveContainer width="100%" height={120}>
                     <LineChart data={chartData}>
@@ -183,9 +183,10 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                       <Line
                         type="monotone"
                         dataKey={graphMode}
-                        stroke={graphMode === 'weight' ? 'hsl(var(--primary))' : 'hsl(var(--accent-foreground))'}
+                        stroke="hsl(var(--primary))"
                         strokeWidth={2}
-                        dot={{ r: 3, fill: graphMode === 'weight' ? 'hsl(var(--primary))' : 'hsl(var(--accent-foreground))' }}
+                        dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                        name={graphMode === 'weight' ? `Weight (${unitLabel})` : 'Reps'}
                       />
                     </LineChart>
                   </ResponsiveContainer>
