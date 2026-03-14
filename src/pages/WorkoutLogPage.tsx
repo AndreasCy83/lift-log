@@ -221,7 +221,8 @@ export default function WorkoutLogPage() {
                         </button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
 
                   <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="w-full text-xs text-primary">
                     <Plus className="h-3 w-3 mr-1" /> Add Set
