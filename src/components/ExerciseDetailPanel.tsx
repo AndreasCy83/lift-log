@@ -50,19 +50,29 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
   }, [history, period]);
 
   const chartData = useMemo(() => {
-    return [...filteredHistory].reverse().map(session => {
-      const bestSet = session.sets.reduce((best, s) => {
-        if (!s.weightKg) return best;
-        if (!best || s.weightKg > best.weightKg!) return s;
-        return best;
-      }, null as WorkoutSet | null);
-      const maxReps = Math.max(...session.sets.map(s => s.reps ?? 0));
-      return {
-        date: format(new Date(session.date), 'MMM d'),
-        weight: bestSet?.weightKg ?? 0,
-        reps: maxReps,
-      };
-    });
+    return [...filteredHistory]
+      .reverse()
+      .map((session) => {
+        const weightValues = session.sets
+          .map((s) => s.weightKg)
+          .filter((value): value is number => typeof value === 'number' && value > 0);
+
+        const repValues = session.sets
+          .map((s) => s.reps)
+          .filter((value): value is number => typeof value === 'number' && value > 0);
+
+        const maxWeight = weightValues.length > 0 ? Math.max(...weightValues) : null;
+        const maxReps = repValues.length > 0 ? Math.max(...repValues) : null;
+
+        if (maxWeight === null && maxReps === null) return null;
+
+        return {
+          date: format(new Date(session.date), 'MMM d'),
+          weight: maxWeight,
+          reps: maxReps,
+        };
+      })
+      .filter((point): point is { date: string; weight: number | null; reps: number | null } => point !== null);
   }, [filteredHistory]);
 
   const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
