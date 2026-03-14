@@ -85,7 +85,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Muscle Group Chips */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 px-2">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 px-2" style={{ WebkitOverflowScrolling: 'touch' }}>
         <button
           onClick={() => setSelectedCategory(null)}
           className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -116,7 +116,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Exercise List */}
-      <ScrollArea className="flex-1 min-h-0">
+      <ScrollArea className="flex-1 min-h-0 max-h-[50vh]">
         <div className="space-y-1 px-2">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
