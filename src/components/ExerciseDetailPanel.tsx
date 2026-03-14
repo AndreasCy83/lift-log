@@ -14,17 +14,18 @@ interface Props {
   exerciseName: string;
   weightUnit: 'kg' | 'lb';
   onPrefill: (weightKg: number, reps: number) => void;
+  refreshKey?: number;
 }
 
-export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill }: Props) {
+export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, refreshKey = 0 }: Props) {
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
   const [period, setPeriod] = useState<Period>('all');
   const [graphMode, setGraphMode] = useState<GraphMode>('weight');
   const [prFlash, setPrFlash] = useState(false);
 
-  const history = useMemo(() => getExerciseHistory(exerciseId), [exerciseId]);
-  const pr = useMemo(() => getPersonalRecord(exerciseId), [exerciseId]);
+  const history = useMemo(() => getExerciseHistory(exerciseId), [exerciseId, refreshKey]);
+  const pr = useMemo(() => getPersonalRecord(exerciseId), [exerciseId, refreshKey]);
 
   const recentWeights = useMemo(() => {
     const weights: number[] = [];

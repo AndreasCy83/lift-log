@@ -38,7 +38,7 @@ export default function WorkoutLogPage() {
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [, forceUpdate] = useState(0);
+  const [updateKey, forceUpdate] = useState(0);
 
   // Re-read exercises after custom creation
   const [exercises, setExercisesState] = useState(() => getExercises());
@@ -177,6 +177,7 @@ export default function WorkoutLogPage() {
                     exerciseId={we.exerciseId}
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={exWeightUnit}
+                    refreshKey={updateKey}
                     onPrefill={(weight, reps) => {
                       const currentSets = getSetsForWorkoutExercise(we.id);
                       const lastSet = currentSets[currentSets.length - 1];
