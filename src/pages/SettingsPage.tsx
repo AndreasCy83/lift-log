@@ -157,6 +157,17 @@ export default function SettingsPage() {
             <Button onClick={handleExport} variant="outline" size="sm" className="flex-1">Export Backup</Button>
             <Button onClick={handleImport} variant="outline" size="sm" className="flex-1">Import Backup</Button>
           </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              resetExerciseDefaults();
+              window.location.reload();
+            }}
+          >
+            Reset Exercises to Defaults
+          </Button>
         </div>
       </div>
     </div>
