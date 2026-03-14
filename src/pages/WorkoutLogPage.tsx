@@ -63,7 +63,7 @@ export default function WorkoutLogPage() {
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
         weightKg: null, reps: ex?.defaultRepsMin ?? null, distanceKm: null, durationMinutes: null,
-        rpe: null, isWarmup: false, isCompleted: false, notes: ''
+        rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
       });
     });
     refresh();
