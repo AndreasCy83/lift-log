@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
-import type { Workout, WorkoutSet } from '@/types/fitness';
+import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
