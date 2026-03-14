@@ -207,7 +207,7 @@ export default function WorkoutLogPage() {
                         weightUnit={exWeightUnit}
                         onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                       />
-                      <div className="col-span-2 flex justify-center">
+                      <div className="flex justify-center">
                         <button
                           onClick={() => handleToggleComplete(s)}
                           className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${s.isCompleted ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground'}`}
@@ -215,7 +215,7 @@ export default function WorkoutLogPage() {
                           <Check className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="col-span-1 flex justify-center">
+                      <div className="flex justify-center">
                         <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
                           <Trash2 className="h-3 w-3" />
                         </button>
