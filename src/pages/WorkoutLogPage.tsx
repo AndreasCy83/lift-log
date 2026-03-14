@@ -175,6 +175,7 @@ export default function WorkoutLogPage() {
                   <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
                     <div>Set</div>
                     <div>Type</div>
+                    <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
                     <div className="text-center">✓</div>
                     <div></div>
