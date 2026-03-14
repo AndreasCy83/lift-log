@@ -14,6 +14,7 @@ interface Props {
   exerciseName: string;
   weightUnit: 'kg' | 'lb';
   onPrefill: (weightKg: number, reps: number) => void;
+  refreshKey?: number;
 }
 
 export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill }: Props) {
