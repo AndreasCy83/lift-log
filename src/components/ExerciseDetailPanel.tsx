@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { format, subDays, isAfter } from 'date-fns';
-import { Trophy, History, TrendingUp, Copy, Trash2, ChevronDown, ChevronUp, Flame } from 'lucide-react';
+import { Trophy, History, TrendingUp, Copy, ChevronDown, ChevronUp, Flame } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { getExerciseHistory, getPersonalRecord } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import type { WorkoutSet } from '@/types/fitness';
 
 type Period = '30d' | '90d' | '1y' | 'all';
+type GraphMode = 'weight' | 'reps';
 
 interface Props {
   exerciseId: string;
@@ -19,12 +20,12 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
   const [period, setPeriod] = useState<Period>('all');
+  const [graphMode, setGraphMode] = useState<GraphMode>('weight');
   const [prFlash, setPrFlash] = useState(false);
 
   const history = useMemo(() => getExerciseHistory(exerciseId), [exerciseId]);
   const pr = useMemo(() => getPersonalRecord(exerciseId), [exerciseId]);
 
-  // Get unique recent weights for quick-add
   const recentWeights = useMemo(() => {
     const weights: number[] = [];
     for (const session of history) {
@@ -40,7 +41,6 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
     return [...new Set(weights)].sort((a, b) => a - b);
   }, [history, pr]);
 
-  // Filter history by period
   const filteredHistory = useMemo(() => {
     if (period === 'all') return history;
     const days = period === '30d' ? 30 : period === '90d' ? 90 : 365;
@@ -48,7 +48,6 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
     return history.filter(h => isAfter(new Date(h.date), cutoff));
   }, [history, period]);
 
-  // Chart data
   const chartData = useMemo(() => {
     return [...filteredHistory].reverse().map(session => {
       const bestSet = session.sets.reduce((best, s) => {
@@ -56,10 +55,11 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
         if (!best || s.weightKg > best.weightKg!) return s;
         return best;
       }, null as WorkoutSet | null);
+      const maxReps = Math.max(...session.sets.map(s => s.reps ?? 0));
       return {
         date: format(new Date(session.date), 'MMM d'),
         weight: bestSet?.weightKg ?? 0,
-        reps: bestSet?.reps ?? 0,
+        reps: maxReps,
       };
     });
   }, [filteredHistory]);
@@ -126,7 +126,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
 
           {showHistory && (
             <div className="mt-2 space-y-2 animate-slide-up">
-              {/* Graph Toggle */}
+              {/* Graph Toggle + Period Filter */}
               <div className="flex items-center gap-2">
                 <Button
                   variant={showGraph ? 'default' : 'outline'}
@@ -136,6 +136,26 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                 >
                   <TrendingUp className="h-3 w-3" /> Graph
                 </Button>
+                {showGraph && (
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setGraphMode('weight')}
+                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                        graphMode === 'weight' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground'
+                      }`}
+                    >
+                      Weight
+                    </button>
+                    <button
+                      onClick={() => setGraphMode('reps')}
+                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                        graphMode === 'reps' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground'
+                      }`}
+                    >
+                      Reps
+                    </button>
+                  </div>
+                )}
                 <div className="flex gap-1 ml-auto">
                   {periods.map(p => (
                     <button
@@ -162,35 +182,51 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                         contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
                         labelStyle={{ color: 'hsl(var(--foreground))' }}
                       />
-                      <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: 'hsl(var(--primary))' }} />
+                      <Line
+                        type="monotone"
+                        dataKey={graphMode}
+                        stroke={graphMode === 'weight' ? 'hsl(var(--primary))' : 'hsl(var(--accent-foreground))'}
+                        strokeWidth={2}
+                        dot={{ r: 3, fill: graphMode === 'weight' ? 'hsl(var(--primary))' : 'hsl(var(--accent-foreground))' }}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
               )}
 
-              {/* History List */}
-              <div className="max-h-48 overflow-y-auto space-y-1">
+              {/* History List - Date grouped with sets detail */}
+              <div className="max-h-60 overflow-y-auto space-y-2">
                 {filteredHistory.map((session, i) => (
-                  <div key={`${session.date}-${i}`} className="flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-1.5 group">
-                    <span className="text-[10px] text-muted-foreground w-16 shrink-0">{format(new Date(session.date), 'MMM d')}</span>
-                    <div className="flex-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                  <div key={`${session.date}-${i}`} className="rounded-lg bg-secondary/50 px-3 py-2">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-semibold">{format(new Date(session.date), 'EEE, MMM d, yyyy')}</span>
+                      <button
+                        onClick={() => {
+                          const best = session.sets.reduce((b, s) => (s.weightKg ?? 0) > (b.weightKg ?? 0) ? s : b, session.sets[0]);
+                          if (best) onPrefill(best.weightKg ?? 0, best.reps ?? 0);
+                        }}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        title="Copy best set to today"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <div className="space-y-0.5">
                       {session.sets.map((s, si) => (
-                        <span key={si} className="text-xs">
-                          {s.weightKg ?? 0}{unitLabel}×{s.reps ?? 0}
-                          {s.rpe ? <span className="text-muted-foreground text-[10px]"> @{s.rpe}</span> : ''}
-                        </span>
+                        <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
+                          <span className="font-medium text-foreground">{s.weightKg ?? 0}{unitLabel} × {s.reps ?? 0}</span>
+                          {s.rpe && <span className="text-[10px]">RPE {s.rpe}</span>}
+                          {s.setTag && s.setTag !== 'N' && (
+                            <span className={`text-[10px] rounded px-1 ${
+                              s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
+                              s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
+                              'bg-red-500/20 text-red-500'
+                            }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
+                          )}
+                        </div>
                       ))}
                     </div>
-                    <button
-                      onClick={() => {
-                        const best = session.sets.reduce((b, s) => (s.weightKg ?? 0) > (b.weightKg ?? 0) ? s : b, session.sets[0]);
-                        if (best) onPrefill(best.weightKg ?? 0, best.reps ?? 0);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary"
-                      title="Copy to today"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
                   </div>
                 ))}
                 {filteredHistory.length === 0 && (
