@@ -192,6 +192,13 @@ export default function WorkoutLogPage() {
                 >
                   <StickyNote className="h-4 w-4" />
                 </button>
+                <button
+                  onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: exWeightUnit })}
+                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                  title="Exercise stats"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </button>
