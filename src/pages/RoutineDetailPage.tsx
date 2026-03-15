@@ -55,8 +55,8 @@ export default function RoutineDetailPage() {
                 <Plus className="h-4 w-4" /> Add
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[85vh]">
-              <DialogHeader><DialogTitle>Add Exercises</DialogTitle></DialogHeader>
+            <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
+              <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
               <ExerciseSelectionScreen onSelect={handleAddExercises} onClose={() => setShowAdd(false)} />
             </DialogContent>
           </Dialog>
