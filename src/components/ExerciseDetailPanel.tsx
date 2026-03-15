@@ -221,20 +221,13 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                     }, null as WorkoutSet | null);
 
                   return (
-                    <div key={`${session.date}-${i}`} className="rounded-lg bg-secondary/50 px-3 py-2">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-semibold">{format(new Date(session.date), 'EEE, MMM d, yyyy')}</span>
-                        <button
-                          onClick={() => {
-                            if (bestSet) onPrefill(bestSet.weightKg!, bestSet.reps!);
-                          }}
-                          className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                          title="Copy best set to today"
-                          disabled={!bestSet}
-                        >
-                          <Copy className="h-3 w-3" />
-                        </button>
-                      </div>
+                    <HistorySessionCard
+                      key={`${session.date}-${i}`}
+                      session={session}
+                      bestSet={bestSet}
+                      unitLabel={unitLabel}
+                      onPrefill={onPrefill}
+                    />
                       <div className="space-y-0.5">
                         {session.sets.map((s, si) => (
                           <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">

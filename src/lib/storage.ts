@@ -198,7 +198,7 @@ export function getExerciseHistory(exerciseId: string) {
       const sets = completedSets.length > 0 ? completedSets : fallbackSets;
 
       if (sets.length === 0) return null;
-      return { date: w.date, sets };
+      return { date: w.date, sets, exerciseNotes: we.notes || '' };
     })
     .filter(Boolean) as { date: string; sets: WorkoutSet[] }[];
 }

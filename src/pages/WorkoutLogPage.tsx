@@ -182,10 +182,32 @@ export default function WorkoutLogPage() {
                     <p className="text-[10px] text-gym-pr mt-0.5">PR: {pr.weight}{exWeightUnit} × {pr.reps}</p>
                   )}
                 </button>
+                <button
+                  onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
+                  className={`p-1 transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Exercise note"
+                >
+                  <StickyNote className="h-4 w-4" />
+                </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
+              {noteExpanded === we.id && (
+                <div className="mb-2 animate-slide-up">
+                  <Textarea
+                    placeholder="Add a note for this exercise…"
+                    value={we.notes}
+                    onChange={(e) => {
+                      const updated = { ...we, notes: e.target.value };
+                      updateWorkoutExercise(updated);
+                      setWorkoutExercises(prev => prev.map(x => x.id === we.id ? updated : x));
+                    }}
+                    className="min-h-[40px] resize-none text-xs bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
+                    rows={2}
+                  />
+                </div>
+              )}
 
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
