@@ -228,26 +228,6 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                       unitLabel={unitLabel}
                       onPrefill={onPrefill}
                     />
-                      <div className="space-y-0.5">
-                        {session.sets.map((s, si) => (
-                          <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
-                            <span className="font-medium text-foreground">
-                              {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
-                              {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
-                            </span>
-                            {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
-                            {s.setTag && s.setTag !== 'N' && (
-                              <span className={`text-[10px] rounded px-1 ${
-                                s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
-                                s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
-                                'bg-red-500/20 text-red-500'
-                              }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   );
                 })}
                 {filteredHistory.length === 0 && (
