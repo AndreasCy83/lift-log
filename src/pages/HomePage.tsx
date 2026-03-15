@@ -2,8 +2,9 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
-import { getWorkouts, getExercisesForWorkout, generateId, addWorkout } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
+import { getCategoryColor } from '@/lib/categoryColors';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -13,7 +14,22 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const workouts = useMemo(() => getWorkouts(), []);
+  const allExercises = useMemo(() => getExercises(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
+
+  // Build a map: date -> unique category IDs for that workout
+  const workoutCategoryMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    workouts.forEach(w => {
+      const wExercises = getExercisesForWorkout(w.id);
+      const catIds = [...new Set(wExercises.map(we => {
+        const ex = allExercises.find(e => e.id === we.exerciseId);
+        return ex?.categoryId;
+      }).filter(Boolean))] as string[];
+      map[w.date] = catIds;
+    });
+    return map;
+  }, [workouts, allExercises]);
 
   const days = useMemo(() => {
     const start = startOfMonth(currentMonth);
@@ -105,18 +121,23 @@ export default function HomePage() {
                   key={dateStr}
                   onClick={() => handleDayClick(day)}
                   onDoubleClick={() => handleDayDoubleClick(day)}
-                  className={`relative flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium transition-all
+                  className={`relative flex h-10 w-full flex-col items-center justify-center rounded-lg text-sm font-medium transition-all
                     ${isSelected ? 'bg-primary text-primary-foreground' : ''}
                     ${!isSelected && isTodayDate ? 'ring-1 ring-primary text-primary' : ''}
                     ${!isSelected && !isTodayDate ? 'text-foreground hover:bg-secondary' : ''}
                   `}
                 >
-                  {format(day, 'd')}
-                  {hasWorkout && !isSelected && (
-                    <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary" />
-                  )}
-                  {hasWorkout && isSelected && (
-                    <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary-foreground" />
+                  <span>{format(day, 'd')}</span>
+                  {hasWorkout && (
+                    <div className="absolute bottom-0.5 flex gap-0.5">
+                      {(workoutCategoryMap[dateStr] ?? []).slice(0, 5).map(catId => (
+                        <span
+                          key={catId}
+                          className="h-1 w-1 rounded-full"
+                          style={{ backgroundColor: isSelected ? 'hsl(var(--primary-foreground))' : getCategoryColor(catId) }}
+                        />
+                      ))}
+                    </div>
                   )}
                 </button>
               );

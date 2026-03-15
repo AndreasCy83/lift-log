@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
+import { getCategoryColor } from '@/lib/categoryColors';
 
 const SET_TYPE_ICONS: Record<SetType, React.ReactNode> = {
   WEIGHT_REPS: <Dumbbell className="h-3.5 w-3.5" />,
@@ -104,6 +105,10 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                 selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
             >
+              <span
+                className="h-2 w-2 rounded-full shrink-0"
+                style={{ backgroundColor: getCategoryColor(cat.id) }}
+              />
               {cat.name}
               {count > 0 && (
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground/20 text-[10px]">
@@ -148,7 +153,11 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                       <Badge variant="outline" className="text-[9px] px-1.5 py-0">Custom</Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
+                    />
                     <span>{categories.find(c => c.id === ex.categoryId)?.name}</span>
                     {formatDefaults(ex) && (
                       <>
