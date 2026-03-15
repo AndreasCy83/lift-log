@@ -297,7 +297,7 @@ export default function WorkoutLogPage() {
                           </button>
                         </div>
                       </div>
-                      {setNoteExpanded === s.id && (
+                      {setNoteOpen === s.id && (
                         <div className="ml-6 mr-1 mt-1 mb-1 animate-slide-up">
                           <Textarea
                             placeholder="Add a note for this set…"
