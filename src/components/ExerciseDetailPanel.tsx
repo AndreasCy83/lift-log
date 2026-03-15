@@ -24,6 +24,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
   onPrefill: (w: number, r: number) => void;
 }) {
   const [showNote, setShowNote] = useState(false);
+  const [expandedSetNote, setExpandedSetNote] = useState<number | null>(null);
   const hasNote = !!session.exerciseNotes;
 
   return (
@@ -55,19 +56,33 @@ function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
       )}
       <div className="space-y-0.5">
         {session.sets.map((s, si) => (
-          <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
-            <span className="font-medium text-foreground">
-              {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
-              {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
-            </span>
-            {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
-            {s.setTag && s.setTag !== 'N' && (
-              <span className={`text-[10px] rounded px-1 ${
-                s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
-                s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
-                'bg-red-500/20 text-red-500'
-              }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
+          <div key={si}>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
+              {s.notes ? (
+                <button
+                  onClick={() => setExpandedSetNote(expandedSetNote === si ? null : si)}
+                  className="text-primary transition-colors"
+                  title="View set note"
+                >
+                  <StickyNote className="h-2.5 w-2.5" />
+                </button>
+              ) : null}
+              <span className="font-medium text-foreground">
+                {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
+                {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
+              </span>
+              {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
+              {s.setTag && s.setTag !== 'N' && (
+                <span className={`text-[10px] rounded px-1 ${
+                  s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
+                  s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
+                  'bg-red-500/20 text-red-500'
+                }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
+              )}
+            </div>
+            {expandedSetNote === si && s.notes && (
+              <p className="text-[10px] italic text-foreground/70 bg-primary/5 rounded px-2 py-0.5 ml-7 mt-0.5">"{s.notes}"</p>
             )}
           </div>
         ))}
