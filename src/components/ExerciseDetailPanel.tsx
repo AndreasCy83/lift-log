@@ -17,6 +17,65 @@ interface Props {
   refreshKey?: number;
 }
 
+function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
+  session: { date: string; sets: WorkoutSet[]; exerciseNotes: string };
+  bestSet: WorkoutSet | null;
+  unitLabel: string;
+  onPrefill: (w: number, r: number) => void;
+}) {
+  const [showNote, setShowNote] = useState(false);
+  const hasNote = !!session.exerciseNotes;
+
+  return (
+    <div className="rounded-lg bg-secondary/50 px-3 py-2">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-semibold">{format(new Date(session.date), 'EEE, MMM d, yyyy')}</span>
+        <div className="flex items-center gap-1.5">
+          {hasNote && (
+            <button
+              onClick={() => setShowNote(!showNote)}
+              className="text-primary transition-colors"
+              title="View exercise note"
+            >
+              <StickyNote className="h-3 w-3" />
+            </button>
+          )}
+          <button
+            onClick={() => { if (bestSet) onPrefill(bestSet.weightKg!, bestSet.reps!); }}
+            className="text-muted-foreground hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Copy best set to today"
+            disabled={!bestSet}
+          >
+            <Copy className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+      {showNote && hasNote && (
+        <p className="text-[11px] italic text-foreground/80 bg-primary/5 rounded px-2 py-1 mb-1.5">"{session.exerciseNotes}"</p>
+      )}
+      <div className="space-y-0.5">
+        {session.sets.map((s, si) => (
+          <div key={si} className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="w-4 text-[10px] text-muted-foreground/60">#{si + 1}</span>
+            <span className="font-medium text-foreground">
+              {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
+              {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
+            </span>
+            {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
+            {s.setTag && s.setTag !== 'N' && (
+              <span className={`text-[10px] rounded px-1 ${
+                s.setTag === 'W' ? 'bg-yellow-500/20 text-yellow-500' :
+                s.setTag === 'D' ? 'bg-blue-500/20 text-blue-500' :
+                'bg-red-500/20 text-red-500'
+              }`}>{s.setTag === 'W' ? 'Warmup' : s.setTag === 'D' ? 'Drop' : 'Failure'}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, refreshKey = 0 }: Props) {
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
