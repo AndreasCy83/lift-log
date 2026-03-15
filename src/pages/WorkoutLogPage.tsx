@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Check, Timer, StickyNote } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Check, Timer, StickyNote, BarChart3 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -15,6 +15,7 @@ import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
+import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
@@ -42,6 +43,7 @@ export default function WorkoutLogPage() {
   const [updateKey, forceUpdate] = useState(0);
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
   const [setNoteOpen, setSetNoteOpen] = useState<string | null>(null);
+  const [statsExercise, setStatsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
 
   // Re-read exercises after custom creation
   const [exercises, setExercisesState] = useState(() => getExercises());
@@ -189,6 +191,13 @@ export default function WorkoutLogPage() {
                   title="Exercise note"
                 >
                   <StickyNote className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: exWeightUnit })}
+                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                  title="Exercise stats"
+                >
+                  <BarChart3 className="h-4 w-4" />
                 </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
@@ -386,6 +395,15 @@ export default function WorkoutLogPage() {
             />
           </DialogContent>
         </Dialog>
+        {statsExercise && (
+          <ExerciseStatsDialog
+            open={!!statsExercise}
+            onOpenChange={(open) => !open && setStatsExercise(null)}
+            exerciseId={statsExercise.id}
+            exerciseName={statsExercise.name}
+            weightUnit={statsExercise.weightUnit}
+          />
+        )}
       </div>
     </div>
   );
