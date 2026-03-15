@@ -200,7 +200,7 @@ export function getExerciseHistory(exerciseId: string) {
       if (sets.length === 0) return null;
       return { date: w.date, sets, exerciseNotes: we.notes || '' };
     })
-    .filter(Boolean) as { date: string; sets: WorkoutSet[] }[];
+    .filter(Boolean) as { date: string; sets: WorkoutSet[]; exerciseNotes: string }[];
 }
 
 export function getPersonalRecord(exerciseId: string): { weight: number; reps: number; date: string } | null {
