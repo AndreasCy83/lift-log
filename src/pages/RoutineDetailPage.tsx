@@ -55,21 +55,9 @@ export default function RoutineDetailPage() {
                 <Plus className="h-4 w-4" /> Add
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
-              <Input placeholder="Search exercises..." value={search} onChange={e => setSearch(e.target.value)} className="mb-3" />
-              <div className="max-h-64 overflow-y-auto space-y-1">
-                {filteredExercises.map(ex => (
-                  <button
-                    key={ex.id}
-                    onClick={() => handleAddExercise(ex.id)}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-secondary transition-colors"
-                  >
-                    <div className="text-sm font-medium">{ex.name}</div>
-                    <div className="text-xs text-muted-foreground">{categories.find(c => c.id === ex.categoryId)?.name}</div>
-                  </button>
-                ))}
-              </div>
+            <DialogContent className="max-w-lg max-h-[85vh]">
+              <DialogHeader><DialogTitle>Add Exercises</DialogTitle></DialogHeader>
+              <ExerciseSelectionScreen onSelect={handleAddExercises} onClose={() => setShowAdd(false)} />
             </DialogContent>
           </Dialog>
         </div>
