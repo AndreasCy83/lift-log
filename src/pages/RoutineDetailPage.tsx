@@ -4,8 +4,8 @@ import { ArrowLeft, Plus, Trash2, GripVertical } from 'lucide-react';
 import { getRoutines, updateRoutine, getExercisesForRoutine, getExercises, getCategories, addRoutineExercise, removeRoutineExercise, generateId } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import type { RoutineExercise } from '@/types/fitness';
+import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 
 export default function RoutineDetailPage() {
   const { id } = useParams<{ id: string }>();
