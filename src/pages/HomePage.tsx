@@ -49,11 +49,12 @@ export default function HomePage() {
   // Compute totals for selected day
   const selectedDayStats = useMemo(() => {
     if (!selectedWorkout) return null;
+    const wExercises = getExercisesForWorkout(selectedWorkout.id);
     let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
     let hasStrength = false, hasCardio = false;
-    selectedExercises.forEach(we => {
+    wExercises.forEach(we => {
       const ex = allExercises.find(e => e.id === we.exerciseId);
-      const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted && !s.isWarmup);
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
       sets.forEach(s => {
         if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
           hasCardio = true;
@@ -67,7 +68,7 @@ export default function HomePage() {
       });
     });
     return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
-  }, [selectedWorkout, selectedExercises, allExercises]);
+  }, [selectedWorkout, allExercises]);
 
   const handleStartWorkout = useCallback(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
