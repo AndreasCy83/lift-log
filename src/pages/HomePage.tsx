@@ -14,7 +14,22 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const workouts = useMemo(() => getWorkouts(), []);
+  const allExercises = useMemo(() => getExercises(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
+
+  // Build a map: date -> unique category IDs for that workout
+  const workoutCategoryMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    workouts.forEach(w => {
+      const wExercises = getExercisesForWorkout(w.id);
+      const catIds = [...new Set(wExercises.map(we => {
+        const ex = allExercises.find(e => e.id === we.exerciseId);
+        return ex?.categoryId;
+      }).filter(Boolean))] as string[];
+      map[w.date] = catIds;
+    });
+    return map;
+  }, [workouts, allExercises]);
 
   const days = useMemo(() => {
     const start = startOfMonth(currentMonth);
