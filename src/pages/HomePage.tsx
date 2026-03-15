@@ -46,6 +46,29 @@ export default function HomePage() {
   const selectedWorkout = workouts.find(w => w.date === selectedDateStr);
   const selectedExercises = selectedWorkout ? getExercisesForWorkout(selectedWorkout.id) : [];
 
+  // Compute totals for selected day
+  const selectedDayStats = useMemo(() => {
+    if (!selectedWorkout) return null;
+    let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
+    let hasStrength = false, hasCardio = false;
+    selectedExercises.forEach(we => {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted && !s.isWarmup);
+      sets.forEach(s => {
+        if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
+          hasCardio = true;
+          if (s.distanceKm) totalDistanceKm += s.distanceKm;
+          if (s.durationMinutes) totalDurationMin += s.durationMinutes;
+        } else {
+          hasStrength = true;
+          if (s.weightKg && s.reps) totalVolume += s.weightKg * s.reps;
+          if (s.reps) totalReps += s.reps;
+        }
+      });
+    });
+    return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
+  }, [selectedWorkout, selectedExercises, allExercises]);
+
   const handleStartWorkout = useCallback(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
     let workout = workouts.find(w => w.date === today);
