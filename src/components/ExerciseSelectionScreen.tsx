@@ -153,7 +153,11 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                       <Badge variant="outline" className="text-[9px] px-1.5 py-0">Custom</Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
+                    />
                     <span>{categories.find(c => c.id === ex.categoryId)?.name}</span>
                     {formatDefaults(ex) && (
                       <>
