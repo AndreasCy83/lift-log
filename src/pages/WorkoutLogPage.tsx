@@ -331,6 +331,43 @@ export default function WorkoutLogPage() {
           );
         })}
 
+        {/* Workout Totals */}
+        {workoutExercises.length > 0 && (() => {
+          let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
+          let hasStrength = false, hasCardio = false;
+          workoutExercises.forEach(we => {
+            const ex = allExercises.find(e => e.id === we.exerciseId);
+            const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+            sets.forEach(s => {
+              if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
+                hasCardio = true;
+                if (s.distanceKm) totalDistanceKm += s.distanceKm;
+                if (s.durationMinutes) totalDurationMin += s.durationMinutes;
+              } else {
+                hasStrength = true;
+                if (s.weightKg && s.reps) totalVolume += s.weightKg * s.reps;
+                if (s.reps) totalReps += s.reps;
+              }
+            });
+          });
+          return (hasStrength || hasCardio) ? (
+            <div className="gym-card flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+              {hasStrength && (
+                <>
+                  <span>Total Volume: <span className="font-semibold text-foreground">{totalVolume.toLocaleString()} kg</span></span>
+                  <span>Total Reps: <span className="font-semibold text-foreground">{totalReps}</span></span>
+                </>
+              )}
+              {hasCardio && (
+                <>
+                  <span>Total Distance: <span className="font-semibold text-foreground">{totalDistanceKm.toFixed(2)} km</span></span>
+                  <span>Total Duration: <span className="font-semibold text-foreground">{totalDurationMin.toFixed(0)} min</span></span>
+                </>
+              )}
+            </div>
+          ) : null;
+        })()}
+
         {/* Add Exercise Button */}
         <button
           onClick={() => setShowAddExercise(true)}
