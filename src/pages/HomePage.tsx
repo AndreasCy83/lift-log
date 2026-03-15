@@ -191,6 +191,22 @@ export default function HomePage() {
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
               </div>
+              {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">
+                  {selectedDayStats.hasStrength && (
+                    <>
+                      <span>Vol: <span className="font-semibold text-foreground">{selectedDayStats.totalVolume.toLocaleString()} kg</span></span>
+                      <span>Reps: <span className="font-semibold text-foreground">{selectedDayStats.totalReps}</span></span>
+                    </>
+                  )}
+                  {selectedDayStats.hasCardio && (
+                    <>
+                      <span>Dist: <span className="font-semibold text-foreground">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span>Time: <span className="font-semibold text-foreground">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No workout logged</p>
