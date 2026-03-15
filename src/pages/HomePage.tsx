@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
-import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout, getSetsForWorkoutExercise } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
 
