@@ -395,6 +395,15 @@ export default function WorkoutLogPage() {
             />
           </DialogContent>
         </Dialog>
+        {statsExercise && (
+          <ExerciseStatsDialog
+            open={!!statsExercise}
+            onOpenChange={(open) => !open && setStatsExercise(null)}
+            exerciseId={statsExercise.id}
+            exerciseName={statsExercise.name}
+            weightUnit={statsExercise.weightUnit}
+          />
+        )}
       </div>
     </div>
   );
