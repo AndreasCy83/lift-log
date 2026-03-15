@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
-import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout, getSetsForWorkoutExercise } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
 
@@ -45,6 +45,29 @@ export default function HomePage() {
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const selectedWorkout = workouts.find(w => w.date === selectedDateStr);
   const selectedExercises = selectedWorkout ? getExercisesForWorkout(selectedWorkout.id) : [];
+
+  // Compute totals for selected day
+  const selectedDayStats = useMemo(() => {
+    if (!selectedWorkout) return null;
+    let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
+    let hasStrength = false, hasCardio = false;
+    selectedExercises.forEach(we => {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted && !s.isWarmup);
+      sets.forEach(s => {
+        if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
+          hasCardio = true;
+          if (s.distanceKm) totalDistanceKm += s.distanceKm;
+          if (s.durationMinutes) totalDurationMin += s.durationMinutes;
+        } else {
+          hasStrength = true;
+          if (s.weightKg && s.reps) totalVolume += s.weightKg * s.reps;
+          if (s.reps) totalReps += s.reps;
+        }
+      });
+    });
+    return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
+  }, [selectedWorkout, selectedExercises, allExercises]);
 
   const handleStartWorkout = useCallback(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -168,6 +191,22 @@ export default function HomePage() {
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
               </div>
+              {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">
+                  {selectedDayStats.hasStrength && (
+                    <>
+                      <span>Vol: <span className="font-semibold text-foreground">{selectedDayStats.totalVolume.toLocaleString()} kg</span></span>
+                      <span>Reps: <span className="font-semibold text-foreground">{selectedDayStats.totalReps}</span></span>
+                    </>
+                  )}
+                  {selectedDayStats.hasCardio && (
+                    <>
+                      <span>Dist: <span className="font-semibold text-foreground">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span>Time: <span className="font-semibold text-foreground">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No workout logged</p>
