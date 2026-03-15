@@ -121,18 +121,23 @@ export default function HomePage() {
                   key={dateStr}
                   onClick={() => handleDayClick(day)}
                   onDoubleClick={() => handleDayDoubleClick(day)}
-                  className={`relative flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium transition-all
+                  className={`relative flex h-10 w-full flex-col items-center justify-center rounded-lg text-sm font-medium transition-all
                     ${isSelected ? 'bg-primary text-primary-foreground' : ''}
                     ${!isSelected && isTodayDate ? 'ring-1 ring-primary text-primary' : ''}
                     ${!isSelected && !isTodayDate ? 'text-foreground hover:bg-secondary' : ''}
                   `}
                 >
-                  {format(day, 'd')}
-                  {hasWorkout && !isSelected && (
-                    <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary" />
-                  )}
-                  {hasWorkout && isSelected && (
-                    <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary-foreground" />
+                  <span>{format(day, 'd')}</span>
+                  {hasWorkout && (
+                    <div className="absolute bottom-0.5 flex gap-0.5">
+                      {(workoutCategoryMap[dateStr] ?? []).slice(0, 5).map(catId => (
+                        <span
+                          key={catId}
+                          className="h-1 w-1 rounded-full"
+                          style={{ backgroundColor: isSelected ? 'hsl(var(--primary-foreground))' : getCategoryColor(catId) }}
+                        />
+                      ))}
+                    </div>
                   )}
                 </button>
               );

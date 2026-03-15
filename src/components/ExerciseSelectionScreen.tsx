@@ -105,6 +105,10 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                 selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
             >
+              <span
+                className="h-2 w-2 rounded-full shrink-0"
+                style={{ backgroundColor: getCategoryColor(cat.id) }}
+              />
               {cat.name}
               {count > 0 && (
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground/20 text-[10px]">
