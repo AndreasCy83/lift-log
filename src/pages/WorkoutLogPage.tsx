@@ -254,37 +254,61 @@ export default function WorkoutLogPage() {
                     };
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     return (
-                    <div key={s.id} className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
-                      <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
-                          className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
-                          title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
-                        >
-                          {tag === 'N' ? '–' : tag}
-                        </button>
+                    <div key={s.id}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.5rem 1rem 2rem 0.75rem 1fr 1fr 1fr 2rem 1rem' }}>
+                        <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => setSetNoteExpanded(setNoteExpanded === s.id ? null : s.id)}
+                            className={`p-0.5 transition-colors ${s.notes ? 'text-primary' : 'text-muted-foreground/40 hover:text-foreground'}`}
+                            title="Set note"
+                          >
+                            <StickyNote className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
+                            className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
+                            title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                          >
+                            {tag === 'N' ? '–' : tag}
+                          </button>
+                        </div>
+                        <div></div>
+                        <DynamicSetInputs
+                          set={s}
+                          setType={exSetType}
+                          weightUnit={exWeightUnit}
+                          onUpdate={(field, value) => handleUpdateSet(s, field, value)}
+                        />
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleToggleComplete(s)}
+                            className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${s.isCompleted ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground'}`}
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <div className="flex justify-center">
+                          <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
-                      <div></div>
-                      <DynamicSetInputs
-                        set={s}
-                        setType={exSetType}
-                        weightUnit={exWeightUnit}
-                        onUpdate={(field, value) => handleUpdateSet(s, field, value)}
-                      />
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => handleToggleComplete(s)}
-                          className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${s.isCompleted ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground'}`}
-                        >
-                          <Check className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                      <div className="flex justify-center">
-                        <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
+                      {setNoteExpanded === s.id && (
+                        <div className="ml-6 mr-1 mt-1 mb-1 animate-slide-up">
+                          <Textarea
+                            placeholder="Add a note for this set…"
+                            value={s.notes}
+                            onChange={(e) => {
+                              handleUpdateSet(s, 'notes', e.target.value);
+                            }}
+                            className="min-h-[36px] resize-none text-xs bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
+                            rows={1}
+                          />
+                        </div>
+                      )}
                     </div>
                     );
                   })}
