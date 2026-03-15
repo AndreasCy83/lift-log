@@ -1,12 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Check, Timer } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Check, Timer, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
-  getPersonalRecord, updateWorkout
+  getPersonalRecord, updateWorkout, updateWorkoutExercise
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -40,6 +40,7 @@ export default function WorkoutLogPage() {
   const [showAddExercise, setShowAddExercise] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [updateKey, forceUpdate] = useState(0);
+  const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
 
   // Re-read exercises after custom creation
   const [exercises, setExercisesState] = useState(() => getExercises());
@@ -181,10 +182,32 @@ export default function WorkoutLogPage() {
                     <p className="text-[10px] text-gym-pr mt-0.5">PR: {pr.weight}{exWeightUnit} × {pr.reps}</p>
                   )}
                 </button>
+                <button
+                  onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
+                  className={`p-1 transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Exercise note"
+                >
+                  <StickyNote className="h-4 w-4" />
+                </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
+              {noteExpanded === we.id && (
+                <div className="mb-2 animate-slide-up">
+                  <Textarea
+                    placeholder="Add a note for this exercise…"
+                    value={we.notes}
+                    onChange={(e) => {
+                      const updated = { ...we, notes: e.target.value };
+                      updateWorkoutExercise(updated);
+                      setWorkoutExercises(prev => prev.map(x => x.id === we.id ? updated : x));
+                    }}
+                    className="min-h-[40px] resize-none text-xs bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
+                    rows={2}
+                  />
+                </div>
+              )}
 
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">

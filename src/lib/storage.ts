@@ -99,6 +99,7 @@ export function getExercisesForWorkout(workoutId: string): WorkoutExercise[] {
   return getWorkoutExercises().filter(we => we.workoutId === workoutId).sort((a, b) => a.position - b.position);
 }
 export function addWorkoutExercise(we: WorkoutExercise) { const all = getWorkoutExercises(); all.push(we); saveWorkoutExercises(all); }
+export function updateWorkoutExercise(we: WorkoutExercise) { saveWorkoutExercises(getWorkoutExercises().map(x => x.id === we.id ? we : x)); }
 export function removeWorkoutExercise(id: string) {
   saveWorkoutExercises(getWorkoutExercises().filter(we => we.id !== id));
   saveWorkoutSets(getWorkoutSets().filter(s => s.workoutExerciseId !== id));
@@ -197,9 +198,9 @@ export function getExerciseHistory(exerciseId: string) {
       const sets = completedSets.length > 0 ? completedSets : fallbackSets;
 
       if (sets.length === 0) return null;
-      return { date: w.date, sets };
+      return { date: w.date, sets, exerciseNotes: we.notes || '' };
     })
-    .filter(Boolean) as { date: string; sets: WorkoutSet[] }[];
+    .filter(Boolean) as { date: string; sets: WorkoutSet[]; exerciseNotes: string }[];
 }
 
 export function getPersonalRecord(exerciseId: string): { weight: number; reps: number; date: string } | null {
