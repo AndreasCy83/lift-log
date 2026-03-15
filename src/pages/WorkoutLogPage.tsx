@@ -41,6 +41,7 @@ export default function WorkoutLogPage() {
   const [showTimer, setShowTimer] = useState(false);
   const [updateKey, forceUpdate] = useState(0);
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
+  const [setNoteExpanded, setSetNoteExpanded] = useState<string | null>(null);
 
   // Re-read exercises after custom creation
   const [exercises, setExercisesState] = useState(() => getExercises());
