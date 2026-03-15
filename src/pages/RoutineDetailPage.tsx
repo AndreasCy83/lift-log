@@ -15,23 +15,19 @@ export default function RoutineDetailPage() {
   const exercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
   const [showAdd, setShowAdd] = useState(false);
-  const [search, setSearch] = useState('');
 
   if (!routine || !id) return <div className="p-4">Routine not found</div>;
 
-  const filteredExercises = exercises.filter(ex =>
-    ex.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleAddExercise = (exerciseId: string) => {
-    const re: RoutineExercise = {
-      id: generateId(), routineId: id, exerciseId, position: routineExercises.length,
-      sets: 3, repsMin: 8, repsMax: 12, restSeconds: 90, supersetGroup: null,
-    };
-    addRoutineExercise(re);
+  const handleAddExercises = (exerciseIds: string[]) => {
+    exerciseIds.forEach((exerciseId, i) => {
+      const re: RoutineExercise = {
+        id: generateId(), routineId: id, exerciseId, position: routineExercises.length + i,
+        sets: 3, repsMin: 8, repsMax: 12, restSeconds: 90, supersetGroup: null,
+      };
+      addRoutineExercise(re);
+    });
     setRoutineExercises(getExercisesForRoutine(id));
     setShowAdd(false);
-    setSearch('');
   };
 
   const handleRemove = (reId: string) => {
