@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, MoreVertical, Play, Trash2, Copy } from 'lucide-react';
-import { getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addWorkout, addWorkoutExercise, addWorkoutSet } from '@/lib/storage';
+import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus } from 'lucide-react';
+import { getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise, addWorkout, addWorkoutExercise, addWorkoutSet } from '@/lib/storage';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Calendar } from '@/components/ui/calendar';
 import type { Routine } from '@/types/fitness';
 
 export default function RoutinesPage() {
@@ -17,6 +18,7 @@ export default function RoutinesPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
+  const [logToDateRoutine, setLogToDateRoutine] = useState<Routine | null>(null);
 
   const handleCreate = () => {
     if (!newName.trim()) return;
@@ -42,20 +44,18 @@ export default function RoutinesPage() {
   const handleDuplicate = (r: Routine) => {
     const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} (Copy)` };
     addRoutine(newRoutine);
-    // Also copy exercises
     const res = getExercisesForRoutine(r.id);
     res.forEach(re => {
       const { id: _, routineId: __, ...rest } = re;
-      const newRe = { ...rest, id: generateId(), routineId: newRoutine.id };
-      // We'd need addRoutineExercise imported
+      addRoutineExercise({ ...rest, id: generateId(), routineId: newRoutine.id });
     });
     setRoutines(getRoutines());
   };
 
-  const handleLogRoutine = (r: Routine) => {
-    const today = format(new Date(), 'yyyy-MM-dd');
+  const handleLogRoutineToDate = (r: Routine, date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
     const workoutId = generateId();
-    addWorkout({ id: workoutId, date: today, startTime: new Date().toISOString(), endTime: null, notes: `From: ${r.name}` });
+    addWorkout({ id: workoutId, date: dateStr, startTime: date.toISOString(), endTime: null, notes: `From: ${r.name}` });
     const res = getExercisesForRoutine(r.id);
     res.forEach((re, idx) => {
       const weId = generateId();
@@ -68,7 +68,12 @@ export default function RoutinesPage() {
         });
       }
     });
-    navigate(`/workout/${today}`);
+    setLogToDateRoutine(null);
+    navigate(`/workout/${dateStr}`);
+  };
+
+  const handleLogRoutine = (r: Routine) => {
+    handleLogRoutineToDate(r, new Date());
   };
 
   return (
@@ -120,6 +125,7 @@ export default function RoutinesPage() {
                         <Button size="sm" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> Log to Date</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> Duplicate</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> Delete</DropdownMenuItem>
                       </DropdownMenuContent>
@@ -131,6 +137,25 @@ export default function RoutinesPage() {
           })
         )}
       </div>
+
+      {/* Log to Date dialog */}
+      <Dialog open={!!logToDateRoutine} onOpenChange={open => { if (!open) setLogToDateRoutine(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">Log "{logToDateRoutine?.name}" to Date</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">Pick a date to copy this routine as a workout:</p>
+          <div className="flex justify-center">
+            <Calendar
+              mode="single"
+              selected={undefined}
+              onSelect={(date) => {
+                if (date && logToDateRoutine) handleLogRoutineToDate(logToDateRoutine, date);
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
