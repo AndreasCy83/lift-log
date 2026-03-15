@@ -10,6 +10,7 @@ import {
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
