@@ -145,6 +145,21 @@ export default function WorkoutLogPage() {
         </div>
       )}
 
+      {/* Workout Comment */}
+      <div className="mx-auto w-full max-w-lg px-4 pt-4">
+        <Textarea
+          placeholder="Add a comment about this workout…"
+          value={workout.notes}
+          onChange={(e) => {
+            const updated = { ...workout, notes: e.target.value };
+            setWorkout(updated);
+            updateWorkout(updated);
+          }}
+          className="min-h-[48px] resize-none text-sm bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
+          rows={2}
+        />
+      </div>
+
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
         {workoutExercises.map(we => {
           const sets = getSetsForWorkoutExercise(we.id);

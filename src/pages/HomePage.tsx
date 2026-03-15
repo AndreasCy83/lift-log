@@ -140,8 +140,13 @@ export default function HomePage() {
             )}
           </div>
           {selectedWorkout ? (
-            <div className="flex gap-4 text-sm text-muted-foreground">
-              <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+            <div className="space-y-1.5">
+              {selectedWorkout.notes ? (
+                <p className="text-sm text-foreground/80 italic">"{selectedWorkout.notes}"</p>
+              ) : null}
+              <div className="flex gap-4 text-sm text-muted-foreground">
+                <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No workout logged</p>
