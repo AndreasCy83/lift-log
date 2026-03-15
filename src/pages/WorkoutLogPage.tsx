@@ -260,7 +260,7 @@ export default function WorkoutLogPage() {
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
-                            onClick={() => setSetNoteExpanded(setNoteExpanded === s.id ? null : s.id)}
+                            onClick={() => setSetNoteOpen(setNoteOpen === s.id ? null : s.id)}
                             className={`p-0.5 transition-colors ${s.notes ? 'text-primary' : 'text-muted-foreground/40 hover:text-foreground'}`}
                             title="Set note"
                           >
