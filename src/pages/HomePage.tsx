@@ -17,8 +17,13 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
+  const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
 
-  const workouts = useMemo(() => getWorkouts(), []);
+  const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
   const allCategories = useMemo(() => getCategories(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
