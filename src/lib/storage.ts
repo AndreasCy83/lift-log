@@ -225,3 +225,15 @@ export function getPersonalRecord(exerciseId: string): { weight: number; reps: n
 
   return best;
 }
+
+// Exercise Goals
+export function getExerciseGoals(): ExerciseGoal[] { return get<ExerciseGoal[]>(STORAGE_KEYS.exerciseGoals, []); }
+export function getGoalsForExercise(exerciseId: string): ExerciseGoal[] {
+  return getExerciseGoals().filter(g => g.exerciseId === exerciseId);
+}
+export function addExerciseGoal(goal: ExerciseGoal) {
+  const all = getExerciseGoals(); all.push(goal); set(STORAGE_KEYS.exerciseGoals, all);
+}
+export function deleteExerciseGoal(id: string) {
+  set(STORAGE_KEYS.exerciseGoals, getExerciseGoals().filter(g => g.id !== id));
+}
