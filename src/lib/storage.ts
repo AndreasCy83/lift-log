@@ -86,11 +86,37 @@ export function updateWorkout(w: Workout) {
   saveWorkouts(all);
 }
 export function deleteWorkout(id: string) {
-  saveWorkouts(getWorkouts().filter(w => w.id !== id));
-  saveWorkoutExercises(getWorkoutExercises().filter(we => we.workoutId !== id));
-  // Also clean up sets
   const weIds = getWorkoutExercises().filter(we => we.workoutId === id).map(we => we.id);
   saveWorkoutSets(getWorkoutSets().filter(s => !weIds.includes(s.workoutExerciseId)));
+  saveWorkoutExercises(getWorkoutExercises().filter(we => we.workoutId !== id));
+  saveWorkouts(getWorkouts().filter(w => w.id !== id));
+}
+
+export function copyWorkoutToDate(workoutId: string, targetDate: string) {
+  const workout = getWorkouts().find(w => w.id === workoutId);
+  if (!workout) return;
+  // Remove existing workout on target date
+  const existing = getWorkouts().find(w => w.date === targetDate);
+  if (existing) deleteWorkout(existing.id);
+  const newWorkoutId = generateId();
+  addWorkout({ ...workout, id: newWorkoutId, date: targetDate, startTime: new Date().toISOString(), endTime: null });
+  const wExercises = getExercisesForWorkout(workoutId);
+  wExercises.forEach(we => {
+    const newWeId = generateId();
+    addWorkoutExercise({ ...we, id: newWeId, workoutId: newWorkoutId });
+    const sets = getSetsForWorkoutExercise(we.id);
+    sets.forEach(s => {
+      addWorkoutSet({ ...s, id: generateId(), workoutExerciseId: newWeId, isCompleted: false });
+    });
+  });
+}
+
+export function moveWorkoutToDate(workoutId: string, targetDate: string) {
+  const existing = getWorkouts().find(w => w.date === targetDate);
+  if (existing) deleteWorkout(existing.id);
+  const workout = getWorkouts().find(w => w.id === workoutId);
+  if (!workout) return;
+  updateWorkout({ ...workout, date: targetDate });
 }
 
 // WorkoutExercises

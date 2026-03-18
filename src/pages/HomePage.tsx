@@ -1,11 +1,15 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, MoreVertical, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
-import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Calendar } from '@/components/ui/calendar';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -13,8 +17,13 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
+  const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
 
-  const workouts = useMemo(() => getWorkouts(), []);
+  const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
   const allCategories = useMemo(() => getCategories(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
@@ -120,6 +129,33 @@ export default function HomePage() {
     navigate(`/workout/${format(day, 'yyyy-MM-dd')}`);
   };
 
+  const handleDeleteWorkout = useCallback(() => {
+    if (selectedWorkout) {
+      deleteWorkout(selectedWorkout.id);
+      setRefreshKey(k => k + 1);
+    }
+    setShowDeleteConfirm(false);
+  }, [selectedWorkout]);
+
+  const handleCopyWorkout = useCallback(() => {
+    if (selectedWorkout && pickerDate) {
+      copyWorkoutToDate(selectedWorkout.id, format(pickerDate, 'yyyy-MM-dd'));
+      setRefreshKey(k => k + 1);
+    }
+    setCopyDialogOpen(false);
+    setPickerDate(undefined);
+  }, [selectedWorkout, pickerDate]);
+
+  const handleMoveWorkout = useCallback(() => {
+    if (selectedWorkout && pickerDate) {
+      moveWorkoutToDate(selectedWorkout.id, format(pickerDate, 'yyyy-MM-dd'));
+      setSelectedDate(pickerDate);
+      setRefreshKey(k => k + 1);
+    }
+    setMoveDialogOpen(false);
+    setPickerDate(undefined);
+  }, [selectedWorkout, pickerDate]);
+
   return (
     <div className="flex min-h-screen flex-col pb-20">
       {/* Header */}
@@ -202,12 +238,35 @@ export default function HomePage() {
               {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
             </h3>
             {selectedWorkout && (
-              <button
-                onClick={() => navigate(`/workout/${selectedDateStr}`)}
-                className="text-xs font-medium text-primary"
-              >
-                View Workout →
-              </button>
+              <div className="flex items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => { setPickerDate(undefined); setCopyDialogOpen(true); }}>
+                      Copy Workout
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
+                      Move this Workout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => navigate(`/workout/${selectedDateStr}`)}
+                  className="text-xs font-medium text-primary ml-1"
+                >
+                  View Workout →
+                </button>
+              </div>
             )}
           </div>
           {selectedWorkout ? (
@@ -278,6 +337,54 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Workout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the workout on {format(selectedDate, 'MMM d, yyyy')}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteWorkout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Copy Workout Dialog */}
+      <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Copy Workout</DialogTitle>
+            <DialogDescription>Select a date to copy this workout to.</DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
+          </div>
+          <Button disabled={!pickerDate} onClick={handleCopyWorkout} className="w-full">
+            Copy to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Move Workout Dialog */}
+      <Dialog open={moveDialogOpen} onOpenChange={setMoveDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Move Workout</DialogTitle>
+            <DialogDescription>Select a date to move this workout to.</DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
+          </div>
+          <Button disabled={!pickerDate} onClick={handleMoveWorkout} className="w-full">
+            Move to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
