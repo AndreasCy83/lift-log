@@ -239,6 +239,44 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">No workout logged</p>
           )}
         </div>
+        {/* Muscle Group Breakdown Pie Chart */}
+        {categoryBreakdown.length > 0 && (
+          <div className="gym-card mt-4">
+            <h3 className="font-display text-sm font-semibold mb-3">Muscle Group Breakdown</h3>
+            <div className="flex items-center gap-4">
+              <div className="h-36 w-36 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryBreakdown}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={28}
+                      outerRadius={60}
+                      strokeWidth={2}
+                      stroke="hsl(var(--background))"
+                    >
+                      {categoryBreakdown.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col gap-1.5 min-w-0">
+                {categoryBreakdown.map(entry => (
+                  <div key={entry.name} className="flex items-center gap-2 text-xs">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: entry.color }} />
+                    <span className="truncate text-muted-foreground">{entry.name}</span>
+                    <span className="ml-auto font-semibold text-foreground">{entry.percent}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
