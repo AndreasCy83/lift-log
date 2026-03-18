@@ -47,7 +47,7 @@ export default function StatsPage() {
         const cat = categories.find(c => c.id === ex.categoryId);
         const catName = cat?.name ?? 'Other';
         if (selectedCategory !== 'all' && cat?.id !== selectedCategory) continue;
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted);
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && (s.isCompleted || hasMeaningfulData(s)));
         if (sets.length > 0) {
           catMap[catName] = (catMap[catName] || 0) + sets.length;
         }
