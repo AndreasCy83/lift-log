@@ -6,7 +6,7 @@ import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
-  getPersonalRecord, updateWorkout, updateWorkoutExercise
+  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -196,7 +196,7 @@ export default function WorkoutLogPage() {
                 </button>
                 <button
                   onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: exWeightUnit })}
-                  className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                  className={`p-1 transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise goals"
                 >
                   <Trophy className="h-4 w-4" />
