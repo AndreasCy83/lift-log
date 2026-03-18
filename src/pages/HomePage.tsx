@@ -16,6 +16,7 @@ export default function HomePage() {
 
   const workouts = useMemo(() => getWorkouts(), []);
   const allExercises = useMemo(() => getExercises(), []);
+  const allCategories = useMemo(() => getCategories(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
 
   // Build a map: date -> unique category IDs for that workout
