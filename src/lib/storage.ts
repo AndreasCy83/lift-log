@@ -1,6 +1,6 @@
 import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
-  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry
+  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal
 } from '@/types/fitness';
 import { DEFAULT_CATEGORIES, DEFAULT_EXERCISES } from '@/data/seedData';
 

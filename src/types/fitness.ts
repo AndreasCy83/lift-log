@@ -107,3 +107,38 @@ export interface BMIEntry {
   weightKg: number;
   heightCm: number;
 }
+
+export type GoalType =
+  | 'MAX_WEIGHT'
+  | 'MAX_REPS'
+  | 'MAX_VOLUME'
+  | 'MAX_WEIGHT_FOR_REPS'
+  | 'MAX_WORKOUT_VOLUME'
+  | 'MAX_WORKOUT_REPS'
+  | 'TOTAL_VOLUME'
+  | 'TOTAL_REPS'
+  | 'ESTIMATED_1RM';
+
+export const GOAL_TYPE_LABELS: Record<GoalType, string> = {
+  MAX_WEIGHT: 'Max Weight',
+  MAX_REPS: 'Max Reps',
+  MAX_VOLUME: 'Max Volume (single set)',
+  MAX_WEIGHT_FOR_REPS: 'Max Weight for Reps',
+  MAX_WORKOUT_VOLUME: 'Max Workout Volume',
+  MAX_WORKOUT_REPS: 'Max Workout Reps',
+  TOTAL_VOLUME: 'Total Volume',
+  TOTAL_REPS: 'Total Reps',
+  ESTIMATED_1RM: 'Estimated 1RM',
+};
+
+export interface ExerciseGoal {
+  id: string;
+  exerciseId: string;
+  goalType: GoalType;
+  targetValue: number;
+  /** For MAX_WEIGHT_FOR_REPS: the rep count to hit at a given weight */
+  targetReps?: number;
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+}
