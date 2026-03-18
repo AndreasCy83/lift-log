@@ -413,6 +413,15 @@ export default function WorkoutLogPage() {
             weightUnit={statsExercise.weightUnit}
           />
         )}
+        {goalsExercise && (
+          <ExerciseGoalsDialog
+            open={!!goalsExercise}
+            onOpenChange={(open) => !open && setGoalsExercise(null)}
+            exerciseId={goalsExercise.id}
+            exerciseName={goalsExercise.name}
+            weightUnit={goalsExercise.weightUnit}
+          />
+        )}
       </div>
     </div>
   );
