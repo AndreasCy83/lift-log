@@ -16,6 +16,7 @@ import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
+import ExerciseGoalsDialog from '@/components/ExerciseGoalsDialog';
 import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
