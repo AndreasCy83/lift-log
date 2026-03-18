@@ -19,6 +19,10 @@ function filterByPeriod<T extends { date: string }>(data: T[], period: Period): 
   return data.filter(d => isAfter(new Date(d.date), cutoff));
 }
 
+function hasMeaningfulData(s: { weightKg: number | null; reps: number | null; distanceKm: number | null; durationMinutes: number | null }) {
+  return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
+}
+
 export default function StatsPage() {
   const exercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
@@ -47,7 +51,7 @@ export default function StatsPage() {
         const cat = categories.find(c => c.id === ex.categoryId);
         const catName = cat?.name ?? 'Other';
         if (selectedCategory !== 'all' && cat?.id !== selectedCategory) continue;
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted);
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && (s.isCompleted || hasMeaningfulData(s)));
         if (sets.length > 0) {
           catMap[catName] = (catMap[catName] || 0) + sets.length;
         }
@@ -64,7 +68,7 @@ export default function StatsPage() {
       const wes = allWEs.filter(x => x.workoutId === w.id);
       totalExercises += wes.length;
       for (const we of wes) {
-        totalSets += allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted).length;
+        totalSets += allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && (s.isCompleted || hasMeaningfulData(s))).length;
       }
     }
     return { workouts: recentWorkouts.length, sets: totalSets, exercises: totalExercises };
