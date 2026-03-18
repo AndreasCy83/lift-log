@@ -45,6 +45,7 @@ export default function WorkoutLogPage() {
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
   const [setNoteOpen, setSetNoteOpen] = useState<string | null>(null);
   const [statsExercise, setStatsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
+  const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
 
   // Re-read exercises after custom creation
   const [exercises, setExercisesState] = useState(() => getExercises());
