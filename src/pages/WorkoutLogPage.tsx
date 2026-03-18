@@ -6,7 +6,7 @@ import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
-  getPersonalRecord, updateWorkout, updateWorkoutExercise
+  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
