@@ -16,6 +16,7 @@ const STORAGE_KEYS = {
   bmiHistory: 'gym-bmi-history',
   weightHistory: 'gym-weight-history',
   settings: 'gym-settings',
+  exerciseGoals: 'gym-exercise-goals',
 };
 
 export function resetExerciseDefaults() {
