@@ -19,6 +19,10 @@ function filterByPeriod<T extends { date: string }>(data: T[], period: Period): 
   return data.filter(d => isAfter(new Date(d.date), cutoff));
 }
 
+function hasMeaningfulData(s: { weightKg: number | null; reps: number | null; distanceKm: number | null; durationMinutes: number | null }) {
+  return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
+}
+
 export default function StatsPage() {
   const exercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
