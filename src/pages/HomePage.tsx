@@ -243,7 +243,7 @@ export default function HomePage() {
         {categoryBreakdown.length > 0 && (
           <div className="gym-card mt-4">
             <h3 className="font-display text-sm font-semibold mb-3">Muscle Group Breakdown</h3>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center gap-4">
               <div className="h-36 w-36 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
