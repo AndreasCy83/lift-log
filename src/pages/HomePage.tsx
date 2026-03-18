@@ -238,12 +238,35 @@ export default function HomePage() {
               {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
             </h3>
             {selectedWorkout && (
-              <button
-                onClick={() => navigate(`/workout/${selectedDateStr}`)}
-                className="text-xs font-medium text-primary"
-              >
-                View Workout →
-              </button>
+              <div className="flex items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => { setPickerDate(undefined); setCopyDialogOpen(true); }}>
+                      Copy Workout
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
+                      Move this Workout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => navigate(`/workout/${selectedDateStr}`)}
+                  className="text-xs font-medium text-primary ml-1"
+                >
+                  View Workout →
+                </button>
+              </div>
             )}
           </div>
           {selectedWorkout ? (
