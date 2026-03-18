@@ -72,6 +72,30 @@ export default function HomePage() {
     return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
   }, [selectedWorkout, allExercises]);
 
+  // Muscle group breakdown for pie chart
+  const categoryBreakdown = useMemo(() => {
+    if (!selectedWorkout) return [];
+    const wExercises = getExercisesForWorkout(selectedWorkout.id);
+    const countMap: Record<string, number> = {};
+    wExercises.forEach(we => {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      if (!ex) return;
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      countMap[ex.categoryId] = (countMap[ex.categoryId] || 0) + sets.length;
+    });
+    const total = Object.values(countMap).reduce((a, b) => a + b, 0);
+    if (total === 0) return [];
+    return Object.entries(countMap).map(([catId, count]) => {
+      const cat = allCategories.find(c => c.id === catId);
+      return {
+        name: cat?.name ?? catId,
+        value: count,
+        percent: Math.round((count / total) * 100),
+        color: getCategoryColor(catId),
+      };
+    }).sort((a, b) => b.value - a.value);
+  }, [selectedWorkout, allExercises, allCategories]);
+
   const handleStartWorkout = useCallback(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
     let workout = workouts.find(w => w.date === today);
