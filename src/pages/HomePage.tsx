@@ -129,6 +129,33 @@ export default function HomePage() {
     navigate(`/workout/${format(day, 'yyyy-MM-dd')}`);
   };
 
+  const handleDeleteWorkout = useCallback(() => {
+    if (selectedWorkout) {
+      deleteWorkout(selectedWorkout.id);
+      setRefreshKey(k => k + 1);
+    }
+    setShowDeleteConfirm(false);
+  }, [selectedWorkout]);
+
+  const handleCopyWorkout = useCallback(() => {
+    if (selectedWorkout && pickerDate) {
+      copyWorkoutToDate(selectedWorkout.id, format(pickerDate, 'yyyy-MM-dd'));
+      setRefreshKey(k => k + 1);
+    }
+    setCopyDialogOpen(false);
+    setPickerDate(undefined);
+  }, [selectedWorkout, pickerDate]);
+
+  const handleMoveWorkout = useCallback(() => {
+    if (selectedWorkout && pickerDate) {
+      moveWorkoutToDate(selectedWorkout.id, format(pickerDate, 'yyyy-MM-dd'));
+      setSelectedDate(pickerDate);
+      setRefreshKey(k => k + 1);
+    }
+    setMoveDialogOpen(false);
+    setPickerDate(undefined);
+  }, [selectedWorkout, pickerDate]);
+
   return (
     <div className="flex min-h-screen flex-col pb-20">
       {/* Header */}
