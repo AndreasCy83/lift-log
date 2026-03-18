@@ -64,7 +64,7 @@ export default function StatsPage() {
       const wes = allWEs.filter(x => x.workoutId === w.id);
       totalExercises += wes.length;
       for (const we of wes) {
-        totalSets += allSets.filter(s => s.workoutExerciseId === we.id && s.isCompleted).length;
+        totalSets += allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && (s.isCompleted || hasMeaningfulData(s))).length;
       }
     }
     return { workouts: recentWorkouts.length, sets: totalSets, exercises: totalExercises };
