@@ -2,9 +2,10 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
-import { getWorkouts, getExercisesForWorkout, getExercises, generateId, addWorkout, getSetsForWorkoutExercise } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -15,6 +16,7 @@ export default function HomePage() {
 
   const workouts = useMemo(() => getWorkouts(), []);
   const allExercises = useMemo(() => getExercises(), []);
+  const allCategories = useMemo(() => getCategories(), []);
   const workoutDates = useMemo(() => new Set(workouts.map(w => w.date)), [workouts]);
 
   // Build a map: date -> unique category IDs for that workout
@@ -69,6 +71,30 @@ export default function HomePage() {
     });
     return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
   }, [selectedWorkout, allExercises]);
+
+  // Muscle group breakdown for pie chart
+  const categoryBreakdown = useMemo(() => {
+    if (!selectedWorkout) return [];
+    const wExercises = getExercisesForWorkout(selectedWorkout.id);
+    const countMap: Record<string, number> = {};
+    wExercises.forEach(we => {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      if (!ex) return;
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      countMap[ex.categoryId] = (countMap[ex.categoryId] || 0) + sets.length;
+    });
+    const total = Object.values(countMap).reduce((a, b) => a + b, 0);
+    if (total === 0) return [];
+    return Object.entries(countMap).map(([catId, count]) => {
+      const cat = allCategories.find(c => c.id === catId);
+      return {
+        name: cat?.name ?? catId,
+        value: count,
+        percent: Math.round((count / total) * 100),
+        color: getCategoryColor(catId),
+      };
+    }).sort((a, b) => b.value - a.value);
+  }, [selectedWorkout, allExercises, allCategories]);
 
   const handleStartWorkout = useCallback(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -213,6 +239,44 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">No workout logged</p>
           )}
         </div>
+        {/* Muscle Group Breakdown Pie Chart */}
+        {categoryBreakdown.length > 0 && (
+          <div className="gym-card mt-4">
+            <h3 className="font-display text-sm font-semibold mb-3">Muscle Group Breakdown</h3>
+            <div className="flex items-center gap-4">
+              <div className="h-36 w-36 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryBreakdown}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={28}
+                      outerRadius={60}
+                      strokeWidth={2}
+                      stroke="hsl(var(--background))"
+                    >
+                      {categoryBreakdown.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col gap-1.5 min-w-0">
+                {categoryBreakdown.map(entry => (
+                  <div key={entry.name} className="flex items-center gap-2 text-xs">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: entry.color }} />
+                    <span className="truncate text-muted-foreground">{entry.name}</span>
+                    <span className="ml-auto font-semibold text-foreground">{entry.percent}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
