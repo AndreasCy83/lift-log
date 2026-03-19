@@ -88,7 +88,7 @@ export function generateFitNotesCsv(): CsvExportResult {
 
 export function getExportSetCount(): number {
   const allSets = getWorkoutSets();
-  return allSets.filter(s => s.isCompleted && !s.isWarmup).length;
+  return allSets.filter(s => isExportableSet(s)).length;
 }
 
 export async function saveExportToFile(result: CsvExportResult): Promise<void> {
