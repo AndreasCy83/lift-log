@@ -120,22 +120,35 @@ export async function shareExport(result: CsvExportResult): Promise<void> {
   const blob = new Blob(['\uFEFF' + result.csv], { type: 'text/csv;charset=utf-8;' });
   const file = new File([blob], result.filename, { type: 'text/csv' });
 
-  if (navigator.canShare?.({ files: [file] })) {
-    await navigator.share({
-      title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
-      text: 'Complete workout history from Fitlog app',
-      files: [file],
-    });
-  } else if (navigator.share) {
-    // Share without file (text only)
-    const url = URL.createObjectURL(blob);
-    await navigator.share({
-      title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
-      text: result.csv,
-    });
-    URL.revokeObjectURL(url);
-  } else {
-    // Fallback to save
-    await saveExportToFile(result);
+  // Try native share with file
+  try {
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
+        text: 'Complete workout history from Fitlog app',
+        files: [file],
+      });
+      return;
+    }
+  } catch (e: any) {
+    if (e?.name === 'AbortError') throw e;
+    // Fall through
   }
+
+  // Try native share without file
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
+        text: 'Complete workout history from Fitlog app',
+      });
+      return;
+    }
+  } catch (e: any) {
+    if (e?.name === 'AbortError') throw e;
+    // Fall through
+  }
+
+  // Fallback: download the file instead
+  await saveExportToFile(result);
 }
