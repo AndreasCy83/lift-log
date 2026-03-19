@@ -116,6 +116,7 @@ export default function WorkoutLogPage() {
 
   const handleFinishWorkout = () => {
     updateWorkout({ ...workout, endTime: new Date().toISOString() });
+    schedulePendingBackup();
     navigate('/');
   };
 
