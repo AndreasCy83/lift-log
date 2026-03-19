@@ -11,6 +11,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import CsvExportButtons from '@/components/CsvExportButtons';
 
 function filterByPeriod<T extends { date: string }>(data: T[], period: Period): T[] {
   const days = periodToDays(period);
@@ -123,6 +124,9 @@ export default function StatsPage() {
 
           {/* Summary Tab */}
           <TabsContent value="summary" className="space-y-4">
+            <div className="gym-card">
+              <CsvExportButtons />
+            </div>
             <PeriodSelector value={summaryPeriod} onChange={setSummaryPeriod} />
 
             <div className="gym-card">

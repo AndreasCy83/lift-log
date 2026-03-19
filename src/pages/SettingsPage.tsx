@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
+import CsvExportButtons from '@/components/CsvExportButtons';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
@@ -161,6 +162,11 @@ export default function SettingsPage() {
           <Button onClick={() => setShowExerciseLibrary(true)} variant="outline" size="sm" className="w-full gap-2">
             <Dumbbell className="h-4 w-4" /> View Exercises
           </Button>
+        </div>
+
+        {/* CSV Export */}
+        <div className="gym-card">
+          <CsvExportButtons />
         </div>
 
         {/* Data */}
