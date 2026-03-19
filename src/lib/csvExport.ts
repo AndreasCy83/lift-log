@@ -82,9 +82,14 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
   return { csv: rows.join('\n'), setCount, filename };
 }
 
-export function getExportSetCount(): number {
-  const allSets = getWorkoutSets();
-  return allSets.filter(s => isExportableSet(s)).length;
+export function getExportSetCount(fromDate?: string, toDate?: string): number {
+  let workouts = getWorkouts();
+  if (fromDate) workouts = workouts.filter(w => w.date >= fromDate);
+  if (toDate) workouts = workouts.filter(w => w.date <= toDate);
+  const workoutIds = new Set(workouts.map(w => w.id));
+  const allWEs = getWorkoutExercises().filter(we => workoutIds.has(we.workoutId));
+  const weIds = new Set(allWEs.map(we => we.id));
+  return getWorkoutSets().filter(s => weIds.has(s.workoutExerciseId) && isExportableSet(s)).length;
 }
 
 export async function saveExportToFile(result: CsvExportResult): Promise<void> {
