@@ -1,6 +1,15 @@
 import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import type { WorkoutSet } from '@/types/fitness';
 
 const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
+
+function hasMeaningfulData(s: WorkoutSet): boolean {
+  return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
+}
+
+function isExportableSet(s: WorkoutSet): boolean {
+  return !s.isWarmup && (s.isCompleted || hasMeaningfulData(s));
+}
 
 function escapeCsv(value: string): string {
   if (!value) return '';
@@ -42,7 +51,7 @@ export function generateFitNotesCsv(): CsvExportResult {
       const categoryName = category?.name ?? 'Strength';
 
       const sets = allSets
-        .filter(s => s.workoutExerciseId === we.id && s.isCompleted && !s.isWarmup)
+        .filter(s => s.workoutExerciseId === we.id && isExportableSet(s))
         .sort((a, b) => a.setIndex - b.setIndex);
 
       for (const s of sets) {
@@ -73,7 +82,7 @@ export function generateFitNotesCsv(): CsvExportResult {
 
 export function getExportSetCount(): number {
   const allSets = getWorkoutSets();
-  return allSets.filter(s => s.isCompleted && !s.isWarmup).length;
+  return allSets.filter(s => isExportableSet(s)).length;
 }
 
 export async function saveExportToFile(result: CsvExportResult): Promise<void> {
