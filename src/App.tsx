@@ -13,6 +13,7 @@ import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { getSettings } from "@/lib/storage";
+import { checkPendingBackup } from "@/lib/autoBackup";
 
 const queryClient = new QueryClient();
 
