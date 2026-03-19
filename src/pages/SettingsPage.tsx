@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
+import AutoBackupSection from '@/components/AutoBackupSection';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
