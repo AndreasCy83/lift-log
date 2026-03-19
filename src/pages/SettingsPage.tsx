@@ -10,6 +10,7 @@ import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
