@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
+import CsvExportButtons from '@/components/CsvExportButtons';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
