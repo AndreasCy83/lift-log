@@ -57,7 +57,7 @@ export function generateFitNotesCsv(): CsvExportResult {
       const categoryName = category?.name ?? 'Strength';
 
       const sets = allSets
-        .filter(s => s.workoutExerciseId === we.id && s.isCompleted && !s.isWarmup)
+        .filter(s => s.workoutExerciseId === we.id && isExportableSet(s))
         .sort((a, b) => a.setIndex - b.setIndex);
 
       for (const s of sets) {
