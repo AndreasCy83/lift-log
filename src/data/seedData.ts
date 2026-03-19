@@ -285,6 +285,27 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('V-Ups', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 20, defaultRestSeconds: 45 }),
   r('Hanging Knee Raises', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
 
+  // Additional core exercises (gym focus)
+  r('Seated Cable Crunch', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Cable Woodchopper (High-to-Low)', 'cat-core', { defaultRepsMin: 12, defaultRepsMax: 20, defaultRestSeconds: 45 }),
+  r('Cable Woodchopper (Low-to-High)', 'cat-core', { defaultRepsMin: 12, defaultRepsMax: 20, defaultRestSeconds: 45 }),
+  r('Cable Russian Twist', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Cable Standing Pallof Press', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 8, defaultRepsMax: 12, defaultRestSeconds: 45 }),
+  r('Cable Half-Kneeling Pallof Press', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 8, defaultRepsMax: 12, defaultRestSeconds: 45 }),
+  r('Barbell Roll-Out', 'cat-core', { defaultRepsMin: 8, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Ab Wheel Roll-Out', 'cat-core', { defaultRepsMin: 6, defaultRepsMax: 12, defaultRestSeconds: 60 }),
+  r('Ab Wheel Pike Roll-Out', 'cat-core', { defaultRepsMin: 6, defaultRepsMax: 10, defaultRestSeconds: 60 }),
+  r('Hanging Straight Leg Raise', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 45 }),
+  r('Hanging Reverse Leg Raise', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 45 }),
+  r('Hanging Windshield Wipers', 'cat-core', { defaultRepsMin: 8, defaultRepsMax: 12, defaultRestSeconds: 45 }),
+  r('Hanging Hollow Rock March', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 10, defaultRepsMax: 20, defaultRestSeconds: 45 }),
+  r('Weighted Plank', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
+  r('Weighted Side Plank', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
+  r('Weighted Hollow Body Hold', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
+  r('Weighted Glute Bridge Hold', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
+  r('Cable Crunch (low pulley)', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Cable Side Crunch (low pulley)', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+
   // Olympic
   r('Snatch', 'cat-olympic', { defaultRepsMin: 1, defaultRepsMax: 3, defaultSets: 5, defaultRestSeconds: 180 }),
   r('Clean and Jerk', 'cat-olympic', { defaultRepsMin: 1, defaultRepsMax: 3, defaultSets: 5, defaultRestSeconds: 180 }),
