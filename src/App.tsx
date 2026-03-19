@@ -13,6 +13,7 @@ import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { getSettings } from "@/lib/storage";
+import { checkPendingBackup } from "@/lib/autoBackup";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,8 @@ function ThemeInit() {
     else if (settings.theme === 'system') {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
     }
+    // Check for overdue auto-backups
+    checkPendingBackup();
   }, []);
   return null;
 }

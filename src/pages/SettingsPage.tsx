@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
+import AutoBackupSection from '@/components/AutoBackupSection';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
@@ -168,6 +169,9 @@ export default function SettingsPage() {
         <div className="gym-card">
           <CsvExportButtons />
         </div>
+
+        {/* Auto Backup */}
+        <AutoBackupSection />
 
         {/* Data */}
         <div className="gym-card space-y-2">
