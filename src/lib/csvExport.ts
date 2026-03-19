@@ -25,8 +25,10 @@ export interface CsvExportResult {
   filename: string;
 }
 
-export function generateFitNotesCsv(): CsvExportResult {
-  const workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
+export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExportResult {
+  let workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
+  if (fromDate) workouts = workouts.filter(w => w.date >= fromDate);
+  if (toDate) workouts = workouts.filter(w => w.date <= toDate);
   const allWEs = getWorkoutExercises();
   const allSets = getWorkoutSets();
   const exercises = getExercises();
