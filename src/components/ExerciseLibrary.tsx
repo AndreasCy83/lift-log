@@ -31,8 +31,13 @@ export default function ExerciseLibrary({ onClose }: Props) {
       const q = search.toLowerCase();
       list = list.filter(e => e.name.toLowerCase().includes(q));
     }
-    return list.sort((a, b) => a.name.localeCompare(b.name));
-  }, [exercises, selectedCat, search]);
+    return [...list].sort((a, b) => {
+      const freqA = usageFrequency[a.id] || 0;
+      const freqB = usageFrequency[b.id] || 0;
+      if (freqB !== freqA) return freqB - freqA;
+      return a.name.localeCompare(b.name);
+    });
+  }, [exercises, selectedCat, search, usageFrequency]);
 
   const getCatName = (catId: string) => categories.find(c => c.id === catId)?.name ?? catId;
   const getCatCount = (catId: string) => exercises.filter(e => e.categoryId === catId).length;

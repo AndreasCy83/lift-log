@@ -35,9 +35,14 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
     let list = exercises;
     if (selectedCategory) list = list.filter(e => e.categoryId === selectedCategory);
     if (search) list = list.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
-    // Seeded first, then custom
-    return list.sort((a, b) => (a.isCustom === b.isCustom ? 0 : a.isCustom ? 1 : -1));
-  }, [exercises, selectedCategory, search]);
+    // Sort by most frequently used, then alphabetically
+    return [...list].sort((a, b) => {
+      const freqA = usageFrequency[a.id] || 0;
+      const freqB = usageFrequency[b.id] || 0;
+      if (freqB !== freqA) return freqB - freqA;
+      return a.name.localeCompare(b.name);
+    });
+  }, [exercises, selectedCategory, search, usageFrequency]);
 
   const toggleSelect = (id: string) => {
     setSelected(prev => {
