@@ -156,6 +156,13 @@ export default function SettingsPage() {
           <Input type="number" value={settings.defaultRestSeconds} onChange={e => setSettings({ ...settings, defaultRestSeconds: parseInt(e.target.value) || 60 })} className="bg-secondary border-0 w-24" />
         </div>
 
+        {/* Exercise Library */}
+        <div className="gym-card">
+          <Button onClick={() => setShowExerciseLibrary(true)} variant="outline" size="sm" className="w-full gap-2">
+            <Dumbbell className="h-4 w-4" /> View Exercises
+          </Button>
+        </div>
+
         {/* Data */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Data</h3>
