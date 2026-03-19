@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft, Search, Plus, Star, Pencil, ChevronRight } from 'lucide-react';
-import { getExercises, getCategories, saveExercises, toggleFavorite } from '@/lib/storage';
+import { getExercises, getCategories, saveExercises, toggleFavorite, getExerciseUsageFrequency } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

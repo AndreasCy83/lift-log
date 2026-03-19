@@ -66,6 +66,16 @@ export function getExercises(): Exercise[] {
 }
 export function saveExercises(exs: Exercise[]) { set(STORAGE_KEYS.exercises, exs); }
 export function addExercise(ex: Exercise) { const all = getExercises(); all.push(ex); saveExercises(all); }
+
+// Exercise usage frequency map (exerciseId → count)
+export function getExerciseUsageFrequency(): Record<string, number> {
+  const wes = getWorkoutExercises();
+  const freq: Record<string, number> = {};
+  for (const we of wes) {
+    freq[we.exerciseId] = (freq[we.exerciseId] || 0) + 1;
+  }
+  return freq;
+}
 export function toggleFavorite(id: string) {
   const all = getExercises();
   const idx = all.findIndex(e => e.id === id);
