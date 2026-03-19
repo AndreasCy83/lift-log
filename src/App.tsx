@@ -26,6 +26,8 @@ function ThemeInit() {
     else if (settings.theme === 'system') {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
     }
+    // Check for overdue auto-backups
+    checkPendingBackup();
   }, []);
   return null;
 }
