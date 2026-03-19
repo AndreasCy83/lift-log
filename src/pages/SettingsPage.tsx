@@ -170,6 +170,9 @@ export default function SettingsPage() {
           <CsvExportButtons />
         </div>
 
+        {/* Auto Backup */}
+        <AutoBackupSection />
+
         {/* Data */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Data</h3>
