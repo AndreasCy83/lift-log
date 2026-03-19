@@ -124,6 +124,9 @@ export default function StatsPage() {
 
           {/* Summary Tab */}
           <TabsContent value="summary" className="space-y-4">
+            <div className="gym-card">
+              <CsvExportButtons />
+            </div>
             <PeriodSelector value={summaryPeriod} onChange={setSummaryPeriod} />
 
             <div className="gym-card">
