@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell } from 'lucide-react';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import ExerciseLibrary from '@/components/ExerciseLibrary';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
@@ -83,6 +85,10 @@ export default function SettingsPage() {
 
   const themeIcons = { system: Monitor, light: Sun, dark: Moon };
 
+  if (showExerciseLibrary) {
+    return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
+  }
+
   return (
     <div className="flex min-h-screen flex-col pb-20">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
@@ -148,6 +154,13 @@ export default function SettingsPage() {
         <div className="gym-card">
           <h3 className="text-sm font-medium mb-2">Default Rest (seconds)</h3>
           <Input type="number" value={settings.defaultRestSeconds} onChange={e => setSettings({ ...settings, defaultRestSeconds: parseInt(e.target.value) || 60 })} className="bg-secondary border-0 w-24" />
+        </div>
+
+        {/* Exercise Library */}
+        <div className="gym-card">
+          <Button onClick={() => setShowExerciseLibrary(true)} variant="outline" size="sm" className="w-full gap-2">
+            <Dumbbell className="h-4 w-4" /> View Exercises
+          </Button>
         </div>
 
         {/* Data */}
