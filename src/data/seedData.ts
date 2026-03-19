@@ -161,7 +161,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('Woodchoppers', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
   r('Plank Jacks', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
   r('V-Ups', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 20, defaultRestSeconds: 45 }),
-  r('Hanging Knee Raises', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Hanging Knee Raises', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
 
   // Olympic
   r('Snatch', 'cat-olympic', { defaultRepsMin: 1, defaultRepsMax: 3, defaultSets: 5, defaultRestSeconds: 180 }),
