@@ -85,6 +85,10 @@ export default function SettingsPage() {
 
   const themeIcons = { system: Monitor, light: Sun, dark: Moon };
 
+  if (showExerciseLibrary) {
+    return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
+  }
+
   return (
     <div className="flex min-h-screen flex-col pb-20">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
