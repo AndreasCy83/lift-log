@@ -25,6 +25,7 @@ interface Props {
 export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [exercises, setExercises] = useState(() => getExercises());
   const categories = useMemo(() => getCategories(), []);
+  const usageFrequency = useMemo(() => getExerciseUsageFrequency(), []);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
