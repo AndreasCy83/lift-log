@@ -255,6 +255,14 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('Kickbacks', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
   r('Lying Tricep Extensions', 'cat-arms', { defaultRestSeconds: 60 }),
 
+  // More arms variations
+  r('Zottman Curl', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Hammer Curl to Bicep Curl', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Concentration Curls (Smith Machine)', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Preacher Curl (Smith Machine)', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Cable Preacher Curl', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Cable Concentration Curl', 'cat-arms', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+
   // Core
   r('Planks', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60, notes: 'Hold for time' }),
   r('Bird Dog', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
