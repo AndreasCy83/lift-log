@@ -54,7 +54,7 @@ export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: P
 }
 
 // Inline wrappers that render the content without their own Dialog wrappers
-import { useMemo, } from 'react';
+import { useMemo } from 'react';
 import { getExerciseHistory } from '@/lib/storage';
 import { subDays, isAfter } from 'date-fns';
 import { getGoalsForExercise, addExerciseGoal, deleteExerciseGoal, generateId } from '@/lib/storage';
@@ -64,16 +64,7 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Plus } from 'lucide-react';
 import { GOAL_TYPE_LABELS } from '@/types/fitness';
 import type { GoalType, ExerciseGoal } from '@/types/fitness';
-import PeriodSelector from '@/components/PeriodSelector';
-
-type Period = 'ALL' | '30D' | '90D' | '1Y';
-
-function periodToDays(p: Period): number | null {
-  if (p === '30D') return 30;
-  if (p === '90D') return 90;
-  if (p === '1Y') return 365;
-  return null;
-}
+import PeriodSelector, { type Period, periodToDays } from '@/components/PeriodSelector';
 
 function InlineStats({ exerciseId, exerciseName, weightUnit }: { exerciseId: string; exerciseName: string; weightUnit: 'kg' | 'lb' }) {
   const [period, setPeriod] = useState<Period>('ALL');
