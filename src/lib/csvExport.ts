@@ -18,12 +18,6 @@ function escapeCsv(value: string): string {
   }
   return value;
 }
-  if (!value) return '';
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
 
 export interface CsvExportResult {
   csv: string;
