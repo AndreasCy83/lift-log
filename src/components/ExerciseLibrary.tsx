@@ -99,10 +99,12 @@ export default function ExerciseLibrary({ onClose }: Props) {
             <button
               key={cat.id}
               onClick={() => setSelectedCat(cat.id === selectedCat ? null : cat.id)}
-              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                selectedCat === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border ${
+                selectedCat === cat.id ? 'text-white' : 'bg-secondary text-secondary-foreground'
               }`}
+              style={selectedCat === cat.id ? { backgroundColor: getCategoryColor(cat.id), borderColor: getCategoryColor(cat.id) } : { borderColor: getCategoryColor(cat.id) }}
             >
+              <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: getCategoryColor(cat.id) }} />
               {cat.name} ({getCatCount(cat.id)})
             </button>
           ))}
