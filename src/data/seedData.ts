@@ -153,7 +153,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('Glute Bridges', 'cat-core', { defaultRepsMin: 12, defaultRepsMax: 20, defaultRestSeconds: 60 }),
   r('Bear Hover', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
   r('Side Plank', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
-  r('Russian Twists', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Russian Twists', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
   r('Bear Crawls', 'cat-core', { setType: 'REPS_DISTANCE', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
   r('Hollow Body Hold', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
   r('Up-Down Planks', 'cat-core', { defaultRepsMin: 8, defaultRepsMax: 15, defaultRestSeconds: 60 }),
