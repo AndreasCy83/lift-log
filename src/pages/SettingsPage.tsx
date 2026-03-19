@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell } from 'lucide-react';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import ExerciseLibrary from '@/components/ExerciseLibrary';
 import type { UserProfile } from '@/types/fitness';
 
 export default function SettingsPage() {
