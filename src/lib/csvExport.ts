@@ -1,8 +1,23 @@
 import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import type { WorkoutSet } from '@/types/fitness';
 
 const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
 
+function hasMeaningfulData(s: WorkoutSet): boolean {
+  return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
+}
+
+function isExportableSet(s: WorkoutSet): boolean {
+  return !s.isWarmup && (s.isCompleted || hasMeaningfulData(s));
+}
+
 function escapeCsv(value: string): string {
+  if (!value) return '';
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
   if (!value) return '';
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
     return `"${value.replace(/"/g, '""')}"`;
