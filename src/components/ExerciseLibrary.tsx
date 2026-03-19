@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft, Search, Plus, Star, Pencil, ChevronRight } from 'lucide-react';
-import { getExercises, getCategories, saveExercises, toggleFavorite } from '@/lib/storage';
+import { getExercises, getCategories, saveExercises, toggleFavorite, getExerciseUsageFrequency } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ interface Props {
 export default function ExerciseLibrary({ onClose }: Props) {
   const [exercises, setExercises] = useState(() => getExercises());
   const categories = useMemo(() => getCategories(), []);
+  const usageFrequency = useMemo(() => getExerciseUsageFrequency(), []);
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -30,8 +31,13 @@ export default function ExerciseLibrary({ onClose }: Props) {
       const q = search.toLowerCase();
       list = list.filter(e => e.name.toLowerCase().includes(q));
     }
-    return list.sort((a, b) => a.name.localeCompare(b.name));
-  }, [exercises, selectedCat, search]);
+    return [...list].sort((a, b) => {
+      const freqA = usageFrequency[a.id] || 0;
+      const freqB = usageFrequency[b.id] || 0;
+      if (freqB !== freqA) return freqB - freqA;
+      return a.name.localeCompare(b.name);
+    });
+  }, [exercises, selectedCat, search, usageFrequency]);
 
   const getCatName = (catId: string) => categories.find(c => c.id === catId)?.name ?? catId;
   const getCatCount = (catId: string) => exercises.filter(e => e.categoryId === catId).length;

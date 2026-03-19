@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Search, Plus, Dumbbell, Timer, Route, Clock, Weight } from 'lucide-react';
-import { getExercises, getCategories } from '@/lib/storage';
+import { getExercises, getCategories, getExerciseUsageFrequency } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,7 @@ interface Props {
 export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [exercises, setExercises] = useState(() => getExercises());
   const categories = useMemo(() => getCategories(), []);
+  const usageFrequency = useMemo(() => getExerciseUsageFrequency(), []);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -34,9 +35,14 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
     let list = exercises;
     if (selectedCategory) list = list.filter(e => e.categoryId === selectedCategory);
     if (search) list = list.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
-    // Seeded first, then custom
-    return list.sort((a, b) => (a.isCustom === b.isCustom ? 0 : a.isCustom ? 1 : -1));
-  }, [exercises, selectedCategory, search]);
+    // Sort by most frequently used, then alphabetically
+    return [...list].sort((a, b) => {
+      const freqA = usageFrequency[a.id] || 0;
+      const freqB = usageFrequency[b.id] || 0;
+      if (freqB !== freqA) return freqB - freqA;
+      return a.name.localeCompare(b.name);
+    });
+  }, [exercises, selectedCategory, search, usageFrequency]);
 
   const toggleSelect = (id: string) => {
     setSelected(prev => {
