@@ -146,7 +146,7 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('Bird Dog', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
   r('Dead Bug', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
   r('Mountain Climbers', 'cat-core', { setType: 'REPS_TIME', defaultRepsMin: 15, defaultRepsMax: 30, defaultRestSeconds: 45 }),
-  r('Supermans', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Supermans', 'cat-core', { setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
   r('Back Extensions', 'cat-core', { defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
   r('Crunches', 'cat-core', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
   r('Reverse Crunches', 'cat-core', { defaultRepsMin: 12, defaultRepsMax: 20, defaultRestSeconds: 45 }),
