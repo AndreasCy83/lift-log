@@ -12,7 +12,7 @@ export default function BottomNav() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg safe-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom,0px)]">
       <div className="mx-auto flex max-w-lg items-center justify-around py-2">
         {tabs.map(({ to, icon: Icon, label }) => {
           const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
