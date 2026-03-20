@@ -8,7 +8,7 @@ interface Props {
   onUpdate: (field: keyof WorkoutSet, value: any) => void;
 }
 
-const inputClass = "h-8 text-xs text-center bg-secondary border-0 px-1 min-w-0 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+const inputClass = "h-8 text-sm text-center bg-secondary border-0 px-1.5 min-w-0 w-full rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
 export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }: Props) {
   const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
