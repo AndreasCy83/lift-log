@@ -8,6 +8,8 @@ interface Props {
   onUpdate: (field: keyof WorkoutSet, value: any) => void;
 }
 
+const inputClass = "h-8 text-xs text-center bg-secondary border-0 px-1 min-w-0 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
 export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }: Props) {
   const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
 
@@ -19,21 +21,21 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
             <Input
               type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
               onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div>
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div>
             <Input
               type="number" placeholder="RPE" value={set.rpe ?? ''}
               onChange={e => onUpdate('rpe', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
         </>
@@ -46,14 +48,14 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
             <Input
               type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
               onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div>
             <Input
               type="number" placeholder="Sec" value={set.durationMinutes ?? ''}
               onChange={e => onUpdate('durationMinutes', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div />
@@ -67,14 +69,14 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div>
             <Input
               type="number" placeholder="km" value={set.distanceKm ?? ''}
               onChange={e => onUpdate('distanceKm', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div />
@@ -88,14 +90,14 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
             <Input
               type="number" placeholder="Reps" value={set.reps ?? ''}
               onChange={e => onUpdate('reps', e.target.value ? parseInt(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div>
             <Input
               type="number" placeholder="Min" value={set.durationMinutes ?? ''}
               onChange={e => onUpdate('durationMinutes', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div />
@@ -109,7 +111,7 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
             <Input
               type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
               onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
-              className="h-8 text-xs text-center bg-secondary border-0"
+              className={inputClass}
             />
           </div>
           <div />
