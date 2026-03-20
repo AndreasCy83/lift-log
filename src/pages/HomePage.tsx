@@ -157,7 +157,7 @@ export default function HomePage() {
   }, [selectedWorkout, pickerDate]);
 
   return (
-    <div className="flex min-h-screen flex-col pb-20">
+    <div className="flex min-h-screen flex-col pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between">
