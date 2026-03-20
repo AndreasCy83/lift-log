@@ -106,7 +106,7 @@ export default function StatsPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col pb-20">
+    <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto max-w-lg">
           <h1 className="font-display text-xl font-bold">Stats & Tools</h1>
