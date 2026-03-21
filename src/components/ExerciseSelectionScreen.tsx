@@ -79,9 +79,9 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0 -mx-2 w-[calc(100%+1rem)]">
+    <div className="flex flex-col h-full min-h-0">
       {/* Search */}
-      <div className="relative mb-3 px-2">
+      <div className="relative mb-3">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search exercises..."
@@ -92,7 +92,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Muscle Group Chips */}
-      <div className="flex gap-2 overflow-x-auto pb-3 px-2 flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="flex gap-2 overflow-x-auto pb-3 flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
         <button
           onClick={() => setSelectedCategory(null)}
           className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -128,7 +128,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
 
       {/* Exercise List */}
       <div className="flex-1 min-h-0 max-h-[50vh] overflow-y-auto">
-        <div className="space-y-1 px-2">
+        <div className="space-y-1">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
             return (
@@ -183,7 +183,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Bottom Actions */}
-      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 px-2 pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 pb-[env(safe-area-inset-bottom,0px)]">
         <Button variant="outline" size="sm" onClick={() => setShowCustomForm(true)} className="gap-1.5">
           <Plus className="h-3.5 w-3.5" /> Custom Exercise
         </Button>
