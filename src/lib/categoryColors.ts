@@ -6,7 +6,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
   'cat-back': 'hsl(142, 71%, 45%)',     // Green
   'cat-legs': 'hsl(271, 91%, 65%)',     // Purple
   'cat-shoulders': 'hsl(25, 95%, 53%)', // Orange
-  'cat-arms': 'hsl(348, 83%, 55%)',     // Red/Pink
+  'cat-biceps': 'hsl(348, 83%, 55%)',   // Red/Pink
+  'cat-triceps': 'hsl(15, 80%, 50%)',   // Burnt Orange
   'cat-core': 'hsl(47, 96%, 53%)',      // Yellow
   'cat-olympic': 'hsl(189, 94%, 43%)',  // Cyan
   'cat-cardio': 'hsl(330, 81%, 60%)',   // Magenta
