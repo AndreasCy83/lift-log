@@ -128,7 +128,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
 
       {/* Exercise List */}
       <div className="flex-1 min-h-0 max-h-[50vh] overflow-y-auto">
-        <div className="space-y-1 px-2">
+        <div className="space-y-1">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
             return (
