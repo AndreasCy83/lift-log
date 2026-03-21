@@ -5,10 +5,11 @@ export const DEFAULT_CATEGORIES: ExerciseCategory[] = [
   { id: 'cat-back', name: 'Back', sortOrder: 1 },
   { id: 'cat-legs', name: 'Legs', sortOrder: 2 },
   { id: 'cat-shoulders', name: 'Shoulders', sortOrder: 3 },
-  { id: 'cat-arms', name: 'Arms', sortOrder: 4 },
-  { id: 'cat-core', name: 'Core', sortOrder: 5 },
-  { id: 'cat-olympic', name: 'Olympic', sortOrder: 6 },
-  { id: 'cat-cardio', name: 'Cardio', sortOrder: 7 },
+  { id: 'cat-biceps', name: 'Biceps', sortOrder: 4 },
+  { id: 'cat-triceps', name: 'Triceps', sortOrder: 5 },
+  { id: 'cat-core', name: 'Core', sortOrder: 6 },
+  { id: 'cat-olympic', name: 'Olympic', sortOrder: 7 },
+  { id: 'cat-cardio', name: 'Cardio', sortOrder: 8 },
 ];
 
 function r(name: string, catId: string, opts?: Partial<Exercise>): Exercise {
