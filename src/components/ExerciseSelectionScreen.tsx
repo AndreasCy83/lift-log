@@ -92,7 +92,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Muscle Group Chips */}
-      <div className="flex gap-2 overflow-x-auto pb-3 px-2 flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="flex gap-2 overflow-x-auto pb-3 flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
         <button
           onClick={() => setSelectedCategory(null)}
           className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
