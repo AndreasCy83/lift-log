@@ -1,5 +1,8 @@
 import { getProfile, getSettings } from '@/lib/storage';
 import { format } from 'date-fns';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const BACKUP_SETTINGS_KEY = 'gym-auto-backup-settings';
 const BACKUP_TIMER_KEY = 'gym-auto-backup-pending';
@@ -35,21 +38,43 @@ export function generateBackupData() {
   };
 }
 
-export function downloadBackup(): { filename: string } {
+export async function downloadBackup(): Promise<{ filename: string }> {
   const data = generateBackupData();
   const now = new Date();
   const filename = `Fitlog-Backup-${format(now, 'yyyy-MM-dd-HHmm')}.json`;
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const jsonString = JSON.stringify(data, null, 2);
 
-  // Update last backup timestamp
+  if (Capacitor.isNativePlatform()) {
+    await Filesystem.writeFile({
+      path: filename,
+      data: jsonString,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+
+    const uriResult = await Filesystem.getUri({
+      path: filename,
+      directory: Directory.Documents,
+    });
+
+    await Share.share({
+      title: 'FitLog Backup',
+      text: 'Your FitLog backup file',
+      url: uriResult.uri,
+      dialogTitle: 'Save or share your backup',
+    });
+  } else {
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   const settings = getBackupSettings();
   settings.lastBackupAt = now.toISOString();
   saveBackupSettings(settings);
@@ -57,18 +82,15 @@ export function downloadBackup(): { filename: string } {
   return { filename };
 }
 
-// Schedule a backup 1 hour from now (stores timestamp in localStorage)
 let pendingTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function schedulePendingBackup() {
   const bs = getBackupSettings();
   if (!bs.enabled) return;
 
-  // Mark pending
-  const triggerAt = Date.now() + 60 * 60 * 1000; // 1 hour
+  const triggerAt = Date.now() + 60 * 60 * 1000;
   localStorage.setItem(BACKUP_TIMER_KEY, String(triggerAt));
 
-  // Clear existing timer
   if (pendingTimer) clearTimeout(pendingTimer);
 
   pendingTimer = setTimeout(() => {
@@ -76,16 +98,15 @@ export function schedulePendingBackup() {
   }, 60 * 60 * 1000);
 }
 
-export function runPendingBackup(): boolean {
+export async function runPendingBackup(): Promise<boolean> {
   const bs = getBackupSettings();
   if (!bs.enabled) return false;
 
   localStorage.removeItem(BACKUP_TIMER_KEY);
-  downloadBackup();
+  await downloadBackup();
   return true;
 }
 
-// On app load, check if there's a pending backup that's overdue
 export function checkPendingBackup(): boolean {
   const bs = getBackupSettings();
   if (!bs.enabled) return false;
@@ -95,10 +116,10 @@ export function checkPendingBackup(): boolean {
 
   const triggerAt = parseInt(pending, 10);
   if (Date.now() >= triggerAt) {
-    return runPendingBackup();
+    runPendingBackup();
+    return true;
   }
 
-  // Re-schedule remaining time
   const remaining = triggerAt - Date.now();
   if (pendingTimer) clearTimeout(pendingTimer);
   pendingTimer = setTimeout(() => {
