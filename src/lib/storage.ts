@@ -55,10 +55,10 @@ export function saveCategories(cats: ExerciseCategory[]) { set(STORAGE_KEYS.cate
 
 // Exercises
 export function getExercises(): Exercise[] {
-  const exs = get<Exercise[]>(STORAGE_KEYS.exercises, []);
+  const exs = get<Exercise[]>(STORAGE_KEYS.exercises, []).filter(Boolean) as Exercise[];
   if (exs.length === 0) { set(STORAGE_KEYS.exercises, DEFAULT_EXERCISES); return DEFAULT_EXERCISES; }
   // Migrate old exercises missing new fields
-  return exs.map(ex => ({
+  return exs.filter(ex => ex && ex.id).map(ex => ({
     ...ex,
     setType: ex.setType ?? (ex.type === 'CARDIO' ? 'REPS_DISTANCE' : 'WEIGHT_REPS'),
     weightUnit: ex.weightUnit ?? 'kg',
