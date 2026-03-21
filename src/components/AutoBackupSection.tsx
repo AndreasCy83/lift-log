@@ -36,11 +36,11 @@ export default function AutoBackupSection() {
     }
   };
 
-  const handleManualBackup = () => {
+  const handleManualBackup = async () => {
     setBacking(true);
     try {
-      downloadBackup();
-      setBs(getBackupSettings()); // refresh lastBackupAt
+      await downloadBackup();
+      setBs(getBackupSettings());
       toast({ title: '✅ Backup downloaded', description: 'Saved to your Downloads folder' });
     } catch {
       toast({ title: 'Backup failed', variant: 'destructive' });
