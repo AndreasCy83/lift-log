@@ -181,18 +181,63 @@ export default function SettingsPage() {
             <Button onClick={handleExport} variant="outline" size="sm" className="flex-1">Export Backup</Button>
             <Button onClick={handleImport} variant="outline" size="sm" className="flex-1">Import Backup</Button>
           </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold text-destructive">Danger Zone</h3>
           <Button
-            variant="destructive"
+            variant="outline"
             size="sm"
-            className="w-full"
-            onClick={() => {
-              resetExerciseDefaults();
-              window.location.reload();
-            }}
+            className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={() => setConfirmAction('reset')}
           >
             Reset Exercises to Defaults
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={() => setConfirmAction('delete')}
+          >
+            Delete Workout History
+          </Button>
         </div>
+
+        {/* Confirmation Dialog */}
+        <AlertDialog open={!!confirmAction} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {confirmAction === 'delete' ? 'Delete Workout History?' : 'Reset Exercises to Defaults?'}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {confirmAction === 'delete'
+                  ? 'This will permanently delete all your workout history, sets, and logs. This action cannot be undone.'
+                  : 'This will replace your exercise library with the default exercises. Custom exercises will be removed. This action cannot be undone.'}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>No, Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (confirmAction === 'delete') {
+                    localStorage.removeItem('gym-workouts');
+                    localStorage.removeItem('gym-workout-exercises');
+                    localStorage.removeItem('gym-workout-sets');
+                  } else {
+                    resetExerciseDefaults();
+                  }
+                  setConfirmAction(null);
+                  window.location.reload();
+                }}
+              >
+                Yes, {confirmAction === 'delete' ? 'Delete' : 'Reset'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
