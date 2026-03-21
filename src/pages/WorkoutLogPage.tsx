@@ -276,7 +276,7 @@ export default function WorkoutLogPage() {
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem minmax(3rem,1.5fr) minmax(3rem,1.5fr) minmax(2.5rem,1fr) 1.8rem 1rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1.8rem 1rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
