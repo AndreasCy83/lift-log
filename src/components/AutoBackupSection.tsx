@@ -41,7 +41,7 @@ export default function AutoBackupSection() {
     try {
       await downloadBackup();
       setBs(getBackupSettings());
-      toast({ title: '✅ Backup downloaded', description: 'Saved to your Downloads folder' });
+      toast({ title: '📤 Choose where to save', description: 'Select "Save to Files" in the share sheet' });
     } catch {
       toast({ title: 'Backup failed', variant: 'destructive' });
     } finally {
