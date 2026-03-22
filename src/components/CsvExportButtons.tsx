@@ -45,7 +45,7 @@ export default function CsvExportButtons() {
     try {
       const result = generateFitNotesCsv(fromDate);
       await saveExportToFile(result);
-      toast({ title: '✅ Saved to Downloads', description: `${result.setCount.toLocaleString()} sets exported` });
+      toast({ title: '📤 Choose where to save your file', description: `${result.setCount.toLocaleString()} sets exported` });
     } catch (e: any) {
       if (e?.name !== 'AbortError') {
         toast({ title: 'Export failed', description: String(e?.message || e), variant: 'destructive' });
