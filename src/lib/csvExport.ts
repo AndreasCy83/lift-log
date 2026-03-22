@@ -1,5 +1,8 @@
 import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
 import type { WorkoutSet } from '@/types/fitness';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
 
