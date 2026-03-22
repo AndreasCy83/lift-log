@@ -86,7 +86,7 @@ export default function AutoBackupSection() {
         className="w-full gap-1.5"
       >
         <Download className="h-3.5 w-3.5" />
-        {backing ? 'Downloading…' : 'Backup Now'}
+        {backing ? 'Downloading…' : 'Backup & Save'}
       </Button>
 
       <p className="text-[10px] text-muted-foreground text-center">
