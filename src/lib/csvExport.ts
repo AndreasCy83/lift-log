@@ -1,5 +1,8 @@
 import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
 import type { WorkoutSet } from '@/types/fitness';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
 
@@ -93,9 +96,32 @@ export function getExportSetCount(fromDate?: string, toDate?: string): number {
 }
 
 export async function saveExportToFile(result: CsvExportResult): Promise<void> {
-  const blob = new Blob(['\uFEFF' + result.csv], { type: 'text/csv;charset=utf-8;' });
+  const csvWithBom = '\uFEFF' + result.csv;
 
-  // Try native file picker (File System Access API)
+  if (Capacitor.isNativePlatform()) {
+    await Filesystem.writeFile({
+      path: result.filename,
+      data: csvWithBom,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+
+    const uriResult = await Filesystem.getUri({
+      path: result.filename,
+      directory: Directory.Documents,
+    });
+
+    await Share.share({
+      title: 'FitLog Export',
+      text: 'Your FitLog workout data export',
+      url: uriResult.uri,
+      dialogTitle: 'Save or share your export',
+    });
+    return;
+  }
+
+  // Web fallback — try native file picker first
+  const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8;' });
   if ('showSaveFilePicker' in window) {
     try {
       const handle = await (window as any).showSaveFilePicker({
@@ -108,11 +134,10 @@ export async function saveExportToFile(result: CsvExportResult): Promise<void> {
       return;
     } catch (e: any) {
       if (e?.name === 'AbortError') throw e;
-      // Fall through to download
     }
   }
 
-  // Fallback: trigger download
+  // Web fallback — blob download
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -124,10 +149,33 @@ export async function saveExportToFile(result: CsvExportResult): Promise<void> {
 }
 
 export async function shareExport(result: CsvExportResult): Promise<void> {
-  const blob = new Blob(['\uFEFF' + result.csv], { type: 'text/csv;charset=utf-8;' });
-  const file = new File([blob], result.filename, { type: 'text/csv' });
+  const csvWithBom = '\uFEFF' + result.csv;
 
-  // Try native share with file
+  if (Capacitor.isNativePlatform()) {
+    await Filesystem.writeFile({
+      path: result.filename,
+      data: csvWithBom,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+
+    const uriResult = await Filesystem.getUri({
+      path: result.filename,
+      directory: Directory.Documents,
+    });
+
+    await Share.share({
+      title: 'FitLog Export',
+      text: 'Your FitLog workout data export',
+      url: uriResult.uri,
+      dialogTitle: 'Share your export',
+    });
+    return;
+  }
+
+  // Web fallback — try native share with file
+  const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8;' });
+  const file = new File([blob], result.filename, { type: 'text/csv' });
   try {
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({
@@ -139,23 +187,8 @@ export async function shareExport(result: CsvExportResult): Promise<void> {
     }
   } catch (e: any) {
     if (e?.name === 'AbortError') throw e;
-    // Fall through
   }
 
-  // Try native share without file
-  try {
-    if (navigator.share) {
-      await navigator.share({
-        title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
-        text: 'Complete workout history from Fitlog app',
-      });
-      return;
-    }
-  } catch (e: any) {
-    if (e?.name === 'AbortError') throw e;
-    // Fall through
-  }
-
-  // Fallback: download the file instead
+  // Web fallback — download instead
   await saveExportToFile(result);
 }
