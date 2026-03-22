@@ -182,6 +182,34 @@ export default function SettingsPage() {
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Data</h3>
           <Button onClick={handleImport} variant="outline" size="sm" className="w-full">Import Backup</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2"
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.csv';
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  try {
+                    const result = importCsvData(reader.result as string);
+                    toast({ title: `✅ Imported ${result.workoutCount} workouts and ${result.setCount} sets` });
+                  } catch {
+                    toast({ title: 'Import failed — invalid CSV file', variant: 'destructive' });
+                  }
+                };
+                reader.readAsText(file);
+              };
+              input.click();
+            }}
+          >
+            <FileUp className="h-4 w-4" />
+            Import CSV from other apps (like FitNotes)
+          </Button>
         </div>
 
         {/* Danger Zone */}
