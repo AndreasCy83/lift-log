@@ -100,22 +100,10 @@ export async function saveExportToFile(result: CsvExportResult): Promise<void> {
 
   if (Capacitor.isNativePlatform()) {
     await Filesystem.writeFile({
-      path: result.filename,
+      path: `Download/${result.filename}`,
       data: csvWithBom,
-      directory: Directory.Documents,
+      directory: Directory.ExternalStorage,
       encoding: Encoding.UTF8,
-    });
-
-    const uriResult = await Filesystem.getUri({
-      path: result.filename,
-      directory: Directory.Documents,
-    });
-
-    await Share.share({
-      title: 'FitLog Export',
-      text: 'Your FitLog workout data export',
-      url: uriResult.uri,
-      dialogTitle: 'Save or share your export',
     });
     return;
   }
