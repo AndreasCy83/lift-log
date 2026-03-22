@@ -100,7 +100,7 @@ export default function CsvExportButtons() {
       <div className="flex gap-2">
         <Button onClick={handleSave} disabled={isEmpty || saving} size="sm" className="flex-1 gap-1.5">
           <Download className="h-3.5 w-3.5" />
-          {saving ? 'Saving…' : 'Save Export'}
+          {saving ? 'Saving…' : 'Export File'}
         </Button>
         <Button onClick={handleShare} disabled={isEmpty || sharing} size="sm" className="flex-1 gap-1.5">
           <Share2 className="h-3.5 w-3.5" />
@@ -110,6 +110,9 @@ export default function CsvExportButtons() {
       {isEmpty && (
         <p className="text-[10px] text-muted-foreground text-center">No workouts to export</p>
       )}
+      <p className="text-[10px] text-muted-foreground text-center">
+        On Android, tap "Save to Files" in the share sheet to download
+      </p>
     </div>
   );
 }

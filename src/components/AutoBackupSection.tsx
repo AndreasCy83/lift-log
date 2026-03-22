@@ -90,7 +90,7 @@ export default function AutoBackupSection() {
       </Button>
 
       <p className="text-[10px] text-muted-foreground text-center">
-        Data stored locally on your device • ~500KB per backup
+        Data stored locally • tap "Save to Files" when share sheet opens
       </p>
     </div>
   );
