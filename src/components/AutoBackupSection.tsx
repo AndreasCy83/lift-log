@@ -41,7 +41,7 @@ export default function AutoBackupSection() {
     try {
       await downloadBackup();
       setBs(getBackupSettings());
-      toast({ title: '✅ Backup downloaded', description: 'Saved to your Downloads folder' });
+      toast({ title: '📤 Choose where to save', description: 'Select "Save to Files" in the share sheet' });
     } catch {
       toast({ title: 'Backup failed', variant: 'destructive' });
     } finally {
@@ -66,7 +66,7 @@ export default function AutoBackupSection() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">Automatic Backup</p>
-          <p className="text-[10px] text-muted-foreground">Download backup ~1hr after each workout</p>
+          <p className="text-[10px] text-muted-foreground">Backup will be ready to save ~1hr after each workout</p>
         </div>
         <Switch checked={bs.enabled} onCheckedChange={handleToggle} />
       </div>
@@ -86,11 +86,11 @@ export default function AutoBackupSection() {
         className="w-full gap-1.5"
       >
         <Download className="h-3.5 w-3.5" />
-        {backing ? 'Downloading…' : 'Backup Now'}
+        {backing ? 'Downloading…' : 'Backup & Save'}
       </Button>
 
       <p className="text-[10px] text-muted-foreground text-center">
-        Data stored locally on your device • ~500KB per backup
+        Data stored locally • tap "Save to Files" when share sheet opens
       </p>
     </div>
   );
