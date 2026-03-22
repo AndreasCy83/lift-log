@@ -178,10 +178,7 @@ export default function SettingsPage() {
         {/* Data */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Data</h3>
-          <div className="flex gap-2">
-            <Button onClick={handleExport} variant="outline" size="sm" className="flex-1">Export Backup</Button>
-            <Button onClick={handleImport} variant="outline" size="sm" className="flex-1">Import Backup</Button>
-          </div>
+          <Button onClick={handleImport} variant="outline" size="sm" className="w-full">Import Backup</Button>
         </div>
 
         {/* Danger Zone */}
