@@ -46,22 +46,10 @@ export async function downloadBackup(): Promise<{ filename: string }> {
 
   if (Capacitor.isNativePlatform()) {
     await Filesystem.writeFile({
-      path: filename,
+      path: `Download/${filename}`,
       data: jsonString,
-      directory: Directory.Documents,
+      directory: Directory.ExternalStorage,
       encoding: Encoding.UTF8,
-    });
-
-    const uriResult = await Filesystem.getUri({
-      path: filename,
-      directory: Directory.Documents,
-    });
-
-    await Share.share({
-      title: 'FitLog Backup',
-      text: 'Your FitLog backup file',
-      url: uriResult.uri,
-      dialogTitle: 'Save or share your backup',
     });
   } else {
     const blob = new Blob([jsonString], { type: 'application/json' });
