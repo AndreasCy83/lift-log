@@ -97,7 +97,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col h-full min-h-0 px-1">
       {/* Sticky top section — search + category pills */}
       <div style={{ position: 'sticky', top: 0, zIndex: 10, flexShrink: 0, minHeight: 'fit-content' }} className="bg-background">
         {/* Search */}
@@ -209,13 +209,13 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Bottom Actions */}
-      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 pb-[env(safe-area-inset-bottom,0px)]">
-        <Button variant="outline" size="sm" onClick={() => setShowCustomForm(true)} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Custom Exercise
+      <div className="flex items-center gap-2 pt-3 border-t border-border mt-3 pb-[env(safe-area-inset-bottom,0px)] pr-4 w-full overflow-visible">
+        <Button variant="outline" size="sm" onClick={() => setShowCustomForm(true)} className="gap-1.5 shrink-0">
+          <Plus className="h-3.5 w-3.5" /> Custom
         </Button>
-        <div className="flex-1" />
-        <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-        <Button size="sm" onClick={handleConfirm} disabled={selected.size === 0} className="gap-1.5">
+        <div className="flex-1 min-w-0" />
+        <Button variant="ghost" size="sm" onClick={onClose} className="shrink-0">Cancel</Button>
+        <Button size="sm" onClick={handleConfirm} disabled={selected.size === 0} className="gap-1.5 shrink-0 mr-2">
           Add{selected.size > 0 && ` (${selected.size})`}
         </Button>
       </div>
