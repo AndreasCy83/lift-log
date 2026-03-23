@@ -208,8 +208,9 @@ export default function SettingsPage() {
             }}
           >
             <FileUp className="h-4 w-4" />
-            Import CSV from other apps (like FitNotes)
+            Import CSV
           </Button>
+          <p className="text-[10px] text-muted-foreground text-center">Supports FitNotes and other CSV formats</p>
         </div>
 
         {/* Danger Zone */}
