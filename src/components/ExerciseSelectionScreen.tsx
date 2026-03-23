@@ -92,12 +92,16 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
 
       {/* Muscle Group Chips */}
-      <div className="flex gap-2 overflow-x-auto pb-3 flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div
+        className="flex gap-2 overflow-x-auto pb-3 flex-nowrap"
+        style={{ WebkitOverflowScrolling: 'touch', minHeight: 40, flexShrink: 0 }}
+      >
         <button
           onClick={() => setSelectedCategory(null)}
-          className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
             !selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
           }`}
+          style={{ flexShrink: 0, minWidth: 40 }}
         >
           All
         </button>
@@ -107,9 +111,10 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id === selectedCategory ? null : cat.id)}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 ${
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                 selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
+              style={{ flexShrink: 0, minWidth: 40 }}
             >
               <span
                 className="h-2 w-2 rounded-full shrink-0"
