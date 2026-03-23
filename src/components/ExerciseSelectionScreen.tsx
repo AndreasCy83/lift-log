@@ -95,22 +95,6 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   if (showCustomForm) {
     return <CustomExerciseForm onSave={handleCustomCreated} onCancel={() => setShowCustomForm(false)} />;
   }
-    const pills = document.getElementById('category-pills-container');
-    if (!pills) return;
-
-    const lockHeight = () => {
-      pills.style.minHeight = '40px';
-      pills.style.height = '40px';
-    };
-
-    window.visualViewport?.addEventListener('resize', lockHeight);
-    window.addEventListener('resize', lockHeight);
-
-    return () => {
-      window.visualViewport?.removeEventListener('resize', lockHeight);
-      window.removeEventListener('resize', lockHeight);
-    };
-  }, []);
 
   return (
     <div className="flex flex-col h-full min-h-0">
