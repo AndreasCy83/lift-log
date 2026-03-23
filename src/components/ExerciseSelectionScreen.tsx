@@ -97,7 +97,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col h-full min-h-0 px-1">
       {/* Sticky top section — search + category pills */}
       <div style={{ position: 'sticky', top: 0, zIndex: 10, flexShrink: 0, minHeight: 'fit-content' }} className="bg-background">
         {/* Search */}
