@@ -74,11 +74,27 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
     return parts.join(' × ') || '';
   };
 
+  useEffect(() => {
+    const pills = document.getElementById('category-pills-container');
+    if (!pills) return;
+
+    const lockHeight = () => {
+      pills.style.minHeight = '40px';
+      pills.style.height = '40px';
+    };
+
+    window.visualViewport?.addEventListener('resize', lockHeight);
+    window.addEventListener('resize', lockHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', lockHeight);
+      window.removeEventListener('resize', lockHeight);
+    };
+  }, []);
+
   if (showCustomForm) {
     return <CustomExerciseForm onSave={handleCustomCreated} onCancel={() => setShowCustomForm(false)} />;
   }
-
-  useEffect(() => {
     const pills = document.getElementById('category-pills-container');
     if (!pills) return;
 
