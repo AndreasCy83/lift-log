@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { getSettings } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
+import { App as CapApp } from '@capacitor/app';
 
 const queryClient = new QueryClient();
 
@@ -26,9 +27,30 @@ function ThemeInit() {
     else if (settings.theme === 'system') {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
     }
-    // Check for overdue auto-backups
     checkPendingBackup();
   }, []);
+  return null;
+}
+
+function AndroidBackHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleBackButton = CapApp.addListener('backButton', () => {
+      const isHome = location.pathname === '/' || location.pathname === '/home';
+      if (isHome) {
+        CapApp.exitApp();
+      } else {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      handleBackButton.then(listener => listener.remove());
+    };
+  }, [location.pathname, navigate]);
+
   return null;
 }
 
@@ -39,6 +61,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AndroidBackHandler />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/routines" element={<RoutinesPage />} />
