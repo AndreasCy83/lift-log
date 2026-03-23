@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Dumbbell, Timer, Route, Clock, Weight } from 'lucide-react';
 import { getExercises, getCategories, getExerciseUsageFrequency } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
@@ -74,28 +74,49 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
     return parts.join(' × ') || '';
   };
 
+  useEffect(() => {
+    const pills = document.getElementById('category-pills-container');
+    if (!pills) return;
+
+    const lockHeight = () => {
+      pills.style.minHeight = '40px';
+      pills.style.height = '40px';
+    };
+
+    window.visualViewport?.addEventListener('resize', lockHeight);
+    window.addEventListener('resize', lockHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', lockHeight);
+      window.removeEventListener('resize', lockHeight);
+    };
+  }, []);
+
   if (showCustomForm) {
     return <CustomExerciseForm onSave={handleCustomCreated} onCancel={() => setShowCustomForm(false)} />;
   }
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Search */}
-      <div className="relative mb-3">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search exercises..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-9"
-        />
-      </div>
+      {/* Sticky top section — search + category pills */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, flexShrink: 0, minHeight: 'fit-content' }} className="bg-background">
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search exercises..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
 
-      {/* Muscle Group Chips */}
-      <div
-        className="flex gap-2 overflow-x-auto pb-3 flex-nowrap"
-        style={{ WebkitOverflowScrolling: 'touch', minHeight: 40, flexShrink: 0 }}
-      >
+        {/* Muscle Group Chips */}
+        <div
+          id="category-pills-container"
+          className="flex gap-2 overflow-x-auto pb-3 flex-nowrap"
+          style={{ WebkitOverflowScrolling: 'touch', minHeight: 40, height: 40, flexShrink: 0 }}
+        >
         <button
           onClick={() => setSelectedCategory(null)}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
@@ -130,8 +151,8 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
           );
         })}
       </div>
+      </div>
 
-      {/* Exercise List */}
       <div className="flex-1 min-h-0 max-h-[50vh] overflow-y-auto">
         <div className="space-y-1">
           {filtered.map(ex => {
