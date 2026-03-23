@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Dumbbell, Timer, Route, Clock, Weight } from 'lucide-react';
 import { getExercises, getCategories, getExerciseUsageFrequency } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
