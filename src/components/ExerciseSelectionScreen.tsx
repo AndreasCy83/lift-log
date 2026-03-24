@@ -3,7 +3,7 @@ import { Search, Plus, Dumbbell, Timer, Route, Clock, Weight } from 'lucide-reac
 import { getExercises, getCategories, getExerciseUsageFrequency } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
