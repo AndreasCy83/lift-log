@@ -105,6 +105,17 @@ export async function runPendingBackup(): Promise<boolean> {
 
   localStorage.removeItem(BACKUP_TIMER_KEY);
   await downloadBackup();
+
+  // Also backup to Google Drive if enabled
+  const gDriveSettings = getGDriveSettings();
+  if (gDriveSettings.enabled) {
+    try {
+      await backupToGoogleDrive();
+    } catch {
+      // Silent fail — local backup always works regardless
+    }
+  }
+
   return true;
 }
 
