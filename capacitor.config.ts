@@ -8,6 +8,11 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: false,
     },
+    GoogleAuth: {
+      scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file'],
+      serverClientId: '437562858925-rr4vou5ls8ebiims84devfqo9e33572p.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true,
+    },
   },
   android: {
     backgroundColor: '#000000',
