@@ -66,13 +66,8 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
     return count;
   };
 
-  const formatDefaults = (ex: Exercise) => {
-    const parts: string[] = [];
-    if (ex.defaultSets) parts.push(`${ex.defaultSets}S`);
-    if (ex.defaultRepsMin && ex.defaultRepsMax) parts.push(`${ex.defaultRepsMin}-${ex.defaultRepsMax}R`);
-    else if (ex.defaultRepsMin) parts.push(`${ex.defaultRepsMin}R`);
-    return parts.join(' × ') || '';
-  };
+
+
 
   useEffect(() => {
     const pills = document.getElementById('category-pills-container');
