@@ -99,10 +99,6 @@ export default function WorkoutLogPage() {
     forceUpdate(n => n + 1);
   };
 
-  const handleToggleComplete = (s: WorkoutSet) => {
-    updateWorkoutSet({ ...s, isCompleted: !s.isCompleted });
-    forceUpdate(n => n + 1);
-  };
 
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
     updateWorkoutSet({ ...s, [field]: value });
