@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Check, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
