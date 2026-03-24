@@ -157,44 +157,43 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
         <div className="space-y-1">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
+            const sessionCount = usageFrequency[ex.id] || 0;
             return (
               <button
                 key={ex.id}
                 onClick={() => toggleSelect(ex.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl transition-colors flex items-center gap-3 ${
+                className={`w-full text-left px-3 py-2.5 rounded-xl transition-colors flex items-start gap-2 ${
                   isSelected ? 'bg-primary/15 border border-primary/30' : 'hover:bg-secondary border border-transparent'
                 }`}
               >
-                {/* Checkbox */}
-                <div className={`h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                <div className={`h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                   isSelected ? 'bg-primary border-primary' : 'border-border'
                 }`}>
                   {isSelected && <span className="text-primary-foreground text-xs font-bold">✓</span>}
                 </div>
 
-                {/* Icon */}
                 <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground shrink-0">
                   {SET_TYPE_ICONS[ex.setType]}
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate">{ex.name}</span>
-                    {ex.isCustom && (
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">Custom</Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
+                <div className="flex-1">
+                  <span className="text-sm font-medium">{ex.name}</span>
+                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5 flex-wrap">
                     <span
                       className="h-1.5 w-1.5 rounded-full shrink-0"
                       style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
                     />
                     <span>{categories.find(c => c.id === ex.categoryId)?.name}</span>
-                    {formatDefaults(ex) && (
+                    {ex.isCustom && (
                       <>
                         <span>·</span>
-                        <span>{formatDefaults(ex)}</span>
+                        <span>Custom</span>
+                      </>
+                    )}
+                    {sessionCount > 0 && (
+                      <>
+                        <span>·</span>
+                        <span>{sessionCount} {sessionCount === 1 ? 'session' : 'sessions'}</span>
                       </>
                     )}
                   </div>
