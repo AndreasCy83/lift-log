@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Check, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -99,10 +99,6 @@ export default function WorkoutLogPage() {
     forceUpdate(n => n + 1);
   };
 
-  const handleToggleComplete = (s: WorkoutSet) => {
-    updateWorkoutSet({ ...s, isCompleted: !s.isCompleted });
-    forceUpdate(n => n + 1);
-  };
 
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
     updateWorkoutSet({ ...s, [field]: value });
@@ -255,13 +251,12 @@ export default function WorkoutLogPage() {
                     }}
                   />
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1.8rem 1rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1rem' }}>
                     <div>Set</div>
                     <div></div>
                     <div>Type</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
-                    <div className="text-center">✓</div>
                     <div></div>
                   </div>
 
@@ -276,7 +271,7 @@ export default function WorkoutLogPage() {
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-primary/10' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1.8rem 1rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
@@ -303,14 +298,6 @@ export default function WorkoutLogPage() {
                           weightUnit={exWeightUnit}
                           onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                         />
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => handleToggleComplete(s)}
-                            className={`h-7 w-7 rounded-full flex items-center justify-center transition-colors ${s.isCompleted ? 'bg-primary text-primary-foreground' : 'border border-border text-muted-foreground'}`}
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
                         <div className="flex justify-center">
                           <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
                             <Trash2 className="h-3 w-3" />
