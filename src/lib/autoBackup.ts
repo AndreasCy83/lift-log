@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
+import { getGDriveSettings, backupToGoogleDrive } from '@/lib/googleDriveBackup';
 
 const BACKUP_SETTINGS_KEY = 'gym-auto-backup-settings';
 const BACKUP_TIMER_KEY = 'gym-auto-backup-pending';
