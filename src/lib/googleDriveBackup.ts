@@ -24,11 +24,6 @@ export function saveGDriveSettings(s: GDriveSettings) {
 }
 
 export async function signInToGoogle(): Promise<{ accessToken: string; email: string }> {
-  await GoogleAuth.initialize({
-    clientId: '437562858925-rr4vou5ls8ebiims84devfqo9e33572p.apps.googleusercontent.com',
-    scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file'],
-    grantOfflineAccess: true,
-  });
   const user = await GoogleAuth.signIn();
   return {
     accessToken: user.authentication.accessToken,
