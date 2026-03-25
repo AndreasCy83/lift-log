@@ -1,4 +1,4 @@
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { SocialLogin } from '@capgo/capacitor-social-login';
 import { generateBackupData } from '@/lib/autoBackup';
 import { format } from 'date-fns';
 
@@ -24,16 +24,24 @@ export function saveGDriveSettings(s: GDriveSettings) {
 }
 
 export async function signInToGoogle(): Promise<{ accessToken: string; email: string }> {
-  const user = await GoogleAuth.signIn();
-  return {
-    accessToken: user.authentication.accessToken,
-    email: user.email,
-  };
+  const result = await SocialLogin.login({
+    provider: 'google',
+    options: {
+      scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file'],
+    },
+  });
+  const googleResult = result.result as { accessToken?: { token?: string } | null; profile?: { email?: string | null } | null };
+  const accessToken = googleResult?.accessToken?.token;
+  const email = googleResult?.profile?.email;
+  if (!accessToken || !email) {
+    throw new Error('Google sign-in failed: missing token or email');
+  }
+  return { accessToken, email };
 }
 
 export async function signOutFromGoogle(): Promise<void> {
   try {
-    await GoogleAuth.signOut();
+    await SocialLogin.logout({ provider: 'google' });
   } catch {
     // ignore
   }
