@@ -30,8 +30,9 @@ export async function signInToGoogle(): Promise<{ accessToken: string; email: st
       scopes: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file'],
     },
   });
-  const accessToken = result.result?.accessToken?.token;
-  const email = result.result?.profile?.email;
+  const googleResult = result.result as { accessToken?: { token?: string } | null; profile?: { email?: string | null } | null };
+  const accessToken = googleResult?.accessToken?.token;
+  const email = googleResult?.profile?.email;
   if (!accessToken || !email) {
     throw new Error('Google sign-in failed: missing token or email');
   }
