@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight } from 'lucide-react';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
 import AutoBackupSection from '@/components/AutoBackupSection';
+import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
@@ -17,6 +18,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [profile, setProfile] = useState<UserProfile>(() =>
@@ -94,6 +96,10 @@ export default function SettingsPage() {
 
   if (showExerciseLibrary) {
     return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
+  }
+
+  if (showPrivacyPolicy) {
+    return <PrivacyPolicyModal onClose={() => setShowPrivacyPolicy(false)} />;
   }
 
   return (
@@ -232,6 +238,18 @@ export default function SettingsPage() {
           >
             Delete Workout History
           </Button>
+        </div>
+
+        {/* Legal */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Legal</h3>
+          <button
+            onClick={() => setShowPrivacyPolicy(true)}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span>Privacy Policy</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
         </div>
 
         {/* Confirmation Dialog */}
