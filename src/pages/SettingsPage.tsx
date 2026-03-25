@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [profile, setProfile] = useState<UserProfile>(() =>
