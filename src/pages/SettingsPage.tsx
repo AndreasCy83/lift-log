@@ -240,6 +240,18 @@ export default function SettingsPage() {
           </Button>
         </div>
 
+        {/* Legal */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Legal</h3>
+          <button
+            onClick={() => setShowPrivacyPolicy(true)}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span>Privacy Policy</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </div>
+
         {/* Confirmation Dialog */}
         <AlertDialog open={!!confirmAction} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}>
           <AlertDialogContent>
