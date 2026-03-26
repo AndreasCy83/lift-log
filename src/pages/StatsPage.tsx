@@ -54,7 +54,7 @@ export default function StatsPage() {
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4">
         {activeTab === 'workouts' && <WorkoutsTab />}
-        {activeTab === 'breakdown' && <PlaceholderTab icon={BarChart3} message="Breakdown analytics coming soon" />}
+        {activeTab === 'breakdown' && <BreakdownTab />}
         {activeTab === 'exercises' && <PlaceholderTab icon={Dumbbell} message="Exercise analytics coming soon" />}
         {activeTab === 'goals' && <PlaceholderTab icon={Target} message="Goals coming soon" />}
         {activeTab === 'records' && <PlaceholderTab icon={Trophy} message="Personal records coming soon" />}
