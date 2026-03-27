@@ -58,7 +58,7 @@ export default function StatsPage() {
         {activeTab === 'workouts' && <WorkoutsTab />}
         {activeTab === 'breakdown' && <BreakdownTab />}
         {activeTab === 'exercises' && <ExercisesTab />}
-        {activeTab === 'goals' && <PlaceholderTab icon={Target} message="Goals coming soon" />}
+        {activeTab === 'goals' && <GoalsTab />}
         {activeTab === 'records' && <PlaceholderTab icon={Trophy} message="Personal records coming soon" />}
       </div>
     </div>
