@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BarChart3, Dumbbell, Target, Trophy } from 'lucide-react';
 import WorkoutsTab from '@/components/stats/WorkoutsTab';
 import BreakdownTab from '@/components/stats/BreakdownTab';
+import ExercisesTab from '@/components/stats/ExercisesTab';
 
 const TABS = [
   { id: 'workouts', label: 'Workouts' },
@@ -55,7 +56,7 @@ export default function StatsPage() {
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4">
         {activeTab === 'workouts' && <WorkoutsTab />}
         {activeTab === 'breakdown' && <BreakdownTab />}
-        {activeTab === 'exercises' && <PlaceholderTab icon={Dumbbell} message="Exercise analytics coming soon" />}
+        {activeTab === 'exercises' && <ExercisesTab />}
         {activeTab === 'goals' && <PlaceholderTab icon={Target} message="Goals coming soon" />}
         {activeTab === 'records' && <PlaceholderTab icon={Trophy} message="Personal records coming soon" />}
       </div>
