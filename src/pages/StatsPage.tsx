@@ -3,6 +3,7 @@ import { BarChart3, Dumbbell, Target, Trophy } from 'lucide-react';
 import WorkoutsTab from '@/components/stats/WorkoutsTab';
 import BreakdownTab from '@/components/stats/BreakdownTab';
 import ExercisesTab from '@/components/stats/ExercisesTab';
+import GoalsTab from '@/components/stats/GoalsTab';
 
 const TABS = [
   { id: 'workouts', label: 'Workouts' },
