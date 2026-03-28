@@ -38,16 +38,17 @@ export default function StatsPage() {
 
       {/* Tab bar */}
       <div className="sticky top-[53px] z-30 border-b border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto max-w-lg flex overflow-x-auto no-scrollbar">
+        <div className="mx-auto max-w-lg flex overflow-x-auto no-scrollbar" style={{ scrollbarWidth: 'none' }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-shrink-0 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 ${
+              className={`shrink-0 whitespace-nowrap px-2.5 min-h-[36px] text-xs font-medium transition-colors border-b-2 ${
                 activeTab === tab.id
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
+              style={{ fontSize: '12px', fontWeight: 500 }}
             >
               {tab.label}
             </button>
