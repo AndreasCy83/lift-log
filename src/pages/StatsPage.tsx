@@ -4,6 +4,7 @@ import WorkoutsTab from '@/components/stats/WorkoutsTab';
 import BreakdownTab from '@/components/stats/BreakdownTab';
 import ExercisesTab from '@/components/stats/ExercisesTab';
 import GoalsTab from '@/components/stats/GoalsTab';
+import RecordsTab from '@/components/stats/RecordsTab';
 
 const TABS = [
   { id: 'workouts', label: 'Workouts' },
@@ -59,7 +60,7 @@ export default function StatsPage() {
         {activeTab === 'breakdown' && <BreakdownTab />}
         {activeTab === 'exercises' && <ExercisesTab />}
         {activeTab === 'goals' && <GoalsTab />}
-        {activeTab === 'records' && <PlaceholderTab icon={Trophy} message="Personal records coming soon" />}
+        {activeTab === 'records' && <RecordsTab />}
       </div>
     </div>
   );
