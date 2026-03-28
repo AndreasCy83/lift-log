@@ -135,3 +135,11 @@
     scrollbar-width: none;
   }
 }
+
+@keyframes fillBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+.fill-bar {
+  animation: fillBar 2s ease-in-out forwards;
+}
