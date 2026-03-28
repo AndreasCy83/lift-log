@@ -4,6 +4,7 @@ import WorkoutsTab from '@/components/stats/WorkoutsTab';
 import BreakdownTab from '@/components/stats/BreakdownTab';
 import ExercisesTab from '@/components/stats/ExercisesTab';
 import GoalsTab from '@/components/stats/GoalsTab';
+import RecordsTab from '@/components/stats/RecordsTab';
 
 const TABS = [
   { id: 'workouts', label: 'Workouts' },
