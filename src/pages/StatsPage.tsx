@@ -60,7 +60,7 @@ export default function StatsPage() {
         {activeTab === 'breakdown' && <BreakdownTab />}
         {activeTab === 'exercises' && <ExercisesTab />}
         {activeTab === 'goals' && <GoalsTab />}
-        {activeTab === 'records' && <PlaceholderTab icon={Trophy} message="Personal records coming soon" />}
+        {activeTab === 'records' && <RecordsTab />}
       </div>
     </div>
   );
