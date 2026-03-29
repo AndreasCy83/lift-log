@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, HardDrive, Clock, Cloud } from 'lucide-react';
+import { Download, HardDrive, Clock, Cloud, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   getBackupSettings,
   saveBackupSettings,
+  saveBackupToDevice,
   downloadBackup,
   schedulePendingBackup,
   cancelPendingBackup,
@@ -23,7 +24,8 @@ import {
 export default function AutoBackupSection() {
   const { toast } = useToast();
   const [bs, setBs] = useState<BackupSettings>(() => getBackupSettings());
-  const [backing, setBacking] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [gDriveSettings, setGDriveSettings] = useState<GDriveSettings>(() => getGDriveSettings());
   const [gDriveBacking, setGDriveBacking] = useState(false);
 
@@ -45,16 +47,29 @@ export default function AutoBackupSection() {
     }
   };
 
-  const handleManualBackup = async () => {
-    setBacking(true);
+  const handleSaveToDevice = async () => {
+    setSaving(true);
+    try {
+      const { filename } = await saveBackupToDevice();
+      setBs(getBackupSettings());
+      toast({ title: '✅ Saved to device', description: filename });
+    } catch {
+      toast({ title: 'Save failed', variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleShareBackup = async () => {
+    setSharing(true);
     try {
       await downloadBackup();
       setBs(getBackupSettings());
       toast({ title: '📤 Choose where to save', description: 'Select "Save to Files" in the share sheet' });
     } catch {
-      toast({ title: 'Backup failed', variant: 'destructive' });
+      toast({ title: 'Share failed', variant: 'destructive' });
     } finally {
-      setBacking(false);
+      setSharing(false);
     }
   };
 
@@ -118,17 +133,29 @@ export default function AutoBackupSection() {
         <span>Last backup: {lastBackupLabel}</span>
       </div>
 
-      {/* Manual backup */}
-      <Button
-        onClick={handleManualBackup}
-        disabled={backing}
-        variant="outline"
-        size="sm"
-        className="w-full gap-1.5"
-      >
-        <Download className="h-3.5 w-3.5" />
-        {backing ? 'Downloading…' : 'Backup & Save'}
-      </Button>
+      {/* Save & Share buttons */}
+      <div className="flex gap-2">
+        <Button
+          onClick={handleSaveToDevice}
+          disabled={saving}
+          variant="outline"
+          size="sm"
+          className="flex-1 gap-1.5"
+        >
+          <Download className="h-3.5 w-3.5" />
+          {saving ? 'Saving…' : 'Save to Device'}
+        </Button>
+        <Button
+          onClick={handleShareBackup}
+          disabled={sharing}
+          variant="outline"
+          size="sm"
+          className="flex-1 gap-1.5"
+        >
+          <Share2 className="h-3.5 w-3.5" />
+          {sharing ? 'Sharing…' : 'Share Backup'}
+        </Button>
+      </div>
 
       {/* Google Drive Backup */}
       <div className="border-t border-border pt-3 space-y-3">
