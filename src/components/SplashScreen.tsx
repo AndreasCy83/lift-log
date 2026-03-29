@@ -17,8 +17,8 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
     const t2 = setTimeout(() => setNameVisible(true), 300);
     const t3 = setTimeout(() => setTaglineVisible(true), 500);
     const t4 = setTimeout(() => setBarVisible(true), 600);
-    const t5 = setTimeout(() => setScreenOpacity(0), 2000);
-    const t6 = setTimeout(() => onFinish(), 2300);
+    const t5 = setTimeout(() => setScreenOpacity(0), 3500);
+    const t6 = setTimeout(() => onFinish(), 3800);
 
     return () => {
       [t1, t2, t3, t4, t5, t6].forEach(clearTimeout);
