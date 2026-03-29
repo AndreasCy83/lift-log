@@ -166,38 +166,25 @@ export default function AutoBackupSection() {
             <path d="m73.4 26.5-10.1-17.5c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 23.5h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
           </svg>
           <h3 className="font-display text-sm font-semibold">Google Drive Backup</h3>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[9px] font-medium text-muted-foreground">Coming Soon</span>
         </div>
 
-        {gDriveSettings.userEmail && (
-          <p className="text-[10px] text-muted-foreground">
-            Connected: {gDriveSettings.userEmail}
-          </p>
-        )}
-
-        {gDriveSettings.lastBackupAt && (
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>Last Drive backup: {format(new Date(gDriveSettings.lastBackupAt), 'yyyy-MM-dd HH:mm')}</span>
-          </div>
-        )}
-
         <Button
-          onClick={handleGDriveBackup}
-          disabled={gDriveBacking}
+          disabled
           variant="outline"
           size="sm"
-          className="w-full gap-1.5"
+          className="w-full gap-1.5 opacity-50 pointer-events-none"
         >
           <Cloud className="h-3.5 w-3.5" />
-          {gDriveBacking ? 'Backing up to Drive…' : 'Backup to Google Drive'}
+          Backup to Google Drive
         </Button>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between opacity-50">
           <div>
             <p className="text-sm font-medium">Auto Drive Backup</p>
-            <p className="text-[10px] text-muted-foreground">Upload to Drive ~1hr after each workout</p>
+            <p className="text-[10px] text-muted-foreground">Coming Soon — Auto Drive Backup will be available in a future update</p>
           </div>
-          <Switch checked={gDriveSettings.enabled} onCheckedChange={handleGDriveToggle} />
+          <Switch checked={false} disabled />
         </div>
       </div>
 
