@@ -1,18 +1,18 @@
 diff --git a/node_modules/@codetrix-studio/capacitor-google-auth/android/build.gradle b/node_modules/@codetrix-studio/capacitor-google-auth/android/build.gradle
-index 1234567..abcdefg 100644
+index 4bb66ea..101d4aa 100644
 --- a/node_modules/@codetrix-studio/capacitor-google-auth/android/build.gradle
 +++ b/node_modules/@codetrix-studio/capacitor-google-auth/android/build.gradle
-@@ -8,7 +8,8 @@ ext {
+@@ -7,8 +7,8 @@ ext {
  
  buildscript {
      repositories {
 -        jcenter()
-+        google()
-+        mavenCentral()
          google()
++        mavenCentral()
      }
      dependencies {
-@@ -45,7 +46,6 @@ android {
+         classpath 'com.android.tools.build:gradle:8.2.1'
+@@ -45,11 +45,9 @@ android {
  
  repositories {
      google()
@@ -20,3 +20,7 @@ index 1234567..abcdefg 100644
      mavenCentral()
  }
  
+-
+ dependencies {
+     implementation fileTree(dir: 'libs', include: ['*.jar'])
+     implementation project(':capacitor-android')
