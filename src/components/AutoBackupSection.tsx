@@ -24,7 +24,8 @@ import {
 export default function AutoBackupSection() {
   const { toast } = useToast();
   const [bs, setBs] = useState<BackupSettings>(() => getBackupSettings());
-  const [backing, setBacking] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [gDriveSettings, setGDriveSettings] = useState<GDriveSettings>(() => getGDriveSettings());
   const [gDriveBacking, setGDriveBacking] = useState(false);
 
