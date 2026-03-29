@@ -133,17 +133,29 @@ export default function AutoBackupSection() {
         <span>Last backup: {lastBackupLabel}</span>
       </div>
 
-      {/* Manual backup */}
-      <Button
-        onClick={handleManualBackup}
-        disabled={backing}
-        variant="outline"
-        size="sm"
-        className="w-full gap-1.5"
-      >
-        <Download className="h-3.5 w-3.5" />
-        {backing ? 'Downloading…' : 'Backup & Save'}
-      </Button>
+      {/* Save & Share buttons */}
+      <div className="flex gap-2">
+        <Button
+          onClick={handleSaveToDevice}
+          disabled={saving}
+          variant="outline"
+          size="sm"
+          className="flex-1 gap-1.5"
+        >
+          <Download className="h-3.5 w-3.5" />
+          {saving ? 'Saving…' : 'Save to Device'}
+        </Button>
+        <Button
+          onClick={handleShareBackup}
+          disabled={sharing}
+          variant="outline"
+          size="sm"
+          className="flex-1 gap-1.5"
+        >
+          <Share2 className="h-3.5 w-3.5" />
+          {sharing ? 'Sharing…' : 'Share Backup'}
+        </Button>
+      </div>
 
       {/* Google Drive Backup */}
       <div className="border-t border-border pt-3 space-y-3">
