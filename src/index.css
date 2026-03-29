@@ -141,5 +141,5 @@
   to   { width: 100%; }
 }
 .fill-bar {
-  animation: fillBar 2s ease-in-out forwards;
+  animation: fillBar 3.5s ease-in-out forwards;
 }
