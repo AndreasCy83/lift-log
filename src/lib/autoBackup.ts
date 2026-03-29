@@ -39,6 +39,38 @@ export function generateBackupData() {
   };
 }
 
+export async function saveBackupToDevice(): Promise<{ filename: string }> {
+  const data = generateBackupData();
+  const now = new Date();
+  const filename = `Fitlog-Backup-${format(now, 'yyyy-MM-dd-HHmm')}.json`;
+  const jsonString = JSON.stringify(data, null, 2);
+
+  if (Capacitor.isNativePlatform()) {
+    await Filesystem.writeFile({
+      path: filename,
+      data: jsonString,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+  } else {
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  const settings = getBackupSettings();
+  settings.lastBackupAt = now.toISOString();
+  saveBackupSettings(settings);
+
+  return { filename };
+}
+
 export async function downloadBackup(): Promise<{ filename: string }> {
   const data = generateBackupData();
   const now = new Date();
