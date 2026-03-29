@@ -118,16 +118,19 @@ export default function AutoBackupSection() {
         </div>
       </div>
 
-      {/* Auto-backup toggle — Coming Soon */}
-      <div className="flex items-center justify-between opacity-50">
+      {/* Auto-backup toggle */}
+      <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-medium">Automatic Backup</p>
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[9px] font-medium text-muted-foreground">Coming Soon</span>
-          </div>
-          <p className="text-[10px] text-muted-foreground">Coming Soon — Google Drive backup will be available in a future update</p>
+          <p className="text-sm font-medium">Automatic Backup</p>
+          <p className="text-[10px] text-muted-foreground">Backup will be ready to save ~1hr after each workout</p>
         </div>
-        <Switch checked={false} disabled />
+        <Switch checked={bs.enabled} onCheckedChange={handleToggle} />
+      </div>
+
+      {/* Last backup timestamp */}
+      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <Clock className="h-3 w-3" />
+        <span>Last backup: {lastBackupLabel}</span>
       </div>
 
       {/* Save & Share buttons */}
