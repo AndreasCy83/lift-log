@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, HardDrive, Clock, Cloud } from 'lucide-react';
+import { Download, HardDrive, Clock, Cloud, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
