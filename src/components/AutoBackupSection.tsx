@@ -47,16 +47,29 @@ export default function AutoBackupSection() {
     }
   };
 
-  const handleManualBackup = async () => {
-    setBacking(true);
+  const handleSaveToDevice = async () => {
+    setSaving(true);
+    try {
+      const { filename } = await saveBackupToDevice();
+      setBs(getBackupSettings());
+      toast({ title: '✅ Saved to device', description: filename });
+    } catch {
+      toast({ title: 'Save failed', variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleShareBackup = async () => {
+    setSharing(true);
     try {
       await downloadBackup();
       setBs(getBackupSettings());
       toast({ title: '📤 Choose where to save', description: 'Select "Save to Files" in the share sheet' });
     } catch {
-      toast({ title: 'Backup failed', variant: 'destructive' });
+      toast({ title: 'Share failed', variant: 'destructive' });
     } finally {
-      setBacking(false);
+      setSharing(false);
     }
   };
 
