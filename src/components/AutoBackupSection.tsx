@@ -122,7 +122,7 @@ export default function AutoBackupSection() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">Automatic Backup</p>
-          <p className="text-[10px] text-muted-foreground">Backup will be ready to save ~1hr after each workout</p>
+          <p className="text-[10px] text-muted-foreground">Auto-saves to Documents 1hr after each workout</p>
         </div>
         <Switch checked={bs.enabled} onCheckedChange={handleToggle} />
       </div>

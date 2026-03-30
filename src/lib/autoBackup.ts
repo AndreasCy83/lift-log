@@ -131,20 +131,57 @@ export function schedulePendingBackup() {
   }, 60 * 60 * 1000);
 }
 
+export async function performSilentBackup(): Promise<boolean> {
+  const bs = getBackupSettings();
+  if (!bs.enabled) return false;
+
+  try {
+    const data = generateBackupData();
+    const now = new Date();
+    const filename = `Fitlog-Auto-Backup-${format(now, 'yyyy-MM-dd-HHmm')}.json`;
+    const jsonString = JSON.stringify(data, null, 2);
+
+    if (Capacitor.isNativePlatform()) {
+      await Filesystem.writeFile({
+        path: filename,
+        data: jsonString,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+    } else {
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    bs.lastBackupAt = now.toISOString();
+    saveBackupSettings(bs);
+    return true;
+  } catch (err) {
+    console.error('[AutoBackup] Silent backup failed:', err);
+    return false;
+  }
+}
+
 export async function runPendingBackup(): Promise<boolean> {
   const bs = getBackupSettings();
   if (!bs.enabled) return false;
 
   localStorage.removeItem(BACKUP_TIMER_KEY);
-  await downloadBackup();
+  await performSilentBackup();
 
-  // Also backup to Google Drive if enabled
   const gDriveSettings = getGDriveSettings();
   if (gDriveSettings.enabled) {
     try {
       await backupToGoogleDrive();
     } catch {
-      // Silent fail — local backup always works regardless
+      // Silent fail
     }
   }
 
