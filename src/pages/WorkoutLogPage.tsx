@@ -339,8 +339,6 @@ export default function WorkoutLogPage() {
               {!isExpanded && (
                 <div className="flex gap-2 text-xs text-muted-foreground">
                   <span>{sets.length} sets</span>
-                  <span>·</span>
-                  <span>{sets.filter(s => s.isCompleted).length} done</span>
                 </div>
               )}
             </div>
