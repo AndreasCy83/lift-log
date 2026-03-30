@@ -99,11 +99,10 @@ export default function WorkoutLogPage() {
 
   const handleAddSet = (weId: string) => {
     const sets = getSetsForWorkoutExercise(weId);
-    const last = sets[sets.length - 1];
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
-      weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: last?.distanceKm ?? null,
-      durationMinutes: last?.durationMinutes ?? null, rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+      weightKg: null, reps: null, distanceKm: null, durationMinutes: null,
+      rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
     });
     forceUpdate(n => n + 1);
   };
