@@ -134,26 +134,26 @@ export default function AutoBackupSection() {
       </div>
 
       {/* Save & Share buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-full">
         <Button
           onClick={handleSaveToDevice}
           disabled={saving}
           variant="outline"
           size="sm"
-          className="flex-1 gap-1.5"
+          className="flex-1 min-w-0 gap-1.5"
         >
-          <Download className="h-3.5 w-3.5" />
-          {saving ? 'Saving…' : 'Save to Device'}
+          <Download className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{saving ? 'Saving…' : 'Save to Device'}</span>
         </Button>
         <Button
           onClick={handleShareBackup}
           disabled={sharing}
           variant="outline"
           size="sm"
-          className="flex-1 gap-1.5"
+          className="flex-1 min-w-0 gap-1.5"
         >
-          <Share2 className="h-3.5 w-3.5" />
-          {sharing ? 'Sharing…' : 'Share Backup'}
+          <Share2 className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{sharing ? 'Sharing…' : 'Share Backup'}</span>
         </Button>
       </div>
 
