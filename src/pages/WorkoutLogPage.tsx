@@ -6,7 +6,8 @@ import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
-  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise
+  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
+  getExerciseHistory
 } from '@/lib/storage';
 import { schedulePendingBackup, checkPendingBackup } from '@/lib/autoBackup';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,15 @@ export default function WorkoutLogPage() {
 
   if (!date || !workout) return <div className="p-4">Invalid date</div>;
 
+  const getLastSessionFirstSet = (exerciseId: string) => {
+    const history = getExerciseHistory(exerciseId);
+    if (history.length === 0) return { weightKg: null, reps: null };
+    const lastSession = history[0];
+    const firstSet = lastSession.sets[0];
+    if (!firstSet) return { weightKg: null, reps: null };
+    return { weightKg: firstSet.weightKg ?? null, reps: firstSet.reps ?? null };
+  };
+
   const handleAddExercises = (exerciseIds: string[]) => {
     const currentExercises = getExercises();
     exerciseIds.forEach((exerciseId, i) => {
@@ -68,10 +78,10 @@ export default function WorkoutLogPage() {
         id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length + i, notes: ''
       };
       addWorkoutExercise(we);
-      const ex = currentExercises.find(e => e.id === exerciseId);
+      const prefill = getLastSessionFirstSet(exerciseId);
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
-        weightKg: null, reps: ex?.defaultRepsMin ?? null, distanceKm: null, durationMinutes: null,
+        weightKg: prefill.weightKg, reps: prefill.reps, distanceKm: null, durationMinutes: null,
         rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
       });
     });
@@ -90,11 +100,10 @@ export default function WorkoutLogPage() {
 
   const handleAddSet = (weId: string) => {
     const sets = getSetsForWorkoutExercise(weId);
-    const last = sets[sets.length - 1];
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
-      weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, distanceKm: last?.distanceKm ?? null,
-      durationMinutes: last?.durationMinutes ?? null, rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+      weightKg: null, reps: null, distanceKm: null, durationMinutes: null,
+      rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
     });
     forceUpdate(n => n + 1);
   };
