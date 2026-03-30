@@ -29,6 +29,16 @@ function ThemeInit() {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
     }
     checkPendingBackup();
+
+    const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
+      if (isActive) {
+        checkPendingBackup();
+      }
+    });
+
+    return () => {
+      listener.then(l => l.remove());
+    };
   }, []);
   return null;
 }
