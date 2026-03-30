@@ -6,7 +6,8 @@ import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
-  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise
+  getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
+  getExerciseHistory
 } from '@/lib/storage';
 import { schedulePendingBackup, checkPendingBackup } from '@/lib/autoBackup';
 import { Button } from '@/components/ui/button';
