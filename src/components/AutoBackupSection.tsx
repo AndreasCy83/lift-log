@@ -52,7 +52,7 @@ export default function AutoBackupSection() {
     try {
       const { filename } = await saveBackupToDevice();
       setBs(getBackupSettings());
-      toast({ title: '✅ Saved to device', description: filename });
+      toast({ title: '✅ Saved to:', description: `Internal Storage/Documents/${filename}` });
     } catch {
       toast({ title: 'Save failed', variant: 'destructive' });
     } finally {
