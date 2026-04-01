@@ -71,7 +71,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onP
                 </button>
               ) : null}
               <span className="font-medium text-foreground">
-                {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
+                {typeof s.weightKg === 'number' ? `${toDisplayWeight(s.weightKg, globalWeightUnit)}${unitLabel}` : '—'}
                 {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
               </span>
               {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
