@@ -106,7 +106,9 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
   const [newStartDate, setNewStartDate] = useState('');
   const [newEndDate, setNewEndDate] = useState('');
 
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const refreshGoals = () => setGoals(getGoalsForExercise(exerciseId));
 
