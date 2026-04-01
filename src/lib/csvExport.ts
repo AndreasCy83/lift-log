@@ -1,4 +1,5 @@
-import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import type { WorkoutSet } from '@/types/fitness';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
