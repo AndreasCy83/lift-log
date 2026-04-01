@@ -33,6 +33,8 @@ export interface CsvExportResult {
 }
 
 export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExportResult {
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
   let workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
   if (fromDate) workouts = workouts.filter(w => w.date >= fromDate);
   if (toDate) workouts = workouts.filter(w => w.date <= toDate);
