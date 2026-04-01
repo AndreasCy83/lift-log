@@ -94,6 +94,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onP
 }
 
 export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, refreshKey = 0 }: Props) {
+  const globalWeightUnit = getSettings().weightUnit;
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
   const [period, setPeriod] = useState<Period>('all');
