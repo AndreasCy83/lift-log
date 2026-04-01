@@ -335,7 +335,7 @@ function GoalCard({
   onEdit: (g: ExerciseGoal) => void;
   onDelete: (id: string) => void;
 }) {
-  const unit = exercise.weightUnit ?? 'kg';
+  const unit = weightUnitLabel(getSettings().weightUnit);
   const allAchieved = goals.every(g => {
     const gt = g.goalType as GoalTypeValue;
     const best = computeCurrentBest(exercise.id, gt, g.targetReps);
