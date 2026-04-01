@@ -135,7 +135,7 @@ export default function BreakdownTab() {
     for (const w of filteredWorkouts) {
       const wes = allWEs.filter(we => we.workoutId === w.id);
       for (const we of wes) {
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted && hasMeaningfulData(s));
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && hasMeaningfulData(s));
         totalSets += sets.length;
         for (const s of sets) {
           totalReps += s.reps ?? 0;
