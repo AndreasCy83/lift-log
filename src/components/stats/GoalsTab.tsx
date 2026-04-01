@@ -109,13 +109,16 @@ function getTargetValue(goal: ExerciseGoal, gt: GoalTypeValue): number {
 }
 
 function formatValue(value: number, goalType: GoalTypeValue, unit: string): string {
+  const globalWeightUnit = getSettings().weightUnit;
+  const displayVal = toDisplayWeight(value, globalWeightUnit) ?? value;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
   switch (goalType) {
     case 'MAX_WEIGHT':
     case 'ESTIMATED_1RM':
     case 'MAX_WEIGHT_FOR_REPS':
-      return `${value.toLocaleString()} ${unit}`;
+      return `${displayVal.toLocaleString()} ${wuLabel}`;
     case 'MAX_WORKOUT_VOLUME':
-      return `${value.toLocaleString()} ${unit}`;
+      return `${displayVal.toLocaleString()} ${wuLabel}`;
     case 'MAX_REPS':
     case 'MAX_WORKOUT_REPS':
       return `${value.toLocaleString()} reps`;
