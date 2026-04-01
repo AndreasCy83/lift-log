@@ -167,7 +167,9 @@ function InlineGoals({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
   const [targetReps, setTargetReps] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const handleAdd = () => {
     if (!targetValue) return;
