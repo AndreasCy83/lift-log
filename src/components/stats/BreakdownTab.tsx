@@ -164,7 +164,7 @@ export default function BreakdownTab() {
         const entry = map.get(key)!;
         entry.workoutIds.add(w.id);
 
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted && hasMeaningfulData(s));
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && hasMeaningfulData(s));
 
         if (metricType === 'sets') entry.value += sets.length;
         else if (metricType === 'reps') {
