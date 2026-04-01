@@ -217,7 +217,7 @@ export default function WorkoutsTab() {
       {/* Weekly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Weekly</h3>
       <StatsChart title="Workouts per Week" data={weeklyData.map(d => ({ label: d.label, value: d.count }))} type="bar" summary={`Total: ${summaryStats.workouts} workouts`} />
-      <StatsChart title="Volume per Week" data={weeklyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Week (${wuLabel})`} data={weeklyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Week" data={weeklyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" summary={`Total: ${summaryStats.totalSets} sets`} />
       <StatsChart title="Reps per Week" data={weeklyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" summary={`Total: ${summaryStats.totalReps} reps`} />
       {hasDurationData && <StatsChart title="Duration per Week" data={weeklyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}
