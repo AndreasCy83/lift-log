@@ -45,6 +45,9 @@ export default function RecordsTab() {
   const workouts = useMemo(() => getWorkouts(), []);
   const allWEs = useMemo(() => getWorkoutExercises(), []);
   const allSets = useMemo(() => getWorkoutSets(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (kg: number) => toDisplayWeight(kg, globalWeightUnit) ?? 0;
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedExercise, setSelectedExercise] = useState('all');
