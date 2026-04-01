@@ -55,7 +55,8 @@ export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: P
 
 // Inline wrappers that render the content without their own Dialog wrappers
 import { useMemo } from 'react';
-import { getExerciseHistory } from '@/lib/storage';
+import { getExerciseHistory, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { subDays, isAfter } from 'date-fns';
 import { getGoalsForExercise, addExerciseGoal, deleteExerciseGoal, generateId } from '@/lib/storage';
 import { Progress } from '@/components/ui/progress';
