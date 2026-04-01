@@ -189,7 +189,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                 onClick={() => onPrefill(w, pr?.weight === w ? pr.reps : 8)}
                 className="rounded-md bg-secondary hover:bg-secondary/80 px-2.5 py-1 text-xs font-medium transition-colors"
               >
-                {w}{unitLabel}
+                {toDisplayWeight(w, globalWeightUnit)}{unitLabel}
               </button>
             ))}
           </div>
