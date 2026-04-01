@@ -225,7 +225,7 @@ export default function WorkoutsTab() {
       {/* Monthly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Monthly</h3>
       <StatsChart title="Workouts per Month" data={monthlyData.map(d => ({ label: d.label, value: d.count }))} type="bar" />
-      <StatsChart title="Volume per Month" data={monthlyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Month (${wuLabel})`} data={monthlyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Month" data={monthlyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" />
       <StatsChart title="Reps per Month" data={monthlyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" />
       {hasDurationData && <StatsChart title="Duration per Month" data={monthlyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}
