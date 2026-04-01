@@ -77,6 +77,14 @@ export default function SettingsPage() {
       reader.onload = () => {
         try {
           const data = JSON.parse(reader.result as string);
+          // Handle unit conversion if backup was stored in lbs
+          if (data.weightStorageUnit === 'lbs' && data.workoutSets) {
+            const LBS_TO_KG = 1 / 2.20462;
+            data.workoutSets = data.workoutSets.map((s: any) => ({
+              ...s,
+              weightKg: s.weightKg != null ? Math.round(s.weightKg * LBS_TO_KG * 100) / 100 : s.weightKg,
+            }));
+          }
           if (data.workouts) localStorage.setItem('gym-workouts', JSON.stringify(data.workouts));
           if (data.workoutExercises) localStorage.setItem('gym-workout-exercises', JSON.stringify(data.workoutExercises));
           if (data.workoutSets) localStorage.setItem('gym-workout-sets', JSON.stringify(data.workoutSets));
