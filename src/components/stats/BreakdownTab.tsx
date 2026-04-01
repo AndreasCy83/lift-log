@@ -50,12 +50,12 @@ function hasMeaningfulData(s: { weightKg: number | null; reps: number | null; di
   return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
 }
 
-function formatUnit(metric: BreakdownMetric, value: number): string {
+function formatUnit(metric: BreakdownMetric, value: number, wuLabel: string): string {
   const m = metric.split('-')[0];
   if (m === 'sets') return `${value} sets`;
   if (m === 'reps') return `${value} reps`;
   if (m === 'workouts') return `${value} workouts`;
-  if (m === 'volume') return `${value.toLocaleString()} kg`;
+  if (m === 'volume') return `${value.toLocaleString()} ${wuLabel}`;
   return `${value}`;
 }
 
