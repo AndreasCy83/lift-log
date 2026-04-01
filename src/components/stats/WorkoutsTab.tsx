@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { format, subDays, isAfter, startOfWeek, startOfMonth, getYear } from 'date-fns';
-import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import PeriodSelector, { Period, periodToDays } from '@/components/PeriodSelector';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CsvExportButtons from '@/components/CsvExportButtons';
