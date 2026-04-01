@@ -9,8 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   getGoalsForExercise, addExerciseGoal, deleteExerciseGoal,
-  getExerciseHistory, generateId
+  getExerciseHistory, generateId, getSettings
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import type { GoalType, ExerciseGoal } from '@/types/fitness';
 import { GOAL_TYPE_LABELS } from '@/types/fitness';
 
