@@ -5,7 +5,10 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 
-const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
+function getCsvHeader() {
+  const wuLabel = weightUnitLabel(getSettings().weightUnit);
+  return `Date,Exercise,Category,Weight (${wuLabel}),Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment`;
+}
 
 function hasMeaningfulData(s: WorkoutSet): boolean {
   return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
