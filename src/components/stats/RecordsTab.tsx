@@ -3,8 +3,9 @@ import { Trophy, MoreVertical, ArrowUpDown, Dumbbell } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getExercises, getCategories, getWorkouts,
-  getWorkoutExercises, getWorkoutSets,
+  getWorkoutExercises, getWorkoutSets, getSettings,
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
