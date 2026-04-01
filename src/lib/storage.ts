@@ -2,6 +2,7 @@ import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
   WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal
 } from '@/types/fitness';
+import type { WeightUnitSetting } from '@/lib/units';
 import { DEFAULT_CATEGORIES, DEFAULT_EXERCISES } from '@/data/seedData';
 
 const STORAGE_KEYS = {
@@ -199,13 +200,15 @@ export function addWeightEntry(entry: WeightEntry) { const all = getWeightHistor
 export interface AppSettings {
   theme: 'system' | 'light' | 'dark';
   units: 'metric' | 'imperial';
+  weightUnit: WeightUnitSetting;
   defaultRestSeconds: number;
   keepScreenOn: boolean;
 }
 export function getSettings(): AppSettings {
-  return get<AppSettings>(STORAGE_KEYS.settings, {
-    theme: 'dark', units: 'metric', defaultRestSeconds: 90, keepScreenOn: true
+  const s = get<AppSettings>(STORAGE_KEYS.settings, {
+    theme: 'dark', units: 'metric', weightUnit: 'kg', defaultRestSeconds: 90, keepScreenOn: true
   });
+  return { ...s, weightUnit: s.weightUnit ?? 'kg' };
 }
 export function saveSettings(s: AppSettings) { set(STORAGE_KEYS.settings, s); }
 

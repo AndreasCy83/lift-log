@@ -55,7 +55,8 @@ export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: P
 
 // Inline wrappers that render the content without their own Dialog wrappers
 import { useMemo } from 'react';
-import { getExerciseHistory } from '@/lib/storage';
+import { getExerciseHistory, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { subDays, isAfter } from 'date-fns';
 import { getGoalsForExercise, addExerciseGoal, deleteExerciseGoal, generateId } from '@/lib/storage';
 import { Progress } from '@/components/ui/progress';
@@ -68,7 +69,9 @@ import PeriodSelector, { type Period, periodToDays } from '@/components/PeriodSe
 
 function InlineStats({ exerciseId, exerciseName, weightUnit }: { exerciseId: string; exerciseName: string; weightUnit: 'kg' | 'lb' }) {
   const [period, setPeriod] = useState<Period>('ALL');
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const stats = useMemo(() => {
     const history = getExerciseHistory(exerciseId);
@@ -107,11 +110,11 @@ function InlineStats({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
           ['Workouts', stats.totalWorkouts],
           ['Total Sets', stats.totalSets],
           ['Total Reps', stats.totalReps],
-          ['Total Volume', `${Math.round(stats.totalVolume)} ${unitLabel}`],
-          ['Max Weight', `${stats.maxWeight} ${unitLabel}`],
+          ['Total Volume', `${Math.round(dw(stats.totalVolume))} ${unitLabel}`],
+          ['Max Weight', `${dw(stats.maxWeight)} ${unitLabel}`],
           ['Max Reps', stats.maxReps],
-          ['Best Set Vol', `${Math.round(stats.maxVolume)} ${unitLabel}`],
-          ['Est. 1RM', `${Math.round(stats.bestE1rm)} ${unitLabel}`],
+          ['Best Set Vol', `${Math.round(dw(stats.maxVolume))} ${unitLabel}`],
+          ['Est. 1RM', `${Math.round(dw(stats.bestE1rm))} ${unitLabel}`],
         ].map(([label, value]) => (
           <div key={label as string} className="rounded-lg bg-secondary p-2.5">
             <p className="text-[10px] uppercase text-muted-foreground">{label}</p>
@@ -164,7 +167,9 @@ function InlineGoals({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
   const [targetReps, setTargetReps] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const handleAdd = () => {
     if (!targetValue) return;
@@ -200,7 +205,7 @@ function InlineGoals({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
               <div>
                 <p className="text-xs font-semibold">{GOAL_TYPE_LABELS[goal.goalType]}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {Math.round(current)} / {goal.targetValue} {unitLabel}
+                  {Math.round(dw(current))} / {dw(goal.targetValue)} {unitLabel}
                   {goal.targetReps ? ` @ ${goal.targetReps} reps` : ''}
                 </p>
               </div>

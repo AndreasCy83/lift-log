@@ -3,8 +3,9 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Dumbbell, MoreVertical, Star, History } from 'lucide-react';
 import { format, subMonths, isAfter } from 'date-fns';
 import {
-  getExercises, getExerciseHistory, getCategories, saveExercises,
+  getExercises, getExerciseHistory, getCategories, saveExercises, getSettings,
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -177,7 +178,8 @@ export default function ExercisesTab() {
   }, [selectedExId, graph, period, targetReps]);
 
   const graphLabel = GRAPH_OPTIONS.find(g => g.value === graph)?.label ?? '';
-  const unit = selectedEx?.weightUnit ?? 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unit = weightUnitLabel(globalWeightUnit);
 
   const handleToggleFavorite = () => {
     if (!selectedEx) return;
@@ -323,7 +325,7 @@ export default function ExercisesTab() {
                       borderRadius: '8px',
                       fontSize: 12,
                     }}
-                    formatter={(v: number) => [`${v.toLocaleString()} ${unit}`, graphLabel]}
+                    formatter={(v: number) => [`${(toDisplayWeight(v, globalWeightUnit) ?? v).toLocaleString()} ${unit}`, graphLabel]}
                     labelFormatter={(label: string) => `Date: ${label}`}
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
@@ -331,7 +333,7 @@ export default function ExercisesTab() {
                       return (
                         <div className="rounded-lg border border-border bg-card p-2.5 text-xs space-y-0.5 shadow-lg">
                           <div className="text-muted-foreground">Date: {d.label}</div>
-                          <div className="font-semibold text-foreground">{graphLabel}: {d.value.toLocaleString()} {unit}</div>
+                          <div className="font-semibold text-foreground">{graphLabel}: {(toDisplayWeight(d.value, globalWeightUnit) ?? d.value).toLocaleString()} {unit}</div>
                           <div className="text-muted-foreground">Sets: {d.sets} · Reps: {d.reps}</div>
                         </div>
                       );

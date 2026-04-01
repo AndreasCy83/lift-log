@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { Target, Plus, MoreVertical, Check, Dumbbell } from 'lucide-react';
 import {
   getExercises, getExerciseHistory, getExerciseGoals,
-  addExerciseGoal, deleteExerciseGoal, generateId,
+  addExerciseGoal, deleteExerciseGoal, generateId, getSettings,
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -108,13 +109,16 @@ function getTargetValue(goal: ExerciseGoal, gt: GoalTypeValue): number {
 }
 
 function formatValue(value: number, goalType: GoalTypeValue, unit: string): string {
+  const globalWeightUnit = getSettings().weightUnit;
+  const displayVal = toDisplayWeight(value, globalWeightUnit) ?? value;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
   switch (goalType) {
     case 'MAX_WEIGHT':
     case 'ESTIMATED_1RM':
     case 'MAX_WEIGHT_FOR_REPS':
-      return `${value.toLocaleString()} ${unit}`;
+      return `${displayVal.toLocaleString()} ${wuLabel}`;
     case 'MAX_WORKOUT_VOLUME':
-      return `${value.toLocaleString()} ${unit}`;
+      return `${displayVal.toLocaleString()} ${wuLabel}`;
     case 'MAX_REPS':
     case 'MAX_WORKOUT_REPS':
       return `${value.toLocaleString()} reps`;
@@ -331,7 +335,7 @@ function GoalCard({
   onEdit: (g: ExerciseGoal) => void;
   onDelete: (id: string) => void;
 }) {
-  const unit = exercise.weightUnit ?? 'kg';
+  const unit = weightUnitLabel(getSettings().weightUnit);
   const allAchieved = goals.every(g => {
     const gt = g.goalType as GoalTypeValue;
     const best = computeCurrentBest(exercise.id, gt, g.targetReps);
@@ -375,13 +379,17 @@ function GoalRow({
   const pct = target > 0 ? Math.min(100, Math.round((best.value / target) * 100)) : 0;
   const achieved = pct >= 100;
 
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
+
   const currentLabel = cfg?.needsWeight && cfg?.needsReps
-    ? `${best.weight} ${unit} × ${best.reps} (${pct}%)`
-    : `${formatValue(best.value, gt, unit)} (${pct}%)`;
+    ? `${dw(best.weight)} ${wuLabel} × ${best.reps} (${pct}%)`
+    : `${formatValue(best.value, gt, wuLabel)} (${pct}%)`;
 
   const targetLabel = cfg?.needsWeight && cfg?.needsReps
-    ? `${goal.targetValue} ${unit} × ${goal.targetReps}`
-    : formatValue(target, gt, unit);
+    ? `${dw(goal.targetValue)} ${wuLabel} × ${goal.targetReps}`
+    : formatValue(target, gt, wuLabel);
 
   return (
     <div className="space-y-1.5">
@@ -492,7 +500,7 @@ function AddGoalDialog({
           {cfg?.needsWeight && (
             <div>
               <label className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
-                Target {formGoalType === 'MAX_WORKOUT_VOLUME' ? 'Volume' : 'Weight'} (kgs)
+                Target {formGoalType === 'MAX_WORKOUT_VOLUME' ? 'Volume' : 'Weight'} ({weightUnitLabel(getSettings().weightUnit)})
               </label>
               <Input
                 type="number"

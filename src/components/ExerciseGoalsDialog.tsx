@@ -9,8 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   getGoalsForExercise, addExerciseGoal, deleteExerciseGoal,
-  getExerciseHistory, generateId
+  getExerciseHistory, generateId, getSettings
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import type { GoalType, ExerciseGoal } from '@/types/fitness';
 import { GOAL_TYPE_LABELS } from '@/types/fitness';
 
@@ -105,7 +106,9 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
   const [newStartDate, setNewStartDate] = useState('');
   const [newEndDate, setNewEndDate] = useState('');
 
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const refreshGoals = () => setGoals(getGoalsForExercise(exerciseId));
 
@@ -179,10 +182,10 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">
-                      {current.toLocaleString()}{suffix && ` ${suffix}`}
+                      {dw(current).toLocaleString()}{suffix && ` ${suffix}`}
                     </span>
                     <span className="font-semibold">
-                      {goal.targetValue.toLocaleString()}{suffix && ` ${suffix}`}
+                      {dw(goal.targetValue).toLocaleString()}{suffix && ` ${suffix}`}
                     </span>
                   </div>
                   <Progress value={pct} className="h-2.5" />

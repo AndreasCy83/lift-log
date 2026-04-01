@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { format, subDays, isAfter } from 'date-fns';
 import { Trophy, History, TrendingUp, Copy, ChevronDown, ChevronUp, Flame, StickyNote } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { getExerciseHistory, getPersonalRecord } from '@/lib/storage';
+import { getExerciseHistory, getPersonalRecord, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { Button } from '@/components/ui/button';
 import type { WorkoutSet } from '@/types/fitness';
 
@@ -17,10 +18,11 @@ interface Props {
   refreshKey?: number;
 }
 
-function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
+function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onPrefill }: {
   session: { date: string; sets: WorkoutSet[]; exerciseNotes: string };
   bestSet: WorkoutSet | null;
   unitLabel: string;
+  globalWeightUnit: 'kg' | 'lbs';
   onPrefill: (w: number, r: number) => void;
 }) {
   const [showNote, setShowNote] = useState(false);
@@ -69,7 +71,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
                 </button>
               ) : null}
               <span className="font-medium text-foreground">
-                {typeof s.weightKg === 'number' ? `${s.weightKg}${unitLabel}` : '—'}
+                {typeof s.weightKg === 'number' ? `${toDisplayWeight(s.weightKg, globalWeightUnit)}${unitLabel}` : '—'}
                 {typeof s.reps === 'number' ? ` × ${s.reps}` : ''}
               </span>
               {typeof s.rpe === 'number' && <span className="text-[10px]">RPE {s.rpe}</span>}
@@ -92,6 +94,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
 }
 
 export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, refreshKey = 0 }: Props) {
+  const globalWeightUnit = getSettings().weightUnit;
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
   const [period, setPeriod] = useState<Period>('all');
@@ -149,7 +152,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
       .filter((point): point is { date: string; weight: number | null; reps: number | null } => point !== null);
   }, [filteredHistory]);
 
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const unitLabel = weightUnitLabel(globalWeightUnit);
   const periods: { key: Period; label: string }[] = [
     { key: '30d', label: '30D' },
     { key: '90d', label: '90D' },
@@ -167,7 +170,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
             <span className="text-[10px] uppercase font-bold tracking-wider text-gym-pr">Personal Best</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-display font-bold">{pr.weight}{unitLabel}</span>
+            <span className="text-lg font-display font-bold">{toDisplayWeight(pr.weight, globalWeightUnit)}{unitLabel}</span>
             <span className="text-sm text-muted-foreground">× {pr.reps}</span>
             <span className="text-[10px] text-muted-foreground ml-auto">{format(new Date(pr.date), 'MMM d, yyyy')}</span>
           </div>
@@ -186,7 +189,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                 onClick={() => onPrefill(w, pr?.weight === w ? pr.reps : 8)}
                 className="rounded-md bg-secondary hover:bg-secondary/80 px-2.5 py-1 text-xs font-medium transition-colors"
               >
-                {w}{unitLabel}
+                {toDisplayWeight(w, globalWeightUnit)}{unitLabel}
               </button>
             ))}
           </div>
@@ -294,14 +297,15 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                       return current.weightKg! > best.weightKg! ? current : best;
                     }, null as WorkoutSet | null);
 
-                  return (
-                    <HistorySessionCard
-                      key={`${session.date}-${i}`}
-                      session={session}
-                      bestSet={bestSet}
-                      unitLabel={unitLabel}
-                      onPrefill={onPrefill}
-                    />
+                    return (
+                      <HistorySessionCard
+                        key={`${session.date}-${i}`}
+                        session={session}
+                        bestSet={bestSet}
+                        unitLabel={unitLabel}
+                        globalWeightUnit={globalWeightUnit}
+                        onPrefill={onPrefill}
+                      />
                   );
                 })}
                 {filteredHistory.length === 0 && (

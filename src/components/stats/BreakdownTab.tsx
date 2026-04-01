@@ -6,7 +6,8 @@ import {
 } from 'date-fns';
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -49,12 +50,12 @@ function hasMeaningfulData(s: { weightKg: number | null; reps: number | null; di
   return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
 }
 
-function formatUnit(metric: BreakdownMetric, value: number): string {
+function formatUnit(metric: BreakdownMetric, value: number, wuLabel: string): string {
   const m = metric.split('-')[0];
   if (m === 'sets') return `${value} sets`;
   if (m === 'reps') return `${value} reps`;
   if (m === 'workouts') return `${value} workouts`;
-  if (m === 'volume') return `${value.toLocaleString()} kg`;
+  if (m === 'volume') return `${value.toLocaleString()} ${wuLabel}`;
   return `${value}`;
 }
 
@@ -64,6 +65,8 @@ export default function BreakdownTab() {
   const workouts = useMemo(() => getWorkouts(), []);
   const allWEs = useMemo(() => getWorkoutExercises(), []);
   const allSets = useMemo(() => getWorkoutSets(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
 
   const [breakdown, setBreakdown] = useState<BreakdownMetric>('sets-category');
   const [periodType, setPeriodType] = useState<PeriodType>('week');
@@ -367,7 +370,7 @@ export default function BreakdownTab() {
               >
                 <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length] }} />
                 <span className="flex-1 text-sm text-foreground truncate">{item.name}</span>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{formatUnit(breakdown, item.value)}</span>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{formatUnit(breakdown, metricType === 'volume' ? Math.round(toDisplayWeight(item.value, globalWeightUnit) ?? 0) : item.value, wuLabel)}</span>
                 <span className="text-xs font-medium text-foreground w-14 text-right">{pct}%</span>
               </button>
             );
@@ -380,7 +383,7 @@ export default function BreakdownTab() {
           { label: 'Total Workouts', value: summaryStats.workouts.toLocaleString() },
           { label: 'Total Sets', value: summaryStats.sets.toLocaleString() },
           { label: 'Total Reps', value: summaryStats.reps.toLocaleString() },
-          { label: 'Total Volume', value: `${summaryStats.volume.toLocaleString()} kg` },
+          { label: 'Total Volume', value: `${(toDisplayWeight(summaryStats.volume, globalWeightUnit) ?? 0).toLocaleString()} ${wuLabel}` },
         ].map(s => (
           <div key={s.label} className="gym-card flex flex-col items-center justify-center py-3">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</span>

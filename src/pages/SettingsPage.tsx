@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight } from 'lucide-react';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
+import type { WeightUnitSetting } from '@/lib/units';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export default function SettingsPage() {
 
   const handleExport = () => {
     const data = {
+      weightStorageUnit: 'kg',
       profile, settings,
       workouts: JSON.parse(localStorage.getItem('gym-workouts') ?? '[]'),
       workoutExercises: JSON.parse(localStorage.getItem('gym-workout-exercises') ?? '[]'),
@@ -76,6 +78,14 @@ export default function SettingsPage() {
       reader.onload = () => {
         try {
           const data = JSON.parse(reader.result as string);
+          // Handle unit conversion if backup was stored in lbs
+          if (data.weightStorageUnit === 'lbs' && data.workoutSets) {
+            const LBS_TO_KG = 1 / 2.20462;
+            data.workoutSets = data.workoutSets.map((s: any) => ({
+              ...s,
+              weightKg: s.weightKg != null ? Math.round(s.weightKg * LBS_TO_KG * 100) / 100 : s.weightKg,
+            }));
+          }
           if (data.workouts) localStorage.setItem('gym-workouts', JSON.stringify(data.workouts));
           if (data.workoutExercises) localStorage.setItem('gym-workout-exercises', JSON.stringify(data.workoutExercises));
           if (data.workoutSets) localStorage.setItem('gym-workout-sets', JSON.stringify(data.workoutSets));
@@ -132,6 +142,24 @@ export default function SettingsPage() {
             </div>
           </div>
           <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">Save Profile</Button>
+        </div>
+
+        {/* Weight Unit */}
+        <div className="gym-card">
+          <h3 className="font-display text-sm font-semibold mb-3">Weight Unit</h3>
+          <div className="flex gap-2">
+            {(['kg', 'lbs'] as const).map(u => (
+              <button
+                key={u}
+                onClick={() => setSettings({ ...settings, weightUnit: u })}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors uppercase
+                  ${settings.weightUnit === u ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+              >
+                {u}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-2">All data is stored internally in kg. This setting only affects display and input.</p>
         </div>
 
         {/* Theme */}

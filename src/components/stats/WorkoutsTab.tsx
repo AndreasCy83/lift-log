@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { format, subDays, isAfter, startOfWeek, startOfMonth, getYear } from 'date-fns';
-import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import PeriodSelector, { Period, periodToDays } from '@/components/PeriodSelector';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CsvExportButtons from '@/components/CsvExportButtons';
@@ -16,6 +17,8 @@ export default function WorkoutsTab() {
   const workouts = useMemo(() => getWorkouts(), []);
   const allWEs = useMemo(() => getWorkoutExercises(), []);
   const allSets = useMemo(() => getWorkoutSets(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
 
   const [period, setPeriod] = useState<Period>('1M');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -121,6 +124,7 @@ export default function WorkoutsTab() {
 
   const hasDurationData = perWorkoutData.some(d => d.hasDuration);
   const fmtK = (v: number) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : String(v);
+  const toDisp = (v: number) => Math.round(toDisplayWeight(v, globalWeightUnit) ?? 0);
 
   return (
     <div className="space-y-4">
@@ -169,7 +173,7 @@ export default function WorkoutsTab() {
             { v: summaryStats.workouts, l: 'Workouts' },
             { v: summaryStats.totalSets, l: 'Sets' },
             { v: summaryStats.totalReps, l: 'Reps' },
-            { v: summaryStats.totalVolume, l: 'Volume' },
+            { v: toDisp(summaryStats.totalVolume), l: `Volume (${wuLabel})` },
           ].map(s => (
             <div key={s.l} className="text-center">
               <div className="font-display text-lg font-bold text-primary">{s.v >= 1000 ? fmtK(s.v) : s.v}</div>
@@ -182,10 +186,10 @@ export default function WorkoutsTab() {
       {/* Per Workout */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Per Workout</h3>
       <StatsChart
-        title="Volume per Workout"
-        data={perWorkoutData.map(d => ({ label: d.label, value: d.volume }))}
+        title={`Volume per Workout (${wuLabel})`}
+        data={perWorkoutData.map(d => ({ label: d.label, value: toDisp(d.volume) }))}
         type="line"
-        summary={perWorkoutData.length > 0 ? `Avg: ${fmtK(Math.round(summaryStats.totalVolume / perWorkoutData.length))} kg/workout` : undefined}
+        summary={perWorkoutData.length > 0 ? `Avg: ${fmtK(toDisp(Math.round(summaryStats.totalVolume / perWorkoutData.length)))} ${wuLabel}/workout` : undefined}
         valueFormatter={fmtK}
       />
       <StatsChart
@@ -213,7 +217,7 @@ export default function WorkoutsTab() {
       {/* Weekly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Weekly</h3>
       <StatsChart title="Workouts per Week" data={weeklyData.map(d => ({ label: d.label, value: d.count }))} type="bar" summary={`Total: ${summaryStats.workouts} workouts`} />
-      <StatsChart title="Volume per Week" data={weeklyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Week (${wuLabel})`} data={weeklyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Week" data={weeklyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" summary={`Total: ${summaryStats.totalSets} sets`} />
       <StatsChart title="Reps per Week" data={weeklyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" summary={`Total: ${summaryStats.totalReps} reps`} />
       {hasDurationData && <StatsChart title="Duration per Week" data={weeklyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}
@@ -221,7 +225,7 @@ export default function WorkoutsTab() {
       {/* Monthly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Monthly</h3>
       <StatsChart title="Workouts per Month" data={monthlyData.map(d => ({ label: d.label, value: d.count }))} type="bar" />
-      <StatsChart title="Volume per Month" data={monthlyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Month (${wuLabel})`} data={monthlyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Month" data={monthlyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" />
       <StatsChart title="Reps per Month" data={monthlyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" />
       {hasDurationData && <StatsChart title="Duration per Month" data={monthlyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}
@@ -229,7 +233,7 @@ export default function WorkoutsTab() {
       {/* Yearly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Yearly</h3>
       <StatsChart title="Workouts per Year" data={yearlyData.map(d => ({ label: d.label, value: d.count }))} type="bar" />
-      <StatsChart title="Volume per Year" data={yearlyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Year (${wuLabel})`} data={yearlyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Year" data={yearlyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" />
       <StatsChart title="Reps per Year" data={yearlyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" />
       {hasDurationData && <StatsChart title="Duration per Year" data={yearlyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}

@@ -28,6 +28,7 @@ export function saveBackupSettings(s: BackupSettings) {
 
 export function generateBackupData() {
   return {
+    weightStorageUnit: 'kg',
     profile: getProfile(),
     settings: getSettings(),
     workouts: JSON.parse(localStorage.getItem('gym-workouts') ?? '[]'),

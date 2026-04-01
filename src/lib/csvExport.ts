@@ -1,10 +1,14 @@
-import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories } from '@/lib/storage';
+import { getWorkouts, getWorkoutExercises, getWorkoutSets, getExercises, getCategories, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import type { WorkoutSet } from '@/types/fitness';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 
-const CSV_HEADER = 'Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment';
+function getCsvHeader() {
+  const wuLabel = weightUnitLabel(getSettings().weightUnit);
+  return `Date,Exercise,Category,Weight (${wuLabel}),Weight Unit,Reps,Distance,Distance Unit,Time,Time Unit,Comment`;
+}
 
 function hasMeaningfulData(s: WorkoutSet): boolean {
   return [s.weightKg, s.reps, s.distanceKm, s.durationMinutes].some(v => typeof v === 'number' && v > 0);
@@ -29,6 +33,8 @@ export interface CsvExportResult {
 }
 
 export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExportResult {
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
   let workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
   if (fromDate) workouts = workouts.filter(w => w.date >= fromDate);
   if (toDate) workouts = workouts.filter(w => w.date <= toDate);
@@ -40,7 +46,7 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
   const exerciseMap = new Map(exercises.map(e => [e.id, e]));
   const categoryMap = new Map(categories.map(c => [c.id, c]));
 
-  const rows: string[] = [CSV_HEADER];
+  const rows: string[] = [getCsvHeader()];
   let setCount = 0;
 
   for (const workout of workouts) {
@@ -60,7 +66,8 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
         .sort((a, b) => a.setIndex - b.setIndex);
 
       for (const s of sets) {
-        const weight = typeof s.weightKg === 'number' && s.weightKg > 0 ? s.weightKg.toString() : '';
+        const displayW = toDisplayWeight(s.weightKg, globalWeightUnit);
+        const weight = displayW !== null && displayW > 0 ? displayW.toString() : '';
         const reps = typeof s.reps === 'number' && s.reps > 0 ? s.reps.toString() : '';
         const distance = typeof s.distanceKm === 'number' && s.distanceKm > 0 ? s.distanceKm.toString() : '';
         const distanceUnit = distance ? 'km' : '';
@@ -74,7 +81,7 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
         const comment = escapeCsv(notes.join(' | '));
 
         rows.push(
-          `${workout.date},${escapeCsv(exercise.name)},${escapeCsv(categoryName)},${weight},kgs,${reps},${distance},${distanceUnit},${time},${timeUnit},${comment}`
+          `${workout.date},${escapeCsv(exercise.name)},${escapeCsv(categoryName)},${weight},${wuLabel},${reps},${distance},${distanceUnit},${time},${timeUnit},${comment}`
         );
         setCount++;
       }
