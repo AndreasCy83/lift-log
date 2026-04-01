@@ -186,10 +186,10 @@ export default function WorkoutsTab() {
       {/* Per Workout */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Per Workout</h3>
       <StatsChart
-        title="Volume per Workout"
-        data={perWorkoutData.map(d => ({ label: d.label, value: d.volume }))}
+        title={`Volume per Workout (${wuLabel})`}
+        data={perWorkoutData.map(d => ({ label: d.label, value: toDisp(d.volume) }))}
         type="line"
-        summary={perWorkoutData.length > 0 ? `Avg: ${fmtK(Math.round(summaryStats.totalVolume / perWorkoutData.length))} kg/workout` : undefined}
+        summary={perWorkoutData.length > 0 ? `Avg: ${fmtK(toDisp(Math.round(summaryStats.totalVolume / perWorkoutData.length)))} ${wuLabel}/workout` : undefined}
         valueFormatter={fmtK}
       />
       <StatsChart
