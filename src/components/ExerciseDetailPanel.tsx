@@ -152,7 +152,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
       .filter((point): point is { date: string; weight: number | null; reps: number | null } => point !== null);
   }, [filteredHistory]);
 
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const unitLabel = weightUnitLabel(globalWeightUnit);
   const periods: { key: Period; label: string }[] = [
     { key: '30d', label: '30D' },
     { key: '90d', label: '90D' },
