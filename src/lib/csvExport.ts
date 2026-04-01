@@ -46,7 +46,7 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
   const exerciseMap = new Map(exercises.map(e => [e.id, e]));
   const categoryMap = new Map(categories.map(c => [c.id, c]));
 
-  const rows: string[] = [CSV_HEADER];
+  const rows: string[] = [getCsvHeader()];
   let setCount = 0;
 
   for (const workout of workouts) {
