@@ -3,8 +3,9 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Dumbbell, MoreVertical, Star, History } from 'lucide-react';
 import { format, subMonths, isAfter } from 'date-fns';
 import {
-  getExercises, getExerciseHistory, getCategories, saveExercises,
+  getExercises, getExerciseHistory, getCategories, saveExercises, getSettings,
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
