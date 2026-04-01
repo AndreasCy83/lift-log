@@ -500,7 +500,7 @@ function AddGoalDialog({
           {cfg?.needsWeight && (
             <div>
               <label className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
-                Target {formGoalType === 'MAX_WORKOUT_VOLUME' ? 'Volume' : 'Weight'} (kgs)
+                Target {formGoalType === 'MAX_WORKOUT_VOLUME' ? 'Volume' : 'Weight'} ({weightUnitLabel(getSettings().weightUnit)})
               </label>
               <Input
                 type="number"

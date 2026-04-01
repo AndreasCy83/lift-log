@@ -333,7 +333,7 @@ export default function ExercisesTab() {
                       return (
                         <div className="rounded-lg border border-border bg-card p-2.5 text-xs space-y-0.5 shadow-lg">
                           <div className="text-muted-foreground">Date: {d.label}</div>
-                          <div className="font-semibold text-foreground">{graphLabel}: {d.value.toLocaleString()} {unit}</div>
+                          <div className="font-semibold text-foreground">{graphLabel}: {(toDisplayWeight(d.value, globalWeightUnit) ?? d.value).toLocaleString()} {unit}</div>
                           <div className="text-muted-foreground">Sets: {d.sets} · Reps: {d.reps}</div>
                         </div>
                       );

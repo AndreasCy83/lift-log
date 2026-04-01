@@ -302,11 +302,11 @@ export default function RecordsTab() {
 
                 {/* PR rows */}
                 <div className="divide-y divide-border">
-                  <PRRow label="Estimated 1RM" value={pr.e1rm ? `${fmtNum(pr.e1rm.value)} kg` : '—'} date={pr.e1rm?.date} formatDate={formatDate} />
-                  <PRRow label="Max Weight" value={pr.maxWeight ? `${fmtNum(pr.maxWeight.weight)} kg × ${pr.maxWeight.reps} reps` : '—'} date={pr.maxWeight?.date} formatDate={formatDate} />
-                  <PRRow label="Max Reps (single set)" value={pr.maxReps ? `${pr.maxReps.reps} reps @ ${fmtNum(pr.maxReps.weight)} kg` : '—'} date={pr.maxReps?.date} formatDate={formatDate} />
-                  <PRRow label="Best Volume (single set)" value={pr.bestSetVolume ? `${fmtNum(pr.bestSetVolume.volume)} kg` : '—'} date={pr.bestSetVolume?.date} formatDate={formatDate} />
-                  <PRRow label="Best Session Volume" value={pr.bestSessionVolume ? `${fmtNum(pr.bestSessionVolume.volume)} kg` : '—'} date={pr.bestSessionVolume?.date} formatDate={formatDate} />
+                  <PRRow label="Estimated 1RM" value={pr.e1rm ? `${fmtNum(dw(pr.e1rm.value))} ${wuLabel}` : '—'} date={pr.e1rm?.date} formatDate={formatDate} />
+                  <PRRow label="Max Weight" value={pr.maxWeight ? `${fmtNum(dw(pr.maxWeight.weight))} ${wuLabel} × ${pr.maxWeight.reps} reps` : '—'} date={pr.maxWeight?.date} formatDate={formatDate} />
+                  <PRRow label="Max Reps (single set)" value={pr.maxReps ? `${pr.maxReps.reps} reps @ ${fmtNum(dw(pr.maxReps.weight))} ${wuLabel}` : '—'} date={pr.maxReps?.date} formatDate={formatDate} />
+                  <PRRow label="Best Volume (single set)" value={pr.bestSetVolume ? `${fmtNum(dw(pr.bestSetVolume.volume))} ${wuLabel}` : '—'} date={pr.bestSetVolume?.date} formatDate={formatDate} />
+                  <PRRow label="Best Session Volume" value={pr.bestSessionVolume ? `${fmtNum(dw(pr.bestSessionVolume.volume))} ${wuLabel}` : '—'} date={pr.bestSessionVolume?.date} formatDate={formatDate} />
                 </div>
               </div>
             );
