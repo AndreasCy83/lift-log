@@ -49,6 +49,7 @@ export default function SettingsPage() {
 
   const handleExport = () => {
     const data = {
+      weightStorageUnit: 'kg',
       profile, settings,
       workouts: JSON.parse(localStorage.getItem('gym-workouts') ?? '[]'),
       workoutExercises: JSON.parse(localStorage.getItem('gym-workout-exercises') ?? '[]'),
