@@ -325,7 +325,7 @@ export default function ExercisesTab() {
                       borderRadius: '8px',
                       fontSize: 12,
                     }}
-                    formatter={(v: number) => [`${v.toLocaleString()} ${unit}`, graphLabel]}
+                    formatter={(v: number) => [`${(toDisplayWeight(v, globalWeightUnit) ?? v).toLocaleString()} ${unit}`, graphLabel]}
                     labelFormatter={(label: string) => `Date: ${label}`}
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
