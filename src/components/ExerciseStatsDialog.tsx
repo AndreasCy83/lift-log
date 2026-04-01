@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getExerciseHistory } from '@/lib/storage';
+import { getExerciseHistory, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import PeriodSelector, { Period, periodToDays } from '@/components/PeriodSelector';
 import { subDays, isAfter } from 'date-fns';
 
