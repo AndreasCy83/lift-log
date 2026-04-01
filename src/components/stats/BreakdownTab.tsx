@@ -383,7 +383,7 @@ export default function BreakdownTab() {
           { label: 'Total Workouts', value: summaryStats.workouts.toLocaleString() },
           { label: 'Total Sets', value: summaryStats.sets.toLocaleString() },
           { label: 'Total Reps', value: summaryStats.reps.toLocaleString() },
-          { label: 'Total Volume', value: `${summaryStats.volume.toLocaleString()} kg` },
+          { label: 'Total Volume', value: `${(toDisplayWeight(summaryStats.volume, globalWeightUnit) ?? 0).toLocaleString()} ${wuLabel}` },
         ].map(s => (
           <div key={s.label} className="gym-card flex flex-col items-center justify-center py-3">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</span>

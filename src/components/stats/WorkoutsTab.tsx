@@ -233,7 +233,7 @@ export default function WorkoutsTab() {
       {/* Yearly */}
       <h3 className="font-display text-sm font-semibold text-muted-foreground">Yearly</h3>
       <StatsChart title="Workouts per Year" data={yearlyData.map(d => ({ label: d.label, value: d.count }))} type="bar" />
-      <StatsChart title="Volume per Year" data={yearlyData.map(d => ({ label: d.label, value: d.volume }))} type="bar" valueFormatter={fmtK} />
+      <StatsChart title={`Volume per Year (${wuLabel})`} data={yearlyData.map(d => ({ label: d.label, value: toDisp(d.volume) }))} type="bar" valueFormatter={fmtK} />
       <StatsChart title="Sets per Year" data={yearlyData.map(d => ({ label: d.label, value: d.sets }))} type="bar" />
       <StatsChart title="Reps per Year" data={yearlyData.map(d => ({ label: d.label, value: d.reps }))} type="bar" />
       {hasDurationData && <StatsChart title="Duration per Year" data={yearlyData.map(d => ({ label: d.label, value: d.duration }))} type="bar" valueFormatter={v => v + 'm'} />}
