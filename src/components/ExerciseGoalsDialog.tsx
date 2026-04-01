@@ -182,7 +182,7 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">
-                      {current.toLocaleString()}{suffix && ` ${suffix}`}
+                      {dw(current).toLocaleString()}{suffix && ` ${suffix}`}
                     </span>
                     <span className="font-semibold">
                       {goal.targetValue.toLocaleString()}{suffix && ` ${suffix}`}
