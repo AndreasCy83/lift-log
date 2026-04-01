@@ -124,6 +124,7 @@ export default function WorkoutsTab() {
 
   const hasDurationData = perWorkoutData.some(d => d.hasDuration);
   const fmtK = (v: number) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : String(v);
+  const toDisp = (v: number) => Math.round(toDisplayWeight(v, globalWeightUnit) ?? 0);
 
   return (
     <div className="space-y-4">
