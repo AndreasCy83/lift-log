@@ -7,9 +7,10 @@ import {
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
-  getExerciseHistory
+  getExerciseHistory, getSettings
 } from '@/lib/storage';
-import { schedulePendingBackup, checkPendingBackup } from '@/lib/autoBackup';
+import { schedulePendingBackup } from '@/lib/autoBackup';
+import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,6 +27,8 @@ export default function WorkoutLogPage() {
   const navigate = useNavigate();
   const allExercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
 
   const [workout, setWorkout] = useState<Workout | null>(() => {
     if (!date) return null;
@@ -72,7 +75,6 @@ export default function WorkoutLogPage() {
   };
 
   const handleAddExercises = (exerciseIds: string[]) => {
-    const currentExercises = getExercises();
     exerciseIds.forEach((exerciseId, i) => {
       const we = {
         id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length + i, notes: ''
@@ -179,7 +181,6 @@ export default function WorkoutLogPage() {
           const isExpanded = expandedExercise === we.id;
           const ex = getEx(we.exerciseId);
           const exSetType = ex?.setType ?? 'WEIGHT_REPS';
-          const exWeightUnit = ex?.weightUnit ?? 'kg';
           const pr = getPersonalRecord(we.exerciseId);
 
           return (
@@ -191,7 +192,7 @@ export default function WorkoutLogPage() {
                     <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground">{getCatName(we.exerciseId)}</span>
                   </div>
                   {pr && (
-                    <p className="text-[10px] text-gym-pr mt-0.5">PR: {pr.weight}{exWeightUnit} × {pr.reps}</p>
+                    <p className="text-[10px] text-gym-pr mt-0.5">PR: {toDisplayWeight(pr.weight, globalWeightUnit)}{wuLabel} × {pr.reps}</p>
                   )}
                 </button>
                 <button
@@ -202,14 +203,14 @@ export default function WorkoutLogPage() {
                   <StickyNote className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: exWeightUnit })}
+                  onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className={`p-1 transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise goals"
                 >
                   <Trophy className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: exWeightUnit })}
+                  onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                   title="Exercise stats"
                 >
@@ -241,7 +242,7 @@ export default function WorkoutLogPage() {
                   <ExerciseDetailPanel
                     exerciseId={we.exerciseId}
                     exerciseName={getExName(we.exerciseId)}
-                    weightUnit={exWeightUnit}
+                    weightUnit={ex?.weightUnit ?? 'kg'}
                     refreshKey={updateKey}
                     onPrefill={(weight, reps) => {
                       const currentSets = getSetsForWorkoutExercise(we.id);
@@ -265,7 +266,7 @@ export default function WorkoutLogPage() {
                     <div></div>
                     <div>Type</div>
                     <div></div>
-                    <SetColumnHeaders setType={exSetType} weightUnit={exWeightUnit} />
+                    <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
                     <div></div>
                   </div>
 
@@ -304,7 +305,7 @@ export default function WorkoutLogPage() {
                         <DynamicSetInputs
                           set={s}
                           setType={exSetType}
-                          weightUnit={exWeightUnit}
+                          weightUnit={globalWeightUnit}
                           onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                         />
                         <div className="flex justify-center">
@@ -364,11 +365,12 @@ export default function WorkoutLogPage() {
               }
             });
           });
+          const displayVolume = toDisplayWeight(totalVolume, globalWeightUnit);
           return (hasStrength || hasCardio) ? (
             <div className="gym-card flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
               {hasStrength && (
                 <>
-                  <span>Total Volume: <span className="font-semibold text-foreground">{totalVolume.toLocaleString()} kg</span></span>
+                  <span>Total Volume: <span className="font-semibold text-foreground">{displayVolume?.toLocaleString()} {wuLabel}</span></span>
                   <span>Total Reps: <span className="font-semibold text-foreground">{totalReps}</span></span>
                 </>
               )}

@@ -1,17 +1,25 @@
 import { Input } from '@/components/ui/input';
-import type { WorkoutSet, SetType, WeightUnit } from '@/types/fitness';
+import type { WorkoutSet, SetType } from '@/types/fitness';
+import type { WeightUnitSetting } from '@/lib/units';
+import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 
 interface Props {
   set: WorkoutSet;
   setType: SetType;
-  weightUnit: WeightUnit;
+  weightUnit: WeightUnitSetting;
   onUpdate: (field: keyof WorkoutSet, value: any) => void;
 }
 
 const inputClass = "h-8 text-sm text-center bg-secondary border-0 px-2 min-w-[3.5rem] w-full rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none overflow-visible";
 
 export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }: Props) {
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const unitLabel = weightUnitLabel(weightUnit);
+  const displayWeight = toDisplayWeight(set.weightKg, weightUnit);
+
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value ? parseFloat(e.target.value) : null;
+    onUpdate('weightKg', toStorageKg(raw, weightUnit));
+  };
 
   switch (setType) {
     case 'WEIGHT_REPS':
@@ -19,8 +27,8 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
         <>
           <div>
             <Input
-              type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
-              onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
+              type="number" placeholder={unitLabel} value={displayWeight ?? ''}
+              onChange={handleWeightChange}
               className={inputClass}
             />
           </div>
@@ -46,8 +54,8 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
         <>
           <div>
             <Input
-              type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
-              onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
+              type="number" placeholder={unitLabel} value={displayWeight ?? ''}
+              onChange={handleWeightChange}
               className={inputClass}
             />
           </div>
@@ -109,8 +117,8 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
         <>
           <div>
             <Input
-              type="number" placeholder={unitLabel} value={set.weightKg ?? ''}
-              onChange={e => onUpdate('weightKg', e.target.value ? parseFloat(e.target.value) : null)}
+              type="number" placeholder={unitLabel} value={displayWeight ?? ''}
+              onChange={handleWeightChange}
               className={inputClass}
             />
           </div>
@@ -124,8 +132,8 @@ export default function DynamicSetInputs({ set, setType, weightUnit, onUpdate }:
   }
 }
 
-export function SetColumnHeaders({ setType, weightUnit }: { setType: SetType; weightUnit: WeightUnit }) {
-  const unitLabel = weightUnit === 'lb' ? 'LB' : 'KG';
+export function SetColumnHeaders({ setType, weightUnit }: { setType: SetType; weightUnit: WeightUnitSetting }) {
+  const unitLabel = weightUnitLabel(weightUnit).toUpperCase();
 
   switch (setType) {
     case 'WEIGHT_REPS':
