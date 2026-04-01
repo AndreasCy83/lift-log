@@ -379,13 +379,17 @@ function GoalRow({
   const pct = target > 0 ? Math.min(100, Math.round((best.value / target) * 100)) : 0;
   const achieved = pct >= 100;
 
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
+
   const currentLabel = cfg?.needsWeight && cfg?.needsReps
-    ? `${best.weight} ${unit} × ${best.reps} (${pct}%)`
-    : `${formatValue(best.value, gt, unit)} (${pct}%)`;
+    ? `${dw(best.weight)} ${wuLabel} × ${best.reps} (${pct}%)`
+    : `${formatValue(best.value, gt, wuLabel)} (${pct}%)`;
 
   const targetLabel = cfg?.needsWeight && cfg?.needsReps
-    ? `${goal.targetValue} ${unit} × ${goal.targetReps}`
-    : formatValue(target, gt, unit);
+    ? `${dw(goal.targetValue)} ${wuLabel} × ${goal.targetReps}`
+    : formatValue(target, gt, wuLabel);
 
   return (
     <div className="space-y-1.5">
