@@ -17,6 +17,8 @@ export default function WorkoutsTab() {
   const workouts = useMemo(() => getWorkouts(), []);
   const allWEs = useMemo(() => getWorkoutExercises(), []);
   const allSets = useMemo(() => getWorkoutSets(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
 
   const [period, setPeriod] = useState<Period>('1M');
   const [selectedCategory, setSelectedCategory] = useState('all');
