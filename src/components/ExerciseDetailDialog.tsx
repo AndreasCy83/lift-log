@@ -205,7 +205,7 @@ function InlineGoals({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
               <div>
                 <p className="text-xs font-semibold">{GOAL_TYPE_LABELS[goal.goalType]}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {Math.round(current)} / {goal.targetValue} {unitLabel}
+                  {Math.round(dw(current))} / {dw(goal.targetValue)} {unitLabel}
                   {goal.targetReps ? ` @ ${goal.targetReps} reps` : ''}
                 </p>
               </div>

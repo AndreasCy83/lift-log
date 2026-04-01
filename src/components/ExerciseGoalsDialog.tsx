@@ -185,7 +185,7 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
                       {dw(current).toLocaleString()}{suffix && ` ${suffix}`}
                     </span>
                     <span className="font-semibold">
-                      {goal.targetValue.toLocaleString()}{suffix && ` ${suffix}`}
+                      {dw(goal.targetValue).toLocaleString()}{suffix && ` ${suffix}`}
                     </span>
                   </div>
                   <Progress value={pct} className="h-2.5" />
