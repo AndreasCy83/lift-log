@@ -110,11 +110,11 @@ function InlineStats({ exerciseId, exerciseName, weightUnit }: { exerciseId: str
           ['Workouts', stats.totalWorkouts],
           ['Total Sets', stats.totalSets],
           ['Total Reps', stats.totalReps],
-          ['Total Volume', `${Math.round(stats.totalVolume)} ${unitLabel}`],
-          ['Max Weight', `${stats.maxWeight} ${unitLabel}`],
+          ['Total Volume', `${Math.round(dw(stats.totalVolume))} ${unitLabel}`],
+          ['Max Weight', `${dw(stats.maxWeight)} ${unitLabel}`],
           ['Max Reps', stats.maxReps],
-          ['Best Set Vol', `${Math.round(stats.maxVolume)} ${unitLabel}`],
-          ['Est. 1RM', `${Math.round(stats.bestE1rm)} ${unitLabel}`],
+          ['Best Set Vol', `${Math.round(dw(stats.maxVolume))} ${unitLabel}`],
+          ['Est. 1RM', `${Math.round(dw(stats.bestE1rm))} ${unitLabel}`],
         ].map(([label, value]) => (
           <div key={label as string} className="rounded-lg bg-secondary p-2.5">
             <p className="text-[10px] uppercase text-muted-foreground">{label}</p>
