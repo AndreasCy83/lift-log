@@ -18,10 +18,11 @@ interface Props {
   refreshKey?: number;
 }
 
-function HistorySessionCard({ session, bestSet, unitLabel, onPrefill }: {
+function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onPrefill }: {
   session: { date: string; sets: WorkoutSet[]; exerciseNotes: string };
   bestSet: WorkoutSet | null;
   unitLabel: string;
+  globalWeightUnit: 'kg' | 'lbs';
   onPrefill: (w: number, r: number) => void;
 }) {
   const [showNote, setShowNote] = useState(false);
