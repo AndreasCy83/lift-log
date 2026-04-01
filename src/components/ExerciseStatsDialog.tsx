@@ -68,7 +68,9 @@ export default function ExerciseStatsDialog({ open, onOpenChange, exerciseId, ex
     };
   }, [open, exerciseId, period]);
 
-  const unit = weightUnit;
+  const globalWeightUnit = getSettings().weightUnit;
+  const unit = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
