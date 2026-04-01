@@ -66,7 +66,8 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
         .sort((a, b) => a.setIndex - b.setIndex);
 
       for (const s of sets) {
-        const weight = typeof s.weightKg === 'number' && s.weightKg > 0 ? s.weightKg.toString() : '';
+        const displayW = toDisplayWeight(s.weightKg, globalWeightUnit);
+        const weight = displayW !== null && displayW > 0 ? displayW.toString() : '';
         const reps = typeof s.reps === 'number' && s.reps > 0 ? s.reps.toString() : '';
         const distance = typeof s.distanceKm === 'number' && s.distanceKm > 0 ? s.distanceKm.toString() : '';
         const distanceUnit = distance ? 'km' : '';
@@ -80,7 +81,7 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
         const comment = escapeCsv(notes.join(' | '));
 
         rows.push(
-          `${workout.date},${escapeCsv(exercise.name)},${escapeCsv(categoryName)},${weight},kgs,${reps},${distance},${distanceUnit},${time},${timeUnit},${comment}`
+          `${workout.date},${escapeCsv(exercise.name)},${escapeCsv(categoryName)},${weight},${wuLabel},${reps},${distance},${distanceUnit},${time},${timeUnit},${comment}`
         );
         setCount++;
       }
