@@ -173,7 +173,7 @@ export default function WorkoutsTab() {
             { v: summaryStats.workouts, l: 'Workouts' },
             { v: summaryStats.totalSets, l: 'Sets' },
             { v: summaryStats.totalReps, l: 'Reps' },
-            { v: summaryStats.totalVolume, l: 'Volume' },
+            { v: toDisp(summaryStats.totalVolume), l: `Volume (${wuLabel})` },
           ].map(s => (
             <div key={s.l} className="text-center">
               <div className="font-display text-lg font-bold text-primary">{s.v >= 1000 ? fmtK(s.v) : s.v}</div>
