@@ -119,7 +119,13 @@ export default function BreakdownTab() {
   const filteredWorkouts = useMemo(() => {
     if (!dateRange) return workouts;
     return workouts.filter(w => {
-      const d = parseISO(w.date);
+      const parts = w.date.split('T')[0].split('-');
+      const d = new Date(
+        parseInt(parts[0]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2]),
+        12, 0, 0
+      );
       return isWithinInterval(d, { start: dateRange.start, end: dateRange.end });
     });
   }, [workouts, dateRange]);
