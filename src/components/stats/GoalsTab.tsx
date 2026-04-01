@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { Target, Plus, MoreVertical, Check, Dumbbell } from 'lucide-react';
 import {
   getExercises, getExerciseHistory, getExerciseGoals,
-  addExerciseGoal, deleteExerciseGoal, generateId,
+  addExerciseGoal, deleteExerciseGoal, generateId, getSettings,
 } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
