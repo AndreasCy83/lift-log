@@ -170,7 +170,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
             <span className="text-[10px] uppercase font-bold tracking-wider text-gym-pr">Personal Best</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-display font-bold">{pr.weight}{unitLabel}</span>
+            <span className="text-lg font-display font-bold">{toDisplayWeight(pr.weight, globalWeightUnit)}{unitLabel}</span>
             <span className="text-sm text-muted-foreground">× {pr.reps}</span>
             <span className="text-[10px] text-muted-foreground ml-auto">{format(new Date(pr.date), 'MMM d, yyyy')}</span>
           </div>
