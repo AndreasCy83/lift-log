@@ -178,7 +178,8 @@ export default function ExercisesTab() {
   }, [selectedExId, graph, period, targetReps]);
 
   const graphLabel = GRAPH_OPTIONS.find(g => g.value === graph)?.label ?? '';
-  const unit = selectedEx?.weightUnit ?? 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unit = weightUnitLabel(globalWeightUnit);
 
   const handleToggleFavorite = () => {
     if (!selectedEx) return;
