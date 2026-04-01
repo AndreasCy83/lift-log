@@ -65,6 +65,8 @@ export default function BreakdownTab() {
   const workouts = useMemo(() => getWorkouts(), []);
   const allWEs = useMemo(() => getWorkoutExercises(), []);
   const allSets = useMemo(() => getWorkoutSets(), []);
+  const globalWeightUnit = getSettings().weightUnit;
+  const wuLabel = weightUnitLabel(globalWeightUnit);
 
   const [breakdown, setBreakdown] = useState<BreakdownMetric>('sets-category');
   const [periodType, setPeriodType] = useState<PeriodType>('week');
