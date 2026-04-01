@@ -297,14 +297,15 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                       return current.weightKg! > best.weightKg! ? current : best;
                     }, null as WorkoutSet | null);
 
-                  return (
-                    <HistorySessionCard
-                      key={`${session.date}-${i}`}
-                      session={session}
-                      bestSet={bestSet}
-                      unitLabel={unitLabel}
-                      onPrefill={onPrefill}
-                    />
+                    return (
+                      <HistorySessionCard
+                        key={`${session.date}-${i}`}
+                        session={session}
+                        bestSet={bestSet}
+                        unitLabel={unitLabel}
+                        globalWeightUnit={globalWeightUnit}
+                        onPrefill={onPrefill}
+                      />
                   );
                 })}
                 {filteredHistory.length === 0 && (

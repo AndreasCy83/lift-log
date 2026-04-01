@@ -88,12 +88,12 @@ export default function ExerciseStatsDialog({ open, onOpenChange, exerciseId, ex
             <StatCell label="Total Workouts" value={stats.totalWorkouts} />
             <StatCell label="Total Sets" value={stats.totalSets} />
             <StatCell label="Total Reps" value={stats.totalReps.toLocaleString()} />
-            <StatCell label="Total Volume" value={`${stats.totalVolume.toLocaleString()} ${unit}`} />
-            <StatCell label="Max Weight" value={`${stats.maxWeight} ${unit}`} />
-            <StatCell label="Est. 1RM" value={`${stats.estimatedE1rm} ${unit}`} />
+            <StatCell label="Total Volume" value={`${dw(stats.totalVolume).toLocaleString()} ${unit}`} />
+            <StatCell label="Max Weight" value={`${dw(stats.maxWeight)} ${unit}`} />
+            <StatCell label="Est. 1RM" value={`${dw(stats.estimatedE1rm)} ${unit}`} />
             <StatCell label="Max Reps" value={stats.maxReps} />
-            <StatCell label="Max Set Vol." value={`${stats.maxVolume.toLocaleString()} ${unit}`} />
-            <StatCell label="Avg Workout Vol." value={`${stats.workoutVolume.toLocaleString()} ${unit}`} />
+            <StatCell label="Max Set Vol." value={`${dw(stats.maxVolume).toLocaleString()} ${unit}`} />
+            <StatCell label="Avg Workout Vol." value={`${dw(stats.workoutVolume).toLocaleString()} ${unit}`} />
           </div>
         )}
       </DialogContent>
