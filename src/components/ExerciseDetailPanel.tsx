@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { format, subDays, isAfter } from 'date-fns';
 import { Trophy, History, TrendingUp, Copy, ChevronDown, ChevronUp, Flame, StickyNote } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { getExerciseHistory, getPersonalRecord } from '@/lib/storage';
+import { getExerciseHistory, getPersonalRecord, getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { Button } from '@/components/ui/button';
 import type { WorkoutSet } from '@/types/fitness';
 
