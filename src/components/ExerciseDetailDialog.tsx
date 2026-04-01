@@ -69,7 +69,9 @@ import PeriodSelector, { type Period, periodToDays } from '@/components/PeriodSe
 
 function InlineStats({ exerciseId, exerciseName, weightUnit }: { exerciseId: string; exerciseName: string; weightUnit: 'kg' | 'lb' }) {
   const [period, setPeriod] = useState<Period>('ALL');
-  const unitLabel = weightUnit === 'lb' ? 'lb' : 'kg';
+  const globalWeightUnit = getSettings().weightUnit;
+  const unitLabel = weightUnitLabel(globalWeightUnit);
+  const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
   const stats = useMemo(() => {
     const history = getExerciseHistory(exerciseId);
