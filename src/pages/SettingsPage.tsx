@@ -135,6 +135,24 @@ export default function SettingsPage() {
           <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">Save Profile</Button>
         </div>
 
+        {/* Weight Unit */}
+        <div className="gym-card">
+          <h3 className="font-display text-sm font-semibold mb-3">Weight Unit</h3>
+          <div className="flex gap-2">
+            {(['kg', 'lbs'] as const).map(u => (
+              <button
+                key={u}
+                onClick={() => setSettings({ ...settings, weightUnit: u })}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors uppercase
+                  ${settings.weightUnit === u ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+              >
+                {u}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-2">All data is stored internally in kg. This setting only affects display and input.</p>
+        </div>
+
         {/* Theme */}
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">Theme</h3>
