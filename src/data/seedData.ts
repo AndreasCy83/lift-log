@@ -10,6 +10,7 @@ export const DEFAULT_CATEGORIES: ExerciseCategory[] = [
   { id: 'cat-core', name: 'Core', sortOrder: 6 },
   { id: 'cat-olympic', name: 'Olympic', sortOrder: 7 },
   { id: 'cat-cardio', name: 'Cardio', sortOrder: 8 },
+  { id: 'cat-abs', name: 'Abs', sortOrder: 9 },
 ];
 
 function r(name: string, catId: string, opts?: Partial<Exercise>): Exercise {

@@ -11,6 +11,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   'cat-core': 'hsl(47, 96%, 53%)',      // Yellow
   'cat-olympic': 'hsl(189, 94%, 43%)',  // Cyan
   'cat-cardio': 'hsl(330, 81%, 60%)',   // Magenta
+  'cat-abs': 'hsl(60, 80%, 50%)',       // Lime/Yellow-Green
 };
 
 export function getCategoryColor(categoryId: string): string {
