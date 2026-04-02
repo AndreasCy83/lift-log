@@ -21,6 +21,7 @@ const queryClient = new QueryClient();
 
 function ThemeInit() {
   useEffect(() => {
+    migrateCategoryIds();
     const settings = getSettings();
     const root = document.documentElement;
     root.classList.remove('dark', 'light');
