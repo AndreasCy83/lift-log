@@ -61,30 +61,33 @@ export function getCategories(): ExerciseCategory[] {
   return cats;
 }
 
-// One-time cleanup: remove ghost UUID categories and remap their exercises to cat-abs
+// One-time cleanup: remove ghost UUID categories and remap exercises with UUID categoryIds to cat-abs
 export function cleanupUuidCategories() {
-  if (localStorage.getItem('uuidCategoryCleanup_v1')) return;
+  if (localStorage.getItem('categoryMigration_v2')) return;
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-/i;
   const validIds = new Set(DEFAULT_CATEGORIES.map(c => c.id));
 
-  // Clean categories
+  // Clean categories: remove any with UUID-style IDs
   const cats = get<ExerciseCategory[]>(STORAGE_KEYS.categories, []);
-  const uuidIds = new Set(cats.filter(c => !validIds.has(c.id) && UUID_RE.test(c.id)).map(c => c.id));
-  if (uuidIds.size > 0) {
-    set(STORAGE_KEYS.categories, cats.filter(c => !uuidIds.has(c.id)));
+  const uuidCatIds = new Set(cats.filter(c => !validIds.has(c.id) && UUID_RE.test(c.id)).map(c => c.id));
+  if (uuidCatIds.size > 0) {
+    set(STORAGE_KEYS.categories, cats.filter(c => !uuidCatIds.has(c.id)));
   }
 
-  // Remap exercises pointing to UUID categories → cat-abs
+  // Remap ALL exercises whose categoryId is a UUID (not a known default) → cat-abs
   const exs = get<Exercise[]>(STORAGE_KEYS.exercises, []);
   let changed = false;
   const fixed = exs.map(ex => {
-    if (uuidIds.has(ex.categoryId)) { changed = true; return { ...ex, categoryId: 'cat-abs' }; }
+    if (!validIds.has(ex.categoryId) && UUID_RE.test(ex.categoryId)) {
+      changed = true;
+      return { ...ex, categoryId: 'cat-abs' };
+    }
     return ex;
   });
   if (changed) set(STORAGE_KEYS.exercises, fixed);
 
-  localStorage.setItem('uuidCategoryCleanup_v1', 'true');
+  localStorage.setItem('categoryMigration_v2', 'true');
 }
 
 // One-time migration: fix broken categoryIds on stored exercises
