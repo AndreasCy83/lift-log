@@ -10,6 +10,7 @@ export const DEFAULT_CATEGORIES: ExerciseCategory[] = [
   { id: 'cat-core', name: 'Core', sortOrder: 6 },
   { id: 'cat-olympic', name: 'Olympic', sortOrder: 7 },
   { id: 'cat-cardio', name: 'Cardio', sortOrder: 8 },
+  { id: 'cat-abs', name: 'Abs', sortOrder: 9 },
 ];
 
 function r(name: string, catId: string, opts?: Partial<Exercise>): Exercise {
@@ -352,4 +353,16 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   r('Assault Bike', 'cat-cardio'),
   r('Treadmill Sprints', 'cat-cardio'),
   r('Elliptical', 'cat-cardio'),
+
+  // Abs
+  r('Crunches', 'cat-abs', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Sit-Ups', 'cat-abs', { id: 'ex-sit-ups-abs', defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Leg Raises', 'cat-abs', { id: 'ex-leg-raises-abs', defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 45 }),
+  r('Plank', 'cat-abs', { id: 'ex-plank-abs', setType: 'WEIGHT_TIME', defaultRepsMin: null, defaultRepsMax: null, defaultRestSeconds: 60 }),
+  r('Russian Twists', 'cat-abs', { id: 'ex-russian-twists-abs', defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Bicycle Crunches', 'cat-abs', { defaultRepsMin: 15, defaultRepsMax: 25, defaultRestSeconds: 45 }),
+  r('Hanging Knee Raises', 'cat-abs', { id: 'ex-hanging-knee-raises-abs', setType: 'REPS_TIME', defaultRepsMin: 10, defaultRepsMax: 15, defaultRestSeconds: 60 }),
+  r('Ab Wheel Roll-Out', 'cat-abs', { id: 'ex-ab-wheel-roll-out-abs', defaultRepsMin: 6, defaultRepsMax: 12, defaultRestSeconds: 60 }),
+  r('V-Ups', 'cat-abs', { id: 'ex-v-ups-abs', defaultRepsMin: 10, defaultRepsMax: 20, defaultRestSeconds: 45 }),
+  r('Reverse Crunches', 'cat-abs', { id: 'ex-reverse-crunches-abs', defaultRepsMin: 12, defaultRepsMax: 20, defaultRestSeconds: 45 }),
 ];
