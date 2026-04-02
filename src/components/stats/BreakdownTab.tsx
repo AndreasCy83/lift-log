@@ -13,6 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { getCategoryColor } from '@/lib/categoryColors';
 
 type BreakdownMetric =
   | 'sets-category' | 'reps-category' | 'workouts-category' | 'volume-category'
@@ -322,9 +323,9 @@ export default function BreakdownTab() {
                   strokeWidth={0}
                 >
                   {breakdownData.map((entry, i) => (
-                    <Cell
+                     <Cell
                       key={entry.id}
-                      fill={SLICE_COLORS[i % SLICE_COLORS.length]}
+                      fill={isGroupByCategory ? getCategoryColor(entry.id) : SLICE_COLORS[i % SLICE_COLORS.length]}
                       opacity={safeIdx === i ? 1 : 0.5}
                       onClick={() => setHighlightIdx(i)}
                       style={{ cursor: 'pointer', transform: safeIdx === i ? 'scale(1.04)' : 'scale(1)', transformOrigin: 'center' }}
@@ -368,7 +369,7 @@ export default function BreakdownTab() {
                 )}
                 style={{ height: 48 }}
               >
-                <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length] }} />
+                <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ backgroundColor: isGroupByCategory ? getCategoryColor(item.id) : SLICE_COLORS[i % SLICE_COLORS.length] }} />
                 <span className="flex-1 text-sm text-foreground truncate">{item.name}</span>
                 <span className="text-xs text-muted-foreground whitespace-nowrap">{formatUnit(breakdown, metricType === 'volume' ? Math.round(toDisplayWeight(item.value, globalWeightUnit) ?? 0) : item.value, wuLabel)}</span>
                 <span className="text-xs font-medium text-foreground w-14 text-right">{pct}%</span>
