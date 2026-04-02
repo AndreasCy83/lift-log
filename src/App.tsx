@@ -12,7 +12,7 @@ import StatsPage from "./pages/StatsPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
-import { getSettings } from "@/lib/storage";
+import { getSettings, migrateCategoryIds } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
 import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
@@ -21,6 +21,7 @@ const queryClient = new QueryClient();
 
 function ThemeInit() {
   useEffect(() => {
+    migrateCategoryIds();
     const settings = getSettings();
     const root = document.documentElement;
     root.classList.remove('dark', 'light');

@@ -50,7 +50,34 @@ export function saveProfile(p: UserProfile) { set(STORAGE_KEYS.profile, p); }
 export function getCategories(): ExerciseCategory[] {
   const cats = get<ExerciseCategory[]>(STORAGE_KEYS.categories, []);
   if (cats.length === 0) { set(STORAGE_KEYS.categories, DEFAULT_CATEGORIES); return DEFAULT_CATEGORIES; }
+  // Ensure all default categories exist (non-destructive merge)
+  const existingIds = new Set(cats.map(c => c.id));
+  const missing = DEFAULT_CATEGORIES.filter(dc => !existingIds.has(dc.id));
+  if (missing.length > 0) {
+    const merged = [...cats, ...missing];
+    set(STORAGE_KEYS.categories, merged);
+    return merged;
+  }
   return cats;
+}
+
+// One-time migration: fix broken categoryIds on stored exercises
+export function migrateCategoryIds() {
+  const migrated = localStorage.getItem('categoryIdsMigrated_v1');
+  if (migrated) return;
+
+  const exercises = getExercises();
+  const validCategoryIds = new Set(DEFAULT_CATEGORIES.map(c => c.id));
+
+  const fixed = exercises.map(ex => {
+    if (validCategoryIds.has(ex.categoryId)) return ex;
+    const seedMatch = DEFAULT_EXERCISES.find(s => s.name === ex.name);
+    if (seedMatch) return { ...ex, categoryId: seedMatch.categoryId };
+    return ex;
+  });
+
+  saveExercises(fixed);
+  localStorage.setItem('categoryIdsMigrated_v1', 'true');
 }
 export function saveCategories(cats: ExerciseCategory[]) { set(STORAGE_KEYS.categories, cats); }
 
