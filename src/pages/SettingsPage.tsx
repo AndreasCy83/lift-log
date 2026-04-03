@@ -281,6 +281,26 @@ export default function SettingsPage() {
           </button>
         </div>
 
+        {/* Feedback */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Feedback</h3>
+          <button
+            onClick={() => {
+              const mailto = 'mailto:fitlogx@gmail.com?subject=FitLog%20X%20-%20Feedback';
+              if (Capacitor.isNativePlatform()) {
+                window.open(mailto, '_system');
+              } else {
+                window.location.href = mailto;
+              }
+            }}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span>Send Feedback</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <p className="text-[10px] text-muted-foreground text-center">Share your thoughts, comments and suggestions.</p>
+        </div>
+
         {/* Confirmation Dialog */}
         <AlertDialog open={!!confirmAction} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}>
           <AlertDialogContent>
