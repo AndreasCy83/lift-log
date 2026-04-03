@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
@@ -278,6 +279,26 @@ export default function SettingsPage() {
             <span>Privacy Policy</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
+        </div>
+
+        {/* Feedback */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Feedback</h3>
+          <button
+            onClick={() => {
+              const mailto = 'mailto:fitlogx@gmail.com?subject=FitLog%20X%20-%20Feedback';
+              if (Capacitor.isNativePlatform()) {
+                window.open(mailto, '_system');
+              } else {
+                window.location.href = mailto;
+              }
+            }}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span>Send Feedback</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <p className="text-[10px] text-muted-foreground text-center">Share your thoughts, comments and suggestions.</p>
         </div>
 
         {/* Confirmation Dialog */}
