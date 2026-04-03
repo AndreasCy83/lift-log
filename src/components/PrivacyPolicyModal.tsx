@@ -7,7 +7,7 @@ interface PrivacyPolicyModalProps {
 
 export default function PrivacyPolicyModal({ onClose }: PrivacyPolicyModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <button onClick={onClose} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
@@ -17,7 +17,7 @@ export default function PrivacyPolicyModal({ onClose }: PrivacyPolicyModalProps)
         </div>
       </header>
       <ScrollArea className="flex-1">
-        <div className="mx-auto max-w-lg px-4 py-6 text-sm leading-relaxed text-foreground space-y-4">
+        <div className="mx-auto max-w-lg px-4 py-6 text-sm leading-relaxed text-foreground space-y-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }}>
           <p className="text-xs text-muted-foreground">Last updated: March 2026</p>
 
           <h2 className="font-display text-base font-semibold pt-2">Overview</h2>
