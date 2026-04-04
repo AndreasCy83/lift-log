@@ -9,6 +9,7 @@ import RoutinesPage from "./pages/RoutinesPage";
 import RoutineDetailPage from "./pages/RoutineDetailPage";
 import WorkoutLogPage from "./pages/WorkoutLogPage";
 import StatsPage from "./pages/StatsPage";
+import BodyTrackerPage from "./pages/BodyTrackerPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
