@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import WeightRulerPicker from './WeightRulerPicker';
 import { addBodyEntry, updateBodyEntry } from '@/lib/bodyTrackerStorage';
 import { getSettings, getProfile } from '@/lib/storage';
@@ -26,22 +27,47 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
     ? (toDisplayWeight(editEntry.weightKg, wu) ?? 75)
     : (toDisplayWeight(profile?.currentWeightKg ?? 75, wu) ?? 75);
 
+  const initialDate = editEntry
+    ? new Date(editEntry.date + 'T' + editEntry.time)
+    : new Date();
+
+  const [entryDate, setEntryDate] = useState(initialDate);
   const [weight, setWeight] = useState(defaultWeight);
   const [bodyFat, setBodyFat] = useState(editEntry?.bodyFatPercent ?? 0);
   const [muscleMass, setMuscleMass] = useState(editEntry?.muscleMassPercent ?? 0);
   const [note, setNote] = useState(editEntry?.note ?? '');
   const [showBodyFat, setShowBodyFat] = useState(!!(editEntry?.bodyFatPercent));
   const [showMuscleMass, setShowMuscleMass] = useState(!!(editEntry?.muscleMassPercent));
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   if (!open) return null;
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!val) return;
+    const newDate = new Date(entryDate);
+    const [y, m, d] = val.split('-').map(Number);
+    newDate.setFullYear(y, m - 1, d);
+    setEntryDate(newDate);
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!val) return;
+    const [h, min] = val.split(':').map(Number);
+    const newDate = new Date(entryDate);
+    newDate.setHours(h, min);
+    setEntryDate(newDate);
+  };
+
   const handleSave = () => {
-    const now = new Date();
     const weightKg = toStorageKg(weight, wu) ?? weight;
 
     if (editEntry) {
       updateBodyEntry({
         ...editEntry,
+        date: format(entryDate, 'yyyy-MM-dd'),
+        time: format(entryDate, 'HH:mm'),
         weightKg,
         bodyFatPercent: showBodyFat && bodyFat > 0 ? bodyFat : null,
         muscleMassPercent: showMuscleMass && muscleMass > 0 ? muscleMass : null,
@@ -49,8 +75,8 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
       });
     } else {
       addBodyEntry({
-        date: format(now, 'yyyy-MM-dd'),
-        time: format(now, 'HH:mm'),
+        date: format(entryDate, 'yyyy-MM-dd'),
+        time: format(entryDate, 'HH:mm'),
         weightKg,
         bodyFatPercent: showBodyFat && bodyFat > 0 ? bodyFat : null,
         muscleMassPercent: showMuscleMass && muscleMass > 0 ? muscleMass : null,
@@ -71,14 +97,34 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}>
-        {/* Date/time display */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 160px)' }}>
+        {/* Date/time pill — tappable */}
         <div className="text-center">
-          <div className="inline-block rounded-full bg-primary/20 px-4 py-1.5">
+          <button
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 active:scale-95 transition-transform"
+          >
+            <CalendarClock className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-primary">
-              {format(new Date(), 'EEE, d MMM yyyy')} — {format(new Date(), 'HH:mm')}
+              {format(entryDate, 'EEE, d MMM yyyy')} — {format(entryDate, 'HH:mm')}
             </span>
-          </div>
+          </button>
+          {showDatePicker && (
+            <div className="mt-3 flex justify-center gap-3">
+              <Input
+                type="date"
+                value={format(entryDate, 'yyyy-MM-dd')}
+                onChange={handleDateChange}
+                className="w-auto bg-card border-border text-sm"
+              />
+              <Input
+                type="time"
+                value={format(entryDate, 'HH:mm')}
+                onChange={handleTimeChange}
+                className="w-auto bg-card border-border text-sm"
+              />
+            </div>
+          )}
         </div>
 
         {/* Weight ruler */}
@@ -155,8 +201,8 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
       </div>
 
-      {/* Save button */}
-      <div className="px-4 pb-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+      {/* Save button — positioned above bottom nav */}
+      <div className="px-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)' }}>
         <Button onClick={handleSave} className="w-full h-12 text-base font-semibold">
           {editEntry ? 'Update Entry' : 'Save Entry'}
         </Button>
