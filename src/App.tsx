@@ -9,6 +9,7 @@ import RoutinesPage from "./pages/RoutinesPage";
 import RoutineDetailPage from "./pages/RoutineDetailPage";
 import WorkoutLogPage from "./pages/WorkoutLogPage";
 import StatsPage from "./pages/StatsPage";
+import BodyTrackerPage from "./pages/BodyTrackerPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
@@ -95,6 +96,7 @@ const App = () => {
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/workout/:date" element={<WorkoutLogPage />} />
+            <Route path="/body" element={<BodyTrackerPage />} />
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />

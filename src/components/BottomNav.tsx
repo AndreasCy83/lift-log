@@ -1,9 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Calendar, Dumbbell, BarChart3, Settings } from 'lucide-react';
+import { Calendar, Dumbbell, BarChart3, Settings, Scale } from 'lucide-react';
 
 const tabs = [
   { to: '/', icon: Calendar, label: 'Home' },
   { to: '/routines', icon: Dumbbell, label: 'Routines' },
+  { to: '/body', icon: Scale, label: 'Body' },
   { to: '/stats', icon: BarChart3, label: 'Stats' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
