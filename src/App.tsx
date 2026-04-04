@@ -96,6 +96,7 @@ const App = () => {
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/workout/:date" element={<WorkoutLogPage />} />
+            <Route path="/body" element={<BodyTrackerPage />} />
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
