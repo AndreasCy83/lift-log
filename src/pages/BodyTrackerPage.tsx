@@ -12,7 +12,6 @@ import BodyGraphs from '@/components/body/BodyGraphs';
 import BodyGoalsPanel from '@/components/body/BodyGoalsPanel';
 import BodyHistoryList from '@/components/body/BodyHistoryList';
 import BodyBMITrends from '@/components/body/BodyBMITrends';
-import { Progress } from '@/components/ui/progress';
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
@@ -62,11 +61,21 @@ export default function BodyTrackerPage() {
 
   const calcGoalProgress = (start: number | null | undefined, current: number | null | undefined, target: number | null) => {
     if (start == null || current == null || target == null) return null;
-    if (isGoalAchieved(start, current, target)) return 100;
+    if (isGoalAchieved(start, current, target)) return 1;
     const range = target - start;
-    if (range === 0) return current === target ? 100 : 0;
+    if (range === 0) return current === target ? 1 : 0;
     const progress = ((current - start) / range) * 100;
-    return Math.round(Math.max(0, Math.min(100, progress)));
+    return Math.max(0, Math.min(1, progress / 100));
+  };
+
+  const progressWidth = (progress: number | null | undefined) => {
+    const safeProgress = Math.max(0, Math.min(1, progress ?? 0));
+    return `${safeProgress * 100}%`;
+  };
+
+  const progressLabel = (progress: number | null | undefined) => {
+    const safeProgress = Math.max(0, Math.min(1, progress ?? 0));
+    return `Progress: ${Math.round(safeProgress * 100)}%`;
   };
 
   // Trend estimation: rate per week from recent entries
@@ -199,7 +208,13 @@ export default function BodyTrackerPage() {
                     <span>Weight</span>
                     <span className="text-muted-foreground">{currentW.toFixed(1)} / {targetW.toFixed(1)} {unitLabel}</span>
                   </div>
-                  <Progress value={pct} className="h-2" />
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/50">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: progressWidth(pct) }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startW, currentW, targetW, unitLabel)}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
@@ -219,7 +234,13 @@ export default function BodyTrackerPage() {
                     <span>Body Fat</span>
                     <span className="text-muted-foreground">{currentBf.toFixed(1)} / {targetBf}%</span>
                   </div>
-                  <Progress value={pct} className="h-2" />
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/50">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: progressWidth(pct) }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startBf, currentBf, targetBf, '%')}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
@@ -239,7 +260,13 @@ export default function BodyTrackerPage() {
                     <span>Muscle Mass</span>
                     <span className="text-muted-foreground">{currentMm.toFixed(1)} / {targetMm}%</span>
                   </div>
-                  <Progress value={pct} className="h-2" />
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/50">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: progressWidth(pct) }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startMm, currentMm, targetMm, '%')}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
