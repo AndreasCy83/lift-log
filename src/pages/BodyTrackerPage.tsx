@@ -192,6 +192,7 @@ export default function BodyTrackerPage() {
               const startW = goals.startWeightKg != null ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW) : currentW;
               const pct = calcGoalProgress(startW, currentW, targetW) ?? 0;
               const weightTrend = estimateTrend(e => toDisplayWeight(e.weightKg, wu));
+              const { trendLine, etaLine } = trendAndEta(startW, currentW, targetW, weightTrend, unitLabel);
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -199,8 +200,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentW.toFixed(1)} / {targetW.toFixed(1)} {unitLabel}</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentW, targetW, unitLabel)}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentW, targetW, weightTrend, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startW, currentW, targetW, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
