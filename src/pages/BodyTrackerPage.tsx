@@ -4,7 +4,7 @@ import { getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getBodyGoals } from '@/lib/bodyTrackerStorage';
 import { getSettings, getProfile } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
-import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format, subMonths, addMonths, startOfMonth, endOfMonth, differenceInDays, addWeeks } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BodyEntry } from '@/types/bodyTracker';
 import AddBodyEntryModal from '@/components/body/AddBodyEntryModal';
