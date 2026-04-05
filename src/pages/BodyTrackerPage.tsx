@@ -212,6 +212,7 @@ export default function BodyTrackerPage() {
               const startBf = goals.startBodyFatPercent ?? currentBf;
               const pct = calcGoalProgress(startBf, currentBf, targetBf) ?? 0;
               const bfTrend = estimateTrend(e => e.bodyFatPercent);
+              const { trendLine, etaLine } = trendAndEta(startBf, currentBf, targetBf, bfTrend, '%');
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -219,8 +220,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentBf.toFixed(1)} / {targetBf}%</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentBf, targetBf, '%')}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentBf, targetBf, bfTrend, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startBf, currentBf, targetBf, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
@@ -230,6 +232,7 @@ export default function BodyTrackerPage() {
               const startMm = goals.startMuscleMassPercent ?? currentMm;
               const pct = calcGoalProgress(startMm, currentMm, targetMm) ?? 0;
               const mmTrend = estimateTrend(e => e.muscleMassPercent);
+              const { trendLine, etaLine } = trendAndEta(startMm, currentMm, targetMm, mmTrend, '%');
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -237,8 +240,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentMm.toFixed(1)} / {targetMm}%</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentMm, targetMm, '%')}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentMm, targetMm, mmTrend, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startMm, currentMm, targetMm, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
