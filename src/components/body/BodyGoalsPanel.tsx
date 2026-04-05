@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getBodyGoals, saveBodyGoals } from '@/lib/bodyTrackerStorage';
+import { getBodyGoals, saveBodyGoals, getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getSettings } from '@/lib/storage';
 import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 import { toast } from 'sonner';
@@ -26,10 +26,16 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
 
   const handleSave = () => {
     const tw = targetWeight ? parseFloat(targetWeight) : null;
+    const entries = getBodyEntries();
+    const latest = entries[0]; // most recent entry
+
     saveBodyGoals({
       targetWeightKg: tw != null ? (toStorageKg(tw, wu) ?? tw) : null,
       targetBodyFatPercent: targetBf ? parseFloat(targetBf) : null,
       targetMuscleMassPercent: targetMm ? parseFloat(targetMm) : null,
+      startWeightKg: tw != null ? (goals.startWeightKg ?? latest?.weightKg ?? null) : null,
+      startBodyFatPercent: targetBf ? (goals.startBodyFatPercent ?? latest?.bodyFatPercent ?? null) : null,
+      startMuscleMassPercent: targetMm ? (goals.startMuscleMassPercent ?? latest?.muscleMassPercent ?? null) : null,
     });
     toast.success('Goals saved');
     onSaved();

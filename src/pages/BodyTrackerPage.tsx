@@ -4,7 +4,7 @@ import { getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getBodyGoals } from '@/lib/bodyTrackerStorage';
 import { getSettings, getProfile } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
-import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format, subMonths, addMonths, startOfMonth, endOfMonth, differenceInDays, addWeeks } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BodyEntry } from '@/types/bodyTracker';
 import AddBodyEntryModal from '@/components/body/AddBodyEntryModal';
@@ -53,13 +53,52 @@ export default function BodyTrackerPage() {
 
   const latest = entries[0];
 
-  // Goal progress helpers
-  const goalProgress = (current: number | null | undefined, target: number | null, inverted = false) => {
-    if (current == null || target == null || target === 0) return null;
-    const pct = inverted
-      ? Math.min(100, Math.max(0, ((target - current) / target) * 100 + 100))
-      : Math.min(100, (current / target) * 100);
-    return Math.round(pct);
+  // Directional goal progress: accounts for whether goal is to go up or down
+  const calcGoalProgress = (start: number | null | undefined, current: number | null | undefined, target: number | null) => {
+    if (start == null || current == null || target == null) return null;
+    const range = target - start;
+    if (range === 0) return current === target ? 100 : 0;
+    const progress = ((current - start) / range) * 100;
+    return Math.round(Math.max(0, Math.min(100, progress)));
+  };
+
+  // Trend estimation: rate per week from recent entries
+  const estimateTrend = (getValue: (e: BodyEntry) => number | null) => {
+    const valid = entries.filter(e => getValue(e) != null).slice(0, 60); // most recent first
+    if (valid.length < 2) return null;
+    // Use entries from last 30 days, fallback to all
+    const now = new Date();
+    let subset = valid.filter(e => differenceInDays(now, new Date(e.date + 'T12:00:00')) <= 30);
+    if (subset.length < 2) subset = valid;
+    const oldest = subset[subset.length - 1];
+    const newest = subset[0];
+    const days = differenceInDays(new Date(newest.date + 'T12:00:00'), new Date(oldest.date + 'T12:00:00'));
+    if (days === 0) return null;
+    const diff = (getValue(newest)! - getValue(oldest)!);
+    return (diff / days) * 7; // per week
+  };
+
+  const trendText = (current: number, target: number, ratePerWeek: number | null, unit: string) => {
+    const remaining = target - current;
+    if (Math.abs(remaining) < 0.05) return 'Goal achieved! 🎉';
+    if (ratePerWeek == null) return 'Not enough data for trend';
+    if (Math.abs(ratePerWeek) < 0.01) return 'No clear trend yet';
+    // Check if trend is moving toward goal
+    const movingToward = (remaining > 0 && ratePerWeek > 0) || (remaining < 0 && ratePerWeek < 0);
+    if (!movingToward) return 'Current trend is moving away from goal';
+    const weeksLeft = Math.abs(remaining / ratePerWeek);
+    if (weeksLeft > 200) return 'No clear trend yet';
+    const estDate = addWeeks(new Date(), Math.ceil(weeksLeft));
+    return `At current trend: ~${Math.ceil(weeksLeft)} week${Math.ceil(weeksLeft) !== 1 ? 's' : ''} (${format(estDate, 'dd MMM yyyy')})`;
+  };
+
+  const remainingText = (current: number, target: number, unit: string) => {
+    const diff = Math.abs(target - current);
+    if (diff < 0.05) return 'Goal achieved! 🎉';
+    const exceeded = (target > current ? false : true) && current > target;
+    // Check if surpassed
+    // For simplicity: if progress >= 100 and not exactly on target
+    return `${diff.toFixed(1)} ${unit} remaining`;
   };
 
   if (subView === 'graphs') return <BodyGraphs entries={entries} onBack={() => setSubView('main')} />;
@@ -113,36 +152,57 @@ export default function BodyTrackerPage() {
             {goals.targetWeightKg != null && latest && (() => {
               const currentW = toDisplayWeight(latest.weightKg, wu) ?? 0;
               const targetW = toDisplayWeight(goals.targetWeightKg, wu) ?? 0;
-              const diff = currentW - targetW;
+              const startW = goals.startWeightKg != null ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW) : currentW;
+              const pct = calcGoalProgress(startW, currentW, targetW) ?? 0;
+              const weightTrend = estimateTrend(e => toDisplayWeight(e.weightKg, wu));
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
                     <span>Weight</span>
                     <span className="text-muted-foreground">{currentW.toFixed(1)} / {targetW.toFixed(1)} {unitLabel}</span>
                   </div>
-                  <Progress value={Math.min(100, (currentW / targetW) * 100)} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{Math.abs(diff).toFixed(1)} {unitLabel} {diff > 0 ? 'to lose' : diff < 0 ? 'to gain' : '— on target!'}</p>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentW, targetW, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentW, targetW, weightTrend, unitLabel)}</p>
                 </div>
               );
             })()}
-            {goals.targetBodyFatPercent != null && latest?.bodyFatPercent != null && (
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Body Fat</span>
-                  <span className="text-muted-foreground">{latest.bodyFatPercent.toFixed(1)} / {goals.targetBodyFatPercent}%</span>
+            {goals.targetBodyFatPercent != null && latest?.bodyFatPercent != null && (() => {
+              const currentBf = latest.bodyFatPercent;
+              const targetBf = goals.targetBodyFatPercent;
+              const startBf = goals.startBodyFatPercent ?? currentBf;
+              const pct = calcGoalProgress(startBf, currentBf, targetBf) ?? 0;
+              const bfTrend = estimateTrend(e => e.bodyFatPercent);
+              return (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Body Fat</span>
+                    <span className="text-muted-foreground">{currentBf.toFixed(1)} / {targetBf}%</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentBf, targetBf, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentBf, targetBf, bfTrend, '%')}</p>
                 </div>
-                <Progress value={goalProgress(latest.bodyFatPercent, goals.targetBodyFatPercent, true) ?? 0} className="h-2" />
-              </div>
-            )}
-            {goals.targetMuscleMassPercent != null && latest?.muscleMassPercent != null && (
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Muscle Mass</span>
-                  <span className="text-muted-foreground">{latest.muscleMassPercent.toFixed(1)} / {goals.targetMuscleMassPercent}%</span>
+              );
+            })()}
+            {goals.targetMuscleMassPercent != null && latest?.muscleMassPercent != null && (() => {
+              const currentMm = latest.muscleMassPercent;
+              const targetMm = goals.targetMuscleMassPercent;
+              const startMm = goals.startMuscleMassPercent ?? currentMm;
+              const pct = calcGoalProgress(startMm, currentMm, targetMm) ?? 0;
+              const mmTrend = estimateTrend(e => e.muscleMassPercent);
+              return (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Muscle Mass</span>
+                    <span className="text-muted-foreground">{currentMm.toFixed(1)} / {targetMm}%</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentMm, targetMm, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentMm, targetMm, mmTrend, '%')}</p>
                 </div>
-                <Progress value={goalProgress(latest.muscleMassPercent, goals.targetMuscleMassPercent) ?? 0} className="h-2" />
-              </div>
-            )}
+              );
+            })()}
           </div>
         )}
 

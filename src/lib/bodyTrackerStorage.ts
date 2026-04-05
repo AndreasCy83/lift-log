@@ -49,7 +49,7 @@ export function deleteBodyEntry(id: string) {
 
 // Goals
 export function getBodyGoals(): BodyGoals {
-  return get<BodyGoals>(KEYS.goals, { targetWeightKg: null, targetBodyFatPercent: null, targetMuscleMassPercent: null });
+  return get<BodyGoals>(KEYS.goals, { targetWeightKg: null, targetBodyFatPercent: null, targetMuscleMassPercent: null, startWeightKg: null, startBodyFatPercent: null, startMuscleMassPercent: null });
 }
 
 export function saveBodyGoals(goals: BodyGoals) {
