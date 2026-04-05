@@ -14,4 +14,7 @@ export interface BodyGoals {
   targetWeightKg: number | null;
   targetBodyFatPercent: number | null;
   targetMuscleMassPercent: number | null;
+  startWeightKg: number | null;
+  startBodyFatPercent: number | null;
+  startMuscleMassPercent: number | null;
 }
