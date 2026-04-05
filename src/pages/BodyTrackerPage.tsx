@@ -54,8 +54,15 @@ export default function BodyTrackerPage() {
   const latest = entries[0];
 
   // Directional goal progress: accounts for whether goal is to go up or down
+  const isGoalAchieved = (start: number, current: number, target: number) => {
+    const goingDown = target < start;
+    if (goingDown) return current <= target;
+    return current >= target;
+  };
+
   const calcGoalProgress = (start: number | null | undefined, current: number | null | undefined, target: number | null) => {
     if (start == null || current == null || target == null) return null;
+    if (isGoalAchieved(start, current, target)) return 100;
     const range = target - start;
     if (range === 0) return current === target ? 100 : 0;
     const progress = ((current - start) / range) * 100;
@@ -64,9 +71,8 @@ export default function BodyTrackerPage() {
 
   // Trend estimation: rate per week from recent entries
   const estimateTrend = (getValue: (e: BodyEntry) => number | null) => {
-    const valid = entries.filter(e => getValue(e) != null).slice(0, 60); // most recent first
+    const valid = entries.filter(e => getValue(e) != null).slice(0, 60);
     if (valid.length < 2) return null;
-    // Use entries from last 30 days, fallback to all
     const now = new Date();
     let subset = valid.filter(e => differenceInDays(now, new Date(e.date + 'T12:00:00')) <= 30);
     if (subset.length < 2) subset = valid;
@@ -75,30 +81,61 @@ export default function BodyTrackerPage() {
     const days = differenceInDays(new Date(newest.date + 'T12:00:00'), new Date(oldest.date + 'T12:00:00'));
     if (days === 0) return null;
     const diff = (getValue(newest)! - getValue(oldest)!);
-    return (diff / days) * 7; // per week
+    return (diff / days) * 7;
   };
 
-  const trendText = (current: number, target: number, ratePerWeek: number | null, unit: string) => {
-    const remaining = target - current;
-    if (Math.abs(remaining) < 0.05) return 'Goal achieved! 🎉';
-    if (ratePerWeek == null) return 'Not enough data for trend';
-    if (Math.abs(ratePerWeek) < 0.01) return 'No clear trend yet';
-    // Check if trend is moving toward goal
-    const movingToward = (remaining > 0 && ratePerWeek > 0) || (remaining < 0 && ratePerWeek < 0);
-    if (!movingToward) return 'Current trend is moving away from goal';
-    const weeksLeft = Math.abs(remaining / ratePerWeek);
-    if (weeksLeft > 200) return 'No clear trend yet';
-    const estDate = addWeeks(new Date(), Math.ceil(weeksLeft));
-    return `At current trend: ~${Math.ceil(weeksLeft)} week${Math.ceil(weeksLeft) !== 1 ? 's' : ''} (${format(estDate, 'dd MMM yyyy')})`;
+  const trendAndEta = (start: number, current: number, target: number, ratePerWeek: number | null, unit: string) => {
+    const achieved = isGoalAchieved(start, current, target);
+    const remaining = Math.abs(target - current);
+
+    // Numeric trend line
+    let trendLine = '';
+    if (ratePerWeek == null) {
+      trendLine = 'Not enough data';
+    } else {
+      const sign = ratePerWeek > 0 ? '+' : '';
+      trendLine = `${sign}${ratePerWeek.toFixed(2)} ${unit}/week`;
+    }
+
+    // ETA / status line
+    let etaLine = '';
+    if (achieved) {
+      etaLine = 'Goal reached! 🎉';
+    } else if (ratePerWeek == null) {
+      etaLine = '';
+    } else if (Math.abs(ratePerWeek) < 0.01) {
+      etaLine = 'No clear trend yet';
+    } else {
+      const movingToward = (target > current && ratePerWeek > 0) || (target < current && ratePerWeek < 0);
+      if (!movingToward) {
+        etaLine = 'Trend is moving away from goal';
+      } else {
+        const weeksLeft = remaining / Math.abs(ratePerWeek);
+        if (weeksLeft > 200) {
+          etaLine = 'No clear trend yet';
+        } else {
+          const estDate = addWeeks(new Date(), Math.ceil(weeksLeft));
+          if (weeksLeft < 4.5) {
+            etaLine = `Estimated goal in ~${Math.ceil(weeksLeft)} week${Math.ceil(weeksLeft) !== 1 ? 's' : ''}`;
+          } else {
+            const months = weeksLeft / 4.33;
+            etaLine = `Estimated goal in ~${months.toFixed(1)} months`;
+          }
+          etaLine += ` (${format(estDate, 'dd MMM yyyy')})`;
+        }
+      }
+    }
+
+    return { trendLine, etaLine };
   };
 
-  const remainingText = (current: number, target: number, unit: string) => {
-    const diff = Math.abs(target - current);
-    if (diff < 0.05) return 'Goal achieved! 🎉';
-    const exceeded = (target > current ? false : true) && current > target;
-    // Check if surpassed
-    // For simplicity: if progress >= 100 and not exactly on target
-    return `${diff.toFixed(1)} ${unit} remaining`;
+  const remainingText = (start: number, current: number, target: number, unit: string) => {
+    if (isGoalAchieved(start, current, target)) {
+      const over = Math.abs(current - target);
+      if (over < 0.05) return 'Goal achieved! 🎉';
+      return `Goal exceeded by ${over.toFixed(1)} ${unit} 🎉`;
+    }
+    return `${Math.abs(target - current).toFixed(1)} ${unit} remaining`;
   };
 
   if (subView === 'graphs') return <BodyGraphs entries={entries} onBack={() => setSubView('main')} />;
@@ -155,6 +192,7 @@ export default function BodyTrackerPage() {
               const startW = goals.startWeightKg != null ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW) : currentW;
               const pct = calcGoalProgress(startW, currentW, targetW) ?? 0;
               const weightTrend = estimateTrend(e => toDisplayWeight(e.weightKg, wu));
+              const { trendLine, etaLine } = trendAndEta(startW, currentW, targetW, weightTrend, unitLabel);
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -162,8 +200,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentW.toFixed(1)} / {targetW.toFixed(1)} {unitLabel}</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentW, targetW, unitLabel)}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentW, targetW, weightTrend, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startW, currentW, targetW, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
@@ -173,6 +212,7 @@ export default function BodyTrackerPage() {
               const startBf = goals.startBodyFatPercent ?? currentBf;
               const pct = calcGoalProgress(startBf, currentBf, targetBf) ?? 0;
               const bfTrend = estimateTrend(e => e.bodyFatPercent);
+              const { trendLine, etaLine } = trendAndEta(startBf, currentBf, targetBf, bfTrend, '%');
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -180,8 +220,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentBf.toFixed(1)} / {targetBf}%</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentBf, targetBf, '%')}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentBf, targetBf, bfTrend, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startBf, currentBf, targetBf, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
@@ -191,6 +232,7 @@ export default function BodyTrackerPage() {
               const startMm = goals.startMuscleMassPercent ?? currentMm;
               const pct = calcGoalProgress(startMm, currentMm, targetMm) ?? 0;
               const mmTrend = estimateTrend(e => e.muscleMassPercent);
+              const { trendLine, etaLine } = trendAndEta(startMm, currentMm, targetMm, mmTrend, '%');
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -198,8 +240,9 @@ export default function BodyTrackerPage() {
                     <span className="text-muted-foreground">{currentMm.toFixed(1)} / {targetMm}%</span>
                   </div>
                   <Progress value={pct} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentMm, targetMm, '%')}</p>
-                  <p className="text-[10px] text-muted-foreground">{trendText(currentMm, targetMm, mmTrend, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startMm, currentMm, targetMm, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
                 </div>
               );
             })()}
