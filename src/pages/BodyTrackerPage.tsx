@@ -152,36 +152,57 @@ export default function BodyTrackerPage() {
             {goals.targetWeightKg != null && latest && (() => {
               const currentW = toDisplayWeight(latest.weightKg, wu) ?? 0;
               const targetW = toDisplayWeight(goals.targetWeightKg, wu) ?? 0;
-              const diff = currentW - targetW;
+              const startW = goals.startWeightKg != null ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW) : currentW;
+              const pct = calcGoalProgress(startW, currentW, targetW) ?? 0;
+              const weightTrend = estimateTrend(e => toDisplayWeight(e.weightKg, wu));
               return (
                 <div>
                   <div className="flex justify-between text-xs mb-1">
                     <span>Weight</span>
                     <span className="text-muted-foreground">{currentW.toFixed(1)} / {targetW.toFixed(1)} {unitLabel}</span>
                   </div>
-                  <Progress value={Math.min(100, (currentW / targetW) * 100)} className="h-2" />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{Math.abs(diff).toFixed(1)} {unitLabel} {diff > 0 ? 'to lose' : diff < 0 ? 'to gain' : '— on target!'}</p>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentW, targetW, unitLabel)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentW, targetW, weightTrend, unitLabel)}</p>
                 </div>
               );
             })()}
-            {goals.targetBodyFatPercent != null && latest?.bodyFatPercent != null && (
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Body Fat</span>
-                  <span className="text-muted-foreground">{latest.bodyFatPercent.toFixed(1)} / {goals.targetBodyFatPercent}%</span>
+            {goals.targetBodyFatPercent != null && latest?.bodyFatPercent != null && (() => {
+              const currentBf = latest.bodyFatPercent;
+              const targetBf = goals.targetBodyFatPercent;
+              const startBf = goals.startBodyFatPercent ?? currentBf;
+              const pct = calcGoalProgress(startBf, currentBf, targetBf) ?? 0;
+              const bfTrend = estimateTrend(e => e.bodyFatPercent);
+              return (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Body Fat</span>
+                    <span className="text-muted-foreground">{currentBf.toFixed(1)} / {targetBf}%</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentBf, targetBf, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentBf, targetBf, bfTrend, '%')}</p>
                 </div>
-                <Progress value={goalProgress(latest.bodyFatPercent, goals.targetBodyFatPercent, true) ?? 0} className="h-2" />
-              </div>
-            )}
-            {goals.targetMuscleMassPercent != null && latest?.muscleMassPercent != null && (
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Muscle Mass</span>
-                  <span className="text-muted-foreground">{latest.muscleMassPercent.toFixed(1)} / {goals.targetMuscleMassPercent}%</span>
+              );
+            })()}
+            {goals.targetMuscleMassPercent != null && latest?.muscleMassPercent != null && (() => {
+              const currentMm = latest.muscleMassPercent;
+              const targetMm = goals.targetMuscleMassPercent;
+              const startMm = goals.startMuscleMassPercent ?? currentMm;
+              const pct = calcGoalProgress(startMm, currentMm, targetMm) ?? 0;
+              const mmTrend = estimateTrend(e => e.muscleMassPercent);
+              return (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Muscle Mass</span>
+                    <span className="text-muted-foreground">{currentMm.toFixed(1)} / {targetMm}%</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(currentMm, targetMm, '%')}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendText(currentMm, targetMm, mmTrend, '%')}</p>
                 </div>
-                <Progress value={goalProgress(latest.muscleMassPercent, goals.targetMuscleMassPercent) ?? 0} className="h-2" />
-              </div>
-            )}
+              );
+            })()}
           </div>
         )}
 
