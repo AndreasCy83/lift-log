@@ -1,4 +1,5 @@
 import { getProfile, getSettings } from '@/lib/storage';
+import { getBodyEntries, getBodyGoals } from '@/lib/bodyTrackerStorage';
 import { format } from 'date-fns';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -28,6 +29,8 @@ export function saveBackupSettings(s: BackupSettings) {
 
 export function generateBackupData() {
   return {
+    backupVersion: 3,
+    exportedAt: new Date().toISOString(),
     weightStorageUnit: 'kg',
     profile: getProfile(),
     settings: getSettings(),
@@ -37,6 +40,8 @@ export function generateBackupData() {
     routines: JSON.parse(localStorage.getItem('gym-routines') ?? '[]'),
     routineExercises: JSON.parse(localStorage.getItem('gym-routine-exercises') ?? '[]'),
     exercises: JSON.parse(localStorage.getItem('gym-exercises') ?? '[]'),
+    bodyEntries: getBodyEntries(),
+    bodyGoals: getBodyGoals(),
   };
 }
 

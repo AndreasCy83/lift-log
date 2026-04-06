@@ -93,6 +93,10 @@ export default function SettingsPage() {
           if (data.routines) localStorage.setItem('gym-routines', JSON.stringify(data.routines));
           if (data.routineExercises) localStorage.setItem('gym-routine-exercises', JSON.stringify(data.routineExercises));
           if (data.exercises) localStorage.setItem('gym-exercises', JSON.stringify(data.exercises));
+          // Body tracker data
+          const bodyEntries = data.bodyEntries ?? data.bodyMeasurements ?? [];
+          if (bodyEntries.length > 0) localStorage.setItem('body-tracker-entries', JSON.stringify(bodyEntries));
+          if (data.bodyGoals) localStorage.setItem('body-tracker-goals', JSON.stringify(data.bodyGoals));
           if (data.profile) saveProfile(data.profile);
           if (data.settings) saveSettings(data.settings);
           window.location.reload();
