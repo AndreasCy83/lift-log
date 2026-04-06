@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
@@ -267,9 +268,9 @@ export default function SettingsPage() {
             variant="outline"
             size="sm"
             className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            onClick={() => setConfirmAction('delete')}
+            onClick={() => { setDeleteConfirmText(''); setConfirmAction('delete'); }}
           >
-            Delete Workout History
+            Delete All Data
           </Button>
         </div>
 
@@ -306,35 +307,74 @@ export default function SettingsPage() {
         </div>
 
         {/* Confirmation Dialog */}
-        <AlertDialog open={!!confirmAction} onOpenChange={(o) => { if (!o) setConfirmAction(null); }}>
+        <AlertDialog open={!!confirmAction} onOpenChange={(o) => { if (!o) { setConfirmAction(null); setDeleteConfirmText(''); } }}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {confirmAction === 'delete' ? 'Delete Workout History?' : 'Reset Exercises to Defaults?'}
+                {confirmAction === 'delete' ? 'Delete All Data?' : 'Reset Exercises to Defaults?'}
               </AlertDialogTitle>
-              <AlertDialogDescription>
-                {confirmAction === 'delete'
-                  ? 'This will permanently delete all your workout history, sets, and logs. This action cannot be undone.'
-                  : 'This will replace your exercise library with the default exercises. Custom exercises will be removed. This action cannot be undone.'}
+              <AlertDialogDescription asChild>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  {confirmAction === 'delete' ? (
+                    <>
+                      <p>This will permanently delete all your workouts, routines, body measurements, goals, profile data, and personal settings from this device. This action cannot be undone.</p>
+                      <div>
+                        <p className="mb-1.5 font-medium text-foreground">Type <span className="font-mono text-destructive">DELETE</span> to confirm:</p>
+                        <Input
+                          value={deleteConfirmText}
+                          onChange={(e) => setDeleteConfirmText(e.target.value)}
+                          placeholder="DELETE"
+                          className="font-mono"
+                          autoComplete="off"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <p>This will replace your exercise library with the default exercises. Custom exercises will be removed. This action cannot be undone.</p>
+                  )}
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>No, Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={confirmAction === 'delete' && deleteConfirmText !== 'DELETE'}
                 onClick={() => {
                   if (confirmAction === 'delete') {
+                    // Workouts
                     localStorage.removeItem('gym-workouts');
                     localStorage.removeItem('gym-workout-exercises');
                     localStorage.removeItem('gym-workout-sets');
+                    // Routines
+                    localStorage.removeItem('gym-routines');
+                    localStorage.removeItem('gym-routine-exercises');
+                    // Body tracker
+                    localStorage.removeItem('body-tracker-entries');
+                    localStorage.removeItem('body-tracker-goals');
+                    // Legacy body data
+                    localStorage.removeItem('gym-bmi-history');
+                    localStorage.removeItem('gym-weight-history');
+                    // Profile
+                    localStorage.removeItem('gym-profile');
+                    // Settings
+                    localStorage.removeItem('gym-settings');
+                    // Exercise goals
+                    localStorage.removeItem('gym-exercise-goals');
+                    // Backup metadata
+                    localStorage.removeItem('fitlog-last-backup');
+                    localStorage.removeItem('fitlog-auto-backup');
+                    toast({ title: 'All user data deleted', description: 'The app has been reset to a clean state.' });
                   } else {
                     resetExerciseDefaults();
+                    toast({ title: 'Exercises reset', description: 'Exercise library restored to defaults.' });
                   }
                   setConfirmAction(null);
+                  setDeleteConfirmText('');
                   window.location.reload();
                 }}
               >
-                Yes, {confirmAction === 'delete' ? 'Delete' : 'Reset'}
+                {confirmAction === 'delete' ? 'Delete All Data' : 'Yes, Reset'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
