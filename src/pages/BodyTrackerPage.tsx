@@ -51,6 +51,18 @@ export default function BodyTrackerPage() {
   }, [monthEntries]);
 
   const latest = entries[0];
+  const earliestWeightEntry = useMemo(
+    () => [...entries].reverse().find(entry => Number.isFinite(entry.weightKg)) ?? null,
+    [entries]
+  );
+  const earliestBodyFatEntry = useMemo(
+    () => [...entries].reverse().find(entry => typeof entry.bodyFatPercent === 'number' && Number.isFinite(entry.bodyFatPercent)) ?? null,
+    [entries]
+  );
+  const earliestMuscleMassEntry = useMemo(
+    () => [...entries].reverse().find(entry => typeof entry.muscleMassPercent === 'number' && Number.isFinite(entry.muscleMassPercent)) ?? null,
+    [entries]
+  );
 
   // Directional goal progress: accounts for whether goal is to go up or down
   const isGoalAchieved = (start: number, current: number, target: number) => {
@@ -59,13 +71,38 @@ export default function BodyTrackerPage() {
     return current >= target;
   };
 
-  const calcGoalProgress = (start: number | null | undefined, current: number | null | undefined, target: number | null) => {
-    if (start == null || current == null || target == null) return null;
-    if (isGoalAchieved(start, current, target)) return 1;
-    const range = target - start;
-    if (range === 0) return current === target ? 1 : 0;
-    const progress = ((current - start) / range) * 100;
-    return Math.max(0, Math.min(1, progress / 100));
+  const calcGoalProgress = (start: number | null | undefined, current: number | null | undefined, target: number | null | undefined) => {
+    if (![start, current, target].every(value => Number.isFinite(value))) return 0;
+
+    const safeStart = start as number;
+    const safeCurrent = current as number;
+    const safeTarget = target as number;
+
+    if (safeStart === safeTarget) {
+      if (safeTarget < safeStart) return safeCurrent <= safeTarget ? 1 : 0;
+      if (safeTarget > safeStart) return safeCurrent >= safeTarget ? 1 : 0;
+      return safeCurrent === safeTarget ? 1 : 0;
+    }
+
+    const isDownwardGoal = safeTarget < safeStart;
+    const isUpwardGoal = safeTarget > safeStart;
+
+    if (isDownwardGoal && safeCurrent <= safeTarget) return 1;
+    if (isUpwardGoal && safeCurrent >= safeTarget) return 1;
+
+    let progress = 0;
+
+    if (isDownwardGoal) {
+      const denominator = safeStart - safeTarget;
+      if (denominator <= 0) return 0;
+      progress = (safeStart - safeCurrent) / denominator;
+    } else {
+      const denominator = safeTarget - safeStart;
+      if (denominator <= 0) return 0;
+      progress = (safeCurrent - safeStart) / denominator;
+    }
+
+    return Math.max(0, Math.min(1, progress));
   };
 
   const progressWidth = (progress: number | null | undefined) => {
@@ -73,9 +110,9 @@ export default function BodyTrackerPage() {
     return `${safeProgress * 100}%`;
   };
 
-  const progressLabel = (progress: number | null | undefined) => {
+  const progressDebugLabel = (start: number, current: number, target: number, progress: number | null | undefined) => {
     const safeProgress = Math.max(0, Math.min(1, progress ?? 0));
-    return `Progress: ${Math.round(safeProgress * 100)}%`;
+    return `Start: ${start.toFixed(1)} · Current: ${current.toFixed(1)} · Target: ${target.toFixed(1)} · Progress: ${Math.round(safeProgress * 100)}%`;
   };
 
   // Trend estimation: rate per week from recent entries
@@ -198,7 +235,9 @@ export default function BodyTrackerPage() {
             {goals.targetWeightKg != null && latest && (() => {
               const currentW = toDisplayWeight(latest.weightKg, wu) ?? 0;
               const targetW = toDisplayWeight(goals.targetWeightKg, wu) ?? 0;
-              const startW = goals.startWeightKg != null ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW) : currentW;
+              const startW = goals.startWeightKg != null
+                ? (toDisplayWeight(goals.startWeightKg, wu) ?? currentW)
+                : (earliestWeightEntry ? (toDisplayWeight(earliestWeightEntry.weightKg, wu) ?? currentW) : currentW);
               const pct = calcGoalProgress(startW, currentW, targetW) ?? 0;
               const weightTrend = estimateTrend(e => toDisplayWeight(e.weightKg, wu));
               const { trendLine, etaLine } = trendAndEta(startW, currentW, targetW, weightTrend, unitLabel);
@@ -214,7 +253,7 @@ export default function BodyTrackerPage() {
                       style={{ width: progressWidth(pct) }}
                     />
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressDebugLabel(startW, currentW, targetW, pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startW, currentW, targetW, unitLabel)}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
@@ -224,7 +263,7 @@ export default function BodyTrackerPage() {
             {goals.targetBodyFatPercent != null && latest?.bodyFatPercent != null && (() => {
               const currentBf = latest.bodyFatPercent;
               const targetBf = goals.targetBodyFatPercent;
-              const startBf = goals.startBodyFatPercent ?? currentBf;
+              const startBf = goals.startBodyFatPercent ?? earliestBodyFatEntry?.bodyFatPercent ?? currentBf;
               const pct = calcGoalProgress(startBf, currentBf, targetBf) ?? 0;
               const bfTrend = estimateTrend(e => e.bodyFatPercent);
               const { trendLine, etaLine } = trendAndEta(startBf, currentBf, targetBf, bfTrend, '%');
@@ -240,7 +279,7 @@ export default function BodyTrackerPage() {
                       style={{ width: progressWidth(pct) }}
                     />
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressDebugLabel(startBf, currentBf, targetBf, pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startBf, currentBf, targetBf, '%')}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
@@ -250,7 +289,7 @@ export default function BodyTrackerPage() {
             {goals.targetMuscleMassPercent != null && latest?.muscleMassPercent != null && (() => {
               const currentMm = latest.muscleMassPercent;
               const targetMm = goals.targetMuscleMassPercent;
-              const startMm = goals.startMuscleMassPercent ?? currentMm;
+              const startMm = goals.startMuscleMassPercent ?? earliestMuscleMassEntry?.muscleMassPercent ?? currentMm;
               const pct = calcGoalProgress(startMm, currentMm, targetMm) ?? 0;
               const mmTrend = estimateTrend(e => e.muscleMassPercent);
               const { trendLine, etaLine } = trendAndEta(startMm, currentMm, targetMm, mmTrend, '%');
@@ -266,7 +305,7 @@ export default function BodyTrackerPage() {
                       style={{ width: progressWidth(pct) }}
                     />
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressLabel(pct)}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{progressDebugLabel(startMm, currentMm, targetMm, pct)}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(startMm, currentMm, targetMm, '%')}</p>
                   <p className="text-[10px] text-muted-foreground">{trendLine}</p>
                   {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
