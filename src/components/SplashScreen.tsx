@@ -37,7 +37,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
       <div className="flex flex-col items-center justify-center w-full h-full">
         <img
           src={appIcon}
-          alt="FitLog Tracker"
+          alt="Fit Log X Tracker"
           className="rounded-3xl"
           style={{
             width: 120,
@@ -60,7 +60,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
             transition: 'opacity 300ms ease-out, transform 300ms ease-out',
           }}
         >
-          FitLog Tracker
+          Fit Log X Tracker
         </h1>
         <p
           style={{

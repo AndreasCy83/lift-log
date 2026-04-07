@@ -291,7 +291,7 @@ export default function SettingsPage() {
           <h3 className="font-display text-sm font-semibold">Feedback</h3>
           <button
             onClick={() => {
-              const mailto = 'mailto:fitlogx@gmail.com?subject=FitLog%20X%20-%20Feedback';
+              const mailto = 'mailto:fitlogx@gmail.com?subject=Fit%20Log%20X%20-%20Feedback';
               if (Capacitor.isNativePlatform()) {
                 window.open(mailto, '_system');
               } else {
