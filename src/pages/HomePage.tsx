@@ -161,7 +161,7 @@ export default function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between">
-          <h1 className="font-display text-xl font-bold">FitLog</h1>
+          <h1 className="font-display text-xl font-bold">Fit Log X</h1>
           <Button
             size="sm"
             onClick={handleStartWorkout}

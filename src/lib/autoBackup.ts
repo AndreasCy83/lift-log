@@ -97,8 +97,8 @@ export async function downloadBackup(): Promise<{ filename: string }> {
     });
 
     await Share.share({
-      title: 'FitLog Backup',
-      text: 'Save your FitLog backup file',
+      title: 'Fit Log X Backup',
+      text: 'Save your Fit Log X backup file',
       url: uriResult.uri,
       dialogTitle: 'Save Backup',
     });

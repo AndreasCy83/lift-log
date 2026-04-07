@@ -160,8 +160,8 @@ export async function shareExport(result: CsvExportResult): Promise<void> {
     });
 
     await Share.share({
-      title: 'FitLog Export',
-      text: 'Your FitLog workout data export',
+      title: 'Fit Log X Export',
+      text: 'Your Fit Log X workout data export',
       url: uriResult.uri,
       dialogTitle: 'Share your export',
     });
@@ -175,7 +175,7 @@ export async function shareExport(result: CsvExportResult): Promise<void> {
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({
         title: `FitNotes Workout Data - ${new Date().toISOString().split('T')[0]}`,
-        text: 'Complete workout history from Fitlog app',
+        text: 'Complete workout history from Fit Log X',
         files: [file],
       });
       return;
