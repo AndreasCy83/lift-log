@@ -107,7 +107,7 @@ export function generateFitNotesCsv(fromDate?: string, toDate?: string): CsvExpo
   for (const entry of bodyEntries) {
     const wKg = entry.weightKg > 0 ? entry.weightKg : null;
     rows.push(
-      `body_measurement,${entry.date},${entry.time || ''},,,${fmtDec(wKg)},${kgToLbs(wKg)},,,,,,,,${fmtDec(entry.bodyFatPercent)},${fmtDec(entry.muscleMassPercent)},${escapeCsv(entry.note || '')}`
+      `body_measurement,${entry.date},${entry.time || ''},,,${ fmtDec(wKg)},${kgToLbs(wKg)},,,,,,${fmtDec(entry.bodyFatPercent)},${fmtDec(entry.muscleMassPercent)},${escapeCsv(entry.note || '')}`
     );
     setCount++;
   }
