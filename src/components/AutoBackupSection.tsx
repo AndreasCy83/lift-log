@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Download, HardDrive, Clock, Cloud, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,6 @@ import {
   saveBackupSettings,
   saveBackupToDevice,
   downloadBackup,
-  schedulePendingBackup,
   cancelPendingBackup,
   type BackupSettings,
 } from '@/lib/autoBackup';
@@ -29,9 +28,25 @@ export default function AutoBackupSection() {
   const [gDriveSettings, setGDriveSettings] = useState<GDriveSettings>(() => getGDriveSettings());
   const [gDriveBacking, setGDriveBacking] = useState(false);
 
+  const hasRunAutoBackup = useRef(false);
+
   useEffect(() => {
     saveBackupSettings(bs);
   }, [bs]);
+
+  // Auto-backup on mount when enabled
+  useEffect(() => {
+    if (!bs.enabled || hasRunAutoBackup.current) return;
+    hasRunAutoBackup.current = true;
+    (async () => {
+      try {
+        await saveBackupToDevice();
+        setBs(getBackupSettings());
+      } catch (err) {
+        console.error('[AutoBackup] Auto-backup on open failed:', err);
+      }
+    })();
+  }, [bs.enabled]);
 
   const handleToggle = (enabled: boolean) => {
     if (enabled) {
@@ -122,7 +137,7 @@ export default function AutoBackupSection() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">Automatic Backup</p>
-          <p className="text-[10px] text-muted-foreground">Auto-saves to Documents 1hr after each workout</p>
+          <p className="text-[10px] text-muted-foreground">Auto-saves to Documents when the app opens</p>
         </div>
         <Switch checked={bs.enabled} onCheckedChange={handleToggle} />
       </div>
