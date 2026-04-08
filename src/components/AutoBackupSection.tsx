@@ -202,6 +202,37 @@ export default function AutoBackupSection() {
             <p className="text-sm font-medium">Auto Drive Backup</p>
             <p className="text-[10px] text-muted-foreground">Coming Soon — Auto Drive Backup will be available in a future update</p>
           </div>
+        <Switch checked={false} disabled />
+        </div>
+      </div>
+
+      {/* Health Connect */}
+      <div className="border-t border-border pt-3 space-y-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M16.5 3C14.76 3 13.09 3.81 12 5.09 10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="#E05D44"/>
+          </svg>
+          <h3 className="font-display text-sm font-semibold">Health Connect</h3>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[9px] font-medium text-muted-foreground">Coming Soon</span>
+        </div>
+
+        <Button
+          disabled
+          variant="outline"
+          size="sm"
+          className="w-full gap-1.5 opacity-50 pointer-events-none"
+        >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M16.5 3C14.76 3 13.09 3.81 12 5.09 10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z" fill="currentColor"/>
+          </svg>
+          Sync with Health Connect
+        </Button>
+
+        <div className="flex items-center justify-between opacity-50">
+          <div>
+            <p className="text-sm font-medium">Auto Sync</p>
+            <p className="text-[10px] text-muted-foreground">Coming Soon — Health Connect sync will be available in a future update</p>
+          </div>
           <Switch checked={false} disabled />
         </div>
       </div>
