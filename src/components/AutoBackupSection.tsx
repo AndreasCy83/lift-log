@@ -10,6 +10,7 @@ import {
   saveBackupToDevice,
   downloadBackup,
   cancelPendingBackup,
+  shouldAutoBackup,
   type BackupSettings,
 } from '@/lib/autoBackup';
 import {
@@ -34,10 +35,13 @@ export default function AutoBackupSection() {
     saveBackupSettings(bs);
   }, [bs]);
 
-  // Auto-backup on mount when enabled
+  // Smart auto-backup on mount: only if 2+ hours passed AND data changed
   useEffect(() => {
     if (!bs.enabled || hasRunAutoBackup.current) return;
     hasRunAutoBackup.current = true;
+
+    if (!shouldAutoBackup()) return;
+
     (async () => {
       try {
         await saveBackupToDevice();
@@ -53,7 +57,7 @@ export default function AutoBackupSection() {
       setBs({ ...bs, enabled: true });
       toast({
         title: 'Auto-backup enabled',
-        description: 'A backup will download ~1hr after each workout. Uses ~500KB per backup.',
+        description: 'Backs up when app opens if 2+ hours passed and data changed.',
       });
     } else {
       cancelPendingBackup();
@@ -137,7 +141,7 @@ export default function AutoBackupSection() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">Automatic Backup</p>
-          <p className="text-[10px] text-muted-foreground">Auto-saves to Documents when the app opens</p>
+          <p className="text-[10px] text-muted-foreground">Auto-saves locally when app opens if 2+ hours passed and data changed</p>
         </div>
         <Switch checked={bs.enabled} onCheckedChange={handleToggle} />
       </div>
