@@ -8,23 +8,78 @@ import { getGDriveSettings, backupToGoogleDrive } from '@/lib/googleDriveBackup'
 
 const BACKUP_SETTINGS_KEY = 'gym-auto-backup-settings';
 const BACKUP_TIMER_KEY = 'gym-auto-backup-pending';
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
 export interface BackupSettings {
   enabled: boolean;
   lastBackupAt: string | null;
+  lastBackupFingerprint: string | null;
 }
 
 export function getBackupSettings(): BackupSettings {
   try {
     const raw = localStorage.getItem(BACKUP_SETTINGS_KEY);
-    return raw ? JSON.parse(raw) : { enabled: false, lastBackupAt: null };
+    const parsed = raw ? JSON.parse(raw) : {};
+    return {
+      enabled: parsed.enabled ?? false,
+      lastBackupAt: parsed.lastBackupAt ?? null,
+      lastBackupFingerprint: parsed.lastBackupFingerprint ?? null,
+    };
   } catch {
-    return { enabled: false, lastBackupAt: null };
+    return { enabled: false, lastBackupAt: null, lastBackupFingerprint: null };
   }
 }
 
 export function saveBackupSettings(s: BackupSettings) {
   localStorage.setItem(BACKUP_SETTINGS_KEY, JSON.stringify(s));
+}
+
+/** Build a lightweight fingerprint of all user data to detect changes. */
+export function buildDataFingerprint(): string {
+  const parts: string[] = [];
+  const keys = [
+    'gym-workouts',
+    'gym-workout-exercises',
+    'gym-workout-sets',
+    'gym-routines',
+    'gym-routine-exercises',
+    'gym-exercises',
+    'body-tracker-entries',
+    'body-tracker-goals',
+  ];
+  for (const k of keys) {
+    parts.push(localStorage.getItem(k) ?? '');
+  }
+  // Include profile
+  const profile = localStorage.getItem('gym-profile') ?? '';
+  parts.push(profile);
+
+  // Simple hash: length + char-sum of concatenated data
+  const combined = parts.join('|');
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    hash = ((hash << 5) - hash + combined.charCodeAt(i)) | 0;
+  }
+  return `${combined.length}:${hash}`;
+}
+
+/** Check if auto-backup should run: returns true if backup is needed. */
+export function shouldAutoBackup(): boolean {
+  const bs = getBackupSettings();
+  if (!bs.enabled) return false;
+
+  // Never backed up → backup immediately
+  if (!bs.lastBackupAt) return true;
+
+  // Check 2-hour cooldown
+  const elapsed = Date.now() - new Date(bs.lastBackupAt).getTime();
+  if (elapsed < TWO_HOURS_MS) return false;
+
+  // Check data changed
+  const currentFingerprint = buildDataFingerprint();
+  if (bs.lastBackupFingerprint && currentFingerprint === bs.lastBackupFingerprint) return false;
+
+  return true;
 }
 
 export function generateBackupData() {
@@ -43,6 +98,13 @@ export function generateBackupData() {
     bodyEntries: getBodyEntries(),
     bodyGoals: getBodyGoals(),
   };
+}
+
+function updateBackupMeta() {
+  const settings = getBackupSettings();
+  settings.lastBackupAt = new Date().toISOString();
+  settings.lastBackupFingerprint = buildDataFingerprint();
+  saveBackupSettings(settings);
 }
 
 export async function saveBackupToDevice(): Promise<{ filename: string }> {
@@ -70,10 +132,7 @@ export async function saveBackupToDevice(): Promise<{ filename: string }> {
     URL.revokeObjectURL(url);
   }
 
-  const settings = getBackupSettings();
-  settings.lastBackupAt = now.toISOString();
-  saveBackupSettings(settings);
-
+  updateBackupMeta();
   return { filename };
 }
 
@@ -114,10 +173,7 @@ export async function downloadBackup(): Promise<{ filename: string }> {
     URL.revokeObjectURL(url);
   }
 
-  const settings = getBackupSettings();
-  settings.lastBackupAt = now.toISOString();
-  saveBackupSettings(settings);
-
+  updateBackupMeta();
   return { filename };
 }
 
@@ -166,8 +222,7 @@ export async function performSilentBackup(): Promise<boolean> {
       URL.revokeObjectURL(url);
     }
 
-    bs.lastBackupAt = now.toISOString();
-    saveBackupSettings(bs);
+    updateBackupMeta();
     return true;
   } catch (err) {
     console.error('[AutoBackup] Silent backup failed:', err);

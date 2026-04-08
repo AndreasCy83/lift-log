@@ -112,7 +112,7 @@
 
     "@capacitor/synapse": ["@capacitor/synapse@1.0.4", "", {}, "sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw=="],
 
-    "@capgo/capacitor-social-login": ["@capgo/capacitor-social-login@8.3.9", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capgo/capacitor-social-login/-/capacitor-social-login-8.3.9.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-JhLf24vk1BlUsMLSTWgv0ebJTtN9JS6pxM4YfaaX5nEldJWWb6qirbJwr32t4rCSbM4iyA6KqWYxfH6u2T9Gwg=="],
+    "@capgo/capacitor-social-login": ["@capgo/capacitor-social-login@8.3.11", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capgo/capacitor-social-login/-/capacitor-social-login-8.3.11.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-PxZRmlPEIzVtdpOoCRHf//hFWpVtzD+zfZHnfoW9MlF0bAMBgw0425OlL7Zso6elz9dxxWIW6aRDnE3LDyDPiw=="],
 
     "@codetrix-studio/capacitor-google-auth": ["@codetrix-studio/capacitor-google-auth@3.4.0-rc.4", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@codetrix-studio/capacitor-google-auth/-/capacitor-google-auth-3.4.0-rc.4.tgz", { "peerDependencies": { "@capacitor/core": "^6.0.0" } }, "sha512-d548/xKrbMHHbzMYSWnlgZCLZYo2zzY7Onrh3x8ujojrb7atkNK68I6su5WgmaBt4E+R4gxBsWams4554aOFjA=="],
 
