@@ -11,6 +11,7 @@ import {
 } from '@/lib/storage';
 import { schedulePendingBackup } from '@/lib/autoBackup';
 import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
+import { getLastUsedRestSeconds, saveLastUsedRestSeconds } from '@/lib/restTimerState';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,7 +21,11 @@ import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import ExerciseGoalsDialog from '@/components/ExerciseGoalsDialog';
-import type { Workout, WorkoutSet, SetTag } from '@/types/fitness';
+import SetRestTimerRow from '@/components/SetRestTimerRow';
+import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
+import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
+import { startRestTimer } from '@/lib/restTimerState';
+import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
@@ -52,8 +57,21 @@ export default function WorkoutLogPage() {
   const [statsExercise, setStatsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
   const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
 
-  // Re-read exercises after custom creation
+  // Rest timer editor state
+  const [restEditorOpen, setRestEditorOpen] = useState(false);
+  const [restEditorTarget, setRestEditorTarget] = useState<{ weId: string; setIndex: number; current: number | null } | null>(null);
+  const [exerciseTimerSheet, setExerciseTimerSheet] = useState<{ weId: string; exerciseId: string; exerciseName: string; current: number | null } | null>(null);
+
   const [exercises, setExercisesState] = useState(() => getExercises());
+
+  /** Get rest seconds for a specific set: per-set override > exercise default > null */
+  const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
+    const sets = getSetsForWorkoutExercise(we.id);
+    const set = sets.find(s => s.setIndex === setIndex);
+    if (set?.restSeconds != null) return set.restSeconds;
+    if (we.defaultRestSeconds != null) return we.defaultRestSeconds;
+    return null;
+  }, [updateKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => {
     if (workout) {
@@ -74,17 +92,28 @@ export default function WorkoutLogPage() {
     return { weightKg: firstSet.weightKg ?? null, reps: firstSet.reps ?? null };
   };
 
+  /** Get the exercise's default rest seconds from history or seed data */
+  const getExerciseRestDefault = (exerciseId: string): number | null => {
+    const lastUsed = getLastUsedRestSeconds(exerciseId);
+    if (lastUsed) return lastUsed;
+    const ex = allExercises.find(e => e.id === exerciseId);
+    return ex?.defaultRestSeconds ?? null;
+  };
+
   const handleAddExercises = (exerciseIds: string[]) => {
     exerciseIds.forEach((exerciseId, i) => {
-      const we = {
-        id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length + i, notes: ''
+      const restDefault = getExerciseRestDefault(exerciseId);
+      const we: WorkoutExercise = {
+        id: generateId(), workoutId: workout.id, exerciseId, position: workoutExercises.length + i, notes: '',
+        defaultRestSeconds: restDefault,
       };
       addWorkoutExercise(we);
       const prefill = getLastSessionFirstSet(exerciseId);
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
         weightKg: prefill.weightKg, reps: prefill.reps, distanceKm: null, durationMinutes: null,
-        rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+        rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: '',
+        restSeconds: restDefault,
       });
     });
     refresh();
@@ -102,18 +131,33 @@ export default function WorkoutLogPage() {
 
   const handleAddSet = (weId: string) => {
     const sets = getSetsForWorkoutExercise(weId);
+    const we = workoutExercises.find(x => x.id === weId);
+    const restSec = we?.defaultRestSeconds ?? null;
     addWorkoutSet({
       id: generateId(), workoutExerciseId: weId, setIndex: sets.length,
       weightKg: null, reps: null, distanceKm: null, durationMinutes: null,
-      rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+      rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: '',
+      restSeconds: restSec,
     });
     forceUpdate(n => n + 1);
   };
 
-
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
-    updateWorkoutSet({ ...s, [field]: value });
+    const updated = { ...s, [field]: value };
+    updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+
+    // Auto-start rest timer when completing a set
+    if (field === 'isCompleted' && value === true) {
+      const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
+      if (we) {
+        const restSec = updated.restSeconds ?? we.defaultRestSeconds;
+        if (restSec && restSec > 0) {
+          startRestTimer(we.id, s.setIndex, restSec);
+          forceUpdate(n => n + 1);
+        }
+      }
+    }
   };
 
   const handleDeleteSet = (id: string) => {
@@ -122,9 +166,64 @@ export default function WorkoutLogPage() {
   };
 
   const handleFinishWorkout = () => {
+    // Save last-used rest timers per exercise
+    workoutExercises.forEach(we => {
+      if (we.defaultRestSeconds && we.defaultRestSeconds > 0) {
+        saveLastUsedRestSeconds(we.exerciseId, we.defaultRestSeconds);
+      }
+    });
     updateWorkout({ ...workout, endTime: new Date().toISOString() });
     schedulePendingBackup();
     navigate('/');
+  };
+
+  // Per-set rest timer tap → open editor
+  const handleRestTimerTap = (weId: string, setIndex: number) => {
+    const we = workoutExercises.find(x => x.id === weId);
+    if (!we) return;
+    const sets = getSetsForWorkoutExercise(weId);
+    const set = sets.find(s => s.setIndex === setIndex);
+    const current = set?.restSeconds ?? we.defaultRestSeconds ?? null;
+    setRestEditorTarget({ weId, setIndex, current });
+    setRestEditorOpen(true);
+  };
+
+  // Save per-set rest
+  const handleSaveSetRest = (seconds: number) => {
+    if (!restEditorTarget) return;
+    const sets = getSetsForWorkoutExercise(restEditorTarget.weId);
+    const set = sets.find(s => s.setIndex === restEditorTarget.setIndex);
+    if (set) {
+      updateWorkoutSet({ ...set, restSeconds: seconds });
+      forceUpdate(n => n + 1);
+    }
+  };
+
+  // Exercise-level timer actions
+  const handleExerciseTimerAction = (action: 'all' | 'future' | 'both' | 'clear', seconds?: number) => {
+    if (!exerciseTimerSheet) return;
+    const weId = exerciseTimerSheet.weId;
+    const we = workoutExercises.find(x => x.id === weId);
+    if (!we) return;
+
+    if (action === 'clear') {
+      // Clear all set rest overrides and default
+      const sets = getSetsForWorkoutExercise(weId);
+      sets.forEach(s => updateWorkoutSet({ ...s, restSeconds: null }));
+      updateWorkoutExercise({ ...we, defaultRestSeconds: null });
+      setWorkoutExercises(prev => prev.map(x => x.id === weId ? { ...x, defaultRestSeconds: null } : x));
+    } else {
+      if (!seconds) return;
+      if (action === 'all' || action === 'both') {
+        const sets = getSetsForWorkoutExercise(weId);
+        sets.forEach(s => updateWorkoutSet({ ...s, restSeconds: seconds }));
+      }
+      if (action === 'future' || action === 'both') {
+        updateWorkoutExercise({ ...we, defaultRestSeconds: seconds });
+        setWorkoutExercises(prev => prev.map(x => x.id === weId ? { ...x, defaultRestSeconds: seconds } : x));
+      }
+    }
+    forceUpdate(n => n + 1);
   };
 
   const getEx = (exId: string) => exercises.find(e => e.id === exId);
@@ -216,6 +315,19 @@ export default function WorkoutLogPage() {
                 >
                   <BarChart3 className="h-4 w-4" />
                 </button>
+                {/* Exercise-level rest timer icon */}
+                <button
+                  onClick={() => setExerciseTimerSheet({
+                    weId: we.id,
+                    exerciseId: we.exerciseId,
+                    exerciseName: getExName(we.exerciseId),
+                    current: we.defaultRestSeconds ?? null,
+                  })}
+                  className={`p-1 transition-colors ${we.defaultRestSeconds ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Set rest timer for exercise"
+                >
+                  <Timer className="h-4 w-4" />
+                </button>
                 <button onClick={() => handleRemoveExercise(we.id)} className="p-1 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -238,7 +350,6 @@ export default function WorkoutLogPage() {
 
               {isExpanded && (
                 <div className="space-y-2 animate-slide-up">
-                  {/* Exercise Detail Panel */}
                   <ExerciseDetailPanel
                     exerciseId={we.exerciseId}
                     exerciseName={getExName(we.exerciseId)}
@@ -254,7 +365,8 @@ export default function WorkoutLogPage() {
                         addWorkoutSet({
                           id: generateId(), workoutExerciseId: we.id, setIndex: currentSets.length,
                           weightKg: weight, reps, distanceKm: null, durationMinutes: null,
-                          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+                          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: '',
+                          restSeconds: we.defaultRestSeconds ?? null,
                         });
                         forceUpdate(n => n + 1);
                       }
@@ -270,7 +382,7 @@ export default function WorkoutLogPage() {
                     <div></div>
                   </div>
 
-                  {sets.map(s => {
+                  {sets.map((s, idx) => {
                     const tag = s.setTag ?? 'N';
                     const tagColors: Record<SetTag, string> = {
                       N: 'bg-secondary text-muted-foreground',
@@ -279,6 +391,8 @@ export default function WorkoutLogPage() {
                       F: 'bg-red-500/20 text-red-500',
                     };
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
+                    const restSec = s.restSeconds ?? we.defaultRestSeconds ?? null;
+
                     return (
                     <div key={s.id}>
                       <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1rem' }}>
@@ -327,6 +441,15 @@ export default function WorkoutLogPage() {
                           />
                         </div>
                       )}
+                      {/* Rest timer separator between sets */}
+                      {idx < sets.length - 1 && (
+                        <SetRestTimerRow
+                          workoutExerciseId={we.id}
+                          afterSetIndex={s.setIndex}
+                          restSeconds={restSec}
+                          onTap={() => handleRestTimerTap(we.id, s.setIndex)}
+                        />
+                      )}
                     </div>
                     );
                   })}
@@ -340,6 +463,7 @@ export default function WorkoutLogPage() {
               {!isExpanded && (
                 <div className="flex gap-2 text-xs text-muted-foreground">
                   <span>{sets.length} sets</span>
+                  {we.defaultRestSeconds && <span>• {Math.floor(we.defaultRestSeconds / 60)}:{(we.defaultRestSeconds % 60).toString().padStart(2, '0')} rest</span>}
                 </div>
               )}
             </div>
@@ -392,7 +516,7 @@ export default function WorkoutLogPage() {
           <Plus className="h-4 w-4" /> Add Exercise
         </button>
 
-        {/* Exercise Selection Dialog */}
+        {/* Dialogs */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
           <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
             <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
@@ -418,6 +542,26 @@ export default function WorkoutLogPage() {
             exerciseId={goalsExercise.id}
             exerciseName={goalsExercise.name}
             weightUnit={goalsExercise.weightUnit}
+          />
+        )}
+
+        {/* Per-set rest timer editor */}
+        <RestTimerEditorSheet
+          open={restEditorOpen}
+          onOpenChange={setRestEditorOpen}
+          initialSeconds={restEditorTarget?.current ?? null}
+          onSave={handleSaveSetRest}
+          title="Set Rest Timer"
+        />
+
+        {/* Exercise-level rest timer sheet */}
+        {exerciseTimerSheet && (
+          <ExerciseRestTimerSheet
+            open={!!exerciseTimerSheet}
+            onOpenChange={(open) => !open && setExerciseTimerSheet(null)}
+            exerciseName={exerciseTimerSheet.exerciseName}
+            currentDefault={exerciseTimerSheet.current}
+            onAction={handleExerciseTimerAction}
           />
         )}
       </div>
