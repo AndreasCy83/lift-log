@@ -63,6 +63,7 @@ export interface WorkoutExercise {
   exerciseId: string;
   position: number;
   notes: string;
+  defaultRestSeconds?: number | null;
 }
 
 export type SetTag = 'N' | 'W' | 'D' | 'F'; // Normal, Warmup, Dropset, Failure
@@ -80,6 +81,7 @@ export interface WorkoutSet {
   isWarmup: boolean;
   isCompleted: boolean;
   notes: string;
+  restSeconds?: number | null;
 }
 
 export interface Routine {
