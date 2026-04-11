@@ -195,7 +195,7 @@ export default function WorkoutLogPage() {
     const set = sets.find(s => s.setIndex === restEditorTarget.setIndex);
     if (set) {
       updateWorkoutSet({ ...set, restSeconds: seconds });
-      forceUpdate(n => n + 1);
+      refresh();
     }
   };
 
@@ -444,6 +444,7 @@ export default function WorkoutLogPage() {
                       {/* Rest timer separator between sets */}
                       {idx < sets.length - 1 && (
                         <SetRestTimerRow
+                          key={`rest-${s.id}-${restSec}`}
                           workoutExerciseId={we.id}
                           afterSetIndex={s.setIndex}
                           restSeconds={restSec}
