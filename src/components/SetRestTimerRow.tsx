@@ -169,17 +169,24 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
           </>
         )}
       </div>
-      {showCountdown && (
-        <div className="w-full h-0.5 rounded-full overflow-hidden mt-0.5" style={{ background: 'hsl(var(--muted))' }}>
-          <div
-            className="h-full rounded-full transition-all duration-200 ease-linear"
-            style={{
-              width: `${(remaining! / (restSeconds ?? 90)) * 100}%`,
-              background: 'linear-gradient(to right, #A855F7 0%, #C084FC 33%, #22C55E 33%, #4ADE80 66%, #3B82F6 66%, #60A5FA 100%)',
-            }}
-          />
-        </div>
-      )}
+      {showCountdown && (() => {
+        const maxSec = restSeconds ?? 90;
+        const progress = (remaining! / maxSec) * 100;
+        // Sequential: purple 100-66, green 66-33, blue 33-0
+        const purple = Math.max(0, Math.min(34, progress - 66));
+        const green = Math.max(0, Math.min(33, progress - 33));
+        const blue = Math.max(0, Math.min(33, progress));
+        const total = purple + green + blue;
+        return (
+          <div className="w-full h-0.5 rounded-full overflow-hidden mt-0.5" style={{ background: 'hsl(var(--muted))' }}>
+            <div className="h-full flex" style={{ width: `${total}%`, transition: 'width 200ms linear' }}>
+              {purple > 0 && <div style={{ flex: purple, background: 'linear-gradient(to right, #A855F7, #C084FC)', transition: 'flex 200ms linear' }} />}
+              {green > 0 && <div style={{ flex: green, background: 'linear-gradient(to right, #22C55E, #4ADE80)', transition: 'flex 200ms linear' }} />}
+              {blue > 0 && <div style={{ flex: blue, background: 'linear-gradient(to right, #3B82F6, #60A5FA)', transition: 'flex 200ms linear' }} />}
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
