@@ -130,9 +130,11 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
   const showCountdown = isRunning && remaining !== null && remaining > 0;
 
   return (
-    <button
+    <div
       onClick={onTap}
-      className={`w-full flex items-center justify-center gap-2 py-1 my-0.5 rounded transition-colors
+      role="button"
+      tabIndex={0}
+      className={`w-full flex items-center justify-center gap-2 py-1 my-0.5 rounded transition-colors cursor-pointer
         ${showCountdown
           ? 'bg-primary/10 border border-primary/30'
           : 'hover:bg-secondary/50'
@@ -165,6 +167,6 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
           <span className="text-[10px] text-muted-foreground/40">Set rest</span>
         </>
       )}
-    </button>
+    </div>
   );
 }
