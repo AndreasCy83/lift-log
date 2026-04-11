@@ -130,43 +130,56 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
   const showCountdown = isRunning && remaining !== null && remaining > 0;
 
   return (
-    <div
-      onClick={onTap}
-      role="button"
-      tabIndex={0}
-      className={`w-full flex items-center justify-center gap-2 py-1 my-0.5 rounded transition-colors cursor-pointer
-        ${showCountdown
-          ? 'bg-primary/10 border border-primary/30'
-          : 'hover:bg-secondary/50'
-        }`}
-    >
-      {showCountdown ? (
-        <>
-          <span className="text-xs font-bold text-primary tabular-nums">{formatTime(remaining!)}</span>
-          <button
-            onClick={handleStartPause}
-            className="p-0.5 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
-          >
-            <Pause className="h-3 w-3" />
-          </button>
-        </>
-      ) : hasRest ? (
-        <>
-          <Timer className="h-3 w-3 text-primary/60" />
-          <span className="text-[11px] text-primary/60 font-medium">{formatTime(restSeconds!)}</span>
-          <button
-            onClick={handleStartPause}
-            className="p-0.5 rounded-full bg-secondary text-muted-foreground hover:text-primary transition-colors"
-          >
-            <Play className="h-3 w-3" />
-          </button>
-        </>
-      ) : (
-        <>
-          <Timer className="h-3 w-3 text-muted-foreground/30" />
-          <span className="text-[10px] text-muted-foreground/40">Set rest</span>
-        </>
+    <>
+      <div
+        onClick={onTap}
+        role="button"
+        tabIndex={0}
+        className={`w-full flex items-center justify-center gap-2 py-1 my-0.5 rounded transition-colors cursor-pointer
+          ${showCountdown
+            ? 'bg-primary/10 border border-primary/30'
+            : 'hover:bg-secondary/50'
+          }`}
+      >
+        {showCountdown ? (
+          <>
+            <span className="text-xs font-bold text-primary tabular-nums">{formatTime(remaining!)}</span>
+            <button
+              onClick={handleStartPause}
+              className="p-0.5 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+            >
+              <Pause className="h-3 w-3" />
+            </button>
+          </>
+        ) : hasRest ? (
+          <>
+            <Timer className="h-3 w-3 text-primary/60" />
+            <span className="text-[11px] text-primary/60 font-medium">{formatTime(restSeconds!)}</span>
+            <button
+              onClick={handleStartPause}
+              className="p-0.5 rounded-full bg-secondary text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Play className="h-3 w-3" />
+            </button>
+          </>
+        ) : (
+          <>
+            <Timer className="h-3 w-3 text-muted-foreground/30" />
+            <span className="text-[10px] text-muted-foreground/40">Set rest</span>
+          </>
+        )}
+      </div>
+      {showCountdown && (
+        <div className="w-full h-0.5 rounded-full overflow-hidden mt-0.5" style={{ background: 'hsl(var(--muted))' }}>
+          <div
+            className="h-full rounded-full transition-all duration-200 ease-linear"
+            style={{
+              width: `${(remaining! / (restSeconds ?? 90)) * 100}%`,
+              background: 'linear-gradient(to right, #A855F7 0%, #C084FC 33%, #22C55E 33%, #4ADE80 66%, #3B82F6 66%, #60A5FA 100%)',
+            }}
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 }
