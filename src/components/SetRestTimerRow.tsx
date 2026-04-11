@@ -168,5 +168,16 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
         </>
       )}
     </div>
+    {showCountdown && (
+      <div className="w-full h-0.5 rounded-full overflow-hidden mt-0.5" style={{ background: 'hsl(var(--muted))' }}>
+        <div
+          className="h-full rounded-full transition-all duration-200 ease-linear"
+          style={{
+            width: `${(remaining! / (restSeconds ?? 90)) * 100}%`,
+            background: 'linear-gradient(to right, #A855F7 0%, #C084FC 33%, #22C55E 33%, #4ADE80 66%, #3B82F6 66%, #60A5FA 100%)',
+          }}
+        />
+      </div>
+    )}
   );
 }
