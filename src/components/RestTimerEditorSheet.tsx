@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Timer, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,6 +29,15 @@ export default function RestTimerEditorSheet({ open, onOpenChange, initialSecond
   const initSec = initialSeconds ?? 90;
   const [minutes, setMinutes] = useState(Math.floor(initSec / 60));
   const [secs, setSecs] = useState(initSec % 60);
+
+  // Reset picker state whenever the sheet opens with new values
+  useEffect(() => {
+    if (open) {
+      const s = initialSeconds ?? 90;
+      setMinutes(Math.floor(s / 60));
+      setSecs(s % 60);
+    }
+  }, [open, initialSeconds]);
 
   const totalSeconds = minutes * 60 + secs;
 
