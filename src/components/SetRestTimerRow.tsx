@@ -172,56 +172,19 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
       {showCountdown && (() => {
         const maxSec = restSeconds ?? 90;
         const progress = (remaining! / maxSec) * 100;
-        // Splash-matched sequential sweep: purple→green→blue
-        const purple = Math.max(0, Math.min(34, progress - 66));
-        const green = Math.max(0, Math.min(33, progress - 33));
-        const blue = Math.max(0, Math.min(33, progress));
-        const total = purple + green + blue;
-        // Neon glow color based on active segment
-        const glowColor = purple > 0 ? 'rgba(168,85,247,0.45)' : green > 0 ? 'rgba(34,197,94,0.45)' : 'rgba(59,130,246,0.45)';
         return (
           <div
             className="w-full rounded-full overflow-hidden mt-0.5"
-            style={{
-              height: 3,
-              background: 'hsl(var(--muted) / 0.5)',
-              backdropFilter: 'blur(4px)',
-            }}
+            style={{ height: 3, background: 'hsl(var(--muted) / 0.5)' }}
           >
             <div
-              className="h-full flex"
+              className="h-full rounded-full will-change-transform"
               style={{
-                width: `${total}%`,
-                transition: 'width 16ms linear',
-                boxShadow: `0 0 8px ${glowColor}, 0 0 16px ${glowColor}`,
-                borderRadius: 9999,
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #22c55e 0%, #4ade80 25%, #a855f7 50%, #c084fc 75%, #3b82f6 100%)',
+                boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), 0 0 16px rgba(168, 85, 247, 0.4)',
               }}
-            >
-              {purple > 0 && (
-                <div style={{
-                  flex: purple,
-                  background: 'linear-gradient(to right, #a855f7, #c084fc)',
-                  transition: 'flex 16ms linear',
-                  borderRadius: 9999,
-                }} />
-              )}
-              {green > 0 && (
-                <div style={{
-                  flex: green,
-                  background: 'linear-gradient(to right, #22c55e, #4ade80)',
-                  transition: 'flex 16ms linear',
-                  borderRadius: 9999,
-                }} />
-              )}
-              {blue > 0 && (
-                <div style={{
-                  flex: blue,
-                  background: 'linear-gradient(to right, #3b82f6, #60a5fa)',
-                  transition: 'flex 16ms linear',
-                  borderRadius: 9999,
-                }} />
-              )}
-            </div>
+            />
           </div>
         );
       })()}
