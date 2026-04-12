@@ -544,14 +544,7 @@ export default function WorkoutLogPage() {
           />
         )}
 
-        {/* Per-set rest timer editor */}
-        <RestTimerEditorSheet
-          open={restEditorOpen}
-          onOpenChange={setRestEditorOpen}
-          initialSeconds={restEditorTarget?.current ?? null}
-          onSave={handleSaveSetRest}
-          title="Set Rest Timer"
-        />
+        {/* Exercise-level rest timer sheet (used for both per-set tap and exercise header) */}
 
         {/* Exercise-level rest timer sheet */}
         {exerciseTimerSheet && (
