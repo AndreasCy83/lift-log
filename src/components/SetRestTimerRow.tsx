@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Timer, Play, Pause } from 'lucide-react';
+import { Timer, Play, Pause, RotateCcw } from 'lucide-react';
 import {
   getActiveTimers, startRestTimer, clearRestTimer,
   getTimerRemaining, markCueFired, type ActiveRestTimer
