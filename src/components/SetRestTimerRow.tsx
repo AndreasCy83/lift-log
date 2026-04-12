@@ -126,8 +126,19 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     }
   };
 
+  const handleReset = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    clearRestTimer(workoutExerciseId, afterSetIndex);
+    timerRef.current = null;
+    setIsRunning(false);
+    const full = restSeconds ?? 90;
+    setRemaining(full);
+    finishedRef.current = false;
+  };
+
   const hasRest = restSeconds !== null && restSeconds > 0;
   const showCountdown = isRunning && remaining !== null && remaining > 0;
+  const showPaused = !isRunning && remaining !== null && remaining > 0 && hasRest && remaining !== restSeconds;
 
   return (
     <>
@@ -149,6 +160,28 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
               className="p-0.5 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
             >
               <Pause className="h-3 w-3" />
+            </button>
+            <button
+              onClick={handleReset}
+              className="p-0.5 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+            >
+              <RotateCcw className="h-3 w-3" />
+            </button>
+          </>
+        ) : showPaused ? (
+          <>
+            <span className="text-xs font-medium text-muted-foreground tabular-nums">{formatTime(remaining!)}</span>
+            <button
+              onClick={handleStartPause}
+              className="p-0.5 rounded-full bg-secondary text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Play className="h-3 w-3" />
+            </button>
+            <button
+              onClick={handleReset}
+              className="p-0.5 rounded-full bg-secondary text-muted-foreground hover:text-primary transition-colors"
+            >
+              <RotateCcw className="h-3 w-3" />
             </button>
           </>
         ) : hasRest ? (
