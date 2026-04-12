@@ -177,15 +177,13 @@ export default function WorkoutLogPage() {
     navigate('/');
   };
 
-  // Per-set rest timer tap → open editor
-  const handleRestTimerTap = (weId: string, setIndex: number) => {
+  // Per-set rest timer tap → open exercise-level sheet with full options
+  const handleRestTimerTap = (weId: string, _setIndex: number) => {
     const we = workoutExercises.find(x => x.id === weId);
     if (!we) return;
-    const sets = getSetsForWorkoutExercise(weId);
-    const set = sets.find(s => s.setIndex === setIndex);
-    const current = set?.restSeconds ?? we.defaultRestSeconds ?? null;
-    setRestEditorTarget({ weId, setIndex, current });
-    setRestEditorOpen(true);
+    const exName = getExName(we.exerciseId);
+    const current = we.defaultRestSeconds ?? null;
+    setExerciseTimerSheet({ weId, exerciseId: we.exerciseId, exerciseName: exName, current });
   };
 
   // Save per-set rest
@@ -546,14 +544,7 @@ export default function WorkoutLogPage() {
           />
         )}
 
-        {/* Per-set rest timer editor */}
-        <RestTimerEditorSheet
-          open={restEditorOpen}
-          onOpenChange={setRestEditorOpen}
-          initialSeconds={restEditorTarget?.current ?? null}
-          onSave={handleSaveSetRest}
-          title="Set Rest Timer"
-        />
+        {/* Exercise-level rest timer sheet (used for both per-set tap and exercise header) */}
 
         {/* Exercise-level rest timer sheet */}
         {exerciseTimerSheet && (
