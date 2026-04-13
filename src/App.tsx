@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
+import { preloadAudioCues } from "@/lib/ttsVoice";
 import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
 
@@ -33,6 +34,7 @@ function ThemeInit() {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
     }
     checkPendingBackup();
+    preloadAudioCues();
 
     const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
       if (isActive) {
