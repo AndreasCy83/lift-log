@@ -4,7 +4,7 @@ import {
   getActiveTimers, startRestTimer, clearRestTimer,
   getTimerRemaining, markCueFired, type ActiveRestTimer
 } from '@/lib/restTimerState';
-import { speakCue, playFinishBeep } from '@/lib/ttsVoice';
+import { speakCue, playFinishBeep, preloadAudioCues } from '@/lib/ttsVoice';
 
 interface Props {
   workoutExerciseId: string;
@@ -54,7 +54,10 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     syncFromStorage();
     // Listen for app resume (Capacitor)
     const handleVisibility = () => {
-      if (!document.hidden) syncFromStorage();
+      if (!document.hidden) {
+        syncFromStorage();
+        preloadAudioCues();
+      }
     };
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);
@@ -70,13 +73,13 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
       const rem = getTimerRemaining(timer);
       setRemaining(rem);
 
-      // Voice cues - fire once
-      if (rem === 10 && !timer.cuesFired.includes(10)) {
+      // Voice cues - fire once (use range to avoid missing due to tick interval)
+      if (rem <= 10 && rem > 9.5 && !timer.cuesFired.includes(10)) {
         speakCue('10 seconds');
         markCueFired(timer.id, 10);
         timer.cuesFired.push(10);
       }
-      if (rem === 5 && !timer.cuesFired.includes(5)) {
+      if (rem <= 5 && rem > 4.5 && !timer.cuesFired.includes(5)) {
         speakCue('5 seconds');
         markCueFired(timer.id, 5);
         timer.cuesFired.push(5);
@@ -85,7 +88,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
       if (rem <= 0) {
         if (!finishedRef.current) {
           finishedRef.current = true;
-          speakCue('Go');
+          speakCue('Go!');
           playFinishBeep();
           onFinish?.();
         }
