@@ -1,30 +1,40 @@
 /**
- * Text-to-speech voice cues for rest timer countdown.
- * Uses browser SpeechSynthesis with fallback to beep.
+ * Audio cues for rest timer countdown.
+ * Uses local MP3 files instead of Web Speech API for Android Capacitor compatibility.
  */
 
-let ttsSupported: boolean | null = null;
+const audioCache: Record<string, HTMLAudioElement> = {};
 
-function isTTSAvailable(): boolean {
-  if (ttsSupported !== null) return ttsSupported;
-  ttsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  return ttsSupported;
+function getAudio(src: string): HTMLAudioElement {
+  if (!audioCache[src]) {
+    const audio = new Audio(src);
+    audio.preload = 'auto';
+    audio.load();
+    audioCache[src] = audio;
+  }
+  return audioCache[src];
 }
 
 export function speakCue(text: string) {
-  if (!isTTSAvailable()) {
-    // Fallback: vibrate
-    if (navigator.vibrate) navigator.vibrate(200);
-    return;
-  }
   try {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 0.8;
-    utterance.lang = 'en-US';
-    window.speechSynthesis.cancel(); // Cancel any pending
-    window.speechSynthesis.speak(utterance);
+    const map: Record<string, string> = {
+      '10 seconds': '/audio/10secs.mp3',
+      '10 seconds remaining': '/audio/10secs.mp3',
+      '5 seconds': '/audio/5secs.mp3',
+      '5 seconds remaining': '/audio/5secs.mp3',
+      'Go': '/audio/GO.mp3',
+      'Go!': '/audio/GO.mp3',
+    };
+    const src = map[text];
+    if (src) {
+      const audio = getAudio(src);
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        if (navigator.vibrate) navigator.vibrate(200);
+      });
+    } else {
+      if (navigator.vibrate) navigator.vibrate(200);
+    }
   } catch {
     if (navigator.vibrate) navigator.vibrate(200);
   }
@@ -51,4 +61,9 @@ export function playFinishBeep() {
     }
   } catch {}
   if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+
+export function preloadAudioCues() {
+  ['/audio/10secs.mp3', '/audio/5secs.mp3', '/audio/GO.mp3']
+    .forEach(src => getAudio(src));
 }
