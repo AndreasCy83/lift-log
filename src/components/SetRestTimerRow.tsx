@@ -115,6 +115,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     if (isRunning) {
       // Pause - clear the timer from storage, keep remaining for display
       clearRestTimer(workoutExerciseId, afterSetIndex);
+      RestTimerNative.stopTimer().catch(() => {});
       timerRef.current = null;
       setIsRunning(false);
     } else {
@@ -126,6 +127,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
         timerRef.current = timer;
         setRemaining(sec);
         setIsRunning(true);
+        RestTimerNative.startTimer({ seconds: sec }).catch(() => {});
       }
     }
   };
