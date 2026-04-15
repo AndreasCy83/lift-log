@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Timer, Play, Pause, RotateCcw } from 'lucide-react';
+import RestTimerNative from '@/lib/RestTimerNative';
 import {
   getActiveTimers, startRestTimer, clearRestTimer,
   getTimerRemaining, markCueFired, type ActiveRestTimer
@@ -114,6 +115,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     if (isRunning) {
       // Pause - clear the timer from storage, keep remaining for display
       clearRestTimer(workoutExerciseId, afterSetIndex);
+      RestTimerNative.stopTimer().catch(() => {});
       timerRef.current = null;
       setIsRunning(false);
     } else {
@@ -125,6 +127,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
         timerRef.current = timer;
         setRemaining(sec);
         setIsRunning(true);
+        RestTimerNative.startTimer({ seconds: sec }).catch(() => {});
       }
     }
   };
@@ -132,6 +135,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
   const handleReset = (e: React.MouseEvent) => {
     e.stopPropagation();
     clearRestTimer(workoutExerciseId, afterSetIndex);
+    RestTimerNative.stopTimer().catch(() => {});
     timerRef.current = null;
     setIsRunning(false);
     const full = restSeconds ?? 90;
