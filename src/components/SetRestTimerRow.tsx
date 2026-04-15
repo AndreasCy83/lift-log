@@ -135,6 +135,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
   const handleReset = (e: React.MouseEvent) => {
     e.stopPropagation();
     clearRestTimer(workoutExerciseId, afterSetIndex);
+    RestTimerNative.stopTimer().catch(() => {});
     timerRef.current = null;
     setIsRunning(false);
     const full = restSeconds ?? 90;
