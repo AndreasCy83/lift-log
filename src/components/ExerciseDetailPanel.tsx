@@ -261,8 +261,8 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
               {showGraph && chartData.length > 0 && (
                 <div className="rounded-lg bg-secondary/50 p-2">
                   <ResponsiveContainer width="100%" height={120}>
-                    <LineChart data={chartData}>
-                      <XAxis dataKey="date" tick={{ fontSize: 9 }} stroke="hsl(var(--muted-foreground))" />
+                    <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <XAxis dataKey="date" tick={{ fontSize: 9 }} stroke="hsl(var(--muted-foreground))" padding={{ left: 10, right: 15 }} />
                       <YAxis tick={{ fontSize: 9 }} stroke="hsl(var(--muted-foreground))" width={30} />
                       <Tooltip
                         contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
