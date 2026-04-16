@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { Shield, Sun, Moon, Monitor, Cloud, Check } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import { format } from 'date-fns';
 const TOTAL_STEPS = 5;
 
 export default function OnboardingWizard() {
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   // Step 1: weight unit (required)
@@ -103,7 +102,7 @@ export default function OnboardingWizard() {
 
   const handleFinish = () => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
-    navigate('/', { replace: true });
+    window.location.assign('/');
   };
 
   const canSkip = step === 2 || step === 3 || step === 4;
