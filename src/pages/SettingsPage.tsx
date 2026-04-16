@@ -382,6 +382,30 @@ export default function SettingsPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog open={showWelcome} onOpenChange={(o) => { if (!o) { localStorage.setItem('hasCompletedFirstLaunch', 'true'); setShowWelcome(false); searchParams.delete('firstLaunch'); setSearchParams(searchParams, { replace: true }); } }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Welcome!</DialogTitle>
+              <DialogDescription>
+                Please take a moment to check and configure your desired options (like weight units, theme, etc.) before getting started.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  localStorage.setItem('hasCompletedFirstLaunch', 'true');
+                  setShowWelcome(false);
+                  searchParams.delete('firstLaunch');
+                  setSearchParams(searchParams, { replace: true });
+                }}
+                className="bg-primary text-primary-foreground"
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
