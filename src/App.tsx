@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -94,7 +94,11 @@ const App = () => {
         <BrowserRouter>
           <AndroidBackHandler />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={
+              localStorage.getItem('hasCompletedFirstLaunch') === 'true'
+                ? <HomePage />
+                : <Navigate to="/settings?firstLaunch=true" replace />
+            } />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/workout/:date" element={<WorkoutLogPage />} />
