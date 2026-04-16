@@ -18,6 +18,7 @@ import { checkPendingBackup } from "@/lib/autoBackup";
 import { preloadAudioCues } from "@/lib/ttsVoice";
 import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
+import OnboardingWizard from "@/components/OnboardingWizard";
 
 const queryClient = new QueryClient();
 
@@ -97,7 +98,7 @@ const App = () => {
             <Route path="/" element={
               localStorage.getItem('hasCompletedFirstLaunch') === 'true'
                 ? <HomePage />
-                : <Navigate to="/settings?firstLaunch=true" replace />
+                : <OnboardingWizard />
             } />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
