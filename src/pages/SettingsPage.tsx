@@ -19,7 +19,9 @@ import type { WeightUnitSetting } from '@/lib/units';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
+  const [showWelcome, setShowWelcome] = useState(() => searchParams.get('firstLaunch') === 'true');
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
