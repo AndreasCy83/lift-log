@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
-  const [showWelcome, setShowWelcome] = useState(() => searchParams.get('firstLaunch') === 'true');
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
@@ -383,29 +382,6 @@ export default function SettingsPage() {
           </AlertDialogContent>
         </AlertDialog>
 
-        <Dialog open={showWelcome} onOpenChange={(o) => { if (!o) { localStorage.setItem('hasCompletedFirstLaunch', 'true'); setShowWelcome(false); searchParams.delete('firstLaunch'); setSearchParams(searchParams, { replace: true }); } }}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Welcome!</DialogTitle>
-              <DialogDescription>
-                Please take a moment to check and configure your desired options (like weight units, theme, etc.) before getting started.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                onClick={() => {
-                  localStorage.setItem('hasCompletedFirstLaunch', 'true');
-                  setShowWelcome(false);
-                  searchParams.delete('firstLaunch');
-                  setSearchParams(searchParams, { replace: true });
-                }}
-                className="bg-primary text-primary-foreground"
-              >
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
