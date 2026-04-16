@@ -94,7 +94,11 @@ const App = () => {
         <BrowserRouter>
           <AndroidBackHandler />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={
+              localStorage.getItem('hasCompletedFirstLaunch') === 'true'
+                ? <HomePage />
+                : <Navigate to="/settings?firstLaunch=true" replace />
+            } />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/workout/:date" element={<WorkoutLogPage />} />
