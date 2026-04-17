@@ -470,13 +470,15 @@ export default function WorkoutLogPage() {
                         </div>
                       )}
                       {/* Rest timer separator between/after sets */}
-                      <SetRestTimerRow
-                        key={`rest-${s.id}-${restSec}`}
-                        workoutExerciseId={we.id}
-                        afterSetIndex={s.setIndex}
-                        restSeconds={restSec}
-                        onTap={() => handleRestTimerTap(we.id, s.setIndex)}
-                      />
+                      <div data-tutorial={isTutorialTarget && idx === 0 ? 'set-rest' : undefined}>
+                        <SetRestTimerRow
+                          key={`rest-${s.id}-${restSec}`}
+                          workoutExerciseId={we.id}
+                          afterSetIndex={s.setIndex}
+                          restSeconds={restSec}
+                          onTap={() => handleRestTimerTap(we.id, s.setIndex)}
+                        />
+                      </div>
                     </div>
                     );
                   })}
