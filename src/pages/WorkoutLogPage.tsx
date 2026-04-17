@@ -587,6 +587,16 @@ export default function WorkoutLogPage() {
           />
         )}
       </div>
+
+      {tutorialOpen && (
+        <ExerciseTutorialOverlay
+          steps={TUTORIAL_STEPS}
+          onFinish={() => {
+            localStorage.setItem('hasSeenExerciseTutorial', 'true');
+            setTutorialOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
