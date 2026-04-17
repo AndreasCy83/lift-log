@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -12,6 +12,7 @@ import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
 import AutoBackupSection from '@/components/AutoBackupSection';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
+import ChangelogDialog from '@/components/ChangelogDialog';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
@@ -23,6 +24,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
@@ -292,6 +294,21 @@ export default function SettingsPage() {
           </Button>
         </div>
 
+        {/* About */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">About</h3>
+          <button
+            onClick={() => setShowChangelog(true)}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              What's New
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </div>
+
         {/* Legal */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Legal</h3>
@@ -303,6 +320,8 @@ export default function SettingsPage() {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
+
+        <ChangelogDialog open={showChangelog} onOpenChange={setShowChangelog} />
 
         {/* Feedback */}
         <div className="gym-card space-y-2">
