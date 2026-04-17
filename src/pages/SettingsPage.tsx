@@ -294,6 +294,21 @@ export default function SettingsPage() {
           </Button>
         </div>
 
+        {/* About */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">About</h3>
+          <button
+            onClick={() => setShowChangelog(true)}
+            className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              What's New
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </div>
+
         {/* Legal */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold">Legal</h3>
@@ -305,6 +320,8 @@ export default function SettingsPage() {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
+
+        <ChangelogDialog open={showChangelog} onOpenChange={setShowChangelog} />
 
         {/* Feedback */}
         <div className="gym-card space-y-2">
