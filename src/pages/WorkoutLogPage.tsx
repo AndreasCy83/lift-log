@@ -321,6 +321,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
                   className={`p-1 transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise note"
+                  data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
                 >
                   <StickyNote className="h-4 w-4" />
                 </button>
@@ -328,6 +329,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className={`p-1 transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise goals"
+                  data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
                 >
                   <Trophy className="h-4 w-4" />
                 </button>
@@ -335,6 +337,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                   title="Exercise stats"
+                  data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                 >
                   <BarChart3 className="h-4 w-4" />
                 </button>
