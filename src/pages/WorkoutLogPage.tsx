@@ -438,6 +438,7 @@ export default function WorkoutLogPage() {
                             onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
                             className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
                             title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                            data-tutorial={isTutorialTarget && idx === 0 ? 'set-tag' : undefined}
                           >
                             {tag === 'N' ? '–' : tag}
                           </button>
