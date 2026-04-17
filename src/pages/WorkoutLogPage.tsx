@@ -297,7 +297,8 @@ export default function WorkoutLogPage() {
       </div>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
-        {workoutExercises.map(we => {
+        {workoutExercises.map((we) => {
+          const isTutorialTarget = expandedExercise === we.id;
           const sets = getSetsForWorkoutExercise(we.id);
           const isExpanded = expandedExercise === we.id;
           const ex = getEx(we.exerciseId);
