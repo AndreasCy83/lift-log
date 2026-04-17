@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
