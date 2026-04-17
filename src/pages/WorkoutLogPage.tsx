@@ -94,6 +94,17 @@ export default function WorkoutLogPage() {
     }
   }, [workout]);
 
+  // Trigger tutorial first time an exercise is expanded with a visible set
+  useEffect(() => {
+    if (tutorialOpen) return;
+    if (localStorage.getItem('hasSeenExerciseTutorial') === 'true') return;
+    if (!expandedExercise) return;
+    const sets = getSetsForWorkoutExercise(expandedExercise);
+    if (sets.length === 0) return;
+    const t = setTimeout(() => setTutorialOpen(true), 350);
+    return () => clearTimeout(t);
+  }, [expandedExercise, tutorialOpen]);
+
   if (!date || !workout) return <div className="p-4">Invalid date</div>;
 
   const getLastSessionFirstSet = (exerciseId: string) => {
