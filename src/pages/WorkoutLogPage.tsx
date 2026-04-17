@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
@@ -24,8 +24,18 @@ import ExerciseGoalsDialog from '@/components/ExerciseGoalsDialog';
 import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
+import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
 import { startRestTimer } from '@/lib/restTimerState';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
+
+const TUTORIAL_STEPS: TutorialStep[] = [
+  { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
+  { selector: '[data-tutorial="exercise-goals"]', title: 'Exercise Goals', text: 'Tap here to set and track specific weight/rep goals for this exercise.' },
+  { selector: '[data-tutorial="exercise-stats"]', title: 'Exercise Stats', text: 'Tap here to view your past performance, history, and graphs for this exercise.' },
+  { selector: '[data-tutorial="exercise-timer"]', title: 'Global Timer', text: 'Tap here to set a default rest timer that applies to all sets for this exercise.' },
+  { selector: '[data-tutorial="set-tag"]', title: 'Set Types', text: 'Tap to cycle between Normal (N), Warmup (W), Dropset (D), and Failure (F).' },
+  { selector: '[data-tutorial="set-rest"]', title: 'Set Timer', text: 'Tap to customize the rest time specifically after this individual set.' },
+];
 
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
@@ -64,6 +74,9 @@ export default function WorkoutLogPage() {
 
   const [exercises, setExercisesState] = useState(() => getExercises());
 
+  // Tutorial overlay
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
     const sets = getSetsForWorkoutExercise(we.id);
@@ -80,6 +93,17 @@ export default function WorkoutLogPage() {
       forceUpdate(n => n + 1);
     }
   }, [workout]);
+
+  // Trigger tutorial first time an exercise is expanded with a visible set
+  useEffect(() => {
+    if (tutorialOpen) return;
+    if (localStorage.getItem('hasSeenExerciseTutorial') === 'true') return;
+    if (!expandedExercise) return;
+    const sets = getSetsForWorkoutExercise(expandedExercise);
+    if (sets.length === 0) return;
+    const t = setTimeout(() => setTutorialOpen(true), 350);
+    return () => clearTimeout(t);
+  }, [expandedExercise, tutorialOpen]);
 
   if (!date || !workout) return <div className="p-4">Invalid date</div>;
 
@@ -273,7 +297,8 @@ export default function WorkoutLogPage() {
       </div>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
-        {workoutExercises.map(we => {
+        {workoutExercises.map((we) => {
+          const isTutorialTarget = expandedExercise === we.id;
           const sets = getSetsForWorkoutExercise(we.id);
           const isExpanded = expandedExercise === we.id;
           const ex = getEx(we.exerciseId);
@@ -296,6 +321,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
                   className={`p-1 transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise note"
+                  data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
                 >
                   <StickyNote className="h-4 w-4" />
                 </button>
@@ -303,6 +329,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className={`p-1 transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Exercise goals"
+                  data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
                 >
                   <Trophy className="h-4 w-4" />
                 </button>
@@ -310,6 +337,7 @@ export default function WorkoutLogPage() {
                   onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                   className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                   title="Exercise stats"
+                  data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                 >
                   <BarChart3 className="h-4 w-4" />
                 </button>
@@ -323,6 +351,7 @@ export default function WorkoutLogPage() {
                   })}
                   className={`p-1 transition-colors ${we.defaultRestSeconds ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Set rest timer for exercise"
+                  data-tutorial={isTutorialTarget ? 'exercise-timer' : undefined}
                 >
                   <Timer className="h-4 w-4" />
                 </button>
@@ -409,6 +438,7 @@ export default function WorkoutLogPage() {
                             onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
                             className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
                             title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                            data-tutorial={isTutorialTarget && idx === 0 ? 'set-tag' : undefined}
                           >
                             {tag === 'N' ? '–' : tag}
                           </button>
@@ -440,13 +470,15 @@ export default function WorkoutLogPage() {
                         </div>
                       )}
                       {/* Rest timer separator between/after sets */}
-                      <SetRestTimerRow
-                        key={`rest-${s.id}-${restSec}`}
-                        workoutExerciseId={we.id}
-                        afterSetIndex={s.setIndex}
-                        restSeconds={restSec}
-                        onTap={() => handleRestTimerTap(we.id, s.setIndex)}
-                      />
+                      <div data-tutorial={isTutorialTarget && idx === 0 ? 'set-rest' : undefined}>
+                        <SetRestTimerRow
+                          key={`rest-${s.id}-${restSec}`}
+                          workoutExerciseId={we.id}
+                          afterSetIndex={s.setIndex}
+                          restSeconds={restSec}
+                          onTap={() => handleRestTimerTap(we.id, s.setIndex)}
+                        />
+                      </div>
                     </div>
                     );
                   })}
@@ -555,6 +587,16 @@ export default function WorkoutLogPage() {
           />
         )}
       </div>
+
+      {tutorialOpen && (
+        <ExerciseTutorialOverlay
+          steps={TUTORIAL_STEPS}
+          onFinish={() => {
+            localStorage.setItem('hasSeenExerciseTutorial', 'true');
+            setTutorialOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
