@@ -255,6 +255,22 @@ export default function SettingsPage() {
           <p className="text-[10px] text-muted-foreground text-center">Supports FitNotes and other CSV formats</p>
         </div>
 
+        {/* Tutorial */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Tutorial</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              localStorage.removeItem('hasSeenExerciseTutorial');
+              toast({ title: 'Tutorial reset', description: 'Open an exercise in a workout to replay the tutorial.' });
+            }}
+          >
+            Reset Exercise Tutorial
+          </Button>
+        </div>
+
         {/* Danger Zone */}
         <div className="gym-card space-y-2">
           <h3 className="font-display text-sm font-semibold text-destructive">Danger Zone</h3>
