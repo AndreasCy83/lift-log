@@ -351,6 +351,7 @@ export default function WorkoutLogPage() {
                   })}
                   className={`p-1 transition-colors ${we.defaultRestSeconds ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                   title="Set rest timer for exercise"
+                  data-tutorial={isTutorialTarget ? 'exercise-timer' : undefined}
                 >
                   <Timer className="h-4 w-4" />
                 </button>
