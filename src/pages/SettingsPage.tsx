@@ -12,6 +12,7 @@ import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
 import AutoBackupSection from '@/components/AutoBackupSection';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
+import ChangelogDialog from '@/components/ChangelogDialog';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
