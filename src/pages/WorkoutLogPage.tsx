@@ -82,6 +82,9 @@ export default function WorkoutLogPage() {
   // Tutorial overlay
   const [tutorialOpen, setTutorialOpen] = useState(false);
 
+  // Repeat-last-routine confirmation state
+  const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
+
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
     const sets = getSetsForWorkoutExercise(we.id);
