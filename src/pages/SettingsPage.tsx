@@ -201,6 +201,15 @@ export default function SettingsPage() {
           <Switch checked={settings.keepScreenOn} onCheckedChange={v => setSettings({ ...settings, keepScreenOn: v })} />
         </div>
 
+        {/* Auto-start rest timer */}
+        <div className="gym-card flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-medium">Auto-start rest timer when set completed</h3>
+            <p className="text-xs text-muted-foreground">Starts the rest timer automatically when you mark a set complete.</p>
+          </div>
+          <Switch checked={settings.autoStartRestTimer} onCheckedChange={v => setSettings({ ...settings, autoStartRestTimer: v })} />
+        </div>
+
         {/* Rest timer default */}
         <div className="gym-card">
           <h3 className="text-sm font-medium mb-2">Default Rest (seconds)</h3>
