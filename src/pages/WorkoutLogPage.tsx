@@ -466,6 +466,11 @@ export default function WorkoutLogPage() {
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={ex?.weightUnit ?? 'kg'}
                     refreshKey={updateKey}
+                    onRepeatLastRoutine={
+                      getPreviousSessionSets(we.exerciseId)
+                        ? () => handleRepeatLastRoutine(we.id, we.exerciseId)
+                        : undefined
+                    }
                     onPrefill={(weight, reps) => {
                       const currentSets = getSetsForWorkoutExercise(we.id);
                       const lastSet = currentSets[currentSets.length - 1];
@@ -567,9 +572,20 @@ export default function WorkoutLogPage() {
                     );
                   })}
 
-                  <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="w-full text-xs text-primary">
-                    <Plus className="h-3 w-3 mr-1" /> Add Set
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="flex-1 min-w-[7rem] text-xs text-primary">
+                      <Plus className="h-3 w-3 mr-1" /> Add Set
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDuplicateLastSet(we.id)}
+                      disabled={sets.length === 0}
+                      className="flex-1 min-w-[7rem] text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <CopyPlus className="h-3 w-3 mr-1" /> Duplicate Last Set
+                    </Button>
+                  </div>
                 </div>
               )}
 
