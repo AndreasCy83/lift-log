@@ -174,6 +174,82 @@ export default function WorkoutLogPage() {
     forceUpdate(n => n + 1);
   };
 
+  const handleDuplicateLastSet = (weId: string) => {
+    const sets = getSetsForWorkoutExercise(weId);
+    if (sets.length === 0) return;
+    const last = sets[sets.length - 1];
+    addWorkoutSet({
+      id: generateId(),
+      workoutExerciseId: weId,
+      setIndex: sets.length,
+      weightKg: last.weightKg,
+      reps: last.reps,
+      distanceKm: last.distanceKm,
+      durationMinutes: last.durationMinutes,
+      rpe: null,
+      setTag: last.setTag ?? 'N',
+      isWarmup: false,
+      isCompleted: false,
+      notes: '',
+      restSeconds: last.restSeconds ?? null,
+    });
+    forceUpdate(n => n + 1);
+    toast('Last set duplicated');
+  };
+
+  /** Has the user entered any meaningful data in the current exercise's sets? */
+  const hasEnteredSetData = (weId: string): boolean => {
+    const sets = getSetsForWorkoutExercise(weId);
+    return sets.some(s =>
+      (typeof s.weightKg === 'number' && s.weightKg > 0) ||
+      (typeof s.reps === 'number' && s.reps > 0) ||
+      (typeof s.distanceKm === 'number' && s.distanceKm > 0) ||
+      (typeof s.durationMinutes === 'number' && s.durationMinutes > 0) ||
+      s.isCompleted ||
+      (s.setTag && s.setTag !== 'N')
+    );
+  };
+
+  /** Returns the previous session sets for this exercise, excluding the current workout. */
+  const getPreviousSessionSets = (exerciseId: string): WorkoutSet[] | null => {
+    const history = getExerciseHistory(exerciseId).filter(h => h.date !== date);
+    if (history.length === 0) return null;
+    return history[0].sets;
+  };
+
+  const performRepeatLastRoutine = (weId: string, exerciseId: string) => {
+    const prev = getPreviousSessionSets(exerciseId);
+    if (!prev || prev.length === 0) return;
+    // Replace all sets for this exercise with new copies based on previous session
+    const all = getWorkoutSets().filter(s => s.workoutExerciseId !== weId);
+    const newSets: WorkoutSet[] = prev.map((s, i) => ({
+      id: generateId(),
+      workoutExerciseId: weId,
+      setIndex: i,
+      weightKg: s.weightKg ?? null,
+      reps: s.reps ?? null,
+      distanceKm: s.distanceKm ?? null,
+      durationMinutes: s.durationMinutes ?? null,
+      rpe: null,
+      setTag: s.setTag ?? 'N',
+      isWarmup: false,
+      isCompleted: false,
+      notes: '',
+      restSeconds: s.restSeconds ?? null,
+    }));
+    saveWorkoutSets([...all, ...newSets]);
+    forceUpdate(n => n + 1);
+    toast('Previous routine loaded');
+  };
+
+  const handleRepeatLastRoutine = (weId: string, exerciseId: string) => {
+    if (hasEnteredSetData(weId)) {
+      setRepeatTarget({ weId, exerciseId });
+    } else {
+      performRepeatLastRoutine(weId, exerciseId);
+    }
+  };
+
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
     const updated = { ...s, [field]: value };
     updateWorkoutSet(updated);
