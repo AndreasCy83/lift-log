@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -254,16 +254,25 @@ export default function WorkoutLogPage() {
     const updated = { ...s, [field]: value };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+  };
 
-    // Auto-start rest timer when completing a set
-    if (field === 'isCompleted' && value === true) {
+  /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
+  const handleToggleSetComplete = (s: WorkoutSet) => {
+    const wasCompleted = !!s.isCompleted;
+    const nextCompleted = !wasCompleted;
+    const updated = { ...s, isCompleted: nextCompleted };
+    updateWorkoutSet(updated);
+    forceUpdate(n => n + 1);
+
+    if (!wasCompleted && nextCompleted) {
+      const settings = getSettings();
+      if (!settings.autoStartRestTimer) return;
       const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
-      if (we) {
-        const restSec = updated.restSeconds ?? we.defaultRestSeconds;
-        if (restSec && restSec > 0) {
-          startRestTimer(we.id, s.setIndex, restSec);
-          forceUpdate(n => n + 1);
-        }
+      if (!we) return;
+      const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
+      if (restSec && restSec > 0) {
+        startRestTimer(we.id, s.setIndex, restSec);
+        forceUpdate(n => n + 1);
       }
     }
   };
