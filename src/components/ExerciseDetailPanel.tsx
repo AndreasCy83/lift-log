@@ -15,6 +15,7 @@ interface Props {
   exerciseName: string;
   weightUnit: 'kg' | 'lb';
   onPrefill: (weightKg: number, reps: number) => void;
+  onRepeatLastRoutine?: () => void;
   refreshKey?: number;
 }
 
@@ -93,7 +94,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onP
   );
 }
 
-export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, refreshKey = 0 }: Props) {
+export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, onRepeatLastRoutine, refreshKey = 0 }: Props) {
   const globalWeightUnit = getSettings().weightUnit;
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
@@ -199,16 +200,27 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
       {/* History Toggle */}
       {history.length > 0 && (
         <div>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors w-full"
-          >
-            <History className="h-3.5 w-3.5" />
-            <span className="uppercase text-[10px] font-bold tracking-wider">History</span>
-            <span className="text-[10px]">({history.length} sessions)</span>
-            <div className="flex-1" />
-            {showHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex-1 min-w-0"
+            >
+              <History className="h-3.5 w-3.5" />
+              <span className="uppercase text-[10px] font-bold tracking-wider">History</span>
+              <span className="text-[10px]">({history.length} sessions)</span>
+              <div className="flex-1" />
+              {showHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </button>
+            {onRepeatLastRoutine && (
+              <button
+                onClick={onRepeatLastRoutine}
+                className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors px-1.5 py-0.5"
+                title="Replace current sets with previous session"
+              >
+                Repeat Last Routine
+              </button>
+            )}
+          </div>
 
           {showHistory && (
             <div className="mt-2 space-y-2 animate-slide-up">

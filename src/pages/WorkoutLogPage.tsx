@@ -1,14 +1,19 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
-  getExerciseHistory, getSettings
+  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets
 } from '@/lib/storage';
+import { toast } from 'sonner';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { schedulePendingBackup } from '@/lib/autoBackup';
 import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 import { getLastUsedRestSeconds, saveLastUsedRestSeconds } from '@/lib/restTimerState';
@@ -76,6 +81,9 @@ export default function WorkoutLogPage() {
 
   // Tutorial overlay
   const [tutorialOpen, setTutorialOpen] = useState(false);
+
+  // Repeat-last-routine confirmation state
+  const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
 
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
@@ -164,6 +172,82 @@ export default function WorkoutLogPage() {
       restSeconds: restSec,
     });
     forceUpdate(n => n + 1);
+  };
+
+  const handleDuplicateLastSet = (weId: string) => {
+    const sets = getSetsForWorkoutExercise(weId);
+    if (sets.length === 0) return;
+    const last = sets[sets.length - 1];
+    addWorkoutSet({
+      id: generateId(),
+      workoutExerciseId: weId,
+      setIndex: sets.length,
+      weightKg: last.weightKg,
+      reps: last.reps,
+      distanceKm: last.distanceKm,
+      durationMinutes: last.durationMinutes,
+      rpe: null,
+      setTag: last.setTag ?? 'N',
+      isWarmup: false,
+      isCompleted: false,
+      notes: '',
+      restSeconds: last.restSeconds ?? null,
+    });
+    forceUpdate(n => n + 1);
+    toast('Last set duplicated');
+  };
+
+  /** Has the user entered any meaningful data in the current exercise's sets? */
+  const hasEnteredSetData = (weId: string): boolean => {
+    const sets = getSetsForWorkoutExercise(weId);
+    return sets.some(s =>
+      (typeof s.weightKg === 'number' && s.weightKg > 0) ||
+      (typeof s.reps === 'number' && s.reps > 0) ||
+      (typeof s.distanceKm === 'number' && s.distanceKm > 0) ||
+      (typeof s.durationMinutes === 'number' && s.durationMinutes > 0) ||
+      s.isCompleted ||
+      (s.setTag && s.setTag !== 'N')
+    );
+  };
+
+  /** Returns the previous session sets for this exercise, excluding the current workout. */
+  const getPreviousSessionSets = (exerciseId: string): WorkoutSet[] | null => {
+    const history = getExerciseHistory(exerciseId).filter(h => h.date !== date);
+    if (history.length === 0) return null;
+    return history[0].sets;
+  };
+
+  const performRepeatLastRoutine = (weId: string, exerciseId: string) => {
+    const prev = getPreviousSessionSets(exerciseId);
+    if (!prev || prev.length === 0) return;
+    // Replace all sets for this exercise with new copies based on previous session
+    const all = getWorkoutSets().filter(s => s.workoutExerciseId !== weId);
+    const newSets: WorkoutSet[] = prev.map((s, i) => ({
+      id: generateId(),
+      workoutExerciseId: weId,
+      setIndex: i,
+      weightKg: s.weightKg ?? null,
+      reps: s.reps ?? null,
+      distanceKm: s.distanceKm ?? null,
+      durationMinutes: s.durationMinutes ?? null,
+      rpe: null,
+      setTag: s.setTag ?? 'N',
+      isWarmup: false,
+      isCompleted: false,
+      notes: '',
+      restSeconds: s.restSeconds ?? null,
+    }));
+    saveWorkoutSets([...all, ...newSets]);
+    forceUpdate(n => n + 1);
+    toast('Previous routine loaded');
+  };
+
+  const handleRepeatLastRoutine = (weId: string, exerciseId: string) => {
+    if (hasEnteredSetData(weId)) {
+      setRepeatTarget({ weId, exerciseId });
+    } else {
+      performRepeatLastRoutine(weId, exerciseId);
+    }
   };
 
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
@@ -382,6 +466,11 @@ export default function WorkoutLogPage() {
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={ex?.weightUnit ?? 'kg'}
                     refreshKey={updateKey}
+                    onRepeatLastRoutine={
+                      getPreviousSessionSets(we.exerciseId)
+                        ? () => handleRepeatLastRoutine(we.id, we.exerciseId)
+                        : undefined
+                    }
                     onPrefill={(weight, reps) => {
                       const currentSets = getSetsForWorkoutExercise(we.id);
                       const lastSet = currentSets[currentSets.length - 1];
@@ -483,9 +572,20 @@ export default function WorkoutLogPage() {
                     );
                   })}
 
-                  <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="w-full text-xs text-primary">
-                    <Plus className="h-3 w-3 mr-1" /> Add Set
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="flex-1 min-w-[7rem] text-xs text-primary">
+                      <Plus className="h-3 w-3 mr-1" /> Add Set
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDuplicateLastSet(we.id)}
+                      disabled={sets.length === 0}
+                      className="flex-1 min-w-[7rem] text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <CopyPlus className="h-3 w-3 mr-1" /> Duplicate Last Set
+                    </Button>
+                  </div>
                 </div>
               )}
 
@@ -597,6 +697,28 @@ export default function WorkoutLogPage() {
           }}
         />
       )}
+
+      <AlertDialog open={!!repeatTarget} onOpenChange={(open) => !open && setRepeatTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Replace current sets?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will replace the current sets for this exercise with the last routine.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (repeatTarget) performRepeatLastRoutine(repeatTarget.weId, repeatTarget.exerciseId);
+                setRepeatTarget(null);
+              }}
+            >
+              Replace
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
