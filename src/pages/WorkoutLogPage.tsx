@@ -697,6 +697,28 @@ export default function WorkoutLogPage() {
           }}
         />
       )}
+
+      <AlertDialog open={!!repeatTarget} onOpenChange={(open) => !open && setRepeatTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Replace current sets?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will replace the current sets for this exercise with the last routine.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (repeatTarget) performRepeatLastRoutine(repeatTarget.weId, repeatTarget.exerciseId);
+                setRepeatTarget(null);
+              }}
+            >
+              Replace
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
