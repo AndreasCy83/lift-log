@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -254,16 +254,25 @@ export default function WorkoutLogPage() {
     const updated = { ...s, [field]: value };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+  };
 
-    // Auto-start rest timer when completing a set
-    if (field === 'isCompleted' && value === true) {
+  /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
+  const handleToggleSetComplete = (s: WorkoutSet) => {
+    const wasCompleted = !!s.isCompleted;
+    const nextCompleted = !wasCompleted;
+    const updated = { ...s, isCompleted: nextCompleted };
+    updateWorkoutSet(updated);
+    forceUpdate(n => n + 1);
+
+    if (!wasCompleted && nextCompleted) {
+      const settings = getSettings();
+      if (!settings.autoStartRestTimer) return;
       const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
-      if (we) {
-        const restSec = updated.restSeconds ?? we.defaultRestSeconds;
-        if (restSec && restSec > 0) {
-          startRestTimer(we.id, s.setIndex, restSec);
-          forceUpdate(n => n + 1);
-        }
+      if (!we) return;
+      const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
+      if (restSec && restSec > 0) {
+        startRestTimer(we.id, s.setIndex, restSec);
+        forceUpdate(n => n + 1);
       }
     }
   };
@@ -489,12 +498,13 @@ export default function WorkoutLogPage() {
                     }}
                   />
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1.1rem 1rem' }}>
                     <div>Set</div>
                     <div></div>
                     <div>Type</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
+                    <div></div>
                     <div></div>
                   </div>
 
@@ -511,7 +521,7 @@ export default function WorkoutLogPage() {
 
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.5rem 1fr 1fr minmax(2rem,0.8fr) 1.1rem 1rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
@@ -539,6 +549,20 @@ export default function WorkoutLogPage() {
                           weightUnit={globalWeightUnit}
                           onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                         />
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleToggleSetComplete(s)}
+                            aria-pressed={s.isCompleted}
+                            title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
+                            className={`h-5 w-5 rounded-full flex items-center justify-center border transition-colors ${
+                              s.isCompleted
+                                ? 'bg-green-500 border-green-500 text-white'
+                                : 'border-muted-foreground/40 text-transparent hover:border-foreground hover:text-muted-foreground/60'
+                            }`}
+                          >
+                            <Check className="h-3 w-3" strokeWidth={3} />
+                          </button>
+                        </div>
                         <div className="flex justify-center">
                           <button onClick={() => handleDeleteSet(s.id)} className="text-muted-foreground hover:text-destructive">
                             <Trash2 className="h-3 w-3" />

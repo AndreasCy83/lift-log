@@ -269,12 +269,13 @@ export interface AppSettings {
   weightUnit: WeightUnitSetting;
   defaultRestSeconds: number;
   keepScreenOn: boolean;
+  autoStartRestTimer: boolean;
 }
 export function getSettings(): AppSettings {
   const s = get<AppSettings>(STORAGE_KEYS.settings, {
-    theme: 'dark', units: 'metric', weightUnit: 'kg', defaultRestSeconds: 90, keepScreenOn: true
+    theme: 'dark', units: 'metric', weightUnit: 'kg', defaultRestSeconds: 90, keepScreenOn: true, autoStartRestTimer: true
   });
-  return { ...s, weightUnit: s.weightUnit ?? 'kg' };
+  return { ...s, weightUnit: s.weightUnit ?? 'kg', autoStartRestTimer: s.autoStartRestTimer ?? true };
 }
 export function saveSettings(s: AppSettings) { set(STORAGE_KEYS.settings, s); }
 
