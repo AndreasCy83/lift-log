@@ -158,6 +158,12 @@ export default function WorkoutLogPage() {
   };
 
   const handleRemoveExercise = (weId: string) => {
+    // If the active rest timer belongs to this exercise, stop it.
+    const active = getActiveTimers().find(t => t.workoutExerciseId === weId);
+    if (active) {
+      RestTimerNative.stopTimer().catch(() => {});
+    }
+    clearAllTimersForExercise(weId);
     removeWorkoutExercise(weId);
     refresh();
   };
