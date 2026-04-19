@@ -210,12 +210,6 @@ export default function SettingsPage() {
           <Switch checked={settings.autoStartRestTimer} onCheckedChange={v => setSettings({ ...settings, autoStartRestTimer: v })} />
         </div>
 
-        {/* Rest timer default */}
-        <div className="gym-card">
-          <h3 className="text-sm font-medium mb-2">Default Rest (seconds)</h3>
-          <Input type="number" value={settings.defaultRestSeconds} onChange={e => setSettings({ ...settings, defaultRestSeconds: parseInt(e.target.value) || 60 })} className="bg-secondary border-0 w-24" />
-        </div>
-
         {/* Exercise Library */}
         <div className="gym-card">
           <Button onClick={() => setShowExerciseLibrary(true)} variant="outline" size="sm" className="w-full gap-2">
