@@ -59,12 +59,13 @@ export default function RoutinesPage() {
     const res = getExercisesForRoutine(r.id);
     res.forEach((re, idx) => {
       const weId = generateId();
-      addWorkoutExercise({ id: weId, workoutId, exerciseId: re.exerciseId, position: idx, notes: '' });
+      addWorkoutExercise({ id: weId, workoutId, exerciseId: re.exerciseId, position: idx, notes: '', defaultRestSeconds: re.restSeconds ?? null });
       for (let i = 0; i < re.sets; i++) {
         addWorkoutSet({
           id: generateId(), workoutExerciseId: weId, setIndex: i,
           weightKg: null, reps: re.repsMin, distanceKm: null, durationMinutes: null,
-          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: ''
+          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: '',
+          restSeconds: re.restSeconds ?? null,
         });
       }
     });
