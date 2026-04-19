@@ -54,15 +54,19 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
 
   useEffect(() => {
     syncFromStorage();
-    // Listen for app resume (Capacitor)
     const handleVisibility = () => {
       if (!document.hidden) {
         syncFromStorage();
         preloadAudioCues();
       }
     };
+    const handleTimersChanged = () => syncFromStorage();
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
+    window.addEventListener(REST_TIMERS_CHANGED_EVENT, handleTimersChanged);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener(REST_TIMERS_CHANGED_EVENT, handleTimersChanged);
+    };
   }, [syncFromStorage]);
 
   // Countdown loop using requestAnimationFrame + timestamp
