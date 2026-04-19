@@ -24,8 +24,14 @@ export function getActiveTimers(): ActiveRestTimer[] {
   } catch { return []; }
 }
 
+/** Custom event dispatched whenever active timers change so UI can re-sync. */
+export const REST_TIMERS_CHANGED_EVENT = 'rest-timers-changed';
+
 function saveActiveTimers(timers: ActiveRestTimer[]) {
   localStorage.setItem(ACTIVE_TIMERS_KEY, JSON.stringify(timers));
+  try {
+    window.dispatchEvent(new CustomEvent(REST_TIMERS_CHANGED_EVENT));
+  } catch {}
 }
 
 export function startRestTimer(
