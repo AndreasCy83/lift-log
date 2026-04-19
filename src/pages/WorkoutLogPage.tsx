@@ -279,6 +279,7 @@ export default function WorkoutLogPage() {
       const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
       if (restSec && restSec > 0) {
         startRestTimer(we.id, s.setIndex, restSec);
+        RestTimerNative.startTimer({ seconds: restSec }).catch(() => {});
         forceUpdate(n => n + 1);
       }
     }
