@@ -3,7 +3,8 @@ import { Timer, Play, Pause, RotateCcw } from 'lucide-react';
 import RestTimerNative from '@/lib/RestTimerNative';
 import {
   getActiveTimers, startRestTimer, clearRestTimer,
-  getTimerRemaining, markCueFired, type ActiveRestTimer
+  getTimerRemaining, markCueFired, type ActiveRestTimer,
+  REST_TIMERS_CHANGED_EVENT,
 } from '@/lib/restTimerState';
 import { speakCue, playFinishBeep, preloadAudioCues } from '@/lib/ttsVoice';
 
