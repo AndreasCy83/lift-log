@@ -30,7 +30,8 @@ import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
-import { startRestTimer } from '@/lib/restTimerState';
+import { startRestTimer, clearAllTimersForExercise, getActiveTimers } from '@/lib/restTimerState';
+import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
