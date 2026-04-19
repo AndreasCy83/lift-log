@@ -30,7 +30,8 @@ import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
-import { startRestTimer } from '@/lib/restTimerState';
+import { startRestTimer, clearAllTimersForExercise, getActiveTimers } from '@/lib/restTimerState';
+import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
@@ -157,6 +158,12 @@ export default function WorkoutLogPage() {
   };
 
   const handleRemoveExercise = (weId: string) => {
+    // If the active rest timer belongs to this exercise, stop it.
+    const active = getActiveTimers().find(t => t.workoutExerciseId === weId);
+    if (active) {
+      RestTimerNative.stopTimer().catch(() => {});
+    }
+    clearAllTimersForExercise(weId);
     removeWorkoutExercise(weId);
     refresh();
   };
@@ -272,6 +279,7 @@ export default function WorkoutLogPage() {
       const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
       if (restSec && restSec > 0) {
         startRestTimer(we.id, s.setIndex, restSec);
+        RestTimerNative.startTimer({ seconds: restSec }).catch(() => {});
         forceUpdate(n => n + 1);
       }
     }
