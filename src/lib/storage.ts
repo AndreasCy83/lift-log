@@ -250,8 +250,20 @@ export function getExercisesForRoutine(routineId: string): RoutineExercise[] {
   return getRoutineExercises().filter(re => re.routineId === routineId).sort((a, b) => a.position - b.position);
 }
 export function addRoutineExercise(re: RoutineExercise) { const all = getRoutineExercises(); all.push(re); saveRoutineExercises(all); }
+export function updateRoutineExercise(re: RoutineExercise) {
+  saveRoutineExercises(getRoutineExercises().map(x => x.id === re.id ? re : x));
+}
 export function removeRoutineExercise(id: string) {
   saveRoutineExercises(getRoutineExercises().filter(re => re.id !== id));
+}
+export function reorderRoutineExercises(routineId: string, orderedIds: string[]) {
+  const all = getRoutineExercises();
+  const posMap = new Map(orderedIds.map((id, i) => [id, i]));
+  const updated = all.map(re => re.routineId === routineId && posMap.has(re.id)
+    ? { ...re, position: posMap.get(re.id)! }
+    : re
+  );
+  saveRoutineExercises(updated);
 }
 
 // BMI History
