@@ -110,7 +110,9 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     }
 
     if (mode === 'copy_previous') {
-      const previous = getLatestSetsForExercise(re.exerciseId);
+      // Pass workoutId so the in-progress routine workout (just created above) can never be
+      // selected as "previous data" for itself when later exercises in the same routine look up history.
+      const previous = getLatestSetsForExercise(re.exerciseId, workoutId);
       if (previous.length === 0) {
         // Safe fallback: single blank set
         addWorkoutSet(blankSet(weId, 0, re.restSeconds ?? master?.defaultRestSeconds ?? null));
