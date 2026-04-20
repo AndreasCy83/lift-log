@@ -244,7 +244,13 @@ export function deleteRoutine(id: string) {
 }
 
 // RoutineExercises
-export function getRoutineExercises(): RoutineExercise[] { return get<RoutineExercise[]>(STORAGE_KEYS.routineExercises, []); }
+export function getRoutineExercises(): RoutineExercise[] {
+  // Migrate older routine entries that lack populationMode → 'predefined' (preserves prior behavior)
+  return get<RoutineExercise[]>(STORAGE_KEYS.routineExercises, []).map(re => ({
+    ...re,
+    populationMode: re.populationMode ?? 'predefined',
+  }));
+}
 export function saveRoutineExercises(re: RoutineExercise[]) { set(STORAGE_KEYS.routineExercises, re); }
 export function getExercisesForRoutine(routineId: string): RoutineExercise[] {
   return getRoutineExercises().filter(re => re.routineId === routineId).sort((a, b) => a.position - b.position);
@@ -264,6 +270,23 @@ export function reorderRoutineExercises(routineId: string, orderedIds: string[])
     : re
   );
   saveRoutineExercises(updated);
+}
+
+/** Returns the sets from the most recent workout containing the given exercise.
+ *  Used by routine "copy_previous" population mode. Returns [] if none found. */
+export function getLatestSetsForExercise(exerciseId: string): WorkoutSet[] {
+  const workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
+  const wes = getWorkoutExercises().filter(we => we.exerciseId === exerciseId);
+  const allSets = getWorkoutSets();
+  for (const w of workouts) {
+    const we = wes.find(x => x.workoutId === w.id);
+    if (!we) continue;
+    const sessionSets = allSets
+      .filter(s => s.workoutExerciseId === we.id)
+      .sort((a, b) => a.setIndex - b.setIndex);
+    if (sessionSets.length > 0) return sessionSets;
+  }
+  return [];
 }
 
 // BMI History
