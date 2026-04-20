@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus } from 'lucide-react';
-import { getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise, addWorkout, addWorkoutExercise, addWorkoutSet } from '@/lib/storage';
+import { getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise } from '@/lib/storage';
+import { createWorkoutFromRoutine } from '@/lib/routineRunner';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
