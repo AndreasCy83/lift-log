@@ -54,22 +54,7 @@ export default function RoutinesPage() {
   };
 
   const handleLogRoutineToDate = (r: Routine, date: Date) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    const workoutId = generateId();
-    addWorkout({ id: workoutId, date: dateStr, startTime: date.toISOString(), endTime: null, notes: `From: ${r.name}` });
-    const res = getExercisesForRoutine(r.id);
-    res.forEach((re, idx) => {
-      const weId = generateId();
-      addWorkoutExercise({ id: weId, workoutId, exerciseId: re.exerciseId, position: idx, notes: '', defaultRestSeconds: re.restSeconds ?? null });
-      for (let i = 0; i < re.sets; i++) {
-        addWorkoutSet({
-          id: generateId(), workoutExerciseId: weId, setIndex: i,
-          weightKg: null, reps: re.repsMin, distanceKm: null, durationMinutes: null,
-          rpe: null, setTag: 'N', isWarmup: false, isCompleted: false, notes: '',
-          restSeconds: re.restSeconds ?? null,
-        });
-      }
-    });
+    const dateStr = createWorkoutFromRoutine(r, date);
     setLogToDateRoutine(null);
     navigate(`/workout/${dateStr}`);
   };
