@@ -1,0 +1,121 @@
+import { format } from 'date-fns';
+import {
+  generateId, getExercisesForRoutine, getExercises, getLatestSetsForExercise,
+  addWorkout, addWorkoutExercise, addWorkoutSet, getWorkoutByDate, deleteWorkout,
+} from '@/lib/storage';
+import type { Routine, RoutineExercise, WorkoutSet, Exercise, SetTag } from '@/types/fitness';
+
+function blankSet(weId: string, setIndex: number, restSeconds: number | null): WorkoutSet {
+  return {
+    id: generateId(),
+    workoutExerciseId: weId,
+    setIndex,
+    weightKg: null,
+    reps: null,
+    distanceKm: null,
+    durationMinutes: null,
+    rpe: null,
+    setTag: 'N',
+    isWarmup: false,
+    isCompleted: false,
+    notes: '',
+    restSeconds,
+  };
+}
+
+function predefinedSet(weId: string, setIndex: number, re: RoutineExercise): WorkoutSet {
+  return {
+    id: generateId(),
+    workoutExerciseId: weId,
+    setIndex,
+    weightKg: null,
+    reps: re.repsMin ?? null,
+    distanceKm: null,
+    durationMinutes: null,
+    rpe: null,
+    setTag: 'N',
+    isWarmup: false,
+    isCompleted: false,
+    notes: '',
+    restSeconds: re.restSeconds ?? null,
+  };
+}
+
+function copiedSet(weId: string, setIndex: number, src: WorkoutSet, fallbackRest: number | null): WorkoutSet {
+  return {
+    id: generateId(),
+    workoutExerciseId: weId,
+    setIndex,
+    weightKg: src.weightKg,
+    reps: src.reps,
+    distanceKm: src.distanceKm,
+    durationMinutes: src.durationMinutes,
+    rpe: null,
+    setTag: (src.setTag ?? 'N') as SetTag,
+    isWarmup: src.isWarmup ?? false,
+    isCompleted: false,
+    notes: '',
+    restSeconds: src.restSeconds ?? fallbackRest,
+  };
+}
+
+/** Creates a workout for the given date from the routine, honoring each entry's populationMode. */
+export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
+  const dateStr = format(date, 'yyyy-MM-dd');
+  // If a workout already exists on this date, replace it (matches existing copyWorkout behavior)
+  const existing = getWorkoutByDate(dateStr);
+  if (existing) deleteWorkout(existing.id);
+
+  const workoutId = generateId();
+  addWorkout({
+    id: workoutId,
+    date: dateStr,
+    startTime: date.toISOString(),
+    endTime: null,
+    notes: `From: ${routine.name}`,
+  });
+
+  const entries = getExercisesForRoutine(routine.id);
+  const allExercises = getExercises();
+
+  entries.forEach((re, idx) => {
+    const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
+    const weId = generateId();
+    const mode = re.populationMode ?? 'predefined';
+
+    addWorkoutExercise({
+      id: weId,
+      workoutId,
+      exerciseId: re.exerciseId,
+      position: idx,
+      notes: '',
+      defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
+    });
+
+    if (mode === 'blank') {
+      // Add the exercise only — no sets prefilled
+      return;
+    }
+
+    if (mode === 'copy_previous') {
+      const previous = getLatestSetsForExercise(re.exerciseId);
+      if (previous.length === 0) {
+        // Safe fallback: single blank set
+        addWorkoutSet(blankSet(weId, 0, re.restSeconds ?? master?.defaultRestSeconds ?? null));
+        return;
+      }
+      previous.forEach((src, i) => {
+        addWorkoutSet(copiedSet(weId, i, src, re.restSeconds ?? master?.defaultRestSeconds ?? null));
+      });
+      return;
+    }
+
+    // predefined
+    const setsCount = Math.max(1, re.sets || 1);
+    for (let i = 0; i < setsCount; i++) {
+      addWorkoutSet(predefinedSet(weId, i, re));
+    }
+  });
+
+  return dateStr;
+}
