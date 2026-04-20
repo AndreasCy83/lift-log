@@ -7,12 +7,16 @@ import {
   reorderRoutineExercises, generateId,
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import type { RoutineExercise } from '@/types/fitness';
+import type { RoutineExercise, RoutinePopulationMode } from '@/types/fitness';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
+import RoutineExerciseSetupSheet from '@/components/RoutineExerciseSetupSheet';
+
+const MODE_SHORT: Record<RoutinePopulationMode, string> = {
+  copy_previous: 'Copy previous',
+  predefined: 'Predefined',
+  blank: 'Blank',
+};
 
 export default function RoutineDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -23,10 +27,6 @@ export default function RoutineDetailPage() {
   const categories = useMemo(() => getCategories(), []);
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<RoutineExercise | null>(null);
-  const [editSets, setEditSets] = useState('');
-  const [editRepsMin, setEditRepsMin] = useState('');
-  const [editRepsMax, setEditRepsMax] = useState('');
-  const [editRest, setEditRest] = useState('');
   const dragId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
@@ -35,6 +35,7 @@ export default function RoutineDetailPage() {
   const refresh = () => setRoutineExercises(getExercisesForRoutine(id));
 
   const handleAddExercises = (exerciseIds: string[]) => {
+    const created: RoutineExercise[] = [];
     exerciseIds.forEach((exerciseId, i) => {
       const master = exercises.find(e => e.id === exerciseId);
       const re: RoutineExercise = {
@@ -42,16 +43,23 @@ export default function RoutineDetailPage() {
         routineId: id,
         exerciseId,
         position: routineExercises.length + i,
+        populationMode: 'predefined',
         sets: master?.defaultSets ?? 3,
         repsMin: master?.defaultRepsMin ?? 8,
         repsMax: master?.defaultRepsMax ?? 12,
         restSeconds: master?.defaultRestSeconds ?? 90,
+        predefinedSetType: master?.setType ?? null,
         supersetGroup: null,
       };
       addRoutineExercise(re);
+      created.push(re);
     });
     refresh();
     setShowAdd(false);
+    // Open the setup sheet for the first newly added exercise so the user picks a mode immediately
+    if (created.length > 0) {
+      setTimeout(() => setEditing(created[0]), 50);
+    }
   };
 
   const handleRemove = (reId: string) => {
@@ -59,23 +67,7 @@ export default function RoutineDetailPage() {
     refresh();
   };
 
-  const openEdit = (re: RoutineExercise) => {
-    setEditing(re);
-    setEditSets(String(re.sets));
-    setEditRepsMin(re.repsMin != null ? String(re.repsMin) : '');
-    setEditRepsMax(re.repsMax != null ? String(re.repsMax) : '');
-    setEditRest(re.restSeconds != null ? String(re.restSeconds) : '');
-  };
-
-  const handleSaveEdit = () => {
-    if (!editing) return;
-    const updated: RoutineExercise = {
-      ...editing,
-      sets: Math.max(1, parseInt(editSets) || 1),
-      repsMin: editRepsMin.trim() === '' ? null : Math.max(0, parseInt(editRepsMin) || 0),
-      repsMax: editRepsMax.trim() === '' ? null : Math.max(0, parseInt(editRepsMax) || 0),
-      restSeconds: editRest.trim() === '' ? null : Math.max(0, parseInt(editRest) || 0),
-    };
+  const handleSaveEdit = (updated: RoutineExercise) => {
     updateRoutineExercise(updated);
     setEditing(null);
     refresh();
@@ -122,6 +114,15 @@ export default function RoutineDetailPage() {
     return r != null ? `${r} reps` : '— reps';
   };
 
+  const summary = (re: RoutineExercise) => {
+    const mode = re.populationMode ?? 'predefined';
+    const cat = getCategoryName(re.exerciseId);
+    const prefix = cat ? `${cat} · ` : '';
+    if (mode === 'copy_previous') return `${prefix}${MODE_SHORT.copy_previous} from last session`;
+    if (mode === 'blank') return `${prefix}${MODE_SHORT.blank} — fill in workout`;
+    return `${prefix}${re.sets} sets × ${repsLabel(re)}${re.restSeconds != null ? ` · ${re.restSeconds}s rest` : ''}`;
+  };
+
   return (
     <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
@@ -166,14 +167,11 @@ export default function RoutineDetailPage() {
               >
                 <GripVertical className="h-4 w-4" />
               </button>
-              <button onClick={() => openEdit(re)} className="flex-1 min-w-0 text-left">
+              <button onClick={() => setEditing(re)} className="flex-1 min-w-0 text-left">
                 <div className="text-sm font-medium truncate">{getExerciseName(re.exerciseId)}</div>
-                <div className="text-xs text-muted-foreground truncate">
-                  {getCategoryName(re.exerciseId)} · {re.sets} sets × {repsLabel(re)}
-                  {re.restSeconds != null ? ` · ${re.restSeconds}s rest` : ''}
-                </div>
+                <div className="text-xs text-muted-foreground truncate">{summary(re)}</div>
               </button>
-              <button onClick={() => openEdit(re)} className="p-1 text-muted-foreground hover:text-primary" aria-label="Edit">
+              <button onClick={() => setEditing(re)} className="p-1 text-muted-foreground hover:text-primary" aria-label="Edit">
                 <Pencil className="h-4 w-4" />
               </button>
               <button onClick={() => handleRemove(re.id)} className="p-1 text-muted-foreground hover:text-destructive" aria-label="Remove">
@@ -184,43 +182,15 @@ export default function RoutineDetailPage() {
         )}
       </div>
 
-      <Sheet open={!!editing} onOpenChange={(o) => { if (!o) setEditing(null); }}>
-        <SheetContent side="bottom" className="rounded-t-2xl">
-          <SheetHeader>
-            <SheetTitle className="text-left">
-              {editing ? getExerciseName(editing.exerciseId) : ''}
-            </SheetTitle>
-          </SheetHeader>
-          <div className="space-y-4 pt-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="re-sets">Sets</Label>
-              <Input id="re-sets" type="number" inputMode="numeric" min={1}
-                value={editSets} onChange={e => setEditSets(e.target.value)} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="re-reps-min">Reps min</Label>
-                <Input id="re-reps-min" type="number" inputMode="numeric" min={0}
-                  value={editRepsMin} onChange={e => setEditRepsMin(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="re-reps-max">Reps max</Label>
-                <Input id="re-reps-max" type="number" inputMode="numeric" min={0}
-                  value={editRepsMax} onChange={e => setEditRepsMax(e.target.value)} />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="re-rest">Rest (seconds)</Label>
-              <Input id="re-rest" type="number" inputMode="numeric" min={0}
-                value={editRest} onChange={e => setEditRest(e.target.value)} />
-            </div>
-            <div className="flex gap-2 pt-2">
-              <Button variant="ghost" className="flex-1" onClick={() => setEditing(null)}>Cancel</Button>
-              <Button className="flex-1 bg-primary text-primary-foreground" onClick={handleSaveEdit}>Save</Button>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+      {editing && (
+        <RoutineExerciseSetupSheet
+          open={!!editing}
+          onOpenChange={(o) => { if (!o) setEditing(null); }}
+          exerciseName={getExerciseName(editing.exerciseId)}
+          initial={editing}
+          onSave={handleSaveEdit}
+        />
+      )}
     </div>
   );
 }
