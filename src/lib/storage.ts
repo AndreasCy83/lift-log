@@ -273,18 +273,29 @@ export function reorderRoutineExercises(routineId: string, orderedIds: string[])
 }
 
 /** Returns the sets from the most recent workout containing the given exercise.
- *  Used by routine "copy_previous" population mode. Returns [] if none found. */
+ *  Used by routine "copy_previous" population mode. Returns the full set rows
+ *  exactly as they were performed (kg, reps, setTag, restSeconds preserved per row).
+ *  Returns [] if none found. */
 export function getLatestSetsForExercise(exerciseId: string): WorkoutSet[] {
   const workouts = getWorkouts().sort((a, b) => b.date.localeCompare(a.date));
   const wes = getWorkoutExercises().filter(we => we.exerciseId === exerciseId);
   const allSets = getWorkoutSets();
   for (const w of workouts) {
-    const we = wes.find(x => x.workoutId === w.id);
-    if (!we) continue;
+    // Pick the LAST occurrence of this exercise inside the workout (most recent block).
+    const matching = wes.filter(x => x.workoutId === w.id);
+    if (matching.length === 0) continue;
+    const we = matching[matching.length - 1];
     const sessionSets = allSets
       .filter(s => s.workoutExerciseId === we.id)
       .sort((a, b) => a.setIndex - b.setIndex);
-    if (sessionSets.length > 0) return sessionSets;
+    // Require at least one row with meaningful data so we don't return ghost empty rows.
+    const hasData = sessionSets.some(s =>
+      (typeof s.weightKg === 'number' && s.weightKg > 0) ||
+      (typeof s.reps === 'number' && s.reps > 0) ||
+      (typeof s.distanceKm === 'number' && s.distanceKm > 0) ||
+      (typeof s.durationMinutes === 'number' && s.durationMinutes > 0)
+    );
+    if (hasData) return sessionSets;
   }
   return [];
 }

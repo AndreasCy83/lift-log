@@ -42,20 +42,30 @@ function predefinedSet(weId: string, setIndex: number, re: RoutineExercise): Wor
 }
 
 function copiedSet(weId: string, setIndex: number, src: WorkoutSet, fallbackRest: number | null): WorkoutSet {
+  // Full row-by-row copy — every field comes from THIS specific previous set row.
+  // Each call returns a brand-new object literal so rows can never share references.
+  const srcReps = typeof src.reps === 'number' ? src.reps : null;
+  const srcWeight = typeof src.weightKg === 'number' ? src.weightKg : null;
+  const srcDistance = typeof src.distanceKm === 'number' ? src.distanceKm : null;
+  const srcDuration = typeof src.durationMinutes === 'number' ? src.durationMinutes : null;
+  const srcTag: SetTag = (src.setTag === 'W' || src.setTag === 'D' || src.setTag === 'F' || src.setTag === 'N')
+    ? src.setTag
+    : (src.isWarmup ? 'W' : 'N');
+  const srcRest = typeof src.restSeconds === 'number' ? src.restSeconds : fallbackRest;
   return {
     id: generateId(),
     workoutExerciseId: weId,
     setIndex,
-    weightKg: src.weightKg,
-    reps: src.reps,
-    distanceKm: src.distanceKm,
-    durationMinutes: src.durationMinutes,
+    weightKg: srcWeight,
+    reps: srcReps,
+    distanceKm: srcDistance,
+    durationMinutes: srcDuration,
     rpe: null,
-    setTag: (src.setTag ?? 'N') as SetTag,
-    isWarmup: src.isWarmup ?? false,
+    setTag: srcTag,
+    isWarmup: srcTag === 'W',
     isCompleted: false,
     notes: '',
-    restSeconds: src.restSeconds ?? fallbackRest,
+    restSeconds: srcRest,
   };
 }
 
