@@ -49,12 +49,18 @@ export interface Exercise {
   isCustom: boolean;
 }
 
+export type WorkoutSource = 'manual' | 'routine';
+
 export interface Workout {
   id: string;
   date: string;
   startTime: string | null;
   endTime: string | null;
   notes: string;
+  /** Origin of the workout. 'routine' workouts must NOT have manual first-set autofill applied on top. */
+  source?: WorkoutSource;
+  /** ID of the routine that generated this workout, if source === 'routine'. */
+  sourceRoutineId?: string | null;
 }
 
 export interface WorkoutExercise {

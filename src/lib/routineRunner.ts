@@ -83,6 +83,8 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     startTime: date.toISOString(),
     endTime: null,
     notes: `From: ${routine.name}`,
+    source: 'routine',
+    sourceRoutineId: routine.id,
   });
 
   const entries = getExercisesForRoutine(routine.id);
