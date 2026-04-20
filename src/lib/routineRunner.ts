@@ -72,11 +72,22 @@ function copiedSet(weId: string, setIndex: number, src: WorkoutSet, fallbackRest
 /** Creates a workout for the given date from the routine, honoring each entry's populationMode. */
 export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
   const dateStr = format(date, 'yyyy-MM-dd');
-  // If a workout already exists on this date, replace it (matches existing copyWorkout behavior)
   const existing = getWorkoutByDate(dateStr);
+  const entries = getExercisesForRoutine(routine.id);
+  const allExercises = getExercises();
+  const workoutId = generateId();
+  const previousSetsByExerciseId = new Map<string, WorkoutSet[]>();
+
+  entries.forEach((re) => {
+    if ((re.populationMode ?? 'predefined') === 'copy_previous' && !previousSetsByExerciseId.has(re.exerciseId)) {
+      previousSetsByExerciseId.set(re.exerciseId, getLatestSetsForExercise(re.exerciseId, workoutId));
+    }
+  });
+
+  // If a workout already exists on this date, replace it only after previous-session data
+  // has been resolved, otherwise today's workout can be deleted before it is used as history.
   if (existing) deleteWorkout(existing.id);
 
-  const workoutId = generateId();
   addWorkout({
     id: workoutId,
     date: dateStr,
@@ -86,9 +97,6 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     source: 'routine',
     sourceRoutineId: routine.id,
   });
-
-  const entries = getExercisesForRoutine(routine.id);
-  const allExercises = getExercises();
 
   entries.forEach((re, idx) => {
     const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
@@ -110,9 +118,7 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     }
 
     if (mode === 'copy_previous') {
-      // Pass workoutId so the in-progress routine workout (just created above) can never be
-      // selected as "previous data" for itself when later exercises in the same routine look up history.
-      const previous = getLatestSetsForExercise(re.exerciseId, workoutId);
+      const previous = previousSetsByExerciseId.get(re.exerciseId) ?? [];
       if (previous.length === 0) {
         // Safe fallback: single blank set
         addWorkoutSet(blankSet(weId, 0, re.restSeconds ?? master?.defaultRestSeconds ?? null));
