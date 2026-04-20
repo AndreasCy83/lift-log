@@ -91,15 +91,22 @@ export interface Routine {
   isActive: boolean;
 }
 
+export type RoutinePopulationMode = 'copy_previous' | 'predefined' | 'blank';
+
 export interface RoutineExercise {
   id: string;
   routineId: string;
   exerciseId: string;
   position: number;
+  /** How sets are populated when this routine runs */
+  populationMode?: RoutinePopulationMode;
+  // Predefined-mode fields (used only when populationMode === 'predefined')
   sets: number;
   repsMin: number | null;
   repsMax: number | null;
   restSeconds: number | null;
+  /** Predefined set type override; falls back to exercise.setType */
+  predefinedSetType?: SetType | null;
   supersetGroup: string | null;
 }
 
