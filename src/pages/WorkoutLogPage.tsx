@@ -55,7 +55,7 @@ export default function WorkoutLogPage() {
     if (!date) return null;
     let w = getWorkoutByDate(date);
     if (!w) {
-      w = { id: generateId(), date, startTime: new Date().toISOString(), endTime: null, notes: '' };
+      w = { id: generateId(), date, startTime: new Date().toISOString(), endTime: null, notes: '', source: 'manual', sourceRoutineId: null };
       addWorkout(w);
     }
     return w;
@@ -134,6 +134,9 @@ export default function WorkoutLogPage() {
   };
 
   const handleAddExercises = (exerciseIds: string[]) => {
+    // Manual add path: only auto-fill the first set from previous entry when this workout
+    // is manual. Routine-created workouts must NOT receive manual autofill on top.
+    const isRoutineWorkout = workout.source === 'routine';
     exerciseIds.forEach((exerciseId, i) => {
       const restDefault = getExerciseRestDefault(exerciseId);
       const we: WorkoutExercise = {
@@ -141,7 +144,7 @@ export default function WorkoutLogPage() {
         defaultRestSeconds: restDefault,
       };
       addWorkoutExercise(we);
-      const prefill = getLastSessionFirstSet(exerciseId);
+      const prefill = isRoutineWorkout ? { weightKg: null, reps: null } : getLastSessionFirstSet(exerciseId);
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
         weightKg: prefill.weightKg, reps: prefill.reps, distanceKm: null, durationMinutes: null,
