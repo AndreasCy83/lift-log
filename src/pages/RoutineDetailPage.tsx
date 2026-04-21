@@ -27,6 +27,9 @@ export default function RoutineDetailPage() {
   const categories = useMemo(() => getCategories(), []);
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<RoutineExercise | null>(null);
+  const [setupQueue, setSetupQueue] = useState<RoutineExercise[]>([]);
+  const [setupIndex, setSetupIndex] = useState(0);
+  const [setupTotal, setSetupTotal] = useState(0);
   const dragId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
