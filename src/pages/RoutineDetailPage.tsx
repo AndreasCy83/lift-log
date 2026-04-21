@@ -220,8 +220,8 @@ export default function RoutineDetailPage() {
       {editing && (
         <RoutineExerciseSetupSheet
           open={!!editing}
-          onOpenChange={(o) => { if (!o) setEditing(null); }}
-          exerciseName={getExerciseName(editing.exerciseId)}
+          onOpenChange={handleSetupOpenChange}
+          exerciseName={`${getExerciseName(editing.exerciseId)}${setupTotal > 1 ? ` (${setupIndex + 1} of ${setupTotal})` : ''}`}
           initial={editing}
           onSave={handleSaveEdit}
         />
