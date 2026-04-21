@@ -289,7 +289,16 @@ export default function WorkoutLogPage() {
   };
 
   const handleDeleteSet = (id: string) => {
+    const allSets = getWorkoutSets();
+    const target = allSets.find(s => s.id === id);
+    const weId = target?.workoutExerciseId;
     deleteWorkoutSet(id);
+    if (weId) {
+      const remaining = getSetsForWorkoutExercise(weId);
+      remaining.forEach((s, i) => {
+        if (s.setIndex !== i) updateWorkoutSet({ ...s, setIndex: i });
+      });
+    }
     forceUpdate(n => n + 1);
   };
 
