@@ -276,35 +276,33 @@ export function reorderRoutineExercises(routineId: string, orderedIds: string[])
  *  Used by routine "copy_previous" population mode. Returns the full set rows
  *  exactly as they were performed (kg, reps, setTag, restSeconds preserved per row).
  *  Returns [] if none found. */
-export function getLatestSetsForExercise(exerciseId: string, excludeWorkoutId?: string): WorkoutSet[] {
-  // Single source of truth: reuse getExerciseHistory's selection rules so routine
-  // copy_previous and manual previous-session lookups never disagree. We scan every
-  // historical workout containing this exercise (not just the most recent occurrence
-  // in storage order) and pick the first session with meaningful set data.
+export function getLatestSetsForExercise(
+  exerciseId: string,
+  excludeWorkoutId?: string
+): WorkoutSet[] {
   const workouts = getWorkouts()
-    .filter(w => !excludeWorkoutId || w.id !== excludeWorkoutId)
+    .filter(w => w.id !== excludeWorkoutId)
     .sort((a, b) => b.date.localeCompare(a.date));
   const wes = getWorkoutExercises().filter(we => we.exerciseId === exerciseId);
   const allSets = getWorkoutSets();
 
   for (const w of workouts) {
-    // A workout can contain the same exercise multiple times — check every block,
-    // not just the last one, so an empty trailing block can't mask a populated earlier block.
-    const blocks = wes.filter(x => x.workoutId === w.id);
-    if (blocks.length === 0) continue;
+    const matching = wes.filter(x => x.workoutId === w.id);
+    if (matching.length === 0) continue;
 
-    // Prefer the LAST block that has meaningful data; fall back to any block with data.
-    for (let i = blocks.length - 1; i >= 0; i--) {
-      const we = blocks[i];
+    for (let i = matching.length - 1; i >= 0; i--) {
+      const we = matching[i];
       const sessionSets = allSets
         .filter(s => s.workoutExerciseId === we.id)
         .sort((a, b) => a.setIndex - b.setIndex);
+
       const hasData = sessionSets.some(s =>
         (typeof s.weightKg === 'number' && s.weightKg > 0) ||
         (typeof s.reps === 'number' && s.reps > 0) ||
         (typeof s.distanceKm === 'number' && s.distanceKm > 0) ||
         (typeof s.durationMinutes === 'number' && s.durationMinutes > 0)
       );
+
       if (hasData) return sessionSets;
     }
   }
