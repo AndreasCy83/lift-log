@@ -27,6 +27,9 @@ export default function RoutineDetailPage() {
   const categories = useMemo(() => getCategories(), []);
   const [showAdd, setShowAdd] = useState(false);
   const [editing, setEditing] = useState<RoutineExercise | null>(null);
+  const [setupQueue, setSetupQueue] = useState<RoutineExercise[]>([]);
+  const [setupIndex, setSetupIndex] = useState(0);
+  const [setupTotal, setSetupTotal] = useState(0);
   const dragId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
@@ -56,8 +59,10 @@ export default function RoutineDetailPage() {
     });
     refresh();
     setShowAdd(false);
-    // Open the setup sheet for the first newly added exercise so the user picks a mode immediately
     if (created.length > 0) {
+      setSetupQueue(created);
+      setSetupIndex(0);
+      setSetupTotal(created.length);
       setTimeout(() => setEditing(created[0]), 50);
     }
   };
@@ -69,8 +74,38 @@ export default function RoutineDetailPage() {
 
   const handleSaveEdit = (updated: RoutineExercise) => {
     updateRoutineExercise(updated);
-    setEditing(null);
     refresh();
+    // Advance queue if we're in multi-add flow
+    if (setupQueue.length > 0 && setupIndex < setupQueue.length - 1) {
+      const nextIndex = setupIndex + 1;
+      const next = setupQueue[nextIndex];
+      setSetupIndex(nextIndex);
+      setEditing(null);
+      setTimeout(() => setEditing(next), 50);
+    } else {
+      setEditing(null);
+      setSetupQueue([]);
+      setSetupIndex(0);
+      setSetupTotal(0);
+    }
+  };
+
+  const handleSetupOpenChange = (o: boolean) => {
+    if (!o) {
+      // User dismissed — advance queue if multi-add
+      if (setupQueue.length > 0 && setupIndex < setupQueue.length - 1) {
+        const nextIndex = setupIndex + 1;
+        const next = setupQueue[nextIndex];
+        setSetupIndex(nextIndex);
+        setEditing(null);
+        setTimeout(() => setEditing(next), 50);
+      } else {
+        setEditing(null);
+        setSetupQueue([]);
+        setSetupIndex(0);
+        setSetupTotal(0);
+      }
+    }
   };
 
   const handleDragStart = (reId: string) => { dragId.current = reId; };
@@ -185,8 +220,8 @@ export default function RoutineDetailPage() {
       {editing && (
         <RoutineExerciseSetupSheet
           open={!!editing}
-          onOpenChange={(o) => { if (!o) setEditing(null); }}
-          exerciseName={getExerciseName(editing.exerciseId)}
+          onOpenChange={handleSetupOpenChange}
+          exerciseName={`${getExerciseName(editing.exerciseId)}${setupTotal > 1 ? ` (${setupIndex + 1} of ${setupTotal})` : ''}`}
           initial={editing}
           onSave={handleSaveEdit}
         />
