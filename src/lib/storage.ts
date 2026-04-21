@@ -290,8 +290,7 @@ export function getLatestSetsForExercise(
     const matching = wes.filter(x => x.workoutId === w.id);
     if (matching.length === 0) continue;
 
-    for (let i = matching.length - 1; i >= 0; i--) {
-      const we = matching[i];
+    for (const we of [...matching].reverse()) {
       const sessionSets = allSets
         .filter(s => s.workoutExerciseId === we.id)
         .sort((a, b) => a.setIndex - b.setIndex);
