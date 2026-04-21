@@ -121,7 +121,7 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
         return;
       }
       previous.forEach((src, i) =>
-        addWorkoutSet(copiedSet(weId, i, src, re.restSeconds ?? master?.defaultRestSeconds ?? null));
+        addWorkoutSet(copiedSet(weId, i, src, re.restSeconds ?? master?.defaultRestSeconds ?? null))
       );
       return;
     }
