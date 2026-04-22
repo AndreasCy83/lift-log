@@ -31,6 +31,7 @@ function predefinedSet(
   row?: import('@/types/fitness').RoutinePredefinedRow,
 ): WorkoutSet {
   const fallbackRest = re.restSeconds ?? null;
+  const tag: SetTag = row?.setTag ?? 'N';
   const base: WorkoutSet = {
     id: generateId(),
     workoutExerciseId: weId,
@@ -40,8 +41,8 @@ function predefinedSet(
     distanceKm: null,
     durationMinutes: null,
     rpe: null,
-    setTag: 'N',
-    isWarmup: false,
+    setTag: tag,
+    isWarmup: tag === 'W',
     isCompleted: false,
     notes: '',
     restSeconds: row?.restSeconds ?? fallbackRest,

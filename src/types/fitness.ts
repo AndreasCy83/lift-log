@@ -105,6 +105,7 @@ export interface RoutinePredefinedRow {
   distanceKm: number | null;
   durationMinutes: number | null;
   restSeconds: number | null;
+  setTag?: SetTag;
 }
 
 export interface RoutineExercise {

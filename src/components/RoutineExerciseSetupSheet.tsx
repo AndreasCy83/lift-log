@@ -5,7 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { RoutineExercise, RoutinePopulationMode, RoutinePredefinedRow, SetType } from '@/types/fitness';
+import type { RoutineExercise, RoutinePopulationMode, RoutinePredefinedRow, SetTag, SetType } from '@/types/fitness';
+
+const TAG_COLORS: Record<SetTag, string> = {
+  N: 'bg-secondary text-muted-foreground',
+  W: 'bg-yellow-500/20 text-yellow-500',
+  D: 'bg-blue-500/20 text-blue-500',
+  F: 'bg-red-500/20 text-red-500',
+};
+const TAG_LABEL: Record<SetTag, string> = { N: 'Normal', W: 'Warmup', D: 'Dropset', F: 'Failure' };
+const NEXT_TAG: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
 
 interface Props {
   open: boolean;
@@ -172,10 +181,32 @@ export default function RoutineExerciseSetupSheet({ open, onOpenChange, exercise
 
           {mode === 'predefined' && (
             <div className="space-y-3 rounded-lg border border-border p-3 bg-secondary/20">
+              {/* Column headers */}
+              <div className="flex items-center gap-2 px-1">
+                <span className="text-[10px] font-semibold text-muted-foreground w-5 flex-shrink-0">Set</span>
+                <span className="text-[10px] font-semibold text-muted-foreground w-7 flex-shrink-0 text-center">Type</span>
+                {showWeight && <span className="text-[10px] font-semibold text-muted-foreground text-center min-w-0 flex-1">KG</span>}
+                {showReps && <span className="text-[10px] font-semibold text-muted-foreground text-center min-w-0 flex-1">Reps</span>}
+                {showDistance && <span className="text-[10px] font-semibold text-muted-foreground text-center min-w-0 flex-1">KM</span>}
+                {showDuration && <span className="text-[10px] font-semibold text-muted-foreground text-center min-w-0 flex-1">Time</span>}
+                <span className="text-[10px] font-semibold text-muted-foreground text-center min-w-0 flex-1">Rest</span>
+                <span className="w-6 flex-shrink-0" aria-hidden />
+              </div>
               <div className="space-y-2">
-                {rows.map((row, idx) => (
+                {rows.map((row, idx) => {
+                  const tag: SetTag = row.setTag ?? 'N';
+                  return (
                   <div key={idx} className="flex items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground w-5 flex-shrink-0">#{idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => updateRow(idx, { setTag: NEXT_TAG[tag] })}
+                      className={`h-7 w-7 rounded text-[10px] font-bold flex items-center justify-center transition-colors flex-shrink-0 ${TAG_COLORS[tag]}`}
+                      title={`${TAG_LABEL[tag]} (tap to cycle)`}
+                      aria-label={`Set ${idx + 1} type: ${TAG_LABEL[tag]}`}
+                    >
+                      {tag === 'N' ? '–' : tag}
+                    </button>
                     {showWeight && (
                       <Input
                         type="number" inputMode="decimal" placeholder="kg" min={0}
@@ -213,7 +244,7 @@ export default function RoutineExerciseSetupSheet({ open, onOpenChange, exercise
                       />
                     )}
                     <Input
-                      type="number" inputMode="numeric" placeholder="Rest" min={0}
+                      type="number" inputMode="numeric" placeholder="sec" min={0}
                       value={numToStr(row.restSeconds)}
                       onChange={e => updateRow(idx, { restSeconds: strToInt(e.target.value) })}
                       className="h-9 text-sm text-center px-2 min-w-0 flex-1"
@@ -229,7 +260,11 @@ export default function RoutineExerciseSetupSheet({ open, onOpenChange, exercise
                       <X className="h-4 w-4" />
                     </button>
                   </div>
-                ))}
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground px-1">
+                <span><span className="font-bold">N</span> Normal · <span className="font-bold text-yellow-500">W</span> Warmup · <span className="font-bold text-blue-500">D</span> Dropset · <span className="font-bold text-red-500">F</span> Failure</span>
               </div>
               <Button
                 type="button"
