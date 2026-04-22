@@ -99,6 +99,14 @@ export interface Routine {
 
 export type RoutinePopulationMode = 'copy_previous' | 'predefined' | 'blank';
 
+export interface RoutinePredefinedRow {
+  weightKg: number | null;
+  reps: number | null;
+  distanceKm: number | null;
+  durationMinutes: number | null;
+  restSeconds: number | null;
+}
+
 export interface RoutineExercise {
   id: string;
   routineId: string;
@@ -113,6 +121,8 @@ export interface RoutineExercise {
   restSeconds: number | null;
   /** Predefined set type override; falls back to exercise.setType */
   predefinedSetType?: SetType | null;
+  /** Per-row predefined set data; when present, takes precedence over sets/repsMin/repsMax. */
+  predefinedRows?: RoutinePredefinedRow[];
   supersetGroup: string | null;
 }
 

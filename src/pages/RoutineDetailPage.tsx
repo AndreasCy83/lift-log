@@ -41,17 +41,27 @@ export default function RoutineDetailPage() {
     const created: RoutineExercise[] = [];
     exerciseIds.forEach((exerciseId, i) => {
       const master = exercises.find(e => e.id === exerciseId);
+      const sets = master?.defaultSets ?? 3;
+      const reps = master?.defaultRepsMin ?? null;
+      const rest = master?.defaultRestSeconds ?? 90;
       const re: RoutineExercise = {
         id: generateId(),
         routineId: id,
         exerciseId,
         position: routineExercises.length + i,
         populationMode: 'predefined',
-        sets: master?.defaultSets ?? 3,
+        sets,
         repsMin: master?.defaultRepsMin ?? 8,
         repsMax: master?.defaultRepsMax ?? 12,
-        restSeconds: master?.defaultRestSeconds ?? 90,
+        restSeconds: rest,
         predefinedSetType: master?.setType ?? null,
+        predefinedRows: Array.from({ length: Math.max(1, sets) }, () => ({
+          weightKg: null,
+          reps,
+          distanceKm: null,
+          durationMinutes: null,
+          restSeconds: rest,
+        })),
         supersetGroup: null,
       };
       addRoutineExercise(re);
@@ -223,6 +233,7 @@ export default function RoutineDetailPage() {
           onOpenChange={handleSetupOpenChange}
           exerciseName={`${getExerciseName(editing.exerciseId)}${setupTotal > 1 ? ` (${setupIndex + 1} of ${setupTotal})` : ''}`}
           initial={editing}
+          setType={exercises.find(e => e.id === editing.exerciseId)?.setType}
           onSave={handleSaveEdit}
         />
       )}
