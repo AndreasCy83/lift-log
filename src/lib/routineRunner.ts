@@ -154,10 +154,17 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
       return;
     }
 
-    // predefined
-    const setsCount = Math.max(1, (re.sets ?? 1));
-    for (let i = 0; i < setsCount; i++) {
-      addWorkoutSet(predefinedSet(weId, i, re));
+    // predefined — prefer per-row setType-aware data when present
+    const setType = master?.setType;
+    if (re.predefinedRows && re.predefinedRows.length > 0) {
+      re.predefinedRows.forEach((row, i) => {
+        addWorkoutSet(predefinedSet(weId, i, re, setType, row));
+      });
+    } else {
+      const setsCount = Math.max(1, (re.sets ?? 1));
+      for (let i = 0; i < setsCount; i++) {
+        addWorkoutSet(predefinedSet(weId, i, re, setType));
+      }
     }
   });
 
