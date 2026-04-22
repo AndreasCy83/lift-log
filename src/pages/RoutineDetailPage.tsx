@@ -233,6 +233,7 @@ export default function RoutineDetailPage() {
           onOpenChange={handleSetupOpenChange}
           exerciseName={`${getExerciseName(editing.exerciseId)}${setupTotal > 1 ? ` (${setupIndex + 1} of ${setupTotal})` : ''}`}
           initial={editing}
+          setType={exercises.find(e => e.id === editing.exerciseId)?.setType}
           onSave={handleSaveEdit}
         />
       )}
