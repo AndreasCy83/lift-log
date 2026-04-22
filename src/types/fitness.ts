@@ -99,6 +99,14 @@ export interface Routine {
 
 export type RoutinePopulationMode = 'copy_previous' | 'predefined' | 'blank';
 
+export interface RoutinePredefinedRow {
+  weightKg: number | null;
+  reps: number | null;
+  distanceKm: number | null;
+  durationMinutes: number | null;
+  restSeconds: number | null;
+}
+
 export interface RoutineExercise {
   id: string;
   routineId: string;
