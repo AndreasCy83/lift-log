@@ -23,13 +23,20 @@ function blankSet(weId: string, setIndex: number, restSeconds: number | null): W
   };
 }
 
-function predefinedSet(weId: string, setIndex: number, re: RoutineExercise): WorkoutSet {
-  return {
+function predefinedSet(
+  weId: string,
+  setIndex: number,
+  re: RoutineExercise,
+  setType: import('@/types/fitness').SetType | undefined,
+  row?: import('@/types/fitness').RoutinePredefinedRow,
+): WorkoutSet {
+  const fallbackRest = re.restSeconds ?? null;
+  const base: WorkoutSet = {
     id: generateId(),
     workoutExerciseId: weId,
     setIndex,
     weightKg: null,
-    reps: re.repsMin ?? null,
+    reps: null,
     distanceKm: null,
     durationMinutes: null,
     rpe: null,
@@ -37,8 +44,29 @@ function predefinedSet(weId: string, setIndex: number, re: RoutineExercise): Wor
     isWarmup: false,
     isCompleted: false,
     notes: '',
-    restSeconds: re.restSeconds ?? null,
+    restSeconds: row?.restSeconds ?? fallbackRest,
   };
+
+  // Legacy path: no per-row data
+  if (!row) {
+    return { ...base, reps: re.repsMin ?? null };
+  }
+
+  // Per-row, branch by setType
+  switch (setType) {
+    case 'WEIGHT_REPS':
+      return { ...base, weightKg: row.weightKg, reps: row.reps };
+    case 'REPS_DISTANCE':
+      return { ...base, reps: row.reps, distanceKm: row.distanceKm };
+    case 'REPS_TIME':
+      return { ...base, reps: row.reps, durationMinutes: row.durationMinutes };
+    case 'WEIGHT_TIME':
+      return { ...base, weightKg: row.weightKg, durationMinutes: row.durationMinutes };
+    case 'WEIGHT_ONLY':
+      return { ...base, weightKg: row.weightKg };
+    default:
+      return { ...base, reps: row.reps, weightKg: row.weightKg };
+  }
 }
 
 function copiedSet(weId: string, setIndex: number, src: WorkoutSet, fallbackRest: number | null): WorkoutSet {
