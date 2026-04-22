@@ -121,6 +121,8 @@ export interface RoutineExercise {
   restSeconds: number | null;
   /** Predefined set type override; falls back to exercise.setType */
   predefinedSetType?: SetType | null;
+  /** Per-row predefined set data; when present, takes precedence over sets/repsMin/repsMax. */
+  predefinedRows?: RoutinePredefinedRow[];
   supersetGroup: string | null;
 }
 
