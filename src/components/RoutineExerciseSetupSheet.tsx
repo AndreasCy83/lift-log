@@ -5,7 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { RoutineExercise, RoutinePopulationMode, RoutinePredefinedRow, SetType } from '@/types/fitness';
+import type { RoutineExercise, RoutinePopulationMode, RoutinePredefinedRow, SetTag, SetType } from '@/types/fitness';
+
+const TAG_COLORS: Record<SetTag, string> = {
+  N: 'bg-secondary text-muted-foreground',
+  W: 'bg-yellow-500/20 text-yellow-500',
+  D: 'bg-blue-500/20 text-blue-500',
+  F: 'bg-red-500/20 text-red-500',
+};
+const TAG_LABEL: Record<SetTag, string> = { N: 'Normal', W: 'Warmup', D: 'Dropset', F: 'Failure' };
+const NEXT_TAG: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
 
 interface Props {
   open: boolean;
