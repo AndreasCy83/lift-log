@@ -324,9 +324,43 @@ export default function WorkoutLogPage() {
         saveLastUsedRestSeconds(we.exerciseId, we.defaultRestSeconds);
       }
     });
-    updateWorkout({ ...workout, endTime: new Date().toISOString() });
+    // Finalize the live workout session timer (independent from rest timer)
+    const elapsedSec = session.end();
+    updateWorkout({
+      ...workout,
+      endTime: new Date().toISOString(),
+      durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
+    });
     schedulePendingBackup();
     navigate('/');
+  };
+
+  /** Intercept any in-app navigation away from this page while the timer is live. */
+  const requestLeave = (target: string) => {
+    if (session.isRunning || session.isPaused) {
+      setPendingNav(target);
+    } else {
+      navigate(target);
+    }
+  };
+
+  const handleLeaveAction = (action: LeaveAction) => {
+    const target = pendingNav;
+    if (action === 'cancel') { setPendingNav(null); return; }
+    if (action === 'pause') session.pause();
+    else if (action === 'end') {
+      const elapsedSec = session.end();
+      if (workout) {
+        updateWorkout({
+          ...workout,
+          endTime: new Date().toISOString(),
+          durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
+        });
+      }
+    }
+    // 'keep' → leave the timer running as-is
+    setPendingNav(null);
+    if (target) navigate(target);
   };
 
   // Per-set rest timer tap → open exercise-level sheet with full options
