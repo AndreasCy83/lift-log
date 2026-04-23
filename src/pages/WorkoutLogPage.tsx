@@ -55,15 +55,21 @@ export default function WorkoutLogPage() {
   const globalWeightUnit = getSettings().weightUnit;
   const wuLabel = weightUnitLabel(globalWeightUnit);
 
+  // Track whether this page just created the workout (fresh "+ Start Workout")
+  // vs opened an existing saved day. Existing days should NOT auto-start the
+  // live timer; they show the saved duration in a compact restored format.
+  const freshWorkoutRef = (useMemo(() => ({ value: false }), []));
   const [workout, setWorkout] = useState<Workout | null>(() => {
     if (!date) return null;
     let w = getWorkoutByDate(date);
     if (!w) {
       w = { id: generateId(), date, startTime: new Date().toISOString(), endTime: null, notes: '', source: 'manual', sourceRoutineId: null };
       addWorkout(w);
+      freshWorkoutRef.value = true;
     }
     return w;
   });
+  const isFreshWorkout = freshWorkoutRef.value;
 
   const [workoutExercises, setWorkoutExercises] = useState(() =>
     workout ? getExercisesForWorkout(workout.id) : []
@@ -94,13 +100,16 @@ export default function WorkoutLogPage() {
   const session = useWorkoutSession(workout?.id ?? null);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
 
-  // Auto-start the session when entering the workout flow.
+  // Auto-start the session ONLY when this is a freshly started workout
+  // (user just pressed "+ Start Workout"). Reopening an existing saved day
+  // should not auto-spawn a live timer — it shows the restored summary instead.
   useEffect(() => {
     if (!workout?.id) return;
     if (workout.endTime) return; // already finished — no live timer
+    if (!isFreshWorkout) return;
     if (!session.session) session.start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workout?.id, workout?.endTime]);
+  }, [workout?.id, workout?.endTime, isFreshWorkout]);
 
   // Listen for nav-leave requests from BottomNav while session is live.
   useEffect(() => {
@@ -440,7 +449,7 @@ export default function WorkoutLogPage() {
             <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
           {/* Live workout session timer (independent from rest timer) */}
-          {(session.isRunning || session.isPaused) && (
+          {(session.isRunning || session.isPaused) ? (
             <div className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-mono tabular-nums ${session.isPaused ? 'border-muted-foreground/40 text-muted-foreground' : 'border-primary/40 text-primary'}`}>
               <Timer className="h-3.5 w-3.5" />
               <span>{formatHMS(session.elapsedSec)}</span>
@@ -453,7 +462,21 @@ export default function WorkoutLogPage() {
                 {session.isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
               </button>
             </div>
-          )}
+          ) : (!isFreshWorkout && typeof workout.durationSeconds === 'number' && workout.durationSeconds > 0) ? (
+            // Restored existing-day view: compact timer display + play to resume.
+            <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground">
+              <Timer className="h-3.5 w-3.5" />
+              <span>{formatHMS(workout.durationSeconds)}</span>
+              <button
+                onClick={() => session.start()}
+                className="ml-0.5 rounded p-0.5 hover:bg-secondary"
+                title="Resume workout timer"
+                aria-label="Resume workout timer"
+              >
+                <Play className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : null}
           <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
             <Timer className="h-4 w-4" />
           </Button>
