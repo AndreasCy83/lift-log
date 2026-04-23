@@ -23,21 +23,19 @@ export default function LeaveWorkoutDialog({ open, onAction }: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2 pt-2">
-          <Button onClick={() => onAction('keep')} variant="default" className="w-full">
+          <Button onClick={() => onAction('keep')} variant="outline" className="w-full justify-center text-foreground font-semibold">
             Keep timer running &amp; leave
           </Button>
-          <Button onClick={() => onAction('pause')} variant="secondary" className="w-full">
+          <Button onClick={() => onAction('pause')} variant="outline" className="w-full justify-center text-foreground">
             Pause timer &amp; leave
           </Button>
-          <Button onClick={() => onAction('end')} variant="outline" className="w-full">
+          <Button onClick={() => onAction('end')} variant="outline" className="w-full justify-center text-destructive">
             End timer &amp; leave
           </Button>
-        </div>
-        <DialogFooter className="pt-2">
-          <Button onClick={() => onAction('cancel')} variant="ghost" className="w-full">
+          <Button onClick={() => onAction('cancel')} variant="outline" className="w-full justify-center text-muted-foreground">
             Stay on this page
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
