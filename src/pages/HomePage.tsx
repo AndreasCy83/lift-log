@@ -277,10 +277,10 @@ export default function HomePage() {
               {selectedWorkout.notes ? (
                 <p className="text-sm text-foreground/80 italic">"{selectedWorkout.notes}"</p>
               ) : null}
-              <div className="flex gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
                 <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
                 {typeof selectedWorkout.durationSeconds === 'number' && selectedWorkout.durationSeconds > 0 && (
-                  <span>Duration: <span className="font-semibold text-foreground font-mono tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
+                  <span>Duration: <span className="font-semibold text-foreground tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
                 )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
