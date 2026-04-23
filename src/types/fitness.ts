@@ -61,6 +61,8 @@ export interface Workout {
   source?: WorkoutSource;
   /** ID of the routine that generated this workout, if source === 'routine'. */
   sourceRoutineId?: string | null;
+  /** Final workout session timer duration in seconds (excludes paused time). Set on Finish. */
+  durationSeconds?: number | null;
 }
 
 export interface WorkoutExercise {
