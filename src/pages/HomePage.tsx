@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, MoreVertical, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate } from '@/lib/storage';
+import { startSession, formatHMS } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
@@ -118,6 +119,8 @@ export default function HomePage() {
       };
       addWorkout(workout);
     }
+    // Start (or resume) the live workout session timer immediately.
+    startSession(workout.id);
     navigate(`/workout/${today}`);
   }, [navigate, workouts]);
 
@@ -276,6 +279,9 @@ export default function HomePage() {
               ) : null}
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+                {typeof selectedWorkout.durationSeconds === 'number' && selectedWorkout.durationSeconds > 0 && (
+                  <span>Duration: <span className="font-semibold text-foreground font-mono tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
+                )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">

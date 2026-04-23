@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -33,6 +33,10 @@ import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/Exercis
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
+import { useWorkoutSession } from '@/hooks/useWorkoutSession';
+import { formatHMS } from '@/lib/workoutSession';
+import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
+import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
@@ -85,6 +89,28 @@ export default function WorkoutLogPage() {
 
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
+
+  // Live workout session timer (independent from rest timer)
+  const session = useWorkoutSession(workout?.id ?? null);
+  const [pendingNav, setPendingNav] = useState<string | null>(null);
+
+  // Auto-start the session when entering the workout flow.
+  useEffect(() => {
+    if (!workout?.id) return;
+    if (workout.endTime) return; // already finished — no live timer
+    if (!session.session) session.start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workout?.id, workout?.endTime]);
+
+  // Listen for nav-leave requests from BottomNav while session is live.
+  useEffect(() => {
+    const onLeaveReq = (e: Event) => {
+      const target = (e as CustomEvent).detail?.target as string | undefined;
+      if (target) setPendingNav(target);
+    };
+    window.addEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
+    return () => window.removeEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
+  }, []);
 
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
@@ -309,9 +335,43 @@ export default function WorkoutLogPage() {
         saveLastUsedRestSeconds(we.exerciseId, we.defaultRestSeconds);
       }
     });
-    updateWorkout({ ...workout, endTime: new Date().toISOString() });
+    // Finalize the live workout session timer (independent from rest timer)
+    const elapsedSec = session.end();
+    updateWorkout({
+      ...workout,
+      endTime: new Date().toISOString(),
+      durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
+    });
     schedulePendingBackup();
     navigate('/');
+  };
+
+  /** Intercept any in-app navigation away from this page while the timer is live. */
+  const requestLeave = (target: string) => {
+    if (session.isRunning || session.isPaused) {
+      setPendingNav(target);
+    } else {
+      navigate(target);
+    }
+  };
+
+  const handleLeaveAction = (action: LeaveAction) => {
+    const target = pendingNav;
+    if (action === 'cancel') { setPendingNav(null); return; }
+    if (action === 'pause') session.pause();
+    else if (action === 'end') {
+      const elapsedSec = session.end();
+      if (workout) {
+        updateWorkout({
+          ...workout,
+          endTime: new Date().toISOString(),
+          durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
+        });
+      }
+    }
+    // 'keep' → leave the timer running as-is
+    setPendingNav(null);
+    if (target) navigate(target);
   };
 
   // Per-set rest timer tap → open exercise-level sheet with full options
@@ -371,15 +431,30 @@ export default function WorkoutLogPage() {
   return (
     <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
-        <div className="mx-auto flex max-w-lg items-center gap-3">
-          <button onClick={() => navigate('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
+        <div className="mx-auto flex max-w-lg items-center gap-2">
+          <button onClick={() => requestLeave('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex-1">
-            <h1 className="font-display text-lg font-bold">Workout</h1>
-            <p className="text-xs text-muted-foreground">{format(new Date(date), 'EEEE, MMM d, yyyy')}</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-base font-bold leading-tight truncate">Workout</h1>
+            <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
-          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary">
+          {/* Live workout session timer (independent from rest timer) */}
+          {(session.isRunning || session.isPaused) && (
+            <div className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-mono tabular-nums ${session.isPaused ? 'border-muted-foreground/40 text-muted-foreground' : 'border-primary/40 text-primary'}`}>
+              <Timer className="h-3.5 w-3.5" />
+              <span>{formatHMS(session.elapsedSec)}</span>
+              <button
+                onClick={() => (session.isRunning ? session.pause() : session.resume())}
+                className="ml-0.5 rounded p-0.5 hover:bg-secondary"
+                title={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+                aria-label={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+              >
+                {session.isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
             <Timer className="h-4 w-4" />
           </Button>
           <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground">
@@ -387,6 +462,8 @@ export default function WorkoutLogPage() {
           </Button>
         </div>
       </header>
+
+      <LeaveWorkoutDialog open={pendingNav !== null} onAction={handleLeaveAction} />
 
       {showTimer && (
         <div className="mx-auto w-full max-w-lg px-4 pt-3">
