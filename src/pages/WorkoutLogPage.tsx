@@ -36,6 +36,7 @@ import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitne
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
 import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
+import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
