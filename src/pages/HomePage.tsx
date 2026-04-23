@@ -279,6 +279,9 @@ export default function HomePage() {
               ) : null}
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+                {typeof selectedWorkout.durationSeconds === 'number' && selectedWorkout.durationSeconds > 0 && (
+                  <span>Duration: <span className="font-semibold text-foreground font-mono tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
+                )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">
