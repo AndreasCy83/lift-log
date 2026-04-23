@@ -100,13 +100,16 @@ export default function WorkoutLogPage() {
   const session = useWorkoutSession(workout?.id ?? null);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
 
-  // Auto-start the session when entering the workout flow.
+  // Auto-start the session ONLY when this is a freshly started workout
+  // (user just pressed "+ Start Workout"). Reopening an existing saved day
+  // should not auto-spawn a live timer — it shows the restored summary instead.
   useEffect(() => {
     if (!workout?.id) return;
     if (workout.endTime) return; // already finished — no live timer
+    if (!isFreshWorkout) return;
     if (!session.session) session.start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workout?.id, workout?.endTime]);
+  }, [workout?.id, workout?.endTime, isFreshWorkout]);
 
   // Listen for nav-leave requests from BottomNav while session is live.
   useEffect(() => {
