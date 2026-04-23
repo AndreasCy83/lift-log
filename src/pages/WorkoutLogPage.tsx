@@ -420,15 +420,30 @@ export default function WorkoutLogPage() {
   return (
     <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
-        <div className="mx-auto flex max-w-lg items-center gap-3">
-          <button onClick={() => navigate('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
+        <div className="mx-auto flex max-w-lg items-center gap-2">
+          <button onClick={() => requestLeave('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex-1">
-            <h1 className="font-display text-lg font-bold">Workout</h1>
-            <p className="text-xs text-muted-foreground">{format(new Date(date), 'EEEE, MMM d, yyyy')}</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-base font-bold leading-tight truncate">Workout</h1>
+            <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
-          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary">
+          {/* Live workout session timer (independent from rest timer) */}
+          {(session.isRunning || session.isPaused) && (
+            <div className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-mono tabular-nums ${session.isPaused ? 'border-muted-foreground/40 text-muted-foreground' : 'border-primary/40 text-primary'}`}>
+              <Timer className="h-3.5 w-3.5" />
+              <span>{formatHMS(session.elapsedSec)}</span>
+              <button
+                onClick={() => (session.isRunning ? session.pause() : session.resume())}
+                className="ml-0.5 rounded p-0.5 hover:bg-secondary"
+                title={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+                aria-label={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+              >
+                {session.isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
             <Timer className="h-4 w-4" />
           </Button>
           <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground">
@@ -436,6 +451,8 @@ export default function WorkoutLogPage() {
           </Button>
         </div>
       </header>
+
+      <LeaveWorkoutDialog open={pendingNav !== null} onAction={handleLeaveAction} />
 
       {showTimer && (
         <div className="mx-auto w-full max-w-lg px-4 pt-3">
