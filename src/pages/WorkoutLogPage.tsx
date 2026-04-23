@@ -102,6 +102,16 @@ export default function WorkoutLogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.id, workout?.endTime]);
 
+  // Listen for nav-leave requests from BottomNav while session is live.
+  useEffect(() => {
+    const onLeaveReq = (e: Event) => {
+      const target = (e as CustomEvent).detail?.target as string | undefined;
+      if (target) setPendingNav(target);
+    };
+    window.addEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
+    return () => window.removeEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
+  }, []);
+
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
     const sets = getSetsForWorkoutExercise(we.id);
