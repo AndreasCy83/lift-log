@@ -55,12 +55,17 @@ export default function WorkoutLogPage() {
   const globalWeightUnit = getSettings().weightUnit;
   const wuLabel = weightUnitLabel(globalWeightUnit);
 
+  // Track whether this page just created the workout (fresh "+ Start Workout")
+  // vs opened an existing saved day. Existing days should NOT auto-start the
+  // live timer; they show the saved duration in a compact restored format.
+  const [isFreshWorkout, setIsFreshWorkout] = useState(false);
   const [workout, setWorkout] = useState<Workout | null>(() => {
     if (!date) return null;
     let w = getWorkoutByDate(date);
     if (!w) {
       w = { id: generateId(), date, startTime: new Date().toISOString(), endTime: null, notes: '', source: 'manual', sourceRoutineId: null };
       addWorkout(w);
+      setIsFreshWorkout(true);
     }
     return w;
   });
