@@ -89,6 +89,18 @@ export default function WorkoutLogPage() {
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
 
+  // Live workout session timer (independent from rest timer)
+  const session = useWorkoutSession(workout?.id ?? null);
+  const [pendingNav, setPendingNav] = useState<string | null>(null);
+
+  // Auto-start the session when entering the workout flow.
+  useEffect(() => {
+    if (!workout?.id) return;
+    if (workout.endTime) return; // already finished — no live timer
+    if (!session.session) session.start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workout?.id, workout?.endTime]);
+
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
     const sets = getSetsForWorkoutExercise(we.id);
