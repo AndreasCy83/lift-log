@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
 import { preloadAudioCues } from "@/lib/ttsVoice";
+import { expireIfStale } from "@/lib/workoutSession";
 import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
 import OnboardingWizard from "@/components/OnboardingWizard";
@@ -36,10 +37,13 @@ function ThemeInit() {
     }
     checkPendingBackup();
     preloadAudioCues();
+    // Safeguard: drop any abandoned live workout session that exceeded the safe threshold.
+    expireIfStale();
 
     const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
       if (isActive) {
         checkPendingBackup();
+        expireIfStale();
       }
     });
 

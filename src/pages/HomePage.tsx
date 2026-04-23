@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, MoreVertical, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate } from '@/lib/storage';
+import { startSession, formatHMS } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
@@ -118,6 +119,8 @@ export default function HomePage() {
       };
       addWorkout(workout);
     }
+    // Start (or resume) the live workout session timer immediately.
+    startSession(workout.id);
     navigate(`/workout/${today}`);
   }, [navigate, workouts]);
 
