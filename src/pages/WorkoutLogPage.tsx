@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -33,6 +33,9 @@ import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/Exercis
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
+import { useWorkoutSession } from '@/hooks/useWorkoutSession';
+import { formatHMS } from '@/lib/workoutSession';
+import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
