@@ -16,7 +16,7 @@ interface UseWorkoutSessionResult {
   elapsedSec: number;
   isRunning: boolean;
   isPaused: boolean;
-  start: () => void;
+  start: (priorElapsedSec?: number) => void;
   pause: () => void;
   resume: () => void;
   /** Stop and clear; returns final elapsed seconds (or null if no session). */
