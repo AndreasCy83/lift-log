@@ -54,9 +54,9 @@ export function useWorkoutSession(workoutId: string | null | undefined): UseWork
     return () => clearInterval(id);
   }, [session?.status, session?.workoutId]);
 
-  const start = useCallback(() => {
+  const start = useCallback((priorElapsedSec: number = 0) => {
     if (!workoutId) return;
-    setSession(startSession(workoutId));
+    setSession(startSession(workoutId, priorElapsedSec));
   }, [workoutId]);
 
   const pause = useCallback(() => {
