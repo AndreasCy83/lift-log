@@ -641,7 +641,7 @@ export default function WorkoutLogPage() {
 
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 1.75rem 1.75rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 2.25rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
