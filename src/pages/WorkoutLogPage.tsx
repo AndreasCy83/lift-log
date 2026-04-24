@@ -684,7 +684,8 @@ export default function WorkoutLogPage() {
                             <Check className="h-3.5 w-3.5" strokeWidth={3} />
                           </button>
                         </div>
-                        <div className="flex justify-center pl-1">
+                        <div></div>
+                        <div className="flex justify-end">
                           <button
                             onClick={() => handleDeleteSet(s.id)}
                             className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive"
