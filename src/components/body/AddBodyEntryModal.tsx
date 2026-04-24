@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { X, CalendarClock } from 'lucide-react';
+import { X, CalendarClock, Plus, Ruler, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import WeightRulerPicker from './WeightRulerPicker';
 import { addBodyEntry, updateBodyEntry } from '@/lib/bodyTrackerStorage';
 import { getSettings, getProfile } from '@/lib/storage';
 import { toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
-import { BodyEntry } from '@/types/bodyTracker';
+import type { BodyEntry, BodyMeasurement, BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
 import { format } from 'date-fns';
 
 interface AddBodyEntryModalProps {
@@ -16,6 +20,30 @@ interface AddBodyEntryModalProps {
   onSaved: () => void;
   editEntry?: BodyEntry | null;
 }
+
+const MEASUREMENT_OPTIONS: { key: BodyMeasurementKey; label: string }[] = [
+  { key: 'shoulders', label: 'Shoulders' },
+  { key: 'chest', label: 'Chest' },
+  { key: 'waist', label: 'Waist' },
+  { key: 'hips', label: 'Hips' },
+  { key: 'upper_arm_right', label: 'Upper Arm (R)' },
+  { key: 'upper_arm_left', label: 'Upper Arm (L)' },
+  { key: 'forearm_right', label: 'Forearm (R)' },
+  { key: 'forearm_left', label: 'Forearm (L)' },
+  { key: 'thigh_right', label: 'Thigh (R)' },
+  { key: 'thigh_left', label: 'Thigh (L)' },
+  { key: 'calf_right', label: 'Calf (R)' },
+  { key: 'calf_left', label: 'Calf (L)' },
+];
+
+const labelFor = (k: BodyMeasurementKey) =>
+  MEASUREMENT_OPTIONS.find(o => o.key === k)?.label ?? k;
+
+const CM_TO_IN = 0.393701;
+const cmToDisplay = (cm: number, unit: BodyMeasurementUnit) =>
+  unit === 'in' ? Math.round(cm * CM_TO_IN * 10) / 10 : Math.round(cm * 10) / 10;
+const displayToCm = (v: number, unit: BodyMeasurementUnit) =>
+  unit === 'in' ? Math.round((v / CM_TO_IN) * 10) / 10 : Math.round(v * 10) / 10;
 
 export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }: AddBodyEntryModalProps) {
   const settings = getSettings();
@@ -40,6 +68,15 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
   const [showMuscleMass, setShowMuscleMass] = useState(!!(editEntry?.muscleMassPercent));
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  // Extra measurements
+  const [measurements, setMeasurements] = useState<BodyMeasurement[]>(
+    editEntry?.measurements ?? []
+  );
+  const [measureUnit, setMeasureUnit] = useState<BodyMeasurementUnit>('cm');
+  const [moreOpen, setMoreOpen] = useState((editEntry?.measurements?.length ?? 0) > 0);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerSelection, setPickerSelection] = useState<Set<BodyMeasurementKey>>(new Set());
+
   if (!open) return null;
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,8 +97,48 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
     setEntryDate(newDate);
   };
 
+  const openPicker = () => {
+    setPickerSelection(new Set());
+    setPickerOpen(true);
+  };
+
+  const togglePick = (k: BodyMeasurementKey) => {
+    setPickerSelection(prev => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+  };
+
+  const confirmPicker = () => {
+    setMeasurements(prev => {
+      const existing = new Set(prev.map(m => m.key));
+      const additions: BodyMeasurement[] = [];
+      pickerSelection.forEach(k => {
+        if (!existing.has(k)) additions.push({ key: k, valueCm: 0 });
+      });
+      return [...prev, ...additions];
+    });
+    setPickerOpen(false);
+  };
+
+  const removeMeasurement = (k: BodyMeasurementKey) => {
+    setMeasurements(prev => prev.filter(m => m.key !== k));
+  };
+
+  const updateMeasurementValue = (k: BodyMeasurementKey, displayVal: string) => {
+    const num = parseFloat(displayVal);
+    setMeasurements(prev => prev.map(m =>
+      m.key === k
+        ? { ...m, valueCm: isNaN(num) ? 0 : displayToCm(num, measureUnit) }
+        : m
+    ));
+  };
+
   const handleSave = () => {
     const weightKg = toStorageKg(weight, wu) ?? weight;
+    const cleanedMeasurements = measurements.filter(m => m.valueCm > 0);
 
     if (editEntry) {
       updateBodyEntry({
@@ -72,6 +149,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         bodyFatPercent: showBodyFat && bodyFat > 0 ? bodyFat : null,
         muscleMassPercent: showMuscleMass && muscleMass > 0 ? muscleMass : null,
         note,
+        measurements: cleanedMeasurements.length > 0 ? cleanedMeasurements : undefined,
       });
     } else {
       addBodyEntry({
@@ -81,11 +159,16 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         bodyFatPercent: showBodyFat && bodyFat > 0 ? bodyFat : null,
         muscleMassPercent: showMuscleMass && muscleMass > 0 ? muscleMass : null,
         note,
+        measurements: cleanedMeasurements.length > 0 ? cleanedMeasurements : undefined,
       });
     }
     onSaved();
     onClose();
   };
+
+  const availableForPicker = MEASUREMENT_OPTIONS.filter(
+    o => !measurements.some(m => m.key === o.key)
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
@@ -97,8 +180,8 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 160px)' }}>
-        {/* Date/time pill — tappable */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 160px)' }}>
+        {/* Date/time pill */}
         <div className="text-center">
           <button
             onClick={() => setShowDatePicker(!showDatePicker)}
@@ -127,8 +210,8 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
           )}
         </div>
 
-        {/* Weight ruler */}
-        <div className="gym-card">
+        {/* Weight ruler — compact */}
+        <div className="gym-card !p-3">
           <WeightRulerPicker
             value={weight}
             onChange={setWeight}
@@ -141,9 +224,9 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
           />
         </div>
 
-        {/* Body fat toggle + ruler */}
-        <div className="gym-card">
-          <div className="flex items-center justify-between mb-3">
+        {/* Body fat */}
+        <div className="gym-card !p-3">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Body Fat %</span>
             <button
               onClick={() => setShowBodyFat(!showBodyFat)}
@@ -165,9 +248,9 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
           )}
         </div>
 
-        {/* Muscle mass toggle + ruler */}
-        <div className="gym-card">
-          <div className="flex items-center justify-between mb-3">
+        {/* Muscle mass */}
+        <div className="gym-card !p-3">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Muscle Mass %</span>
             <button
               onClick={() => setShowMuscleMass(!showMuscleMass)}
@@ -189,8 +272,90 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
           )}
         </div>
 
+        {/* More Measurements */}
+        <div className="gym-card !p-3 space-y-3">
+          <button
+            type="button"
+            onClick={() => setMoreOpen(o => !o)}
+            className="w-full flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <Ruler className="h-4 w-4 text-primary" />
+              More Measurements
+              {measurements.length > 0 && (
+                <span className="text-[10px] text-muted-foreground">({measurements.length})</span>
+              )}
+            </span>
+            {moreOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+          </button>
+
+          {moreOpen && (
+            <div className="space-y-3">
+              {/* Unit toggle */}
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Unit</span>
+                <div className="inline-flex rounded-full border border-border overflow-hidden">
+                  {(['cm', 'in'] as const).map(u => (
+                    <button
+                      key={u}
+                      onClick={() => setMeasureUnit(u)}
+                      className={`px-3 py-1 text-xs font-medium transition-colors ${
+                        measureUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {u}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* List of measurements */}
+              {measurements.length > 0 && (
+                <div className="space-y-2">
+                  {measurements.map(m => {
+                    const display = m.valueCm > 0 ? cmToDisplay(m.valueCm, measureUnit).toString() : '';
+                    return (
+                      <div key={m.key} className="flex items-center gap-2">
+                        <span className="flex-1 text-sm">{labelFor(m.key)}</span>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          value={display}
+                          onChange={(e) => updateMeasurementValue(m.key, e.target.value)}
+                          placeholder="0"
+                          className="w-20 h-8 bg-secondary border-0 text-sm text-right"
+                        />
+                        <span className="text-xs text-muted-foreground w-7">{measureUnit}</span>
+                        <button
+                          onClick={() => removeMeasurement(m.key)}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
+                          aria-label="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Add button */}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={openPicker}
+                disabled={availableForPicker.length === 0}
+                className="w-full h-9 text-sm"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Measurements
+              </Button>
+            </div>
+          )}
+        </div>
+
         {/* Comment */}
-        <div className="gym-card">
+        <div className="gym-card !p-3">
           <Textarea
             placeholder="Comment (optional)"
             value={note}
@@ -201,12 +366,55 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
       </div>
 
-      {/* Save button — positioned above bottom nav */}
+      {/* Save button */}
       <div className="px-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)' }}>
         <Button onClick={handleSave} className="w-full h-12 text-base font-semibold">
           {editEntry ? 'Update Entry' : 'Save Entry'}
         </Button>
       </div>
+
+      {/* Picker dialog */}
+      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Add Measurements</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[55vh] overflow-y-auto -mx-2 px-2">
+            {availableForPicker.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                All measurements already added.
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {availableForPicker.map(opt => {
+                  const checked = pickerSelection.has(opt.key);
+                  return (
+                    <label
+                      key={opt.key}
+                      className="flex items-center gap-3 px-2 py-2.5 rounded-md hover:bg-secondary/60 cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => togglePick(opt.key)}
+                      />
+                      <span className="text-sm">{opt.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+            <Button variant="ghost" onClick={() => setPickerOpen(false)}>Cancel</Button>
+            <Button
+              onClick={confirmPicker}
+              disabled={pickerSelection.size === 0}
+            >
+              Add{pickerSelection.size > 0 ? ` (${pickerSelection.size})` : ''}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
