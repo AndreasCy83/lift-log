@@ -200,37 +200,40 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
       {/* History Toggle */}
       {history.length > 0 && (
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setShowHistory(!showHistory)}
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex-1 min-w-0"
             >
-              <History className="h-3.5 w-3.5" />
-              <span className="uppercase text-[10px] font-bold tracking-wider">History</span>
-              <span className="text-[10px]">({history.length} sessions)</span>
+              <History className="h-3.5 w-3.5 shrink-0" />
+              <span className="uppercase text-[10px] font-bold tracking-wider whitespace-nowrap">
+                History <span className="font-normal opacity-80">({history.length} sessions)</span>
+              </span>
               <div className="flex-1" />
-              {showHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              {showHistory ? <ChevronUp className="h-3.5 w-3.5 shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 shrink-0" />}
             </button>
             {onRepeatLastRoutine && (
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={onRepeatLastRoutine}
-                className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors px-1.5 py-0.5"
+                className="shrink-0 h-6 px-2 text-[10px] uppercase tracking-wider rounded-md"
                 title="Replace current sets with previous session"
               >
-                Repeat Last Routine
-              </button>
+                Repeat Last
+              </Button>
             )}
           </div>
 
           {showHistory && (
             <div className="mt-2 space-y-2 animate-slide-up">
-              {/* Graph Toggle + Period Filter */}
-              <div className="flex items-center gap-2">
+              {/* Graph Toggle + Mode (row 1) */}
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button
                   variant={showGraph ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setShowGraph(!showGraph)}
-                  className="text-[10px] h-6 gap-1"
+                  className="text-[10px] h-6 gap-1 px-2"
                 >
                   <TrendingUp className="h-3 w-3" /> Graph
                 </Button>
@@ -254,19 +257,21 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                     </button>
                   </div>
                 )}
-                <div className="flex gap-1 ml-auto">
-                  {periods.map(p => (
-                    <button
-                      key={p.key}
-                      onClick={() => setPeriod(p.key)}
-                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                        period === p.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
+              </div>
+
+              {/* Period Filter (row 2) - always fits, never crops ALL */}
+              <div className="grid grid-cols-4 gap-1 w-full">
+                {periods.map(p => (
+                  <button
+                    key={p.key}
+                    onClick={() => setPeriod(p.key)}
+                    className={`px-1 py-0.5 rounded text-[10px] font-medium transition-colors text-center ${
+                      period === p.key ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
               </div>
 
               {/* Graph */}
