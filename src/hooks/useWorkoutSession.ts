@@ -16,7 +16,7 @@ interface UseWorkoutSessionResult {
   elapsedSec: number;
   isRunning: boolean;
   isPaused: boolean;
-  start: () => void;
+  start: (priorElapsedSec?: number) => void;
   pause: () => void;
   resume: () => void;
   /** Stop and clear; returns final elapsed seconds (or null if no session). */
@@ -54,9 +54,9 @@ export function useWorkoutSession(workoutId: string | null | undefined): UseWork
     return () => clearInterval(id);
   }, [session?.status, session?.workoutId]);
 
-  const start = useCallback(() => {
+  const start = useCallback((priorElapsedSec: number = 0) => {
     if (!workoutId) return;
-    setSession(startSession(workoutId));
+    setSession(startSession(workoutId, priorElapsedSec));
   }, [workoutId]);
 
   const pause = useCallback(() => {

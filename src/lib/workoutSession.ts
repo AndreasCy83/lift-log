@@ -72,14 +72,16 @@ export function getSessionForWorkout(workoutId: string): ActiveWorkoutSession | 
  * same workout, return it as-is (resume). If a session exists for a different
  * workout, replace it (the previous one is treated as abandoned).
  */
-export function startSession(workoutId: string): ActiveWorkoutSession {
+export function startSession(workoutId: string, priorElapsedSec: number = 0): ActiveWorkoutSession {
   const existing = read();
   if (existing && existing.workoutId === workoutId && existing.status !== 'expired') {
     return existing;
   }
+  const offsetMs = Math.max(0, Math.floor(priorElapsedSec * 1000));
   const next: ActiveWorkoutSession = {
     workoutId,
-    startedAt: Date.now(),
+    // Backdate startedAt so getElapsedMs immediately reflects the prior elapsed time.
+    startedAt: Date.now() - offsetMs,
     pausedAt: null,
     accumulatedPausedMs: 0,
     status: 'running',
