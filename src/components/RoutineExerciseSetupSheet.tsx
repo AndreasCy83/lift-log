@@ -129,7 +129,10 @@ export default function RoutineExerciseSetupSheet({ open, onOpenChange, exercise
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[90vh] overflow-y-auto">
+      <SheetContent
+        side="bottom"
+        className="rounded-t-2xl max-h-[90vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+      >
         <SheetHeader>
           <SheetTitle className="text-left">{exerciseName}</SheetTitle>
         </SheetHeader>
