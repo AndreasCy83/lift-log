@@ -618,12 +618,13 @@ export default function WorkoutLogPage() {
                     }}
                   />
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 2.25rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 0.5rem 2.25rem' }}>
                     <div>Set</div>
                     <div></div>
                     <div>Type</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
+                    <div></div>
                     <div></div>
                     <div></div>
                   </div>
@@ -641,7 +642,7 @@ export default function WorkoutLogPage() {
 
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 2.25rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 0.5rem 2.25rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
@@ -683,7 +684,8 @@ export default function WorkoutLogPage() {
                             <Check className="h-3.5 w-3.5" strokeWidth={3} />
                           </button>
                         </div>
-                        <div className="flex justify-center pl-1">
+                        <div></div>
+                        <div className="flex justify-end">
                           <button
                             onClick={() => handleDeleteSet(s.id)}
                             className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive"
