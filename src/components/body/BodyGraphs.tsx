@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { BodyEntry } from '@/types/bodyTracker';
+import { BodyEntry, BodyMeasurementUnit } from '@/types/bodyTracker';
 import { getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
-import { format, parseISO, subDays, subMonths, subYears } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChevronLeft } from 'lucide-react';
+import { getHistoricMeasurementKeys, measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
 
 const PERIODS = [
   { label: '7D', days: 7 },
@@ -23,6 +24,7 @@ interface Props {
 
 export default function BodyGraphs({ entries, onBack }: Props) {
   const [period, setPeriod] = useState(30);
+  const [measurementUnit, setMeasurementUnit] = useState<BodyMeasurementUnit>('cm');
   const settings = getSettings();
   const wu = settings.weightUnit;
   const unitLabel = weightUnitLabel(wu);
@@ -51,6 +53,24 @@ export default function BodyGraphs({ entries, onBack }: Props) {
     value: e.muscleMassPercent!,
   })), [filtered]);
 
+  const historicMeasurementKeys = useMemo(() => Array.from(getHistoricMeasurementKeys(entries)), [entries]);
+
+  const measurementSeries = useMemo(() => {
+    return historicMeasurementKeys.map(key => {
+      const data = filtered
+        .map(e => {
+          const m = e.measurements?.find(x => x.key === key);
+          if (!m || !Number.isFinite(m.valueCm) || m.valueCm <= 0) return null;
+          return {
+            date: format(new Date(e.date + 'T12:00:00'), 'MMM d'),
+            value: cmToDisplay(m.valueCm, measurementUnit),
+          };
+        })
+        .filter((d): d is { date: string; value: number } => d !== null);
+      return { key, data };
+    });
+  }, [historicMeasurementKeys, filtered, measurementUnit]);
+
   const Chart = ({ data, color, title, unit: u }: { data: { date: string; value: number }[]; color: string; title: string; unit: string }) => (
     <div className="gym-card mb-4">
       <h3 className="text-sm font-semibold mb-3">{title}</h3>
@@ -72,6 +92,22 @@ export default function BodyGraphs({ entries, onBack }: Props) {
       )}
     </div>
   );
+
+  // Distinct colors for measurement charts
+  const MEASUREMENT_COLORS = [
+    'hsl(280, 70%, 60%)',
+    'hsl(340, 75%, 55%)',
+    'hsl(20, 85%, 55%)',
+    'hsl(160, 70%, 45%)',
+    'hsl(220, 75%, 60%)',
+    'hsl(50, 85%, 50%)',
+    'hsl(0, 70%, 55%)',
+    'hsl(120, 60%, 45%)',
+    'hsl(260, 65%, 60%)',
+    'hsl(180, 70%, 45%)',
+    'hsl(310, 70%, 55%)',
+    'hsl(90, 60%, 45%)',
+  ];
 
   return (
     <div className="flex flex-col h-full">
@@ -97,6 +133,35 @@ export default function BodyGraphs({ entries, onBack }: Props) {
         <Chart data={weightData} color="hsl(145, 80%, 45%)" title={`Weight (${unitLabel})`} unit={unitLabel} />
         <Chart data={bfData} color="hsl(38, 92%, 50%)" title="Body Fat (%)" unit="%" />
         <Chart data={mmData} color="hsl(190, 80%, 50%)" title="Muscle Mass (%)" unit="%" />
+
+        {historicMeasurementKeys.length > 0 && (
+          <div className="flex items-center justify-between mb-3 mt-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">More Measurements</p>
+            <div className="inline-flex rounded-full border border-border overflow-hidden">
+              {(['cm', 'in'] as const).map(u => (
+                <button
+                  key={u}
+                  onClick={() => setMeasurementUnit(u)}
+                  className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                    measurementUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                  }`}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {measurementSeries.map((s, i) => (
+          <Chart
+            key={s.key}
+            data={s.data}
+            color={MEASUREMENT_COLORS[i % MEASUREMENT_COLORS.length]}
+            title={`${measurementLabel(s.key)} (${measurementUnit})`}
+            unit={measurementUnit}
+          />
+        ))}
       </div>
     </div>
   );
