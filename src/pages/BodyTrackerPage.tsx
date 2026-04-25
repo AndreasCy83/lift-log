@@ -263,7 +263,7 @@ export default function BodyTrackerPage() {
 
 
         {/* Goal progress */}
-        {(goals.targetWeightKg || goals.targetBodyFatPercent || goals.targetMuscleMassPercent) && (
+        {(goals.targetWeightKg || goals.targetBodyFatPercent || goals.targetMuscleMassPercent || (goals.measurementGoals && goals.measurementGoals.length > 0)) && (
           <div className="gym-card mb-4 space-y-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Goals Progress</p>
             {goals.targetWeightKg != null && latest && (() => {
@@ -346,6 +346,53 @@ export default function BodyTrackerPage() {
                 </div>
               );
             })()}
+
+            {goals.measurementGoals && goals.measurementGoals.length > 0 && goals.measurementGoals.map(mg => {
+              if (!(mg.targetCm > 0)) return null;
+              // Find latest entry that has this measurement with a value
+              let currentCm: number | null = null;
+              for (const e of entries) {
+                const m = e.measurements?.find(x => x.key === mg.key);
+                if (m && m.valueCm > 0) { currentCm = m.valueCm; break; }
+              }
+              if (currentCm == null) return null;
+
+              // Earliest measurement value for this key (fallback start)
+              let earliestCm: number | null = null;
+              for (let i = entries.length - 1; i >= 0; i--) {
+                const m = entries[i].measurements?.find(x => x.key === mg.key);
+                if (m && m.valueCm > 0) { earliestCm = m.valueCm; break; }
+              }
+              const startCmRaw = mg.startCm ?? earliestCm ?? currentCm;
+
+              const u = measurementDisplayUnit;
+              const current = cmToDisplay(currentCm, u);
+              const target = cmToDisplay(mg.targetCm, u);
+              const start = cmToDisplay(startCmRaw, u);
+              const pct = calcGoalProgress(start, current, target) ?? 0;
+              const trend = estimateTrend(e => {
+                const m = e.measurements?.find(x => x.key === mg.key);
+                return m && m.valueCm > 0 ? cmToDisplay(m.valueCm, u) : null;
+              });
+              const { trendLine, etaLine } = trendAndEta(start, current, target, trend, u);
+              return (
+                <div key={mg.key}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>{measurementLabel(mg.key)}</span>
+                    <span className="text-muted-foreground">{current.toFixed(1)} / {target.toFixed(1)} {u}</span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/50">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: progressWidth(pct) }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(start, current, target, u)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
+                </div>
+              );
+            })}
           </div>
         )}
 
