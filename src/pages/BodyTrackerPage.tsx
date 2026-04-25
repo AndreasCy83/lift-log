@@ -19,6 +19,7 @@ type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
 export default function BodyTrackerPage() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [measurementDisplayUnit, setMeasurementDisplayUnit] = useState<BodyMeasurementUnit>('cm');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [subView, setSubView] = useState<SubView>('main');
   const [showAddModal, setShowAddModal] = useState(false);
