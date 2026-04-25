@@ -21,6 +21,13 @@ import {
   getHistoricMeasurementKeys,
 } from '@/lib/bodyMeasurements';
 
+interface AddBodyEntryModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+  editEntry?: BodyEntry | null;
+}
+
 export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }: AddBodyEntryModalProps) {
   const settings = getSettings();
   const profile = getProfile();
@@ -35,6 +42,16 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
     ? new Date(editEntry.date + 'T' + editEntry.time)
     : new Date();
 
+  // Preselect measurement keys that have ever been used in past entries (only for new entries).
+  const historicKeys = useMemo(() => {
+    if (editEntry) return new Set<BodyMeasurementKey>();
+    return getHistoricMeasurementKeys(getBodyEntries());
+  }, [editEntry, open]);
+
+  const initialMeasurements: BodyMeasurement[] = editEntry?.measurements
+    ? editEntry.measurements
+    : Array.from(historicKeys).map(k => ({ key: k, valueCm: 0 }));
+
   const [entryDate, setEntryDate] = useState(initialDate);
   const [weight, setWeight] = useState(defaultWeight);
   const [bodyFat, setBodyFat] = useState(editEntry?.bodyFatPercent ?? 0);
@@ -45,11 +62,9 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Extra measurements
-  const [measurements, setMeasurements] = useState<BodyMeasurement[]>(
-    editEntry?.measurements ?? []
-  );
+  const [measurements, setMeasurements] = useState<BodyMeasurement[]>(initialMeasurements);
   const [measureUnit, setMeasureUnit] = useState<BodyMeasurementUnit>('cm');
-  const [moreOpen, setMoreOpen] = useState((editEntry?.measurements?.length ?? 0) > 0);
+  const [moreOpen, setMoreOpen] = useState(initialMeasurements.length > 0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerSelection, setPickerSelection] = useState<Set<BodyMeasurementKey>>(new Set());
 
