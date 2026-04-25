@@ -34,6 +34,14 @@ export interface BodyEntry {
   updatedAt: string;
 }
 
+export interface BodyMeasurementGoal {
+  key: BodyMeasurementKey;
+  /** Target value in cm */
+  targetCm: number;
+  /** Starting value in cm (snapshot of latest at goal-set time) */
+  startCm: number | null;
+}
+
 export interface BodyGoals {
   targetWeightKg: number | null;
   targetBodyFatPercent: number | null;
@@ -41,4 +49,6 @@ export interface BodyGoals {
   startWeightKg: number | null;
   startBodyFatPercent: number | null;
   startMuscleMassPercent: number | null;
+  /** Optional per-measurement goals (always stored in cm). */
+  measurementGoals?: BodyMeasurementGoal[];
 }

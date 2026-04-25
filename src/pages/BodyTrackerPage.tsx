@@ -12,11 +12,14 @@ import BodyGraphs from '@/components/body/BodyGraphs';
 import BodyGoalsPanel from '@/components/body/BodyGoalsPanel';
 import BodyHistoryList from '@/components/body/BodyHistoryList';
 import BodyBMITrends from '@/components/body/BodyBMITrends';
+import { measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
+import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
 export default function BodyTrackerPage() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [measurementDisplayUnit, setMeasurementDisplayUnit] = useState<BodyMeasurementUnit>('cm');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [subView, setSubView] = useState<SubView>('main');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -220,16 +223,47 @@ export default function BodyTrackerPage() {
               <span className="text-3xl font-bold text-primary font-display">{(toDisplayWeight(latest.weightKg, wu) ?? 0).toFixed(1)}</span>
               <span className="text-sm text-muted-foreground">{unitLabel}</span>
             </div>
-            <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
               {latest.bodyFatPercent != null && <span>BF: {latest.bodyFatPercent.toFixed(1)}%</span>}
               {latest.muscleMassPercent != null && <span>MM: {latest.muscleMassPercent.toFixed(1)}%</span>}
               <span>{format(new Date(latest.date + 'T12:00:00'), 'MMM d')} · {latest.time}</span>
             </div>
+            {latest.measurements && latest.measurements.some(m => m.valueCm > 0) && (
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Measurements</span>
+                  <div className="inline-flex rounded-full border border-border overflow-hidden">
+                    {(['cm', 'in'] as const).map(u => (
+                      <button
+                        key={u}
+                        onClick={() => setMeasurementDisplayUnit(u)}
+                        className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                          measurementDisplayUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                  {latest.measurements.filter(m => m.valueCm > 0).map(m => (
+                    <div key={m.key} className="flex items-center justify-between text-[11px]">
+                      <span className="text-muted-foreground truncate">{measurementLabel(m.key)}</span>
+                      <span className="text-foreground font-medium ml-2 shrink-0">
+                        {cmToDisplay(m.valueCm, measurementDisplayUnit).toFixed(1)} {measurementDisplayUnit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
+
         {/* Goal progress */}
-        {(goals.targetWeightKg || goals.targetBodyFatPercent || goals.targetMuscleMassPercent) && (
+        {(goals.targetWeightKg || goals.targetBodyFatPercent || goals.targetMuscleMassPercent || (goals.measurementGoals && goals.measurementGoals.length > 0)) && (
           <div className="gym-card mb-4 space-y-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Goals Progress</p>
             {goals.targetWeightKg != null && latest && (() => {
@@ -312,6 +346,53 @@ export default function BodyTrackerPage() {
                 </div>
               );
             })()}
+
+            {goals.measurementGoals && goals.measurementGoals.length > 0 && goals.measurementGoals.map(mg => {
+              if (!(mg.targetCm > 0)) return null;
+              // Find latest entry that has this measurement with a value
+              let currentCm: number | null = null;
+              for (const e of entries) {
+                const m = e.measurements?.find(x => x.key === mg.key);
+                if (m && m.valueCm > 0) { currentCm = m.valueCm; break; }
+              }
+              if (currentCm == null) return null;
+
+              // Earliest measurement value for this key (fallback start)
+              let earliestCm: number | null = null;
+              for (let i = entries.length - 1; i >= 0; i--) {
+                const m = entries[i].measurements?.find(x => x.key === mg.key);
+                if (m && m.valueCm > 0) { earliestCm = m.valueCm; break; }
+              }
+              const startCmRaw = mg.startCm ?? earliestCm ?? currentCm;
+
+              const u = measurementDisplayUnit;
+              const current = cmToDisplay(currentCm, u);
+              const target = cmToDisplay(mg.targetCm, u);
+              const start = cmToDisplay(startCmRaw, u);
+              const pct = calcGoalProgress(start, current, target) ?? 0;
+              const trend = estimateTrend(e => {
+                const m = e.measurements?.find(x => x.key === mg.key);
+                return m && m.valueCm > 0 ? cmToDisplay(m.valueCm, u) : null;
+              });
+              const { trendLine, etaLine } = trendAndEta(start, current, target, trend, u);
+              return (
+                <div key={mg.key}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>{measurementLabel(mg.key)}</span>
+                    <span className="text-muted-foreground">{current.toFixed(1)} / {target.toFixed(1)} {u}</span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/50">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: progressWidth(pct) }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{remainingText(start, current, target, u)}</p>
+                  <p className="text-[10px] text-muted-foreground">{trendLine}</p>
+                  {etaLine && <p className="text-[10px] text-muted-foreground">{etaLine}</p>}
+                </div>
+              );
+            })}
           </div>
         )}
 
