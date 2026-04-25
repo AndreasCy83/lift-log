@@ -245,7 +245,10 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
         </div>
       </div>
 
-      <div className="px-4 pb-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+      <div
+        className="fixed bottom-0 left-0 right-0 z-40 px-4 pt-3 border-t border-border bg-background/95 backdrop-blur-lg"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 72px)' }}
+      >
         <Button onClick={handleSave} className="w-full h-12 text-base font-semibold">Save Goals</Button>
       </div>
 
