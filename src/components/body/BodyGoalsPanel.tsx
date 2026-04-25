@@ -125,13 +125,13 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-screen bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
         <button onClick={onBack} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
         <h2 className="font-display text-lg font-semibold">Body Goals</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}>
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 200px)' }}>
         <div className="gym-card space-y-3">
           <label className="text-sm font-medium">Target Weight ({unitLabel})</label>
           <Input
@@ -245,7 +245,10 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
         </div>
       </div>
 
-      <div className="px-4 pb-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+      <div
+        className="fixed bottom-0 left-0 right-0 z-40 px-4 pt-3 border-t border-border bg-background/95 backdrop-blur-lg"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 72px)' }}
+      >
         <Button onClick={handleSave} className="w-full h-12 text-base font-semibold">Save Goals</Button>
       </div>
 
