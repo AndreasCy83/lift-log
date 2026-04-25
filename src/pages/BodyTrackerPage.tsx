@@ -12,6 +12,8 @@ import BodyGraphs from '@/components/body/BodyGraphs';
 import BodyGoalsPanel from '@/components/body/BodyGoalsPanel';
 import BodyHistoryList from '@/components/body/BodyHistoryList';
 import BodyBMITrends from '@/components/body/BodyBMITrends';
+import { measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
+import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
