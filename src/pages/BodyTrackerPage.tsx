@@ -223,13 +223,44 @@ export default function BodyTrackerPage() {
               <span className="text-3xl font-bold text-primary font-display">{(toDisplayWeight(latest.weightKg, wu) ?? 0).toFixed(1)}</span>
               <span className="text-sm text-muted-foreground">{unitLabel}</span>
             </div>
-            <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
               {latest.bodyFatPercent != null && <span>BF: {latest.bodyFatPercent.toFixed(1)}%</span>}
               {latest.muscleMassPercent != null && <span>MM: {latest.muscleMassPercent.toFixed(1)}%</span>}
               <span>{format(new Date(latest.date + 'T12:00:00'), 'MMM d')} · {latest.time}</span>
             </div>
+            {latest.measurements && latest.measurements.some(m => m.valueCm > 0) && (
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Measurements</span>
+                  <div className="inline-flex rounded-full border border-border overflow-hidden">
+                    {(['cm', 'in'] as const).map(u => (
+                      <button
+                        key={u}
+                        onClick={() => setMeasurementDisplayUnit(u)}
+                        className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                          measurementDisplayUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                  {latest.measurements.filter(m => m.valueCm > 0).map(m => (
+                    <div key={m.key} className="flex items-center justify-between text-[11px]">
+                      <span className="text-muted-foreground truncate">{measurementLabel(m.key)}</span>
+                      <span className="text-foreground font-medium ml-2 shrink-0">
+                        {cmToDisplay(m.valueCm, measurementDisplayUnit).toFixed(1)} {measurementDisplayUnit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
+
 
         {/* Goal progress */}
         {(goals.targetWeightKg || goals.targetBodyFatPercent || goals.targetMuscleMassPercent) && (
