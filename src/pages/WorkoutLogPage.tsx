@@ -618,12 +618,13 @@ export default function WorkoutLogPage() {
                     }}
                   />
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 0.5rem 2.25rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 0.4rem 2rem 1.25rem 2rem' }}>
                     <div>Set</div>
                     <div></div>
                     <div>Type</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
+                    <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
