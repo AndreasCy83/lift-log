@@ -37,6 +37,7 @@ import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
 import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
 import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
+import WorkoutCelebrationModal from '@/components/workout/WorkoutCelebrationModal';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
@@ -96,6 +97,9 @@ export default function WorkoutLogPage() {
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
   const [deleteSetTarget, setDeleteSetTarget] = useState<string | null>(null);
+
+  // Post-workout celebration modal
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
@@ -353,7 +357,8 @@ export default function WorkoutLogPage() {
       durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
     });
     schedulePendingBackup();
-    navigate('/');
+    // Open the celebration modal; navigation happens when user closes it.
+    setCelebrationOpen(true);
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
@@ -895,6 +900,17 @@ export default function WorkoutLogPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {workout && (
+        <WorkoutCelebrationModal
+          workoutId={workout.id}
+          open={celebrationOpen}
+          onClose={() => {
+            setCelebrationOpen(false);
+            navigate('/');
+          }}
+        />
+      )}
     </div>
   );
 }
