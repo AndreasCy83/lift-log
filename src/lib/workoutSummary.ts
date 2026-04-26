@@ -13,6 +13,7 @@ import {
   getRoutines,
 } from '@/lib/storage';
 import type { Workout, WorkoutSet, Exercise } from '@/types/fitness';
+import { getCategoryColor } from '@/lib/categoryColors';
 
 export interface MuscleFocus {
   categoryId: string;
