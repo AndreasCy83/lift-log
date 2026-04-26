@@ -97,6 +97,9 @@ export default function WorkoutLogPage() {
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
   const [deleteSetTarget, setDeleteSetTarget] = useState<string | null>(null);
 
+  // Post-workout celebration modal
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
