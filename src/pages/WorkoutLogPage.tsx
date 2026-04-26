@@ -356,7 +356,8 @@ export default function WorkoutLogPage() {
       durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
     });
     schedulePendingBackup();
-    navigate('/');
+    // Open the celebration modal; navigation happens when user closes it.
+    setCelebrationOpen(true);
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
