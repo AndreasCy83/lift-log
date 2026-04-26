@@ -95,6 +95,7 @@ export default function WorkoutLogPage() {
 
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
+  const [deleteSetTarget, setDeleteSetTarget] = useState<string | null>(null);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
