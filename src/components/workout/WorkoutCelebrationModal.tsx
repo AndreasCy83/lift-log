@@ -74,17 +74,17 @@ function CardShell({
         background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
       }}
     >
-      <div className="absolute inset-0 p-6 flex flex-col">
+      <div className="absolute inset-0 p-6 pb-20 flex flex-col">
         {children}
       </div>
-      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
+      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2.5">
         <img
           src={appIcon}
           alt=""
-          className="w-5 h-5 rounded-md object-cover opacity-90"
+          className="w-9 h-9 rounded-xl object-cover shadow-lg ring-1 ring-white/15"
           crossOrigin="anonymous"
         />
-        <span className="text-[12px] font-semibold text-white/60 tracking-wide">FitLog X Tracker</span>
+        <span className="text-[15px] font-bold text-white/85 tracking-wide">FitLog X Tracker</span>
       </div>
     </div>
   );
@@ -180,24 +180,83 @@ const milestoneCard: CardDef = {
   },
 };
 
-function MuscleBars({ muscles }: { muscles: MuscleFocus[] }) {
-  const top = muscles.slice(0, 6);
+function MuscleDonut({ muscles }: { muscles: MuscleFocus[] }) {
+  const top = muscles.slice(0, 5);
+  const size = 180;
+  const stroke = 22;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  // Build cumulative arcs
+  let offset = 0;
+  const segments = top.map((m) => {
+    const len = Math.max(0.001, m.share) * circumference;
+    const seg = { m, dasharray: `${len} ${circumference - len}`, dashoffset: -offset };
+    offset += len;
+    return seg;
+  });
+
+  const primary = top[0];
+
   return (
-    <div className="space-y-2.5 w-full">
-      {top.map(m => (
-        <div key={m.categoryId}>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-medium text-white/90">{m.name}</span>
-            <span className="text-xs text-white/50 tabular-nums">{Math.round(m.share * 100)}%</span>
-          </div>
-          <div className="h-2.5 rounded-full bg-white/5 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${Math.max(4, m.share * 100)}%`, background: m.color }}
+    <div className="w-full flex flex-col items-center">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          {/* track */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={radius}
+            fill="none"
+            stroke="hsl(0 0% 100% / 0.06)"
+            strokeWidth={stroke}
+          />
+          {segments.map((s, i) => (
+            <circle
+              key={i}
+              cx={cx}
+              cy={cy}
+              r={radius}
+              fill="none"
+              stroke={s.m.color}
+              strokeWidth={stroke}
+              strokeDasharray={s.dasharray}
+              strokeDashoffset={s.dashoffset}
+              strokeLinecap="butt"
             />
+          ))}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="text-[10px] uppercase tracking-widest text-white/50">Top Focus</div>
+          <div className="text-3xl font-extrabold text-white tabular-nums leading-none mt-1">
+            {primary ? `${Math.round(primary.share * 100)}%` : '—'}
+          </div>
+          <div
+            className="text-xs font-semibold mt-1 truncate max-w-[120px] text-center"
+            style={{ color: primary?.color }}
+          >
+            {primary?.name ?? ''}
           </div>
         </div>
-      ))}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-5 w-full grid grid-cols-2 gap-x-4 gap-y-2">
+        {top.map((m) => (
+          <div key={m.categoryId} className="flex items-center gap-2 min-w-0">
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]"
+              style={{ backgroundColor: m.color, color: m.color }}
+            />
+            <span className="text-xs font-medium text-white/85 truncate flex-1">{m.name}</span>
+            <span className="text-xs font-bold text-white/95 tabular-nums">
+              {Math.round(m.share * 100)}%
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -209,10 +268,10 @@ const musclesCard: CardDef = {
       <div className="flex flex-col h-full">
         <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Muscle Focus</div>
         <h2 className="mt-1 text-2xl font-bold text-white">Today's Targets</h2>
-        <div className="mt-6 flex-1 flex flex-col justify-center">
-          <MuscleBars muscles={d.muscleFocus} />
+        <div className="mt-4 flex-1 flex flex-col justify-center">
+          <MuscleDonut muscles={d.muscleFocus} />
         </div>
-        <div className="mt-2 text-center text-xs text-white/40">
+        <div className="mt-3 text-center text-[11px] text-white/45">
           Distribution by training volume
         </div>
       </div>
