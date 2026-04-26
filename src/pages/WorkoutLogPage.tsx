@@ -95,6 +95,7 @@ export default function WorkoutLogPage() {
 
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
+  const [deleteSetTarget, setDeleteSetTarget] = useState<string | null>(null);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
@@ -618,12 +619,13 @@ export default function WorkoutLogPage() {
                     }}
                   />
                   {/* Dynamic Headers */}
-                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 0.5rem 2.25rem' }}>
+                  <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 0.4rem 2rem 1.25rem 2rem' }}>
                     <div>Set</div>
                     <div></div>
                     <div>Type</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
+                    <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
@@ -642,7 +644,7 @@ export default function WorkoutLogPage() {
 
                     return (
                     <div key={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.25rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 2rem 0.5rem 2.25rem' }}>
+                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,2.6rem) minmax(0,2.6rem) minmax(0,2.6rem) 0.4rem 2rem 1.25rem 2rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
                           <button
@@ -670,6 +672,7 @@ export default function WorkoutLogPage() {
                           weightUnit={globalWeightUnit}
                           onUpdate={(field, value) => handleUpdateSet(s, field, value)}
                         />
+                        <div></div>
                         <div className="flex justify-center">
                           <button
                             onClick={() => handleToggleSetComplete(s)}
@@ -687,11 +690,12 @@ export default function WorkoutLogPage() {
                         <div></div>
                         <div className="flex justify-end">
                           <button
-                            onClick={() => handleDeleteSet(s.id)}
-                            className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive"
+                            onClick={() => setDeleteSetTarget(s.id)}
+                            className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors"
                             title="Delete set"
+                            aria-label="Delete set"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </div>
@@ -865,6 +869,28 @@ export default function WorkoutLogPage() {
               }}
             >
               Replace
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!deleteSetTarget} onOpenChange={(open) => !open && setDeleteSetTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this set?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This set will be removed and remaining sets will be renumbered. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteSetTarget) handleDeleteSet(deleteSetTarget);
+                setDeleteSetTarget(null);
+              }}
+            >
+              Yes, delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
