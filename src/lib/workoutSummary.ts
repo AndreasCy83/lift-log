@@ -203,9 +203,6 @@ export function computeCelebrationData(workoutId: string): WorkoutCelebrationDat
       const cat = catMap.get(catId);
       const share =
         totalCatVolume > 0 ? v.volume / totalCatVolume : totalCatSets > 0 ? v.sets / totalCatSets : 0;
-      // Lazy import to avoid circular
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { getCategoryColor } = require('@/lib/categoryColors') as typeof import('@/lib/categoryColors');
       return {
         categoryId: catId,
         name: cat?.name ?? 'Other',
