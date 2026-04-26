@@ -900,6 +900,17 @@ export default function WorkoutLogPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {workout && (
+        <WorkoutCelebrationModal
+          workoutId={workout.id}
+          open={celebrationOpen}
+          onClose={() => {
+            setCelebrationOpen(false);
+            navigate('/');
+          }}
+        />
+      )}
     </div>
   );
 }
