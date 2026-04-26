@@ -77,8 +77,14 @@ function CardShell({
       <div className="absolute inset-0 p-6 flex flex-col">
         {children}
       </div>
-      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center">
-        <span className="text-[10px] tracking-[0.3em] font-semibold text-white/40">FITLOG X</span>
+      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
+        <img
+          src={appIcon}
+          alt=""
+          className="w-5 h-5 rounded-md object-cover opacity-90"
+          crossOrigin="anonymous"
+        />
+        <span className="text-[12px] font-semibold text-white/60 tracking-wide">FitLog X Tracker</span>
       </div>
     </div>
   );
