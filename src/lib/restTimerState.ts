@@ -39,9 +39,8 @@ export function startRestTimer(
   afterSetIndex: number,
   totalSeconds: number
 ): ActiveRestTimer {
-  const timers = getActiveTimers().filter(
-    t => !(t.workoutExerciseId === workoutExerciseId && t.afterSetIndex === afterSetIndex)
-  );
+  // Enforce single active timer at the workout level: latest started wins.
+  // Clear ALL existing timers regardless of exercise/set.
   const timer: ActiveRestTimer = {
     id: `${workoutExerciseId}-${afterSetIndex}`,
     workoutExerciseId,
@@ -50,9 +49,13 @@ export function startRestTimer(
     endAt: Date.now() + totalSeconds * 1000,
     cuesFired: [],
   };
-  timers.push(timer);
-  saveActiveTimers(timers);
+  saveActiveTimers([timer]);
   return timer;
+}
+
+/** Clear every active rest timer (e.g. on workout finish). */
+export function clearAllRestTimers() {
+  saveActiveTimers([]);
 }
 
 export function clearRestTimer(workoutExerciseId: string, afterSetIndex: number) {

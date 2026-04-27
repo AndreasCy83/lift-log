@@ -30,7 +30,7 @@ import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
-import { startRestTimer, clearAllTimersForExercise, getActiveTimers } from '@/lib/restTimerState';
+import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
@@ -349,6 +349,9 @@ export default function WorkoutLogPage() {
         saveLastUsedRestSeconds(we.exerciseId, we.defaultRestSeconds);
       }
     });
+    // Stop and clear ALL active rest timers — none should keep running after finish.
+    clearAllRestTimers();
+    RestTimerNative.stopTimer().catch(() => {});
     // Finalize the live workout session timer (independent from rest timer)
     const elapsedSec = session.end();
     updateWorkout({
