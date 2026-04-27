@@ -461,6 +461,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('graphs')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="Graphs"
+            data-tutorial="body-graphs"
           >
             <LineChartIcon className="h-5 w-5 text-primary" />
           </button>
@@ -468,6 +469,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('history')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="History"
+            data-tutorial="body-history"
           >
             <List className="h-5 w-5 text-primary" />
           </button>
@@ -476,6 +478,7 @@ export default function BodyTrackerPage() {
           <button
             onClick={() => { setEditEntry(null); setShowAddModal(true); }}
             className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-xl active:scale-95 transition-transform -mt-2"
+            data-tutorial="body-add"
           >
             <Plus className="h-7 w-7 text-primary-foreground" />
           </button>
@@ -485,6 +488,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('goals')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="Goals"
+            data-tutorial="body-goals"
           >
             <Target className="h-5 w-5 text-primary" />
           </button>
@@ -492,6 +496,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('bmi')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="BMI & Trends"
+            data-tutorial="body-bmi"
           >
             <Activity className="h-5 w-5 text-primary" />
           </button>
