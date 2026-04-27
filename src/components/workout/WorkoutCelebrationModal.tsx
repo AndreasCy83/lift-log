@@ -696,11 +696,11 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
         className="px-5 pt-3 flex flex-col gap-2.5"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
       >
-        <div className="flex gap-2.5">
+        <div className="flex gap-2">
           <Button
             onClick={handleInstagramShare}
             disabled={sharing}
-            className="flex-1 h-12 rounded-full text-white font-semibold border-0"
+            className="flex-1 h-12 rounded-full text-white font-semibold border-0 px-3"
             style={{
               background: 'linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
             }}
@@ -708,10 +708,18 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
             <Instagram className="w-5 h-5" /> Stories
           </Button>
           <Button
+            onClick={handleDownload}
+            disabled={sharing}
+            variant="secondary"
+            className="flex-1 h-12 rounded-full font-semibold px-3"
+          >
+            <Download className="w-5 h-5" /> Save
+          </Button>
+          <Button
             onClick={handleShareSheet}
             disabled={sharing}
             variant="secondary"
-            className="flex-1 h-12 rounded-full font-semibold"
+            className="flex-1 h-12 rounded-full font-semibold px-3"
           >
             <Share2 className="w-5 h-5" /> Share
           </Button>
