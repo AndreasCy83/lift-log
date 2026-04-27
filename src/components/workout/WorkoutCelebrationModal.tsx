@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import {
-  X, Share2, Instagram, Trophy, Flame, Dumbbell, TrendingUp,
+  X, Share2, Instagram, Trophy, Flame, Dumbbell, TrendingUp, Download,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
