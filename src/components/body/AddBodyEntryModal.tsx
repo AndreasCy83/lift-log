@@ -26,9 +26,10 @@ interface AddBodyEntryModalProps {
   onClose: () => void;
   onSaved: () => void;
   editEntry?: BodyEntry | null;
+  initialMoreOpen?: boolean;
 }
 
-export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }: AddBodyEntryModalProps) {
+export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry, initialMoreOpen }: AddBodyEntryModalProps) {
   const settings = getSettings();
   const profile = getProfile();
   const wu = settings.weightUnit;
@@ -64,7 +65,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
   // Extra measurements
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>(initialMeasurements);
   const [measureUnit, setMeasureUnit] = useState<BodyMeasurementUnit>('cm');
-  const [moreOpen, setMoreOpen] = useState(initialMeasurements.length > 0);
+  const [moreOpen, setMoreOpen] = useState(initialMoreOpen || initialMeasurements.length > 0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerSelection, setPickerSelection] = useState<Set<BodyMeasurementKey>>(new Set());
 
@@ -202,7 +203,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* Weight ruler — compact */}
-        <div className="gym-card !p-3">
+        <div className="gym-card !p-3" data-tutorial="body-weight">
           <WeightRulerPicker
             value={weight}
             onChange={setWeight}
@@ -216,7 +217,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* Body fat */}
-        <div className="gym-card !p-3">
+        <div className="gym-card !p-3" data-tutorial="body-fat">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Body Fat %</span>
             <button
@@ -240,7 +241,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* Muscle mass */}
-        <div className="gym-card !p-3">
+        <div className="gym-card !p-3" data-tutorial="body-muscle">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Muscle Mass %</span>
             <button
@@ -264,7 +265,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* More Measurements */}
-        <div className="gym-card !p-3 space-y-3">
+        <div className="gym-card !p-3 space-y-3" data-tutorial="body-measurements">
           <button
             type="button"
             onClick={() => setMoreOpen(o => !o)}
@@ -337,6 +338,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
                 onClick={openPicker}
                 disabled={availableForPicker.length === 0}
                 className="w-full h-9 text-sm"
+                data-tutorial="body-add-measurements"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Measurements

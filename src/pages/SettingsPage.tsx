@@ -269,10 +269,11 @@ export default function SettingsPage() {
             className="w-full"
             onClick={() => {
               localStorage.removeItem('hasSeenExerciseTutorial');
-              toast({ title: 'Tutorial reset', description: 'Open an exercise in a workout to replay the tutorial.' });
+              localStorage.removeItem('hasSeenBodyTutorial');
+              toast({ title: 'Tutorials reset', description: 'Open an exercise or the Body tab to replay the tutorials.' });
             }}
           >
-            Reset Exercise Tutorial
+            Reset Tutorials
           </Button>
         </div>
 

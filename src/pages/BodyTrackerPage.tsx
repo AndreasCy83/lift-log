@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Plus, LineChart as LineChartIcon, List, Target, Activity } from 'lucide-react';
 import { getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getBodyGoals } from '@/lib/bodyTrackerStorage';
@@ -14,6 +14,23 @@ import BodyHistoryList from '@/components/body/BodyHistoryList';
 import BodyBMITrends from '@/components/body/BodyBMITrends';
 import { measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
 import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
+import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+
+const BODY_TUTORIAL_MAIN: TutorialStep[] = [
+  { selector: '[data-tutorial="body-graphs"]', title: 'Graphs', text: 'View visual trends of your weight, body fat, muscle mass and measurements over time.' },
+  { selector: '[data-tutorial="body-history"]', title: 'History', text: 'Browse and edit every body entry you have logged.' },
+  { selector: '[data-tutorial="body-add"]', title: 'Add Entry', text: 'Tap the + button to log a new body entry — weight, body fat, measurements and more.' },
+  { selector: '[data-tutorial="body-goals"]', title: 'Goals', text: 'Set targets for weight, body fat, muscle mass and individual measurements.' },
+  { selector: '[data-tutorial="body-bmi"]', title: 'BMI & Trends', text: 'Check your BMI and longer-term trend lines for body composition.' },
+];
+
+const BODY_TUTORIAL_FIELDS: TutorialStep[] = [
+  { selector: '[data-tutorial="body-weight"]', title: 'Weight', text: 'Spin the ruler to set your current weight. Switch units in Settings.' },
+  { selector: '[data-tutorial="body-fat"]', title: 'Body Fat %', text: 'Toggle on to log your body fat percentage for this entry.' },
+  { selector: '[data-tutorial="body-muscle"]', title: 'Muscle Mass %', text: 'Toggle on to record your muscle mass percentage.' },
+  { selector: '[data-tutorial="body-measurements"]', title: 'More Measurements', text: 'Expand to track circumference measurements like shoulders, biceps and more.' },
+  { selector: '[data-tutorial="body-add-measurements"]', title: 'Pick Measurements', text: 'Add specific spots — for example shoulders or upper arms (biceps) — and log them in cm or in.' },
+];
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
@@ -24,6 +41,7 @@ export default function BodyTrackerPage() {
   const [subView, setSubView] = useState<SubView>('main');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editEntry, setEditEntry] = useState<BodyEntry | null>(null);
+  const [tutorialPhase, setTutorialPhase] = useState<'none' | 'main' | 'fields'>('none');
 
   const entries = useMemo(() => getBodyEntries(), [refreshKey]);
   const goals = useMemo(() => getBodyGoals(), [refreshKey]);
@@ -33,6 +51,15 @@ export default function BodyTrackerPage() {
   const unitLabel = weightUnitLabel(wu);
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
+
+  // First-time tutorial trigger for the Body tab
+  useEffect(() => {
+    if (subView !== 'main') return;
+    if (tutorialPhase !== 'none') return;
+    if (localStorage.getItem('hasSeenBodyTutorial') === 'true') return;
+    const t = setTimeout(() => setTutorialPhase('main'), 400);
+    return () => clearTimeout(t);
+  }, [subView, tutorialPhase]);
 
   // Entries for current month
   const monthEntries = useMemo(() => {
@@ -434,6 +461,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('graphs')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="Graphs"
+            data-tutorial="body-graphs"
           >
             <LineChartIcon className="h-5 w-5 text-primary" />
           </button>
@@ -441,6 +469,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('history')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="History"
+            data-tutorial="body-history"
           >
             <List className="h-5 w-5 text-primary" />
           </button>
@@ -449,6 +478,7 @@ export default function BodyTrackerPage() {
           <button
             onClick={() => { setEditEntry(null); setShowAddModal(true); }}
             className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-xl active:scale-95 transition-transform -mt-2"
+            data-tutorial="body-add"
           >
             <Plus className="h-7 w-7 text-primary-foreground" />
           </button>
@@ -458,6 +488,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('goals')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="Goals"
+            data-tutorial="body-goals"
           >
             <Target className="h-5 w-5 text-primary" />
           </button>
@@ -465,6 +496,7 @@ export default function BodyTrackerPage() {
             onClick={() => setSubView('bmi')}
             className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             title="BMI & Trends"
+            data-tutorial="body-bmi"
           >
             <Activity className="h-5 w-5 text-primary" />
           </button>
@@ -474,10 +506,42 @@ export default function BodyTrackerPage() {
       {/* Add/Edit modal */}
       <AddBodyEntryModal
         open={showAddModal}
-        onClose={() => { setShowAddModal(false); setEditEntry(null); }}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditEntry(null);
+          if (tutorialPhase === 'fields') {
+            localStorage.setItem('hasSeenBodyTutorial', 'true');
+            setTutorialPhase('none');
+          }
+        }}
         onSaved={refresh}
         editEntry={editEntry}
+        initialMoreOpen={tutorialPhase === 'fields'}
       />
+
+      {/* First-time tutorial — main actions */}
+      {tutorialPhase === 'main' && !showAddModal && (
+        <ExerciseTutorialOverlay
+          steps={BODY_TUTORIAL_MAIN}
+          onFinish={() => {
+            // Open Add modal and continue to field tutorial
+            setEditEntry(null);
+            setShowAddModal(true);
+            setTimeout(() => setTutorialPhase('fields'), 350);
+          }}
+        />
+      )}
+
+      {/* First-time tutorial — body entry fields (inside modal) */}
+      {tutorialPhase === 'fields' && showAddModal && (
+        <ExerciseTutorialOverlay
+          steps={BODY_TUTORIAL_FIELDS}
+          onFinish={() => {
+            localStorage.setItem('hasSeenBodyTutorial', 'true');
+            setTutorialPhase('none');
+          }}
+        />
+      )}
     </div>
   );
 }
