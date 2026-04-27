@@ -74,17 +74,17 @@ function CardShell({
         background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
       }}
     >
-      <div className="absolute inset-0 p-6 pb-20 flex flex-col">
+      <div className="absolute inset-0 p-6 pb-28 flex flex-col">
         {children}
       </div>
-      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2.5">
+      <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-3">
         <img
           src={appIcon}
           alt=""
-          className="w-9 h-9 rounded-xl object-cover shadow-lg ring-1 ring-white/15"
+          className="w-12 h-12 rounded-2xl object-cover shadow-lg ring-1 ring-white/15"
           crossOrigin="anonymous"
         />
-        <span className="text-[15px] font-bold text-white/85 tracking-wide">FitLog X Tracker</span>
+        <span className="text-[18px] font-extrabold text-white/90 tracking-wide">FitLog X Tracker</span>
       </div>
     </div>
   );
