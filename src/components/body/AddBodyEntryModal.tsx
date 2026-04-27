@@ -264,7 +264,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* More Measurements */}
-        <div className="gym-card !p-3 space-y-3">
+        <div className="gym-card !p-3 space-y-3" data-tutorial="body-measurements">
           <button
             type="button"
             onClick={() => setMoreOpen(o => !o)}
