@@ -26,9 +26,10 @@ interface AddBodyEntryModalProps {
   onClose: () => void;
   onSaved: () => void;
   editEntry?: BodyEntry | null;
+  initialMoreOpen?: boolean;
 }
 
-export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }: AddBodyEntryModalProps) {
+export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry, initialMoreOpen }: AddBodyEntryModalProps) {
   const settings = getSettings();
   const profile = getProfile();
   const wu = settings.weightUnit;
