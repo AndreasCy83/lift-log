@@ -52,6 +52,15 @@ export default function BodyTrackerPage() {
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
+  // First-time tutorial trigger for the Body tab
+  useEffect(() => {
+    if (subView !== 'main') return;
+    if (tutorialPhase !== 'none') return;
+    if (localStorage.getItem('hasSeenBodyTutorial') === 'true') return;
+    const t = setTimeout(() => setTutorialPhase('main'), 400);
+    return () => clearTimeout(t);
+  }, [subView, tutorialPhase]);
+
   // Entries for current month
   const monthEntries = useMemo(() => {
     const start = startOfMonth(currentMonth);
