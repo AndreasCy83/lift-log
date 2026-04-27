@@ -600,6 +600,47 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     }
   }, [captureCurrentCard, sharing, writeTempImage]);
 
+  const handleDownload = useCallback(async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const dataUrl = await captureCurrentCard();
+      if (!dataUrl) { toast.error('Could not capture card'); return; }
+      const filename = `fitlog-workout-${Date.now()}.png`;
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Filesystem.writeFile({
+            path: filename,
+            data: dataUrlToBase64(dataUrl),
+            directory: Directory.Documents,
+            recursive: true,
+          });
+          toast.success('Saved to Documents');
+        } catch (err) {
+          console.error('Download failed', err);
+          // Fallback: write to cache and open share sheet so user can save it
+          const fileUri = await writeTempImage(dataUrl);
+          if (fileUri) {
+            await Share.share({ title: 'Save image', url: fileUri, dialogTitle: 'Save image' });
+          } else {
+            toast.error('Could not save image');
+          }
+        }
+      } else {
+        downloadDataUrl(dataUrl, filename);
+        toast.success('Image downloaded');
+      }
+    } catch (e: any) {
+      if (e?.message && !/cancel/i.test(e.message)) {
+        console.error(e);
+        toast.error('Download failed');
+      }
+    } finally {
+      setSharing(false);
+    }
+  }, [captureCurrentCard, sharing, writeTempImage]);
+
   if (!open || !data) return null;
 
   return (
