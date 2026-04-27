@@ -281,51 +281,77 @@ const musclesCard: CardDef = {
 
 const highlightsCard: CardDef = {
   key: 'highlights',
-  render: (d, unit, dw) => (
-    <CardShell accent="hsl(280 80% 55% / 0.22)">
-      <div className="flex flex-col h-full">
-        <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
-        <h2 className="mt-1 text-2xl font-bold text-white">
-          {d.personalRecords.length > 0 ? 'New Records!' : 'Top Performances'}
-        </h2>
-        <div className="mt-6 flex-1 flex flex-col gap-3 justify-center">
-          {d.personalRecords.slice(0, 3).map((pr, i) => (
-            <div key={i} className="rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4">
-              <div className="flex items-center gap-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
-                <Trophy className="w-4 h-4" /> Personal Record
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{pr.exerciseName}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {dw(pr.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {pr.reps}</span>
-              </div>
+  render: (d, unit, dw) => {
+    type Block = { kind: 'pr' | 'volume' | 'heaviest'; node: JSX.Element };
+    const blocks: Block[] = [];
+
+    for (const pr of d.personalRecords) {
+      blocks.push({
+        kind: 'pr',
+        node: (
+          <div className="rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4">
+            <div className="flex items-center gap-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
+              <Trophy className="w-4 h-4" /> Personal Record
             </div>
-          ))}
-          {d.heaviestSet && d.personalRecords.length < 3 && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
-                <Dumbbell className="w-4 h-4" /> Heaviest Set
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{d.heaviestSet.exerciseName}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {dw(d.heaviestSet.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {d.heaviestSet.reps}</span>
-              </div>
+            <div className="mt-1 text-lg font-bold text-white truncate">{pr.exerciseName}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {dw(pr.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {pr.reps}</span>
             </div>
-          )}
-          {d.topVolumeExercise && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
-                <TrendingUp className="w-4 h-4" /> Top Volume
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{d.topVolumeExercise.name}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {fmtNum(dw(d.topVolumeExercise.volumeKg))} {unit}
-              </div>
+          </div>
+        ),
+      });
+    }
+
+    if (d.topVolumeExercise) {
+      blocks.push({
+        kind: 'volume',
+        node: (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
+              <TrendingUp className="w-4 h-4" /> Top Volume
             </div>
-          )}
+            <div className="mt-1 text-lg font-bold text-white truncate">{d.topVolumeExercise!.name}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {fmtNum(dw(d.topVolumeExercise!.volumeKg))} {unit}
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    if (d.heaviestSet) {
+      blocks.push({
+        kind: 'heaviest',
+        node: (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
+              <Dumbbell className="w-4 h-4" /> Heaviest Set
+            </div>
+            <div className="mt-1 text-lg font-bold text-white truncate">{d.heaviestSet!.exerciseName}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {dw(d.heaviestSet!.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {d.heaviestSet!.reps}</span>
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    const visible = blocks.slice(0, 3);
+
+    return (
+      <CardShell accent="hsl(280 80% 55% / 0.22)">
+        <div className="flex flex-col h-full">
+          <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
+          <h2 className="mt-1 text-2xl font-bold text-white">
+            {d.personalRecords.length > 0 ? 'New Records!' : 'Top Performances'}
+          </h2>
+          <div className="mt-6 flex-1 flex flex-col gap-3 justify-center">
+            {visible.map((b, i) => <div key={i}>{b.node}</div>)}
+          </div>
         </div>
-      </div>
-    </CardShell>
-  ),
+      </CardShell>
+    );
+  },
 };
 
 const lifetimeCard: CardDef = {
