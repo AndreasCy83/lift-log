@@ -65,7 +65,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry, i
   // Extra measurements
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>(initialMeasurements);
   const [measureUnit, setMeasureUnit] = useState<BodyMeasurementUnit>('cm');
-  const [moreOpen, setMoreOpen] = useState(initialMeasurements.length > 0);
+  const [moreOpen, setMoreOpen] = useState(initialMoreOpen || initialMeasurements.length > 0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerSelection, setPickerSelection] = useState<Set<BodyMeasurementKey>>(new Set());
 
