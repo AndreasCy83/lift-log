@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import {
-  X, Share2, Instagram, Trophy, Flame, Dumbbell, TrendingUp,
+  X, Share2, Instagram, Trophy, Flame, Dumbbell, TrendingUp, Download,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
@@ -74,17 +74,17 @@ function CardShell({
         background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
       }}
     >
-      <div className="absolute inset-0 p-6 pb-20 flex flex-col">
+      <div className="absolute inset-0 p-6 pb-28 flex flex-col">
         {children}
       </div>
-      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2.5">
+      <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-3">
         <img
           src={appIcon}
           alt=""
-          className="w-9 h-9 rounded-xl object-cover shadow-lg ring-1 ring-white/15"
+          className="w-12 h-12 rounded-2xl object-cover shadow-lg ring-1 ring-white/15"
           crossOrigin="anonymous"
         />
-        <span className="text-[15px] font-bold text-white/85 tracking-wide">FitLog X Tracker</span>
+        <span className="text-[18px] font-extrabold text-white/90 tracking-wide">FitLog X Tracker</span>
       </div>
     </div>
   );
@@ -281,51 +281,77 @@ const musclesCard: CardDef = {
 
 const highlightsCard: CardDef = {
   key: 'highlights',
-  render: (d, unit, dw) => (
-    <CardShell accent="hsl(280 80% 55% / 0.22)">
-      <div className="flex flex-col h-full">
-        <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
-        <h2 className="mt-1 text-2xl font-bold text-white">
-          {d.personalRecords.length > 0 ? 'New Records!' : 'Top Performances'}
-        </h2>
-        <div className="mt-6 flex-1 flex flex-col gap-3 justify-center">
-          {d.personalRecords.slice(0, 3).map((pr, i) => (
-            <div key={i} className="rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4">
-              <div className="flex items-center gap-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
-                <Trophy className="w-4 h-4" /> Personal Record
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{pr.exerciseName}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {dw(pr.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {pr.reps}</span>
-              </div>
+  render: (d, unit, dw) => {
+    type Block = { kind: 'pr' | 'volume' | 'heaviest'; node: JSX.Element };
+    const blocks: Block[] = [];
+
+    for (const pr of d.personalRecords) {
+      blocks.push({
+        kind: 'pr',
+        node: (
+          <div className="rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4">
+            <div className="flex items-center gap-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
+              <Trophy className="w-4 h-4" /> Personal Record
             </div>
-          ))}
-          {d.heaviestSet && d.personalRecords.length < 3 && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
-                <Dumbbell className="w-4 h-4" /> Heaviest Set
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{d.heaviestSet.exerciseName}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {dw(d.heaviestSet.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {d.heaviestSet.reps}</span>
-              </div>
+            <div className="mt-1 text-lg font-bold text-white truncate">{pr.exerciseName}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {dw(pr.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {pr.reps}</span>
             </div>
-          )}
-          {d.topVolumeExercise && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
-                <TrendingUp className="w-4 h-4" /> Top Volume
-              </div>
-              <div className="mt-1 text-lg font-bold text-white truncate">{d.topVolumeExercise.name}</div>
-              <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
-                {fmtNum(dw(d.topVolumeExercise.volumeKg))} {unit}
-              </div>
+          </div>
+        ),
+      });
+    }
+
+    if (d.topVolumeExercise) {
+      blocks.push({
+        kind: 'volume',
+        node: (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
+              <TrendingUp className="w-4 h-4" /> Top Volume
             </div>
-          )}
+            <div className="mt-1 text-lg font-bold text-white truncate">{d.topVolumeExercise!.name}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {fmtNum(dw(d.topVolumeExercise!.volumeKg))} {unit}
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    if (d.heaviestSet) {
+      blocks.push({
+        kind: 'heaviest',
+        node: (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
+              <Dumbbell className="w-4 h-4" /> Heaviest Set
+            </div>
+            <div className="mt-1 text-lg font-bold text-white truncate">{d.heaviestSet!.exerciseName}</div>
+            <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
+              {dw(d.heaviestSet!.weightKg)} {unit} <span className="text-white/60 text-base font-semibold">× {d.heaviestSet!.reps}</span>
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    const visible = blocks.slice(0, 3);
+
+    return (
+      <CardShell accent="hsl(280 80% 55% / 0.22)">
+        <div className="flex flex-col h-full">
+          <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
+          <h2 className="mt-1 text-2xl font-bold text-white">
+            {d.personalRecords.length > 0 ? 'New Records!' : 'Top Performances'}
+          </h2>
+          <div className="mt-6 flex-1 flex flex-col gap-3 justify-center">
+            {visible.map((b, i) => <div key={i}>{b.node}</div>)}
+          </div>
         </div>
-      </div>
-    </CardShell>
-  ),
+      </CardShell>
+    );
+  },
 };
 
 const lifetimeCard: CardDef = {
@@ -574,6 +600,47 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     }
   }, [captureCurrentCard, sharing, writeTempImage]);
 
+  const handleDownload = useCallback(async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const dataUrl = await captureCurrentCard();
+      if (!dataUrl) { toast.error('Could not capture card'); return; }
+      const filename = `fitlog-workout-${Date.now()}.png`;
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Filesystem.writeFile({
+            path: filename,
+            data: dataUrlToBase64(dataUrl),
+            directory: Directory.Documents,
+            recursive: true,
+          });
+          toast.success('Saved to Documents');
+        } catch (err) {
+          console.error('Download failed', err);
+          // Fallback: write to cache and open share sheet so user can save it
+          const fileUri = await writeTempImage(dataUrl);
+          if (fileUri) {
+            await Share.share({ title: 'Save image', url: fileUri, dialogTitle: 'Save image' });
+          } else {
+            toast.error('Could not save image');
+          }
+        }
+      } else {
+        downloadDataUrl(dataUrl, filename);
+        toast.success('Image downloaded');
+      }
+    } catch (e: any) {
+      if (e?.message && !/cancel/i.test(e.message)) {
+        console.error(e);
+        toast.error('Download failed');
+      }
+    } finally {
+      setSharing(false);
+    }
+  }, [captureCurrentCard, sharing, writeTempImage]);
+
   if (!open || !data) return null;
 
   return (
@@ -629,11 +696,11 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
         className="px-5 pt-3 flex flex-col gap-2.5"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
       >
-        <div className="flex gap-2.5">
+        <div className="flex gap-2">
           <Button
             onClick={handleInstagramShare}
             disabled={sharing}
-            className="flex-1 h-12 rounded-full text-white font-semibold border-0"
+            className="flex-1 h-12 rounded-full text-white font-semibold border-0 px-3"
             style={{
               background: 'linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
             }}
@@ -641,10 +708,18 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
             <Instagram className="w-5 h-5" /> Stories
           </Button>
           <Button
+            onClick={handleDownload}
+            disabled={sharing}
+            variant="secondary"
+            className="flex-1 h-12 rounded-full font-semibold px-3"
+          >
+            <Download className="w-5 h-5" /> Save
+          </Button>
+          <Button
             onClick={handleShareSheet}
             disabled={sharing}
             variant="secondary"
-            className="flex-1 h-12 rounded-full font-semibold"
+            className="flex-1 h-12 rounded-full font-semibold px-3"
           >
             <Share2 className="w-5 h-5" /> Share
           </Button>
