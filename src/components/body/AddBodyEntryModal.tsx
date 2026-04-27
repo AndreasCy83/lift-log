@@ -337,6 +337,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
                 onClick={openPicker}
                 disabled={availableForPicker.length === 0}
                 className="w-full h-9 text-sm"
+                data-tutorial="body-add-measurements"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Measurements
