@@ -202,7 +202,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* Weight ruler — compact */}
-        <div className="gym-card !p-3">
+        <div className="gym-card !p-3" data-tutorial="body-weight">
           <WeightRulerPicker
             value={weight}
             onChange={setWeight}
