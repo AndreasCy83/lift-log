@@ -49,8 +49,17 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
         setRemaining(null);
         setIsRunning(false);
       }
+    } else {
+      // No active timer for this row anymore (a different timer took over,
+      // or all timers were cleared). Make sure this row stops counting down.
+      if (timerRef.current || isRunning || remaining !== null) {
+        timerRef.current = null;
+        setIsRunning(false);
+        setRemaining(null);
+        finishedRef.current = false;
+      }
     }
-  }, [workoutExerciseId, afterSetIndex]);
+  }, [workoutExerciseId, afterSetIndex, isRunning, remaining]);
 
   useEffect(() => {
     syncFromStorage();
