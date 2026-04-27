@@ -41,6 +41,7 @@ export default function BodyTrackerPage() {
   const [subView, setSubView] = useState<SubView>('main');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editEntry, setEditEntry] = useState<BodyEntry | null>(null);
+  const [tutorialPhase, setTutorialPhase] = useState<'none' | 'main' | 'fields'>('none');
 
   const entries = useMemo(() => getBodyEntries(), [refreshKey]);
   const goals = useMemo(() => getBodyGoals(), [refreshKey]);
