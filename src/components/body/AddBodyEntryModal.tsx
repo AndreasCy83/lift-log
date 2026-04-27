@@ -216,7 +216,7 @@ export default function AddBodyEntryModal({ open, onClose, onSaved, editEntry }:
         </div>
 
         {/* Body fat */}
-        <div className="gym-card !p-3">
+        <div className="gym-card !p-3" data-tutorial="body-fat">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Body Fat %</span>
             <button
