@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Plus, LineChart as LineChartIcon, List, Target, Activity } from 'lucide-react';
 import { getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getBodyGoals } from '@/lib/bodyTrackerStorage';
@@ -14,6 +14,23 @@ import BodyHistoryList from '@/components/body/BodyHistoryList';
 import BodyBMITrends from '@/components/body/BodyBMITrends';
 import { measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
 import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
+import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+
+const BODY_TUTORIAL_MAIN: TutorialStep[] = [
+  { selector: '[data-tutorial="body-graphs"]', title: 'Graphs', text: 'View visual trends of your weight, body fat, muscle mass and measurements over time.' },
+  { selector: '[data-tutorial="body-history"]', title: 'History', text: 'Browse and edit every body entry you have logged.' },
+  { selector: '[data-tutorial="body-add"]', title: 'Add Entry', text: 'Tap the + button to log a new body entry — weight, body fat, measurements and more.' },
+  { selector: '[data-tutorial="body-goals"]', title: 'Goals', text: 'Set targets for weight, body fat, muscle mass and individual measurements.' },
+  { selector: '[data-tutorial="body-bmi"]', title: 'BMI & Trends', text: 'Check your BMI and longer-term trend lines for body composition.' },
+];
+
+const BODY_TUTORIAL_FIELDS: TutorialStep[] = [
+  { selector: '[data-tutorial="body-weight"]', title: 'Weight', text: 'Spin the ruler to set your current weight. Switch units in Settings.' },
+  { selector: '[data-tutorial="body-fat"]', title: 'Body Fat %', text: 'Toggle on to log your body fat percentage for this entry.' },
+  { selector: '[data-tutorial="body-muscle"]', title: 'Muscle Mass %', text: 'Toggle on to record your muscle mass percentage.' },
+  { selector: '[data-tutorial="body-measurements"]', title: 'More Measurements', text: 'Expand to track circumference measurements like shoulders, biceps and more.' },
+  { selector: '[data-tutorial="body-add-measurements"]', title: 'Pick Measurements', text: 'Add specific spots — for example shoulders or upper arms (biceps) — and log them in cm or in.' },
+];
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
