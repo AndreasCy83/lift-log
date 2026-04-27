@@ -683,13 +683,13 @@ export default function WorkoutLogPage() {
                             onClick={() => handleToggleSetComplete(s)}
                             aria-pressed={s.isCompleted}
                             title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
-                            className={`h-7 w-7 rounded-full flex items-center justify-center border transition-colors ${
+                            className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
                               s.isCompleted
                                 ? 'bg-green-500 border-green-500 text-white'
                                 : 'border-muted-foreground/40 text-transparent hover:border-foreground hover:text-muted-foreground/60'
                             }`}
                           >
-                            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                            <Check className="h-3 w-3" strokeWidth={3} />
                           </button>
                         </div>
                         <div></div>
