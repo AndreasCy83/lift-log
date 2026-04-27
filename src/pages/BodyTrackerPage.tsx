@@ -506,10 +506,42 @@ export default function BodyTrackerPage() {
       {/* Add/Edit modal */}
       <AddBodyEntryModal
         open={showAddModal}
-        onClose={() => { setShowAddModal(false); setEditEntry(null); }}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditEntry(null);
+          if (tutorialPhase === 'fields') {
+            localStorage.setItem('hasSeenBodyTutorial', 'true');
+            setTutorialPhase('none');
+          }
+        }}
         onSaved={refresh}
         editEntry={editEntry}
+        initialMoreOpen={tutorialPhase === 'fields'}
       />
+
+      {/* First-time tutorial — main actions */}
+      {tutorialPhase === 'main' && !showAddModal && (
+        <ExerciseTutorialOverlay
+          steps={BODY_TUTORIAL_MAIN}
+          onFinish={() => {
+            // Open Add modal and continue to field tutorial
+            setEditEntry(null);
+            setShowAddModal(true);
+            setTimeout(() => setTutorialPhase('fields'), 350);
+          }}
+        />
+      )}
+
+      {/* First-time tutorial — body entry fields (inside modal) */}
+      {tutorialPhase === 'fields' && showAddModal && (
+        <ExerciseTutorialOverlay
+          steps={BODY_TUTORIAL_FIELDS}
+          onFinish={() => {
+            localStorage.setItem('hasSeenBodyTutorial', 'true');
+            setTutorialPhase('none');
+          }}
+        />
+      )}
     </div>
   );
 }
