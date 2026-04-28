@@ -17,41 +17,58 @@ export default function PrivacyPolicyModal({ onClose }: PrivacyPolicyModalProps)
         </div>
       </header>
       <ScrollArea className="flex-1">
-        <div className="mx-auto max-w-lg px-4 py-6 text-sm leading-relaxed text-foreground space-y-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }}>
-          <p className="text-xs text-muted-foreground">Last updated: March 2026</p>
+        <div className="mx-auto max-w-lg px-4 py-6 text-sm leading-relaxed text-foreground space-y-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }}>
+          <p className="text-xs text-muted-foreground">Last Updated: April 2026</p>
 
-          <h2 className="font-display text-base font-semibold pt-2">Overview</h2>
-          <p>Fit Log X Tracker does not collect or store any personally identifiable information unless the Google Drive Backup feature has been explicitly enabled (see Google Drive Backup section below).</p>
-          <p>You are not required to register an account in order to use Fit Log X Tracker and all workout data you record within the application is stored locally on your mobile device. No data is transmitted to any server or third party.</p>
+          <div className="space-y-1 pt-1">
+            <p><span className="text-muted-foreground">App Name:</span> fitlogX</p>
+            <p><span className="text-muted-foreground">Package Name:</span> com.andreascy83.liftlog</p>
+            <p><span className="text-muted-foreground">Developer Contact:</span> <a href="mailto:fitlogx@gmail.com" className="text-primary underline">fitlogx@gmail.com</a></p>
+          </div>
 
-          <h2 className="font-display text-base font-semibold pt-2">Local Data Storage</h2>
-          <p>All workout logs, routines, exercises, and settings are stored exclusively on your device using local storage. This data never leaves your device unless you explicitly choose to export or back it up.</p>
+          <h2 className="font-display text-base font-semibold pt-3">Overview</h2>
+          <p>fitlogX is designed with a "Privacy-First" approach. We believe your fitness journey is your business. As such, fitlogX does not collect or store any personally identifiable information on our own servers.</p>
+          <p>You are not required to register an account to use fitlogX. All workout data, logs, and settings you record within the application are stored locally on your mobile device. No data is transmitted to any third-party server unless you explicitly enable the optional Google Drive Backup feature.</p>
 
-          <h2 className="font-display text-base font-semibold pt-2">Google Drive Backup</h2>
-          <p>You may optionally enable Google Drive Backup via Settings &gt; Google Drive Backup, which will upload a copy of your Fit Log X Tracker data to your personal Google Drive account. This allows you to recover your data in the event that you switch to a different device in the future.</p>
-          <p>When enabling this feature you will be prompted to sign in with Google. This sign-in process is facilitated entirely by Google Play Services and Fit Log X Tracker is never in possession of your Google password.</p>
-          <p>Once you have signed in with Google, the following information is made available to Fit Log X Tracker from your Google account:</p>
+          <h2 className="font-display text-base font-semibold pt-3">1. Local Data Storage</h2>
+          <p>All workout logs, routines, exercises, and settings are stored exclusively on your device's internal storage. This data remains on your device and is not accessible by the developer or any third party.</p>
+
+          <h2 className="font-display text-base font-semibold pt-3">2. Google Drive Backup (Optional)</h2>
+          <p>You may optionally choose to enable Google Drive Backup (via Settings &gt; Google Drive Backup) to upload a copy of your fitlogX data to your own personal Google Drive account. This allows for data recovery when switching devices.</p>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Your email address</li>
-            <li>Your full name</li>
+            <li><span className="font-semibold">Authentication:</span> This process is handled entirely by Google Play Services. fitlogX never sees or stores your Google password.</li>
+            <li><span className="font-semibold">Data Accessed:</span> Once signed in, fitlogX accesses your Email Address and Full Name only to identify the backup destination.</li>
+            <li><span className="font-semibold">Limited Scope Access:</span> fitlogX only requests access to the "drive.file" scope. This means the app can only see, read, and modify files that it has created itself. It cannot see your photos, documents, or other personal files in your Drive.</li>
+            <li><span className="font-semibold">Revoking Access:</span> You can sign out at any time within the app or revoke access via myaccount.google.com/security.</li>
           </ul>
-          <p>Fit Log X Tracker does not transmit this information from your mobile device and it is not used for any purpose other than enabling backup files to be uploaded to your Google Drive account.</p>
-          <p>Fit Log X Tracker is only granted access to view, read, and modify files in Google Drive that it has created itself — it is not able to access any files or folders that you have created by any other means.</p>
-          <p>You can disable Google Drive Backup at any time by going to Settings &gt; Google Drive Backup and signing out.</p>
-          <p>You may also revoke Fit Log X Tracker's access directly from Google: Go to myaccount.google.com &gt; Security &gt; Third-party apps with account access, find Fit Log X Tracker and select "Remove access".</p>
 
-          <h2 className="font-display text-base font-semibold pt-2">Data Sharing</h2>
-          <p>Fit Log X Tracker does not sell, trade, or share your personal data with any third parties. No analytics, advertising SDKs, or tracking libraries are included in this application.</p>
+          <h2 className="font-display text-base font-semibold pt-3">3. Data Collection and Usage Disclosure</h2>
+          <p>For the purposes of the Google Play "Data Safety" section, here is how we handle data:</p>
+          <ul className="list-disc pl-6 space-y-1">
+            <li><span className="font-semibold">Personal Info:</span> We do not collect names or emails unless you use the Drive Backup (where it is used only for authentication).</li>
+            <li><span className="font-semibold">Health &amp; Fitness:</span> Workout logs are stored locally and are not "collected" by us.</li>
+            <li><span className="font-semibold">Device Identifiers:</span> We do not collect Ad IDs or device serial numbers.</li>
+          </ul>
 
-          <h2 className="font-display text-base font-semibold pt-2">Children's Privacy</h2>
-          <p>Fit Log X Tracker does not knowingly collect any information from children under the age of 13. The app is intended for general fitness tracking use.</p>
+          <h2 className="font-display text-base font-semibold pt-3">4. Data Deletion &amp; Retention</h2>
+          <p>Because your data is stored locally, we do not retain your data if you leave the app. To permanently delete all data associated with fitlogX:</p>
+          <ul className="list-disc pl-6 space-y-1">
+            <li>Navigate to Android Settings &gt; Apps &gt; fitlogX &gt; Clear Data/Storage.</li>
+            <li>Uninstall the application.</li>
+            <li>Manually delete the fitlogX_backup files from your personal Google Drive if you created them.</li>
+          </ul>
 
-          <h2 className="font-display text-base font-semibold pt-2">Changes to This Policy</h2>
-          <p>If this Privacy Policy is updated in the future, the updated version will be made available within the app. Continued use of the app after any changes constitutes acceptance of the new policy.</p>
+          <h2 className="font-display text-base font-semibold pt-3">5. Data Security</h2>
+          <p>We protect your data by relying on the built-in security features of the Android operating system (encryption, sandboxing). For the Google Drive feature, all data is transmitted via a secure, encrypted HTTPS connection directly to Google.</p>
 
-          <h2 className="font-display text-base font-semibold pt-2">Contact</h2>
-          <p>If you have any questions about this Privacy Policy or how your data is handled, please contact us at:</p>
-          <p><a href="mailto:fitlogx@gmail.com" className="text-primary underline">fitlogx@gmail.com</a></p>
+          <h2 className="font-display text-base font-semibold pt-3">6. Children's Privacy</h2>
+          <p>fitlogX is intended for a general audience. We do not knowingly collect information from children under the age of 13.</p>
+
+          <h2 className="font-display text-base font-semibold pt-3">7. Changes to This Policy</h2>
+          <p>If we update this policy, the new version will be available within the app. Continued use signifies acceptance of the terms.</p>
+
+          <h2 className="font-display text-base font-semibold pt-3">8. Contact</h2>
+          <p>For any questions regarding your privacy, please contact: <a href="mailto:fitlogx@gmail.com" className="text-primary underline">fitlogx@gmail.com</a></p>
         </div>
       </ScrollArea>
     </div>
