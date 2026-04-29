@@ -7,8 +7,15 @@ import {
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
-  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets
+  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts
 } from '@/lib/storage';
+import SupportModal from '@/components/SupportModal';
+
+function isSupportMilestone(count: number): boolean {
+  if (count === 10 || count === 30 || count === 40) return true;
+  if (count > 40 && count % 40 === 0) return true;
+  return false;
+}
 import { toast } from 'sonner';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -100,6 +107,8 @@ export default function WorkoutLogPage() {
 
   // Post-workout celebration modal
   const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [supportCount, setSupportCount] = useState(0);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
@@ -360,6 +369,11 @@ export default function WorkoutLogPage() {
       durationSeconds: elapsedSec ?? workout.durationSeconds ?? null,
     });
     schedulePendingBackup();
+    // Check workout milestone for Support modal (read directly from store)
+    const totalWorkouts = getWorkouts().filter(w => w.endTime).length;
+    if (isSupportMilestone(totalWorkouts)) {
+      setSupportCount(totalWorkouts);
+    }
     // Open the celebration modal; navigation happens when user closes it.
     setCelebrationOpen(true);
   };
@@ -910,10 +924,23 @@ export default function WorkoutLogPage() {
           open={celebrationOpen}
           onClose={() => {
             setCelebrationOpen(false);
-            navigate('/');
+            if (supportCount > 0) {
+              setSupportOpen(true);
+            } else {
+              navigate('/');
+            }
           }}
         />
       )}
+      <SupportModal
+        open={supportOpen}
+        workoutCount={supportCount}
+        onClose={() => {
+          setSupportOpen(false);
+          navigate('/');
+        }}
+      />
+    </
     </div>
   );
 }
