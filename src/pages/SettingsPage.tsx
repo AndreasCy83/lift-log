@@ -13,6 +13,7 @@ import CsvExportButtons from '@/components/CsvExportButtons';
 import AutoBackupSection from '@/components/AutoBackupSection';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import ChangelogDialog from '@/components/ChangelogDialog';
+import { handlePurchase } from '@/components/SupportModal';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
@@ -326,6 +327,30 @@ export default function SettingsPage() {
         </div>
 
         <ChangelogDialog open={showChangelog} onOpenChange={setShowChangelog} />
+
+        {/* Support the Creator */}
+        <div className="gym-card space-y-3">
+          <h3 className="font-display text-sm font-semibold">Support the Creator 🙌</h3>
+          <p className="text-xs text-muted-foreground">FitLog X is free. If it's helped your training, a small tip keeps it alive.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => handlePurchase('espresso_tip')}
+              className="flex flex-col items-center gap-1 rounded-xl border border-border bg-secondary p-3 hover:bg-secondary/80 transition-colors"
+            >
+              <span className="text-2xl">☕</span>
+              <span className="text-xs font-medium">Quick Espresso</span>
+              <span className="text-sm font-bold text-primary">€2.99</span>
+            </button>
+            <button
+              onClick={() => handlePurchase('protein_shake_tip')}
+              className="flex flex-col items-center gap-1 rounded-xl border border-border bg-secondary p-3 hover:bg-secondary/80 transition-colors"
+            >
+              <span className="text-2xl">🥤</span>
+              <span className="text-xs font-medium">Protein Shake</span>
+              <span className="text-sm font-bold text-primary">€5.99</span>
+            </button>
+          </div>
+        </div>
 
         {/* Feedback */}
         <div className="gym-card space-y-2">
