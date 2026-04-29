@@ -155,6 +155,31 @@ export default function SettingsPage() {
           <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">Save Profile</Button>
         </div>
 
+        {/* Support the Creator (compact) */}
+        <div className="gym-card space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-sm font-semibold">Support the Creator 🙌</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => handlePurchase('espresso_tip')}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary px-2 py-1.5 hover:bg-secondary/80 transition-colors"
+            >
+              <span className="text-base leading-none">☕</span>
+              <span className="text-[11px] font-medium">Espresso</span>
+              <span className="text-[11px] font-bold text-primary">€2.99</span>
+            </button>
+            <button
+              onClick={() => handlePurchase('protein_shake_tip')}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary px-2 py-1.5 hover:bg-secondary/80 transition-colors"
+            >
+              <span className="text-base leading-none">🥤</span>
+              <span className="text-[11px] font-medium">Shake</span>
+              <span className="text-[11px] font-bold text-primary">€5.99</span>
+            </button>
+          </div>
+        </div>
+
         {/* Weight Unit */}
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">Weight Unit</h3>
