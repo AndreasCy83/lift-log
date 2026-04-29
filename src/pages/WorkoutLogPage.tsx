@@ -940,7 +940,6 @@ export default function WorkoutLogPage() {
           navigate('/');
         }}
       />
-    </
     </div>
   );
 }
