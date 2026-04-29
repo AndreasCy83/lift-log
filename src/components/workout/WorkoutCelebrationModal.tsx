@@ -336,7 +336,8 @@ const highlightsCard: CardDef = {
       });
     }
 
-    const visible = blocks.slice(0, 3);
+    // Max 2 highlights to prevent cropping. Priority: PRs > top volume > heaviest set.
+    const visible = blocks.slice(0, 2);
 
     return (
       <CardShell accent="hsl(280 80% 55% / 0.22)">
