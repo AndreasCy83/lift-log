@@ -10,6 +10,7 @@ import {
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts
 } from '@/lib/storage';
 import SupportModal from '@/components/SupportModal';
+import { requestReview, shouldRequestReview } from '@/lib/rateApp';
 
 function isSupportMilestone(count: number): boolean {
   if (count === 10 || count === 30 || count === 40) return true;
@@ -938,6 +939,9 @@ export default function WorkoutLogPage() {
         onClose={() => {
           setSupportOpen(false);
           navigate('/');
+          if (shouldRequestReview(supportCount)) {
+            requestReview();
+          }
         }}
       />
     </div>
