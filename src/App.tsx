@@ -21,6 +21,7 @@ import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
 import OnboardingWizard from "@/components/OnboardingWizard";
 import RateAppDialog from "@/components/RateAppDialog";
+import { trackAppOpen } from "@/lib/rateApp";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,8 @@ function ThemeInit() {
         expireIfStale();
       }
     });
+
+    trackAppOpen();
 
     return () => {
       listener.then(l => l.remove());
