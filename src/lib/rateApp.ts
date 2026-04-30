@@ -1,19 +1,13 @@
 // NATIVE_REVIEW_PLACEHOLDER - replace locally after publishing
-import { toast } from "sonner";
-
+import { toast } from 'sonner';
+let showReviewDialogFn: (() => void) | null = null;
+export function registerReviewDialog(fn: () => void) {
+  showReviewDialogFn = fn;
+}
 export const requestReview = async (): Promise<void> => {
-  // TODO: Replace with @capacitor/rate-app after publishing to Play Store
-  console.log("Rate app triggered");
-  toast("⭐ Enjoying FitLog X?", {
-    description: "Tap below to rate us on Google Play!",
-    action: {
-      label: "Rate Now",
-      onClick: () => window.open("https://play.google.com/store/apps/details?id=com.andreascy83.liftlog", "_blank"),
-    },
-    duration: 8000,
-  });
+  console.log('Rate app triggered');
+  if (showReviewDialogFn) showReviewDialogFn();
 };
-
 // Trigger sequence: 10, 30, then every 30 after (60, 90, 120...)
 export function shouldRequestReview(count: number): boolean {
   if (count === 10) return true;

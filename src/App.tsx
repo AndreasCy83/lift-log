@@ -20,6 +20,7 @@ import { expireIfStale } from "@/lib/workoutSession";
 import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
 import OnboardingWizard from "@/components/OnboardingWizard";
+import RateAppDialog from "@/components/RateAppDialog";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AndroidBackHandler />
+          <RateAppDialog />
           <Routes>
             <Route path="/" element={
               localStorage.getItem('hasCompletedFirstLaunch') === 'true'
