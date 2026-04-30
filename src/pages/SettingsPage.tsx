@@ -180,6 +180,18 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Rate the App */}
+        <div className="gym-card space-y-2">
+          <h3 className="font-display text-sm font-semibold">Enjoying FitLog X? ⭐</h3>
+          <button
+            onClick={() => window.open('https://play.google.com/store/apps/details?id=com.andreascy83.liftlog', '_blank')}
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary px-2 py-1.5 hover:bg-secondary/80 transition-colors"
+          >
+            <span className="text-base leading-none">⭐</span>
+            <span className="text-[11px] font-medium">Rate on Google Play</span>
+          </button>
+        </div>
+
         {/* Weight Unit */}
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">Weight Unit</h3>
