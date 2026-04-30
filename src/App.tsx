@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
+import { HashRouter, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -97,7 +97,7 @@ const App = () => {
         <ThemeInit />
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <HashRouter>
           <AndroidBackHandler />
           <RateAppDialog />
           <Routes>
@@ -115,7 +115,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
-        </BrowserRouter>
+        </HashRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
