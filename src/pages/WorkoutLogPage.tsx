@@ -378,10 +378,6 @@ export default function WorkoutLogPage() {
     }
     // Open the celebration modal; navigation happens when user closes it.
     setCelebrationOpen(true);
-    incrementWorkoutCount();
-    if (shouldShowReview()) {
-      requestReview();
-    }
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
@@ -930,6 +926,10 @@ export default function WorkoutLogPage() {
           open={celebrationOpen}
           onClose={() => {
             setCelebrationOpen(false);
+            incrementWorkoutCount();
+            if (shouldShowReview()) {
+              requestReview();
+            }
             if (supportCount > 0) {
               setSupportOpen(true);
             } else {
