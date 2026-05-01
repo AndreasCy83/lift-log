@@ -10,6 +10,7 @@ import {
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts
 } from '@/lib/storage';
 import SupportModal from '@/components/SupportModal';
+import { incrementWorkoutCount, shouldShowReview, requestReview } from '@/lib/rateApp';
 
 
 function isSupportMilestone(count: number): boolean {
@@ -377,6 +378,10 @@ export default function WorkoutLogPage() {
     }
     // Open the celebration modal; navigation happens when user closes it.
     setCelebrationOpen(true);
+    incrementWorkoutCount();
+    if (shouldShowReview()) {
+      requestReview();
+    }
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
