@@ -1,16 +1,6 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-
-// NATIVE_BILLING_PLACEHOLDER - replace locally
-const handlePurchase = async (productId: string) => {
-  // TODO: Replace with native billing in local build
-  // CONSUMABLE product - must call consume() after purchase
-  console.log('Purchase triggered for:', productId);
-  toast.success('☕ Thank you for your support!');
-};
-
-export { handlePurchase };
+import { handlePurchase } from '@/lib/billing';
 
 interface SupportModalProps {
   open: boolean;

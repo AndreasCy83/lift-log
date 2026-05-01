@@ -1,11 +1,10 @@
-import NativePurchases, { PURCHASE_TYPE } from '@capgo/native-purchases';
+import { NativePurchases, PURCHASE_TYPE } from '@capgo/native-purchases';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 
 export const initBilling = async (): Promise<void> => {
   if (!Capacitor.isNativePlatform()) return;
   try {
-    await NativePurchases.setup({ apiKey: '' });
     console.log('Billing ready');
   } catch (e) {
     console.error('Billing init failed', e);
