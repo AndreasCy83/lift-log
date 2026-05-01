@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { registerReviewDialog } from '@/lib/rateApp';
@@ -36,6 +36,8 @@ export default function RateAppDialog() {
   return (
     <Dialog open={step !== null} onOpenChange={(open) => { if (!open) handleClose(); }}>
       <DialogContent className="max-w-sm">
+        <DialogTitle className="sr-only">Rate FitLog X</DialogTitle>
+        <DialogDescription className="sr-only">Help us improve by sharing your feedback.</DialogDescription>
         {step === 'sentiment' && (
           <div className="flex flex-col items-center text-center gap-3 py-2">
             <div className="text-5xl">💪</div>
