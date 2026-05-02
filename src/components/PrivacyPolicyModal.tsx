@@ -7,7 +7,7 @@ interface PrivacyPolicyModalProps {
 
 export default function PrivacyPolicyModal({ onClose }: PrivacyPolicyModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <button onClick={onClose} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
