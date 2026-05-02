@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 export const initBilling = async (): Promise<void> => {
   if (!Capacitor.isNativePlatform()) return;
   try {
+    await NativePurchases.setup({ apiKey: '' });
     console.log('Billing ready');
   } catch (e) {
     console.error('Billing init failed', e);
