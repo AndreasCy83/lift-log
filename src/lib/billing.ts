@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 export const initBilling = async (): Promise<void> => {
   if (!Capacitor.isNativePlatform()) return;
   try {
+    // NativePurchases does not require setup() — initialization is automatic on native platforms.
     console.log('Billing ready');
   } catch (e) {
     console.error('Billing init failed', e);
