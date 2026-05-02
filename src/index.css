@@ -84,8 +84,10 @@
     @apply border-border;
   }
   html {
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Horizontal safe-area only. Top inset is applied directly to sticky
+       headers (and bottom inset to BottomNav) so they stay correct while
+       scrolling on Capacitor Android, where viewport-fit=cover puts the
+       status bar above the webview. */
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
   }
@@ -96,6 +98,13 @@
     min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
+  }
+  /* Global: any sticky header pinned to the top reserves the status-bar
+     inset so titles are never cropped under the Android status bar,
+     before or after scrolling. Page <header> elements use `sticky top-0`
+     with `py-3` (0.75rem). */
+  header.sticky.top-0 {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', sans-serif;
