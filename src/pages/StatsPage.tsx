@@ -37,7 +37,7 @@ export default function StatsPage() {
       </header>
 
       {/* Tab bar */}
-      <div className="sticky top-[53px] z-30 border-b border-border bg-background/95 backdrop-blur-lg">
+      <div className="sticky z-30 border-b border-border bg-background/95 backdrop-blur-lg" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 53px)' }}>
         <div className="mx-auto max-w-lg flex overflow-x-auto no-scrollbar" style={{ scrollbarWidth: 'none' }}>
           {TABS.map(tab => (
             <button
