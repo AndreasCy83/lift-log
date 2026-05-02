@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
+import { initBilling } from "@/lib/billing";
 import { preloadAudioCues } from "@/lib/ttsVoice";
 import { expireIfStale } from "@/lib/workoutSession";
 import { App as CapApp } from '@capacitor/app';
@@ -38,6 +39,7 @@ function ThemeInit() {
     }
     checkPendingBackup();
     preloadAudioCues();
+    initBilling();
     // Safeguard: drop any abandoned live workout session that exceeded the safe threshold.
     expireIfStale();
 
