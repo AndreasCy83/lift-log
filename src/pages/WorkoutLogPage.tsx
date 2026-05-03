@@ -125,6 +125,36 @@ export default function WorkoutLogPage() {
   const session = useWorkoutSession(workout?.id ?? null);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
 
+  // Drag-and-drop sensors: short long-press for touch so vertical scrolling still works.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { delay: 220, tolerance: 8 } })
+  );
+  const handleDragStart = useCallback((_e: DragStartEvent) => {
+    try {
+      // Capacitor haptics if available, else web vibration
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      if (w?.Capacitor?.Plugins?.Haptics?.impact) {
+        w.Capacitor.Plugins.Haptics.impact({ style: 'MEDIUM' });
+      } else if (navigator.vibrate) {
+        navigator.vibrate(20);
+      }
+    } catch { /* noop */ }
+  }, []);
+  const handleDragEnd = useCallback((e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id || !workout) return;
+    setWorkoutExercises(prev => {
+      const oldIdx = prev.findIndex(x => x.id === active.id);
+      const newIdx = prev.findIndex(x => x.id === over.id);
+      if (oldIdx < 0 || newIdx < 0) return prev;
+      const next = arrayMove(prev, oldIdx, newIdx).map((we, i) => ({ ...we, position: i }));
+      reorderWorkoutExercises(workout.id, next.map(x => x.id));
+      return next;
+    });
+  }, [workout]);
+
+
   // Auto-start the session ONLY when this is a freshly started workout
   // (user just pressed "+ Start Workout"). Reopening an existing saved day
   // should not auto-spawn a live timer — it shows the restored summary instead.
