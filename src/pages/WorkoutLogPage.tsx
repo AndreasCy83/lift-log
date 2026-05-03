@@ -66,6 +66,24 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="set-rest"]', title: 'Set Timer', text: 'Tap to customize the rest time specifically after this individual set.' },
 ];
 
+function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    position: isDragging ? 'relative' : undefined,
+    boxShadow: isDragging ? '0 12px 30px hsl(var(--background) / 0.6)' : undefined,
+    scale: isDragging ? '1.02' : undefined,
+    touchAction: 'manipulation',
+  };
+  return (
+    <div ref={setNodeRef} style={style} className="gym-card" {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+}
+
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
