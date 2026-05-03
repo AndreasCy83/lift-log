@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play } from 'lucide-react';
 import { format } from 'date-fns';
@@ -7,8 +7,17 @@ import {
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
-  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts
+  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
+  reorderWorkoutExercises
 } from '@/lib/storage';
+import {
+  DndContext, PointerSensor, TouchSensor, useSensor, useSensors,
+  closestCenter, type DragEndEvent, type DragStartEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext, useSortable, arrayMove, verticalListSortingStrategy
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import SupportModal from '@/components/SupportModal';
 import { incrementWorkoutCount, shouldShowReview, requestReview } from '@/lib/rateApp';
 
@@ -56,6 +65,24 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   { selector: '[data-tutorial="set-tag"]', title: 'Set Types', text: 'Tap to cycle between Normal (N), Warmup (W), Dropset (D), and Failure (F).' },
   { selector: '[data-tutorial="set-rest"]', title: 'Set Timer', text: 'Tap to customize the rest time specifically after this individual set.' },
 ];
+
+function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    position: isDragging ? 'relative' : undefined,
+    boxShadow: isDragging ? '0 12px 30px hsl(var(--background) / 0.6)' : undefined,
+    scale: isDragging ? '1.02' : undefined,
+    touchAction: 'manipulation',
+  };
+  return (
+    <div ref={setNodeRef} style={style} className="gym-card" {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+}
 
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
@@ -115,6 +142,36 @@ export default function WorkoutLogPage() {
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
+
+  // Drag-and-drop sensors: short long-press for touch so vertical scrolling still works.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { delay: 220, tolerance: 8 } })
+  );
+  const handleDragStart = useCallback((_e: DragStartEvent) => {
+    try {
+      // Capacitor haptics if available, else web vibration
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      if (w?.Capacitor?.Plugins?.Haptics?.impact) {
+        w.Capacitor.Plugins.Haptics.impact({ style: 'MEDIUM' });
+      } else if (navigator.vibrate) {
+        navigator.vibrate(20);
+      }
+    } catch { /* noop */ }
+  }, []);
+  const handleDragEnd = useCallback((e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id || !workout) return;
+    setWorkoutExercises(prev => {
+      const oldIdx = prev.findIndex(x => x.id === active.id);
+      const newIdx = prev.findIndex(x => x.id === over.id);
+      if (oldIdx < 0 || newIdx < 0) return prev;
+      const next = arrayMove(prev, oldIdx, newIdx).map((we, i) => ({ ...we, position: i }));
+      reorderWorkoutExercises(workout.id, next.map(x => x.id));
+      return next;
+    });
+  }, [workout]);
+
 
   // Auto-start the session ONLY when this is a freshly started workout
   // (user just pressed "+ Start Workout"). Reopening an existing saved day
@@ -535,6 +592,8 @@ export default function WorkoutLogPage() {
       </div>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <SortableContext items={workoutExercises.map(w => w.id)} strategy={verticalListSortingStrategy}>
         {workoutExercises.map((we) => {
           const isTutorialTarget = expandedExercise === we.id;
           const sets = getSetsForWorkoutExercise(we.id);
@@ -544,7 +603,7 @@ export default function WorkoutLogPage() {
           const pr = getPersonalRecord(we.exerciseId);
 
           return (
-            <div key={we.id} className="gym-card">
+            <SortableExerciseCard key={we.id} id={we.id}>
               <div className="flex items-center justify-between mb-2">
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 text-left">
                   <div className="flex items-center gap-2">
@@ -773,9 +832,12 @@ export default function WorkoutLogPage() {
                   {we.defaultRestSeconds && <span>• {Math.floor(we.defaultRestSeconds / 60)}:{(we.defaultRestSeconds % 60).toString().padStart(2, '0')} rest</span>}
                 </div>
               )}
-            </div>
+            </SortableExerciseCard>
           );
         })}
+          </SortableContext>
+        </DndContext>
+
 
         {/* Workout Totals */}
         {workoutExercises.length > 0 && (() => {
