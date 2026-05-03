@@ -209,6 +209,16 @@ export function removeWorkoutExercise(id: string) {
   saveWorkoutSets(getWorkoutSets().filter(s => s.workoutExerciseId !== id));
 }
 
+export function reorderWorkoutExercises(workoutId: string, orderedIds: string[]) {
+  const all = getWorkoutExercises();
+  const posMap = new Map(orderedIds.map((id, i) => [id, i]));
+  const updated = all.map(we => we.workoutId === workoutId && posMap.has(we.id)
+    ? { ...we, position: posMap.get(we.id)! }
+    : we
+  );
+  saveWorkoutExercises(updated);
+}
+
 // WorkoutSets
 export function getWorkoutSets(): WorkoutSet[] {
   return get<WorkoutSet[]>(STORAGE_KEYS.workoutSets, []).map(s => ({ ...s, setTag: s.setTag ?? 'N' }));
