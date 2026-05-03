@@ -167,7 +167,7 @@ export default function SettingsPage() {
             >
               <span className="text-base leading-none">☕</span>
               <span className="text-[11px] font-medium">Espresso</span>
-              <span className="text-[11px] font-bold text-primary">€2.99</span>
+              <span className="text-[11px] font-bold text-primary">from €2.99</span>
             </button>
             <button
               onClick={() => handlePurchase('protein_shake_tip')}
@@ -175,9 +175,12 @@ export default function SettingsPage() {
             >
               <span className="text-base leading-none">🥤</span>
               <span className="text-[11px] font-medium">Shake</span>
-              <span className="text-[11px] font-bold text-primary">€5.99</span>
+              <span className="text-[11px] font-bold text-primary">from €5.99</span>
             </button>
           </div>
+          <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+            Final local price is shown by Google Play at checkout and may include VAT/taxes depending on your country.
+          </p>
         </div>
 
         {/* Rate the App */}
