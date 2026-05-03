@@ -574,6 +574,8 @@ export default function WorkoutLogPage() {
       </div>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <SortableContext items={workoutExercises.map(w => w.id)} strategy={verticalListSortingStrategy}>
         {workoutExercises.map((we) => {
           const isTutorialTarget = expandedExercise === we.id;
           const sets = getSetsForWorkoutExercise(we.id);
@@ -583,7 +585,7 @@ export default function WorkoutLogPage() {
           const pr = getPersonalRecord(we.exerciseId);
 
           return (
-            <div key={we.id} className="gym-card">
+            <SortableExerciseCard key={we.id} id={we.id}>
               <div className="flex items-center justify-between mb-2">
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 text-left">
                   <div className="flex items-center gap-2">
@@ -812,9 +814,12 @@ export default function WorkoutLogPage() {
                   {we.defaultRestSeconds && <span>• {Math.floor(we.defaultRestSeconds / 60)}:{(we.defaultRestSeconds % 60).toString().padStart(2, '0')} rest</span>}
                 </div>
               )}
-            </div>
+            </SortableExerciseCard>
           );
         })}
+          </SortableContext>
+        </DndContext>
+
 
         {/* Workout Totals */}
         {workoutExercises.length > 0 && (() => {
