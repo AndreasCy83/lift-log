@@ -7,8 +7,17 @@ import {
   getExercises, getCategories, generateId, addWorkout, addWorkoutExercise,
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
-  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts
+  getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
+  reorderWorkoutExercises
 } from '@/lib/storage';
+import {
+  DndContext, PointerSensor, TouchSensor, useSensor, useSensors,
+  closestCenter, type DragEndEvent, type DragStartEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext, useSortable, arrayMove, verticalListSortingStrategy
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import SupportModal from '@/components/SupportModal';
 import { incrementWorkoutCount, shouldShowReview, requestReview } from '@/lib/rateApp';
 
