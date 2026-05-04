@@ -8,13 +8,18 @@ interface ChangelogDialogProps {
 }
 
 const CHANGES = [
-  'Added automatic backup',
+  'Added automatic Local backup',
+  'Enhanced and corrected Routines Functions',
   'Added Dark Theme',
   'Fixed various bugs',
+  'Optimized flow',
   'Added Kg and Lbs support',
-  'Improved rest timer with audio cues',
-  'Fixed issues in Analytics',
+  'Improved rest timer with audio cues and various bugs',
+  'Fixed issues/Bugs in Analytics',
   'Added Body Weight tracking function',
+  'Added Measurements',
+  'Fixed bugs in exercise sequence',
+  'Updated Privacy Policy',
 ];
 
 export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogProps) {
@@ -30,7 +35,7 @@ export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogP
 
         <div className="space-y-4">
           <div>
-            <span className="font-display text-2xl font-bold text-primary">Version 3.0</span>
+            <span className="font-display text-2xl font-bold text-primary">Version 1.4</span>
             <p className="text-xs text-muted-foreground mt-1">Latest additions and fixes</p>
           </div>
 
