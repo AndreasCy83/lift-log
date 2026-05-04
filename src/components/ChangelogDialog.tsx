@@ -8,13 +8,18 @@ interface ChangelogDialogProps {
 }
 
 const CHANGES = [
-  'Added automatic backup',
+  'Added automatic Local backup',
+  'Enhanced and corrected Routines Functions',
   'Added Dark Theme',
   'Fixed various bugs',
+  'Optimized flow',
   'Added Kg and Lbs support',
-  'Improved rest timer with audio cues',
-  'Fixed issues in Analytics',
+  'Improved rest timer with audio cues and various bugs',
+  'Fixed issues/Bugs in Analytics',
   'Added Body Weight tracking function',
+  'Added Measurements',
+  'Fixed bugs in exercise sequence',
+  'Updated Privacy Policy',
 ];
 
 export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogProps) {
