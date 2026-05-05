@@ -11,7 +11,7 @@ import {
   reorderWorkoutExercises
 } from '@/lib/storage';
 import {
-  DndContext, PointerSensor, TouchSensor, useSensor, useSensors,
+  DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
   closestCenter, type DragEndEvent, type DragStartEvent
 } from '@dnd-kit/core';
 import {
@@ -75,7 +75,7 @@ function SortableExerciseCard({ id, children }: { id: string; children: React.Re
     position: isDragging ? 'relative' : undefined,
     boxShadow: isDragging ? '0 12px 30px hsl(var(--background) / 0.6)' : undefined,
     scale: isDragging ? '1.02' : undefined,
-    touchAction: 'manipulation',
+    touchAction: isDragging ? 'none' : 'auto',
   };
   return (
     <div ref={setNodeRef} style={style} className="gym-card" {...attributes} {...listeners}>
@@ -145,7 +145,8 @@ export default function WorkoutLogPage() {
 
   // Drag-and-drop sensors: short long-press for touch so vertical scrolling still works.
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { delay: 220, tolerance: 8 } })
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 280, tolerance: 8 } })
   );
   const handleDragStart = useCallback((_e: DragStartEvent) => {
     try {
