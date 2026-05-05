@@ -176,7 +176,7 @@ export function copyWorkoutToDate(workoutId: string, targetDate: string) {
   const existing = getWorkouts().find(w => w.date === targetDate);
   if (existing) deleteWorkout(existing.id);
   const newWorkoutId = generateId();
-  addWorkout({ ...workout, id: newWorkoutId, date: targetDate, startTime: new Date().toISOString(), endTime: null });
+  addWorkout({ ...workout, id: newWorkoutId, date: targetDate, startTime: new Date().toISOString(), endTime: null, durationSeconds: null });
   const wExercises = getExercisesForWorkout(workoutId);
   wExercises.forEach(we => {
     const newWeId = generateId();
