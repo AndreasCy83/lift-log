@@ -559,7 +559,20 @@ export default function WorkoutLogPage() {
                 <Play className="h-3.5 w-3.5" />
               </button>
             </div>
-          ) : null}
+          ) : (
+            <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground">
+              <Timer className="h-3.5 w-3.5" />
+              <span>00:00:00</span>
+              <button
+                onClick={() => session.start(0)}
+                className="ml-0.5 rounded p-0.5 hover:bg-secondary"
+                title="Start workout timer"
+                aria-label="Start workout timer"
+              >
+                <Play className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
           <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
             <Timer className="h-4 w-4" />
           </Button>
