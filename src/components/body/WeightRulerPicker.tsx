@@ -29,31 +29,41 @@ export default function WeightRulerPicker({
   const startX = useRef(0);
   const startScroll = useRef(0);
   const [displayValue, setDisplayValue] = useState(value);
+  const [containerWidth, setContainerWidth] = useState(0);
   const totalTicks = Math.round((max - min) / step);
 
   const valueToScroll = useCallback((v: number) => {
-    return ((v - min) / step) * TICK_WIDTH;
+    return ((v - min) / step) * TICK_WIDTH + TICK_WIDTH / 2;
   }, [min, step]);
 
-  const scrollToValue = useCallback((scroll: number) => {
-    const tickIndex = Math.round(scroll / TICK_WIDTH);
+  const scrollToValue = useCallback((scrollLeft: number) => {
+    const tickIndex = Math.round((scrollLeft - TICK_WIDTH / 2) / TICK_WIDTH);
     const clamped = Math.max(0, Math.min(totalTicks, tickIndex));
     return Math.round((min + clamped * step) * 10) / 10;
   }, [min, step, totalTicks]);
 
-  // initial scroll
+  // Measure container width
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const containerW = el.clientWidth;
-    el.scrollLeft = valueToScroll(value) - containerW / 2;
+    const update = () => setContainerWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
+
+  // initial scroll once we know container width
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || containerWidth === 0) return;
+    el.scrollLeft = valueToScroll(value);
+  }, [containerWidth]);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
-    const centerOffset = el.scrollLeft + el.clientWidth / 2;
-    const v = scrollToValue(centerOffset);
+    const v = scrollToValue(el.scrollLeft);
     setDisplayValue(v);
   }, [scrollToValue]);
 
@@ -77,14 +87,12 @@ export default function WeightRulerPicker({
 
   const handlePointerUp = () => {
     isDragging.current = false;
-    // snap
     const el = containerRef.current;
     if (!el) return;
-    const centerOffset = el.scrollLeft + el.clientWidth / 2;
-    const v = scrollToValue(centerOffset);
+    const v = scrollToValue(el.scrollLeft);
     setDisplayValue(v);
     onChange(v);
-    el.scrollLeft = valueToScroll(v) - el.clientWidth / 2;
+    el.scrollLeft = valueToScroll(v);
   };
 
   return (
