@@ -33,11 +33,11 @@ export default function WeightRulerPicker({
   const totalTicks = Math.round((max - min) / step);
 
   const valueToScroll = useCallback((v: number) => {
-    return ((v - min) / step) * TICK_WIDTH;
+    return ((v - min) / step) * TICK_WIDTH + TICK_WIDTH / 2;
   }, [min, step]);
 
   const scrollToValue = useCallback((scrollLeft: number) => {
-    const tickIndex = Math.round(scrollLeft / TICK_WIDTH);
+    const tickIndex = Math.round((scrollLeft - TICK_WIDTH / 2) / TICK_WIDTH);
     const clamped = Math.max(0, Math.min(totalTicks, tickIndex));
     return Math.round((min + clamped * step) * 10) / 10;
   }, [min, step, totalTicks]);
