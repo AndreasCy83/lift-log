@@ -48,6 +48,7 @@ import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
@@ -941,6 +942,15 @@ export default function WorkoutLogPage() {
           />
         )}
       </div>
+
+      {/* Floating sticky rest timer — shared state with inline SetRestTimerRow */}
+      <FloatingRestTimer
+        bottomOffset={88}
+        resolveLabel={(weId) => {
+          const we = workoutExercises.find(x => x.id === weId);
+          return we ? getExName(we.exerciseId) : undefined;
+        }}
+      />
 
       {tutorialOpen && (
         <ExerciseTutorialOverlay

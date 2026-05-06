@@ -5,6 +5,7 @@ import {
   getActiveTimers, startRestTimer, clearRestTimer,
   getTimerRemaining, markCueFired, type ActiveRestTimer,
   REST_TIMERS_CHANGED_EVENT,
+  pauseCurrentRestTimer, resumeCurrentRestTimer,
 } from '@/lib/restTimerState';
 import { speakCue, playFinishBeep, preloadAudioCues } from '@/lib/ttsVoice';
 
@@ -38,10 +39,11 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     );
     if (active) {
       const rem = getTimerRemaining(active);
+      const paused = active.status === 'paused';
       if (rem > 0) {
         timerRef.current = active;
         setRemaining(rem);
-        setIsRunning(true);
+        setIsRunning(!paused);
         finishedRef.current = false;
       } else {
         clearRestTimer(workoutExerciseId, afterSetIndex);
@@ -127,13 +129,21 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
   const handleStartPause = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isRunning) {
-      // Pause - clear the timer from storage, keep remaining for display
-      clearRestTimer(workoutExerciseId, afterSetIndex);
+      // Pause but preserve the timer in storage so the floating UI stays in sync.
+      pauseCurrentRestTimer();
       RestTimerNative.stopTimer().catch(() => {});
-      timerRef.current = null;
       setIsRunning(false);
+    } else if (timerRef.current && timerRef.current.status === 'paused') {
+      // Resume existing paused timer.
+      const next = resumeCurrentRestTimer();
+      if (next) {
+        timerRef.current = next;
+        setRemaining(getTimerRemaining(next));
+        setIsRunning(true);
+        RestTimerNative.startTimer({ seconds: getTimerRemaining(next) }).catch(() => {});
+      }
     } else {
-      // Start/resume
+      // Start fresh
       const sec = remaining ?? restSeconds ?? 90;
       if (sec > 0) {
         finishedRef.current = false;

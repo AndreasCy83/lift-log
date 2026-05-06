@@ -12,9 +12,13 @@ export interface ActiveRestTimer {
   workoutExerciseId: string;
   afterSetIndex: number;
   totalSeconds: number;
-  endAt: number; // Date.now() + totalSeconds * 1000
+  endAt: number; // Date.now() + remainingSeconds * 1000 (when running)
   /** Track which voice cues have fired */
   cuesFired: number[];
+  /** 'running' | 'paused'. Defaults to 'running' for back-compat. */
+  status?: 'running' | 'paused';
+  /** Remaining seconds captured at pause time (only meaningful when status==='paused'). */
+  pausedRemaining?: number;
 }
 
 export function getActiveTimers(): ActiveRestTimer[] {
@@ -70,7 +74,41 @@ export function clearAllTimersForExercise(workoutExerciseId: string) {
 }
 
 export function getTimerRemaining(timer: ActiveRestTimer): number {
+  if (timer.status === 'paused' && typeof timer.pausedRemaining === 'number') {
+    return Math.max(0, timer.pausedRemaining);
+  }
   return Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+}
+
+/** Get the single active rest timer for the current workout, if any. */
+export function getCurrentRestTimer(): ActiveRestTimer | null {
+  return getActiveTimers()[0] ?? null;
+}
+
+/** Pause the currently active rest timer (preserves remaining seconds). */
+export function pauseCurrentRestTimer(): ActiveRestTimer | null {
+  const timers = getActiveTimers();
+  const t = timers[0];
+  if (!t || t.status === 'paused') return t ?? null;
+  const remaining = Math.max(0, Math.ceil((t.endAt - Date.now()) / 1000));
+  const next: ActiveRestTimer = { ...t, status: 'paused', pausedRemaining: remaining };
+  saveActiveTimers([next]);
+  return next;
+}
+
+/** Resume a paused rest timer. */
+export function resumeCurrentRestTimer(): ActiveRestTimer | null {
+  const timers = getActiveTimers();
+  const t = timers[0];
+  if (!t || t.status !== 'paused') return t ?? null;
+  const rem = Math.max(0, t.pausedRemaining ?? 0);
+  if (rem <= 0) {
+    saveActiveTimers([]);
+    return null;
+  }
+  const next: ActiveRestTimer = { ...t, status: 'running', endAt: Date.now() + rem * 1000, pausedRemaining: undefined };
+  saveActiveTimers([next]);
+  return next;
 }
 
 export function markCueFired(timerId: string, cueSecond: number) {
