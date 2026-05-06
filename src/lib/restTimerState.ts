@@ -12,9 +12,13 @@ export interface ActiveRestTimer {
   workoutExerciseId: string;
   afterSetIndex: number;
   totalSeconds: number;
-  endAt: number; // Date.now() + totalSeconds * 1000
+  endAt: number; // Date.now() + remainingSeconds * 1000 (when running)
   /** Track which voice cues have fired */
   cuesFired: number[];
+  /** 'running' | 'paused'. Defaults to 'running' for back-compat. */
+  status?: 'running' | 'paused';
+  /** Remaining seconds captured at pause time (only meaningful when status==='paused'). */
+  pausedRemaining?: number;
 }
 
 export function getActiveTimers(): ActiveRestTimer[] {
