@@ -63,8 +63,7 @@ export default function WeightRulerPicker({
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
-    const centerOffset = el.scrollLeft + el.clientWidth / 2;
-    const v = scrollToValue(centerOffset);
+    const v = scrollToValue(el.scrollLeft);
     setDisplayValue(v);
   }, [scrollToValue]);
 
@@ -88,14 +87,12 @@ export default function WeightRulerPicker({
 
   const handlePointerUp = () => {
     isDragging.current = false;
-    // snap
     const el = containerRef.current;
     if (!el) return;
-    const centerOffset = el.scrollLeft + el.clientWidth / 2;
-    const v = scrollToValue(centerOffset);
+    const v = scrollToValue(el.scrollLeft);
     setDisplayValue(v);
     onChange(v);
-    el.scrollLeft = valueToScroll(v) - el.clientWidth / 2;
+    el.scrollLeft = valueToScroll(v);
   };
 
   return (
