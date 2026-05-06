@@ -36,19 +36,29 @@ export default function WeightRulerPicker({
     return ((v - min) / step) * TICK_WIDTH;
   }, [min, step]);
 
-  const scrollToValue = useCallback((scroll: number) => {
-    const tickIndex = Math.round(scroll / TICK_WIDTH);
+  const scrollToValue = useCallback((scrollLeft: number) => {
+    const tickIndex = Math.round(scrollLeft / TICK_WIDTH);
     const clamped = Math.max(0, Math.min(totalTicks, tickIndex));
     return Math.round((min + clamped * step) * 10) / 10;
   }, [min, step, totalTicks]);
 
-  // initial scroll
+  // Measure container width
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const containerW = el.clientWidth;
-    el.scrollLeft = valueToScroll(value) - containerW / 2;
+    const update = () => setContainerWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
+
+  // initial scroll once we know container width
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || containerWidth === 0) return;
+    el.scrollLeft = valueToScroll(value);
+  }, [containerWidth]);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
