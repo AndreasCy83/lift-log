@@ -48,6 +48,7 @@ import SetRestTimerRow from '@/components/SetRestTimerRow';
 import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
