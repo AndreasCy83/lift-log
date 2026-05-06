@@ -943,6 +943,15 @@ export default function WorkoutLogPage() {
         )}
       </div>
 
+      {/* Floating sticky rest timer — shared state with inline SetRestTimerRow */}
+      <FloatingRestTimer
+        bottomOffset={88}
+        resolveLabel={(weId) => {
+          const we = workoutExercises.find(x => x.id === weId);
+          return we ? getExName(we.exerciseId) : undefined;
+        }}
+      />
+
       {tutorialOpen && (
         <ExerciseTutorialOverlay
           steps={TUTORIAL_STEPS}
