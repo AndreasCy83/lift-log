@@ -29,6 +29,7 @@ export default function WeightRulerPicker({
   const startX = useRef(0);
   const startScroll = useRef(0);
   const [displayValue, setDisplayValue] = useState(value);
+  const [containerWidth, setContainerWidth] = useState(0);
   const totalTicks = Math.round((max - min) / step);
 
   const valueToScroll = useCallback((v: number) => {
