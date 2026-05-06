@@ -5,6 +5,7 @@ import {
   getActiveTimers, startRestTimer, clearRestTimer,
   getTimerRemaining, markCueFired, type ActiveRestTimer,
   REST_TIMERS_CHANGED_EVENT,
+  pauseCurrentRestTimer, resumeCurrentRestTimer,
 } from '@/lib/restTimerState';
 import { speakCue, playFinishBeep, preloadAudioCues } from '@/lib/ttsVoice';
 
