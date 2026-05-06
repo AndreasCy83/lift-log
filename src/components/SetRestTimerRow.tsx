@@ -39,10 +39,11 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
     );
     if (active) {
       const rem = getTimerRemaining(active);
+      const paused = active.status === 'paused';
       if (rem > 0) {
         timerRef.current = active;
         setRemaining(rem);
-        setIsRunning(true);
+        setIsRunning(!paused);
         finishedRef.current = false;
       } else {
         clearRestTimer(workoutExerciseId, afterSetIndex);
