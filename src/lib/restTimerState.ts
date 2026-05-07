@@ -111,7 +111,25 @@ export function resumeCurrentRestTimer(): ActiveRestTimer | null {
   return next;
 }
 
-export function markCueFired(timerId: string, cueSecond: number) {
+export function adjustRestTimerSeconds(delta: number): ActiveRestTimer | null {
+  const timers = getActiveTimers();
+  const t = timers[0];
+  if (!t) return null;
+
+  if (t.status === 'paused' && typeof t.pausedRemaining === 'number') {
+    const nextRemaining = Math.max(0, (t.pausedRemaining ?? 0) + delta);
+    const next: ActiveRestTimer = { ...t, pausedRemaining: nextRemaining };
+    saveActiveTimers([next]);
+    return next;
+  }
+
+  const currentRemaining = Math.max(0, Math.ceil((t.endAt - Date.now()) / 1000));
+  const nextRemaining = Math.max(0, currentRemaining + delta);
+  const next: ActiveRestTimer = { ...t, endAt: Date.now() + nextRemaining * 1000 };
+  saveActiveTimers([next]);
+  return next;
+}
+
   const timers = getActiveTimers();
   const t = timers.find(x => x.id === timerId);
   if (t && !t.cuesFired.includes(cueSecond)) {
