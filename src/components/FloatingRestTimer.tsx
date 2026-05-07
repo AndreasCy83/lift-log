@@ -146,7 +146,6 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
     bottom: `calc(${bottomOffset}px + env(safe-area-inset-bottom, 0px))`,
   };
 
-  if (minimized) {
   if (minimized || forceMinimized) {
     return (
       <div
