@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Timer, Pause, Play, RotateCcw, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Timer, Pause, Play, RotateCcw, X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import RestTimerNative from '@/lib/RestTimerNative';
 import {
   getCurrentRestTimer,
@@ -9,6 +9,7 @@ import {
   clearAllRestTimers,
   startRestTimer,
   markCueFired,
+  adjustRestTimerSeconds,
   REST_TIMERS_CHANGED_EVENT,
   type ActiveRestTimer,
 } from '@/lib/restTimerState';
