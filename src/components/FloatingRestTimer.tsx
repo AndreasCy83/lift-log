@@ -19,6 +19,10 @@ interface Props {
   resolveLabel?: (workoutExerciseId: string) => string | undefined;
   /** Extra bottom offset in px (e.g. for bottom navigation height). Defaults to 80. */
   bottomOffset?: number;
+  /** When true, only the minimized pill is shown and clicking it calls onMinimizedClick instead of expanding. */
+  forceMinimized?: boolean;
+  /** Optional handler invoked when the minimized pill is clicked (used in forceMinimized mode). */
+  onMinimizedClick?: () => void;
 }
 
 function fmt(sec: number): string {
