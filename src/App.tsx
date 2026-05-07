@@ -22,6 +22,7 @@ import { App as CapApp } from '@capacitor/app';
 import SplashScreen from "@/components/SplashScreen";
 import OnboardingWizard from "@/components/OnboardingWizard";
 import RateAppDialog from "@/components/RateAppDialog";
+import GlobalRestTimer from "@/components/GlobalRestTimer";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +117,7 @@ const App = () => {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <GlobalRestTimer />
           <BottomNav />
         </HashRouter>
       </TooltipProvider>

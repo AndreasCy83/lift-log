@@ -19,6 +19,10 @@ interface Props {
   resolveLabel?: (workoutExerciseId: string) => string | undefined;
   /** Extra bottom offset in px (e.g. for bottom navigation height). Defaults to 80. */
   bottomOffset?: number;
+  /** When true, only the minimized pill is shown and clicking it calls onMinimizedClick instead of expanding. */
+  forceMinimized?: boolean;
+  /** Optional handler invoked when the minimized pill is clicked (used in forceMinimized mode). */
+  onMinimizedClick?: () => void;
 }
 
 function fmt(sec: number): string {
@@ -27,7 +31,7 @@ function fmt(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80 }: Props) {
+export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, forceMinimized = false, onMinimizedClick }: Props) {
   const [timer, setTimer] = useState<ActiveRestTimer | null>(() => getCurrentRestTimer());
   const [remaining, setRemaining] = useState<number>(() => {
     const t = getCurrentRestTimer();
@@ -142,16 +146,19 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80 }: P
     bottom: `calc(${bottomOffset}px + env(safe-area-inset-bottom, 0px))`,
   };
 
-  if (minimized) {
+  if (minimized || forceMinimized) {
     return (
       <div
         className="fixed left-1/2 z-40 -translate-x-1/2 px-3"
         style={containerStyle}
       >
         <button
-          onClick={() => setMinimized(false)}
+          onClick={() => {
+            if (forceMinimized) onMinimizedClick?.();
+            else setMinimized(false);
+          }}
           className="flex items-center gap-2 rounded-full border border-primary/40 bg-background/95 px-3 py-1.5 shadow-lg backdrop-blur-md hover:bg-secondary/70 transition-colors"
-          aria-label="Expand rest timer"
+          aria-label={forceMinimized ? 'Open workout rest timer' : 'Expand rest timer'}
         >
           <span className={`relative flex h-2 w-2 ${isPaused ? '' : ''}`}>
             <span className={`absolute inline-flex h-full w-full rounded-full ${isPaused ? 'bg-muted-foreground/60' : 'bg-primary opacity-75 animate-ping'}`} />
@@ -159,7 +166,7 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80 }: P
           </span>
           <Timer className="h-3.5 w-3.5 text-primary" />
           <span className="text-xs font-bold tabular-nums text-foreground">{fmt(remaining)}</span>
-          <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+          {!forceMinimized && <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />}
         </button>
       </div>
     );
