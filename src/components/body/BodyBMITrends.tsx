@@ -91,7 +91,7 @@ export default function BodyBMITrends({ entries, onBack }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
         <button onClick={onBack} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
         <h2 className="font-display text-lg font-semibold">BMI & Trends</h2>
       </div>
