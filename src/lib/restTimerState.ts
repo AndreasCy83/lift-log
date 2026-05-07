@@ -130,6 +130,7 @@ export function adjustRestTimerSeconds(delta: number): ActiveRestTimer | null {
   return next;
 }
 
+export function markCueFired(timerId: string, cueSecond: number) {
   const timers = getActiveTimers();
   const t = timers.find(x => x.id === timerId);
   if (t && !t.cuesFired.includes(cueSecond)) {
@@ -137,6 +138,7 @@ export function adjustRestTimerSeconds(delta: number): ActiveRestTimer | null {
     saveActiveTimers(timers);
   }
 }
+
 
 /** Store last-used rest seconds per exercise */
 export function getLastUsedRestSeconds(exerciseId: string): number | null {
