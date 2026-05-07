@@ -204,11 +204,29 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
           </button>
         </div>
 
-        <div className="flex items-baseline justify-center gap-1 mb-2">
-          <span className={`font-display text-3xl font-bold tabular-nums ${isPaused ? 'text-muted-foreground' : 'text-primary'}`}>
-            {fmt(remaining)}
-          </span>
-          <span className="text-xs text-muted-foreground tabular-nums">/ {fmt(timer.totalSeconds)}</span>
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => handleAdjust(-5)}
+            className="flex items-center gap-0.5 rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Subtract 5 seconds"
+          >
+            <Minus className="h-3 w-3" />
+            5s
+          </button>
+          <div className="flex items-baseline justify-center gap-1">
+            <span className={`font-display text-3xl font-bold tabular-nums ${isPaused ? 'text-muted-foreground' : 'text-primary'}`}>
+              {fmt(remaining)}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">/ {fmt(timer.totalSeconds)}</span>
+          </div>
+          <button
+            onClick={() => handleAdjust(5)}
+            className="flex items-center gap-0.5 rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Add 5 seconds"
+          >
+            <Plus className="h-3 w-3" />
+            5s
+          </button>
         </div>
 
         <div className="w-full rounded-full overflow-hidden mb-3" style={{ height: 4, background: 'hsl(var(--muted) / 0.5)' }}>
