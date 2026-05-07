@@ -31,7 +31,7 @@ function fmt(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80 }: Props) {
+export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, forceMinimized = false, onMinimizedClick }: Props) {
   const [timer, setTimer] = useState<ActiveRestTimer | null>(() => getCurrentRestTimer());
   const [remaining, setRemaining] = useState<number>(() => {
     const t = getCurrentRestTimer();
