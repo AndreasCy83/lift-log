@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Timer, Pause, Play, RotateCcw, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Timer, Pause, Play, RotateCcw, X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import RestTimerNative from '@/lib/RestTimerNative';
 import {
   getCurrentRestTimer,
@@ -9,6 +9,7 @@ import {
   clearAllRestTimers,
   startRestTimer,
   markCueFired,
+  adjustRestTimerSeconds,
   REST_TIMERS_CHANGED_EVENT,
   type ActiveRestTimer,
 } from '@/lib/restTimerState';
@@ -142,6 +143,10 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
     RestTimerNative.startTimer({ seconds: timer.totalSeconds }).catch(() => {});
   };
 
+  const handleAdjust = (delta: number) => {
+    adjustRestTimerSeconds(delta);
+  };
+
   const containerStyle: React.CSSProperties = {
     bottom: `calc(${bottomOffset}px + env(safe-area-inset-bottom, 0px))`,
   };
@@ -199,11 +204,29 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
           </button>
         </div>
 
-        <div className="flex items-baseline justify-center gap-1 mb-2">
-          <span className={`font-display text-3xl font-bold tabular-nums ${isPaused ? 'text-muted-foreground' : 'text-primary'}`}>
-            {fmt(remaining)}
-          </span>
-          <span className="text-xs text-muted-foreground tabular-nums">/ {fmt(timer.totalSeconds)}</span>
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => handleAdjust(-5)}
+            className="flex items-center gap-0.5 rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Subtract 5 seconds"
+          >
+            <Minus className="h-3 w-3" />
+            5s
+          </button>
+          <div className="flex items-baseline justify-center gap-1">
+            <span className={`font-display text-3xl font-bold tabular-nums ${isPaused ? 'text-muted-foreground' : 'text-primary'}`}>
+              {fmt(remaining)}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">/ {fmt(timer.totalSeconds)}</span>
+          </div>
+          <button
+            onClick={() => handleAdjust(5)}
+            className="flex items-center gap-0.5 rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Add 5 seconds"
+          >
+            <Plus className="h-3 w-3" />
+            5s
+          </button>
         </div>
 
         <div className="w-full rounded-full overflow-hidden mb-3" style={{ height: 4, background: 'hsl(var(--muted) / 0.5)' }}>
