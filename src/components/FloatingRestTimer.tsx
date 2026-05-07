@@ -143,6 +143,10 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
     RestTimerNative.startTimer({ seconds: timer.totalSeconds }).catch(() => {});
   };
 
+  const handleAdjust = (delta: number) => {
+    adjustRestTimerSeconds(delta);
+  };
+
   const containerStyle: React.CSSProperties = {
     bottom: `calc(${bottomOffset}px + env(safe-area-inset-bottom, 0px))`,
   };
