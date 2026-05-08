@@ -137,9 +137,9 @@ export default function RecordsTab() {
 
       results.push({
         exerciseId: exId,
-        exerciseName: ex.name,
-        categoryId: ex.categoryId,
-        categoryName: catMap.get(ex.categoryId) ?? 'Other',
+        exerciseName: exName,
+        categoryId: exCategoryId,
+        categoryName: catMap.get(exCategoryId) ?? 'Other',
         lastLoggedDate: lastDate,
         e1rm, maxWeight, maxReps,
         bestSetVolume: bestSetVol,
