@@ -76,7 +76,9 @@ export default function RecordsTab() {
 
     for (const [exId, sessions] of exSessionMap) {
       const ex = exercises.find(e => e.id === exId);
-      if (!ex) continue;
+      // Tolerate orphan exerciseIds (e.g. deleted custom exercises) so PRs still appear
+      const exName = ex?.name ?? '(Custom exercise)';
+      const exCategoryId = ex?.categoryId ?? '';
 
       let e1rm: PRData['e1rm'] = null;
       let maxWeight: PRData['maxWeight'] = null;
