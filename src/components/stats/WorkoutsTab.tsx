@@ -24,11 +24,37 @@ export default function WorkoutsTab() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedExercise, setSelectedExercise] = useState('all');
 
-  // Filter exercises by category for dropdown
+  // Exercise IDs that have at least one logged workout (built-in or custom)
+  const loggedExerciseIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const we of allWEs) ids.add(we.exerciseId);
+    return ids;
+  }, [allWEs]);
+
+  // Filter exercises by category for dropdown — includes built-in + custom,
+  // limited to those with logged history, sorted alphabetically.
+  // Also tolerates exerciseIds referenced by workouts but missing from the
+  // exercises store (e.g. deleted custom exercises) by synthesizing entries.
   const exerciseOptions = useMemo(() => {
-    if (selectedCategory === 'all') return exercises;
-    return exercises.filter(e => e.categoryId === selectedCategory);
-  }, [exercises, selectedCategory]);
+    const byId = new Map(exercises.map(e => [e.id, e]));
+    const merged: { id: string; name: string; categoryId: string }[] = [];
+    for (const id of loggedExerciseIds) {
+      const ex = byId.get(id);
+      if (ex) {
+        merged.push({ id: ex.id, name: ex.name, categoryId: ex.categoryId });
+      } else {
+        merged.push({ id, name: '(Custom exercise)', categoryId: '' });
+      }
+    }
+    const filtered = selectedCategory === 'all'
+      ? merged
+      : merged.filter(e => e.categoryId === selectedCategory);
+    // Dedupe by id (defensive) and sort alphabetically
+    const seen = new Set<string>();
+    return filtered
+      .filter(e => (seen.has(e.id) ? false : (seen.add(e.id), true)))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [exercises, selectedCategory, loggedExerciseIds]);
 
   // Reset exercise when category changes
   const handleCategoryChange = (v: string) => {
