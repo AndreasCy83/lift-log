@@ -63,6 +63,31 @@ export function playFinishBeep() {
   if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 }
 
+/**
+ * Immediately stop any currently playing rest-timer voice cues / beeps.
+ * Used when the user finishes a workout so no callouts continue afterward.
+ */
+export function stopAllCues() {
+  try {
+    Object.values(audioCache).forEach(a => {
+      try { a.pause(); a.currentTime = 0; } catch {}
+    });
+  } catch {}
+  try {
+    if (audioCtxRef.current) {
+      const ctx = audioCtxRef.current;
+      audioCtxRef.current = null;
+      ctx.close().catch(() => {});
+    }
+  } catch {}
+  try {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  } catch {}
+  try { if (navigator.vibrate) navigator.vibrate(0); } catch {}
+}
+
 export function preloadAudioCues() {
   ['/audio/10secs.mp3', '/audio/5secs.mp3', '/audio/GO.mp3']
     .forEach(src => getAudio(src));

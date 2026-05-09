@@ -51,6 +51,7 @@ import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/Exercis
 import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
+import { stopAllCues } from '@/lib/ttsVoice';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
@@ -422,6 +423,9 @@ export default function WorkoutLogPage() {
     // Stop and clear ALL active rest timers — none should keep running after finish.
     clearAllRestTimers();
     RestTimerNative.stopTimer().catch(() => {});
+    // Cancel any pending / playing voice cues + finish beeps so they don't
+    // continue after the workout ends.
+    stopAllCues();
     // Finalize the live workout session timer (independent from rest timer)
     const elapsedSec = session.end();
     updateWorkout({
