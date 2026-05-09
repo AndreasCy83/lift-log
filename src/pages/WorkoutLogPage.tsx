@@ -8,8 +8,10 @@ import {
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
-  reorderWorkoutExercises
+  reorderWorkoutExercises, markGoalAcknowledged
 } from '@/lib/storage';
+import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
+import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
   DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
   closestCenter, type DragEndEvent, type DragStartEvent
@@ -120,7 +122,8 @@ export default function WorkoutLogPage() {
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
   const [setNoteOpen, setSetNoteOpen] = useState<string | null>(null);
   const [statsExercise, setStatsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
-  const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
+  const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb'; initialAdding?: boolean; initialGoalType?: import('@/types/fitness').GoalType } | null>(null);
+  const [completedGoalQueue, setCompletedGoalQueue] = useState<import('@/lib/goalProgress').CompletedGoal[]>([]);
 
   // Rest timer editor state
   const [restEditorOpen, setRestEditorOpen] = useState(false);
@@ -187,7 +190,13 @@ export default function WorkoutLogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.id, workout?.endTime, isFreshWorkout]);
 
-  // Listen for nav-leave requests from BottomNav while session is live.
+  // One-time: silently acknowledge already-completed goals so we don't surface old ones.
+  useEffect(() => {
+    if (localStorage.getItem('goalCelebrationBackfill_v1')) return;
+    detectNewlyCompletedGoals().forEach(c => markGoalAcknowledged(c.goal.id));
+    localStorage.setItem('goalCelebrationBackfill_v1', 'true');
+  }, []);
+
   useEffect(() => {
     const onLeaveReq = (e: Event) => {
       const target = (e as CustomEvent).detail?.target as string | undefined;
@@ -371,10 +380,21 @@ export default function WorkoutLogPage() {
     }
   };
 
+  const checkGoalCompletions = useCallback(() => {
+    const found = detectNewlyCompletedGoals();
+    if (found.length === 0) return;
+    setCompletedGoalQueue(prev => {
+      const existing = new Set(prev.map(c => c.goal.id));
+      const toAdd = found.filter(c => !existing.has(c.goal.id));
+      return toAdd.length ? [...prev, ...toAdd] : prev;
+    });
+  }, []);
+
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
     const updated = { ...s, [field]: value };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+    checkGoalCompletions();
   };
 
   /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
@@ -384,6 +404,7 @@ export default function WorkoutLogPage() {
     const updated = { ...s, isCompleted: nextCompleted };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+    checkGoalCompletions();
 
     if (!wasCompleted && nextCompleted) {
       const settings = getSettings();
@@ -930,6 +951,8 @@ export default function WorkoutLogPage() {
             exerciseId={goalsExercise.id}
             exerciseName={goalsExercise.name}
             weightUnit={goalsExercise.weightUnit}
+            initialAdding={goalsExercise.initialAdding}
+            initialGoalType={goalsExercise.initialGoalType}
           />
         )}
 
@@ -1036,6 +1059,38 @@ export default function WorkoutLogPage() {
           navigate('/');
         }}
       />
+
+      {(() => {
+        const current = completedGoalQueue[0];
+        if (!current) return null;
+        const dismiss = () => {
+          markGoalAcknowledged(current.goal.id);
+          setCompletedGoalQueue(prev => prev.slice(1));
+        };
+        const ex = allExercises.find(e => e.id === current.exerciseId);
+        return (
+          <GoalCelebrationModal
+            open={true}
+            goal={current.goal}
+            exerciseName={current.exerciseName}
+            currentValue={current.currentValue}
+            onMaybeLater={dismiss}
+            onSetNewGoal={() => {
+              markGoalAcknowledged(current.goal.id);
+              setCompletedGoalQueue(prev => prev.slice(1));
+              if (ex) {
+                setGoalsExercise({
+                  id: ex.id,
+                  name: ex.name,
+                  weightUnit: ex.weightUnit ?? 'kg',
+                  initialAdding: true,
+                  initialGoalType: current.goal.goalType,
+                });
+              }
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }

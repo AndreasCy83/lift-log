@@ -169,4 +169,6 @@ export interface ExerciseGoal {
   startDate?: string;
   endDate?: string;
   createdAt: string;
+  /** ISO timestamp when the user has been shown the goal-completed celebration. */
+  completedAcknowledgedAt?: string;
 }
