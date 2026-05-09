@@ -21,6 +21,8 @@ interface Props {
   exerciseId: string;
   exerciseName: string;
   weightUnit: 'kg' | 'lb';
+  initialAdding?: boolean;
+  initialGoalType?: GoalType;
 }
 
 function computeCurrentValue(exerciseId: string, goal: ExerciseGoal): number {
