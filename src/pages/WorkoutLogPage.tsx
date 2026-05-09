@@ -374,10 +374,21 @@ export default function WorkoutLogPage() {
     }
   };
 
+  const checkGoalCompletions = useCallback(() => {
+    const found = detectNewlyCompletedGoals();
+    if (found.length === 0) return;
+    setCompletedGoalQueue(prev => {
+      const existing = new Set(prev.map(c => c.goal.id));
+      const toAdd = found.filter(c => !existing.has(c.goal.id));
+      return toAdd.length ? [...prev, ...toAdd] : prev;
+    });
+  }, []);
+
   const handleUpdateSet = (s: WorkoutSet, field: keyof WorkoutSet, value: any) => {
     const updated = { ...s, [field]: value };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
+    checkGoalCompletions();
   };
 
   /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
