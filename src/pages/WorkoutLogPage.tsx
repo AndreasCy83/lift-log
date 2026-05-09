@@ -945,6 +945,8 @@ export default function WorkoutLogPage() {
             exerciseId={goalsExercise.id}
             exerciseName={goalsExercise.name}
             weightUnit={goalsExercise.weightUnit}
+            initialAdding={goalsExercise.initialAdding}
+            initialGoalType={goalsExercise.initialGoalType}
           />
         )}
 
