@@ -407,3 +407,14 @@ export function addExerciseGoal(goal: ExerciseGoal) {
 export function deleteExerciseGoal(id: string) {
   set(STORAGE_KEYS.exerciseGoals, getExerciseGoals().filter(g => g.id !== id));
 }
+export function updateExerciseGoal(goal: ExerciseGoal) {
+  set(STORAGE_KEYS.exerciseGoals, getExerciseGoals().map(g => g.id === goal.id ? goal : g));
+}
+export function markGoalAcknowledged(id: string) {
+  const all = getExerciseGoals();
+  const idx = all.findIndex(g => g.id === id);
+  if (idx >= 0) {
+    all[idx] = { ...all[idx], completedAcknowledgedAt: new Date().toISOString() };
+    set(STORAGE_KEYS.exerciseGoals, all);
+  }
+}
