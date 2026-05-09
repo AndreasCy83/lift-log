@@ -99,14 +99,22 @@ function computeCurrentValue(exerciseId: string, goal: ExerciseGoal): number {
   }
 }
 
-export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, exerciseName, weightUnit }: Props) {
+export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, exerciseName, weightUnit, initialAdding, initialGoalType }: Props) {
   const [goals, setGoals] = useState<ExerciseGoal[]>(() => getGoalsForExercise(exerciseId));
-  const [adding, setAdding] = useState(false);
-  const [newType, setNewType] = useState<GoalType>('MAX_WEIGHT');
+  const [adding, setAdding] = useState(!!initialAdding);
+  const [newType, setNewType] = useState<GoalType>(initialGoalType ?? 'MAX_WEIGHT');
   const [newTarget, setNewTarget] = useState('');
   const [newTargetReps, setNewTargetReps] = useState('');
   const [newStartDate, setNewStartDate] = useState('');
   const [newEndDate, setNewEndDate] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      setGoals(getGoalsForExercise(exerciseId));
+      if (initialAdding) setAdding(true);
+      if (initialGoalType) setNewType(initialGoalType);
+    }
+  }, [open, exerciseId, initialAdding, initialGoalType]);
 
   const globalWeightUnit = getSettings().weightUnit;
   const unitLabel = weightUnitLabel(globalWeightUnit);
