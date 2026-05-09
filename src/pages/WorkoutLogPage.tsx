@@ -8,8 +8,10 @@ import {
   addWorkoutSet, updateWorkoutSet, deleteWorkoutSet, removeWorkoutExercise,
   getPersonalRecord, updateWorkout, updateWorkoutExercise, getGoalsForExercise,
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
-  reorderWorkoutExercises
+  reorderWorkoutExercises, markGoalAcknowledged
 } from '@/lib/storage';
+import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
+import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
   DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
   closestCenter, type DragEndEvent, type DragStartEvent
