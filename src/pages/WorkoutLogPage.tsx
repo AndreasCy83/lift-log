@@ -190,7 +190,13 @@ export default function WorkoutLogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.id, workout?.endTime, isFreshWorkout]);
 
-  // Listen for nav-leave requests from BottomNav while session is live.
+  // One-time: silently acknowledge already-completed goals so we don't surface old ones.
+  useEffect(() => {
+    if (localStorage.getItem('goalCelebrationBackfill_v1')) return;
+    detectNewlyCompletedGoals().forEach(c => markGoalAcknowledged(c.goal.id));
+    localStorage.setItem('goalCelebrationBackfill_v1', 'true');
+  }, []);
+
   useEffect(() => {
     const onLeaveReq = (e: Event) => {
       const target = (e as CustomEvent).detail?.target as string | undefined;
