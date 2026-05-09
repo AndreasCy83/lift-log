@@ -1053,6 +1053,38 @@ export default function WorkoutLogPage() {
           navigate('/');
         }}
       />
+
+      {(() => {
+        const current = completedGoalQueue[0];
+        if (!current) return null;
+        const dismiss = () => {
+          markGoalAcknowledged(current.goal.id);
+          setCompletedGoalQueue(prev => prev.slice(1));
+        };
+        const ex = allExercises.find(e => e.id === current.exerciseId);
+        return (
+          <GoalCelebrationModal
+            open={true}
+            goal={current.goal}
+            exerciseName={current.exerciseName}
+            currentValue={current.currentValue}
+            onMaybeLater={dismiss}
+            onSetNewGoal={() => {
+              markGoalAcknowledged(current.goal.id);
+              setCompletedGoalQueue(prev => prev.slice(1));
+              if (ex) {
+                setGoalsExercise({
+                  id: ex.id,
+                  name: ex.name,
+                  weightUnit: ex.weightUnit ?? 'kg',
+                  initialAdding: true,
+                  initialGoalType: current.goal.goalType,
+                });
+              }
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }
