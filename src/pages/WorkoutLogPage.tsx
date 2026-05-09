@@ -120,7 +120,8 @@ export default function WorkoutLogPage() {
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
   const [setNoteOpen, setSetNoteOpen] = useState<string | null>(null);
   const [statsExercise, setStatsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
-  const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb' } | null>(null);
+  const [goalsExercise, setGoalsExercise] = useState<{ id: string; name: string; weightUnit: 'kg' | 'lb'; initialAdding?: boolean; initialGoalType?: import('@/types/fitness').GoalType } | null>(null);
+  const [completedGoalQueue, setCompletedGoalQueue] = useState<import('@/lib/goalProgress').CompletedGoal[]>([]);
 
   // Rest timer editor state
   const [restEditorOpen, setRestEditorOpen] = useState(false);
