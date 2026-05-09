@@ -51,6 +51,7 @@ import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/Exercis
 import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
+import { stopAllCues } from '@/lib/ttsVoice';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
