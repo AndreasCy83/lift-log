@@ -398,8 +398,7 @@ export default function WorkoutLogPage() {
     const updated = { ...s, isCompleted: nextCompleted };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
-
-    if (!wasCompleted && nextCompleted) {
+    checkGoalCompletions();
       const settings = getSettings();
       if (!settings.autoStartRestTimer) return;
       const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
