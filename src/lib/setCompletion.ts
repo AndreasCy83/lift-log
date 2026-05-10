@@ -6,12 +6,10 @@
  *  - A set is "counted" iff its toggle is ON (`isCompleted === true`).
  *  - Untoggled rows never contribute to any saved/derived metric, even if
  *    values were typed in.
- *  - "Draft" rows = untoggled rows that are missing required data for their
- *    set type. They must NOT be treated as a meaningful pending set when
- *    finishing the workout.
- *  - "Meaningful pending" rows = untoggled rows that DO have enough data to
- *    look like the user intended to log them. Used only to decide whether to
- *    warn on Finish Workout.
+ *  - "Draft" rows = not toggled AND completely blank (no weight/reps/distance/duration).
+ *    They must NOT be treated as a meaningful pending set when finishing the workout.
+ *  - "Meaningful pending" rows = untoggled rows that have ANY entered data,
+ *    whether partial or complete. Used only to decide whether to warn on Finish Workout.
  */
 import type { WorkoutSet, SetType } from '@/types/fitness';
 
@@ -25,8 +23,8 @@ function n(v: number | null | undefined): number {
 }
 
 /**
- * Does this row have the minimum data required for its set type to count as
- * "the user intended to log this"? Used for finish-workout warning only.
+ * Does this row have ANY entered data (partial or complete)?
+ * Used for finish-workout warning only.
  */
 export function hasRequiredSetData(
   set: Pick<WorkoutSet, 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
@@ -38,22 +36,22 @@ export function hasRequiredSetData(
   const t = n(set.durationMinutes);
   switch (setType) {
     case 'WEIGHT_REPS':
-      return w > 0 && r > 0;
+      return w > 0 || r > 0;
     case 'WEIGHT_TIME':
-      return w > 0 && t > 0;
+      return w > 0 || t > 0;
     case 'WEIGHT_ONLY':
       return w > 0;
     case 'REPS_DISTANCE':
-      return r > 0 && d > 0;
+      return r > 0 || d > 0;
     case 'REPS_TIME':
-      return r > 0 && t > 0;
+      return r > 0 || t > 0;
     default:
-      // Fallback: needs weight+reps OR cardio-style data.
-      return (w > 0 && r > 0) || (r > 0 && (d > 0 || t > 0));
+      // Fallback: any positive value counts as "has data".
+      return w > 0 || r > 0 || d > 0 || t > 0;
   }
 }
 
-/** A draft row = not toggled AND missing required data. */
+/** A draft row = not toggled AND completely blank. */
 export function isDraftSet(
   set: Pick<WorkoutSet, 'isCompleted' | 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
   setType: SetType | undefined,
@@ -62,7 +60,7 @@ export function isDraftSet(
   return !hasRequiredSetData(set, setType);
 }
 
-/** Untoggled, but populated enough to be a real pending set. */
+/** Untoggled, but has any entered data — triggers finish-workout warning. */
 export function isMeaningfulPendingSet(
   set: Pick<WorkoutSet, 'isCompleted' | 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
   setType: SetType | undefined,
