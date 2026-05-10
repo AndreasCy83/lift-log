@@ -885,7 +885,7 @@ export default function WorkoutLogPage() {
           let hasStrength = false, hasCardio = false;
           workoutExercises.forEach(we => {
             const ex = allExercises.find(e => e.id === we.exerciseId);
-            const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+            const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
             sets.forEach(s => {
               if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
                 hasCardio = true;
