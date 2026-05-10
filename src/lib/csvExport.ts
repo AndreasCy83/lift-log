@@ -14,7 +14,8 @@ function hasMeaningfulData(s: WorkoutSet): boolean {
 }
 
 function isExportableSet(s: WorkoutSet): boolean {
-  return !s.isWarmup && (s.isCompleted || hasMeaningfulData(s));
+  // Only toggled/completed sets are saved workout data; untoggled drafts are excluded.
+  return !s.isWarmup && s.isCompleted === true;
 }
 
 function escapeCsv(value: string): string {
