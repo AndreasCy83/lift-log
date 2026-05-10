@@ -66,7 +66,7 @@ export default function RecordsTab() {
     for (const we of allWEs) {
       const date = workoutDateMap.get(we.workoutId);
       if (!date) continue;
-      const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && hasMeaningfulData(s));
+      const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted === true);
       if (sets.length === 0) continue;
       if (!exSessionMap.has(we.exerciseId)) exSessionMap.set(we.exerciseId, []);
       exSessionMap.get(we.exerciseId)!.push({ date, sets });
