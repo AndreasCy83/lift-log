@@ -143,6 +143,8 @@ export default function WorkoutLogPage() {
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [supportCount, setSupportCount] = useState(0);
+  // Warning shown when user taps Finish but has meaningful pending (untoggled) sets.
+  const [incompleteWarnOpen, setIncompleteWarnOpen] = useState(false);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
