@@ -54,6 +54,7 @@ import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
+import { isMeaningfulPendingSet } from '@/lib/setCompletion';
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
@@ -143,6 +144,8 @@ export default function WorkoutLogPage() {
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [supportCount, setSupportCount] = useState(0);
+  // Warning shown when user taps Finish but has meaningful pending (untoggled) sets.
+  const [incompleteWarnOpen, setIncompleteWarnOpen] = useState(false);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
@@ -434,7 +437,7 @@ export default function WorkoutLogPage() {
     forceUpdate(n => n + 1);
   };
 
-  const handleFinishWorkout = () => {
+  const performFinishWorkout = () => {
     // Save last-used rest timers per exercise
     workoutExercises.forEach(we => {
       if (we.defaultRestSeconds && we.defaultRestSeconds > 0) {
@@ -462,6 +465,24 @@ export default function WorkoutLogPage() {
     }
     // Open the celebration modal; navigation happens when user closes it.
     setCelebrationOpen(true);
+  };
+
+  const handleFinishWorkout = () => {
+    // Detect meaningful untoggled sets (drafts with empty weight/reps are ignored).
+    let hasPending = false;
+    for (const we of workoutExercises) {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      const sets = getSetsForWorkoutExercise(we.id);
+      if (sets.some(s => isMeaningfulPendingSet(s, ex?.setType))) {
+        hasPending = true;
+        break;
+      }
+    }
+    if (hasPending) {
+      setIncompleteWarnOpen(true);
+      return;
+    }
+    performFinishWorkout();
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
@@ -609,6 +630,28 @@ export default function WorkoutLogPage() {
       </header>
 
       <LeaveWorkoutDialog open={pendingNav !== null} onAction={handleLeaveAction} />
+
+      <AlertDialog open={incompleteWarnOpen} onOpenChange={setIncompleteWarnOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Incomplete Sets Remaining</AlertDialogTitle>
+            <AlertDialogDescription>
+              Some sets are not marked as completed yet. Do you want to finish the workout anyway or return and complete them?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIncompleteWarnOpen(false)}>
+              Complete Exercises
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { setIncompleteWarnOpen(false); performFinishWorkout(); }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Finish Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {showTimer && (
         <div className="mx-auto w-full max-w-lg px-4 pt-3">
@@ -885,7 +928,7 @@ export default function WorkoutLogPage() {
           let hasStrength = false, hasCardio = false;
           workoutExercises.forEach(we => {
             const ex = allExercises.find(e => e.id === we.exerciseId);
-            const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+            const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
             sets.forEach(s => {
               if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
                 hasCardio = true;

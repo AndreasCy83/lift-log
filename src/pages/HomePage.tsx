@@ -71,7 +71,7 @@ export default function HomePage() {
     let hasStrength = false, hasCardio = false;
     wExercises.forEach(we => {
       const ex = allExercises.find(e => e.id === we.exerciseId);
-      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
       sets.forEach(s => {
         if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
           hasCardio = true;
@@ -95,7 +95,7 @@ export default function HomePage() {
     wExercises.forEach(we => {
       const ex = allExercises.find(e => e.id === we.exerciseId);
       if (!ex) return;
-      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
       countMap[ex.categoryId] = (countMap[ex.categoryId] || 0) + sets.length;
     });
     const total = Object.values(countMap).reduce((a, b) => a + b, 0);

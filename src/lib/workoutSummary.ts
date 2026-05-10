@@ -93,11 +93,8 @@ function workoutVolumeAndStats(workoutId: string): { volume: number; sets: numbe
   for (const we of wes) {
     const ws = allSets.filter(s => s.workoutExerciseId === we.id);
     for (const s of ws) {
-      // Count any set with meaningful data
-      const meaningful =
-        (typeof s.weightKg === 'number' && s.weightKg > 0) ||
-        (typeof s.reps === 'number' && s.reps > 0);
-      if (!meaningful) continue;
+      // Only toggled/completed sets count.
+      if (s.isCompleted !== true) continue;
       sets += 1;
       reps += s.reps ?? 0;
       volume += workoutSetsVolume(s);
@@ -136,10 +133,7 @@ export function computeCelebrationData(workoutId: string): WorkoutCelebrationDat
   for (const we of wes) {
     const ex = exMap.get(we.exerciseId);
     const exName = ex?.name ?? 'Exercise';
-    const sets = getSetsForWorkoutExercise(we.id).filter(s =>
-      (typeof s.weightKg === 'number' && s.weightKg > 0) ||
-      (typeof s.reps === 'number' && s.reps > 0)
-    );
+    const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted === true);
     if (sets.length === 0) continue;
 
     let exVolume = 0;
@@ -181,7 +175,7 @@ export function computeCelebrationData(workoutId: string): WorkoutCelebrationDat
       const otherWes = allWes.filter(x => x.exerciseId === we.exerciseId && x.workoutId !== workout.id);
       let historyBest = 0;
       for (const ow of otherWes) {
-        const oss = allSets.filter(s => s.workoutExerciseId === ow.id);
+        const oss = allSets.filter(s => s.workoutExerciseId === ow.id && s.isCompleted === true);
         for (const s of oss) {
           if (s.weightKg && s.reps && s.weightKg > 0 && s.reps > 0) {
             const e = s.weightKg * (1 + s.reps / 30);
