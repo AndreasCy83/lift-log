@@ -85,7 +85,7 @@ export default function WorkoutsTab() {
           if (selectedCategory !== 'all' && ex.categoryId !== selectedCategory) continue;
           if (selectedExercise !== 'all' && ex.id !== selectedExercise) continue;
 
-          const weSets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && (s.isCompleted || hasMeaningfulData(s)));
+          const weSets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted === true);
           for (const s of weSets) {
             sets++;
             const r = s.reps ?? 0;
