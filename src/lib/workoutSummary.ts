@@ -175,7 +175,7 @@ export function computeCelebrationData(workoutId: string): WorkoutCelebrationDat
       const otherWes = allWes.filter(x => x.exerciseId === we.exerciseId && x.workoutId !== workout.id);
       let historyBest = 0;
       for (const ow of otherWes) {
-        const oss = allSets.filter(s => s.workoutExerciseId === ow.id);
+        const oss = allSets.filter(s => s.workoutExerciseId === ow.id && s.isCompleted === true);
         for (const s of oss) {
           if (s.weightKg && s.reps && s.weightKg > 0 && s.reps > 0) {
             const e = s.weightKg * (1 + s.reps / 30);
