@@ -436,7 +436,7 @@ export default function WorkoutLogPage() {
     forceUpdate(n => n + 1);
   };
 
-  const handleFinishWorkout = () => {
+  const performFinishWorkout = () => {
     // Save last-used rest timers per exercise
     workoutExercises.forEach(we => {
       if (we.defaultRestSeconds && we.defaultRestSeconds > 0) {
@@ -464,6 +464,24 @@ export default function WorkoutLogPage() {
     }
     // Open the celebration modal; navigation happens when user closes it.
     setCelebrationOpen(true);
+  };
+
+  const handleFinishWorkout = () => {
+    // Detect meaningful untoggled sets (drafts with empty weight/reps are ignored).
+    let hasPending = false;
+    for (const we of workoutExercises) {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      const sets = getSetsForWorkoutExercise(we.id);
+      if (sets.some(s => isMeaningfulPendingSet(s, ex?.setType))) {
+        hasPending = true;
+        break;
+      }
+    }
+    if (hasPending) {
+      setIncompleteWarnOpen(true);
+      return;
+    }
+    performFinishWorkout();
   };
 
   /** Intercept any in-app navigation away from this page while the timer is live. */
