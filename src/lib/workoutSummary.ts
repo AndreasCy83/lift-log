@@ -133,10 +133,7 @@ export function computeCelebrationData(workoutId: string): WorkoutCelebrationDat
   for (const we of wes) {
     const ex = exMap.get(we.exerciseId);
     const exName = ex?.name ?? 'Exercise';
-    const sets = getSetsForWorkoutExercise(we.id).filter(s =>
-      (typeof s.weightKg === 'number' && s.weightKg > 0) ||
-      (typeof s.reps === 'number' && s.reps > 0)
-    );
+    const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted === true);
     if (sets.length === 0) continue;
 
     let exVolume = 0;
