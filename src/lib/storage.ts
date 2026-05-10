@@ -364,9 +364,8 @@ export function getExerciseHistory(exerciseId: string) {
         .filter((s) => s.workoutExerciseId === we.id && !s.isWarmup)
         .sort((a, b) => a.setIndex - b.setIndex);
 
-      const completedSets = sessionSets.filter((s) => s.isCompleted && hasMeaningfulSetData(s));
-      const fallbackSets = sessionSets.filter(hasMeaningfulSetData);
-      const sets = completedSets.length > 0 ? completedSets : fallbackSets;
+      // Only toggled (completed) sets count anywhere in the app.
+      const sets = sessionSets.filter((s) => s.isCompleted === true);
 
       if (sets.length === 0) return null;
       return { date: w.date, sets, exerciseNotes: we.notes || '' };
