@@ -139,7 +139,7 @@ export default function BreakdownTab() {
     for (const w of filteredWorkouts) {
       const wes = allWEs.filter(we => we.workoutId === w.id);
       for (const we of wes) {
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && hasMeaningfulData(s));
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted === true);
         totalSets += sets.length;
         for (const s of sets) {
           totalReps += s.reps ?? 0;
@@ -168,7 +168,7 @@ export default function BreakdownTab() {
         const entry = map.get(key)!;
         entry.workoutIds.add(w.id);
 
-        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && hasMeaningfulData(s));
+        const sets = allSets.filter(s => s.workoutExerciseId === we.id && !s.isWarmup && s.isCompleted === true);
 
         if (metricType === 'sets') entry.value += sets.length;
         else if (metricType === 'reps') {
