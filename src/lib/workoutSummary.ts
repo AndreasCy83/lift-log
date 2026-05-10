@@ -93,11 +93,8 @@ function workoutVolumeAndStats(workoutId: string): { volume: number; sets: numbe
   for (const we of wes) {
     const ws = allSets.filter(s => s.workoutExerciseId === we.id);
     for (const s of ws) {
-      // Count any set with meaningful data
-      const meaningful =
-        (typeof s.weightKg === 'number' && s.weightKg > 0) ||
-        (typeof s.reps === 'number' && s.reps > 0);
-      if (!meaningful) continue;
+      // Only toggled/completed sets count.
+      if (s.isCompleted !== true) continue;
       sets += 1;
       reps += s.reps ?? 0;
       volume += workoutSetsVolume(s);
