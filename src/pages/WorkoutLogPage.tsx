@@ -631,6 +631,28 @@ export default function WorkoutLogPage() {
 
       <LeaveWorkoutDialog open={pendingNav !== null} onAction={handleLeaveAction} />
 
+      <AlertDialog open={incompleteWarnOpen} onOpenChange={setIncompleteWarnOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Incomplete Sets Remaining</AlertDialogTitle>
+            <AlertDialogDescription>
+              Some sets are not marked as completed yet. Do you want to finish the workout anyway or return and complete them?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIncompleteWarnOpen(false)}>
+              Complete Exercises
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { setIncompleteWarnOpen(false); performFinishWorkout(); }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Finish Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {showTimer && (
         <div className="mx-auto w-full max-w-lg px-4 pt-3">
           <RestTimer onClose={() => setShowTimer(false)} />
