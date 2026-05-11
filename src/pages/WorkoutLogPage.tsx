@@ -56,7 +56,7 @@ import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
 import { isMeaningfulPendingSet, getMissingRequiredFields } from '@/lib/setCompletion';
 
-import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
+import type { Workout, WorkoutSet, WorkoutExercise, SetTag, SetType } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
 import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
