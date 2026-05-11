@@ -55,7 +55,7 @@ import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRes
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
 import { isMeaningfulPendingSet, getMissingRequiredFields } from '@/lib/setCompletion';
-import { toast } from '@/hooks/use-toast';
+
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
