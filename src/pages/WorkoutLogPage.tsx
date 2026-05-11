@@ -414,7 +414,7 @@ export default function WorkoutLogPage() {
           missing.length === 1
             ? `Enter ${missing[0]} before completing this set`
             : `Enter ${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]} before completing this set`;
-        toast({ title: 'Missing required fields', description: msg, variant: 'destructive' });
+        toast.error(msg);
         // Try to focus the first missing field within this set's row.
         try {
           const placeholderMap: Record<string, string[]> = {
