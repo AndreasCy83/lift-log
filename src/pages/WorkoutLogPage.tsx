@@ -874,7 +874,7 @@ export default function WorkoutLogPage() {
                         <div></div>
                         <div className="flex justify-center">
                           <button
-                            onClick={() => handleToggleSetComplete(s)}
+                            onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
                             title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
