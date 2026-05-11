@@ -54,8 +54,9 @@ import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
-import { isMeaningfulPendingSet } from '@/lib/setCompletion';
-import type { Workout, WorkoutSet, WorkoutExercise, SetTag } from '@/types/fitness';
+import { isMeaningfulPendingSet, getMissingRequiredFields } from '@/lib/setCompletion';
+
+import type { Workout, WorkoutSet, WorkoutExercise, SetTag, SetType } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 import { formatHMS } from '@/lib/workoutSession';
 import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
@@ -401,9 +402,41 @@ export default function WorkoutLogPage() {
   };
 
   /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
-  const handleToggleSetComplete = (s: WorkoutSet) => {
+  const handleToggleSetComplete = (s: WorkoutSet, setType: SetType | undefined) => {
     const wasCompleted = !!s.isCompleted;
     const nextCompleted = !wasCompleted;
+
+    // Block toggling ON when required fields are missing (RPE never required).
+    if (!wasCompleted && nextCompleted) {
+      const missing = getMissingRequiredFields(s, setType);
+      if (missing.length > 0) {
+        const msg =
+          missing.length === 1
+            ? `Enter ${missing[0]} before completing this set`
+            : `Enter ${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]} before completing this set`;
+        toast.error(msg);
+        // Try to focus the first missing field within this set's row.
+        try {
+          const placeholderMap: Record<string, string[]> = {
+            weight: ['kg', 'lb', 'lbs'],
+            reps: ['Reps'],
+            distance: ['km'],
+            duration: ['Sec', 'Min'],
+          };
+          const wanted = placeholderMap[missing[0]] ?? [];
+          const row = document.querySelector<HTMLElement>(`[data-set-id="${s.id}"]`);
+          const inputs = (row ?? document).querySelectorAll<HTMLInputElement>('input');
+          for (const inp of Array.from(inputs)) {
+            if (wanted.some(p => (inp.placeholder || '').toLowerCase().includes(p.toLowerCase()))) {
+              inp.focus();
+              break;
+            }
+          }
+        } catch {}
+        return;
+      }
+    }
+
     const updated = { ...s, isCompleted: nextCompleted };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
@@ -809,7 +842,7 @@ export default function WorkoutLogPage() {
                     const restSec = s.restSeconds ?? we.defaultRestSeconds ?? null;
 
                     return (
-                    <div key={s.id}>
+                    <div key={s.id} data-set-id={s.id}>
                       <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
@@ -841,7 +874,7 @@ export default function WorkoutLogPage() {
                         <div></div>
                         <div className="flex justify-center">
                           <button
-                            onClick={() => handleToggleSetComplete(s)}
+                            onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
                             title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${

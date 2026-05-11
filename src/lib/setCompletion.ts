@@ -51,6 +51,53 @@ export function hasRequiredSetData(
   }
 }
 
+/**
+ * Strict required-data check for ALLOWING a set to be toggled ON.
+ * RPE is always optional and never required.
+ * Returns { ok, missing[] } where `missing` is a list of human field names.
+ */
+export function getMissingRequiredFields(
+  set: Pick<WorkoutSet, 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
+  setType: SetType | undefined,
+): string[] {
+  const w = n(set.weightKg);
+  const r = n(set.reps);
+  const d = n(set.distanceKm);
+  const t = n(set.durationMinutes);
+  const missing: string[] = [];
+  switch (setType) {
+    case 'WEIGHT_REPS':
+      if (w <= 0) missing.push('weight');
+      if (r <= 0) missing.push('reps');
+      break;
+    case 'WEIGHT_TIME':
+      if (w <= 0) missing.push('weight');
+      if (t <= 0) missing.push('duration');
+      break;
+    case 'WEIGHT_ONLY':
+      if (w <= 0) missing.push('weight');
+      break;
+    case 'REPS_DISTANCE':
+      if (r <= 0) missing.push('reps');
+      if (d <= 0) missing.push('distance');
+      break;
+    case 'REPS_TIME':
+      if (r <= 0) missing.push('reps');
+      if (t <= 0) missing.push('duration');
+      break;
+    default:
+      if (w <= 0 && r <= 0 && d <= 0 && t <= 0) missing.push('values');
+  }
+  return missing;
+}
+
+export function canCompleteSet(
+  set: Pick<WorkoutSet, 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
+  setType: SetType | undefined,
+): boolean {
+  return getMissingRequiredFields(set, setType).length === 0;
+}
+
 /** A draft row = not toggled AND completely blank. */
 export function isDraftSet(
   set: Pick<WorkoutSet, 'isCompleted' | 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
