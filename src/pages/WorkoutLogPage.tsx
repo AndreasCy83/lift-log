@@ -402,9 +402,41 @@ export default function WorkoutLogPage() {
   };
 
   /** Explicit toggle handler for set completion check. Only starts rest timer on incomplete -> complete transition, when setting is enabled. */
-  const handleToggleSetComplete = (s: WorkoutSet) => {
+  const handleToggleSetComplete = (s: WorkoutSet, setType: SetType | undefined) => {
     const wasCompleted = !!s.isCompleted;
     const nextCompleted = !wasCompleted;
+
+    // Block toggling ON when required fields are missing (RPE never required).
+    if (!wasCompleted && nextCompleted) {
+      const missing = getMissingRequiredFields(s, setType);
+      if (missing.length > 0) {
+        const msg =
+          missing.length === 1
+            ? `Enter ${missing[0]} before completing this set`
+            : `Enter ${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]} before completing this set`;
+        toast({ title: 'Missing required fields', description: msg, variant: 'destructive' });
+        // Try to focus the first missing field within this set's row.
+        try {
+          const placeholderMap: Record<string, string[]> = {
+            weight: ['kg', 'lb', 'lbs'],
+            reps: ['Reps'],
+            distance: ['km'],
+            duration: ['Sec', 'Min'],
+          };
+          const wanted = placeholderMap[missing[0]] ?? [];
+          const row = document.querySelector<HTMLElement>(`[data-set-id="${s.id}"]`);
+          const inputs = (row ?? document).querySelectorAll<HTMLInputElement>('input');
+          for (const inp of Array.from(inputs)) {
+            if (wanted.some(p => (inp.placeholder || '').toLowerCase().includes(p.toLowerCase()))) {
+              inp.focus();
+              break;
+            }
+          }
+        } catch {}
+        return;
+      }
+    }
+
     const updated = { ...s, isCompleted: nextCompleted };
     updateWorkoutSet(updated);
     forceUpdate(n => n + 1);
