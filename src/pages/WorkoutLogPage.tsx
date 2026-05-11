@@ -842,7 +842,7 @@ export default function WorkoutLogPage() {
                     const restSec = s.restSeconds ?? we.defaultRestSeconds ?? null;
 
                     return (
-                    <div key={s.id}>
+                    <div key={s.id} data-set-id={s.id}>
                       <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}>
                         <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
                         <div className="flex justify-center">
