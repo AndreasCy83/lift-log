@@ -1003,7 +1003,7 @@ export default function WorkoutLogPage() {
 
         {/* Dialogs */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
-          <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
+          <DialogContent className="flex flex-col p-4 sm:p-6 !max-w-none sm:!max-w-md !w-screen sm:!w-full !h-[100dvh] sm:!h-auto !max-h-[100dvh] sm:!max-h-[85vh] !left-0 !top-0 !translate-x-0 !translate-y-0 sm:!left-[50%] sm:!top-[50%] sm:!translate-x-[-50%] sm:!translate-y-[-50%] !rounded-none sm:!rounded-lg pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
             <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
             <ExerciseSelectionScreen
               onSelect={handleAddExercises}
