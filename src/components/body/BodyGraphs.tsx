@@ -110,58 +110,63 @@ export default function BodyGraphs({ entries, onBack }: Props) {
   ];
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
+    <div className="flex flex-col h-[100dvh] bg-background">
+      <div
+        className="sticky top-0 z-20 bg-background flex items-center gap-3 px-4 py-3 border-b border-border"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+      >
         <button onClick={onBack} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
         <h2 className="font-display text-lg font-semibold">Graphs</h2>
       </div>
 
-      {/* Period pills */}
-      <div className="flex gap-1.5 px-4 py-3 overflow-x-auto no-scrollbar">
-        {PERIODS.map(p => (
-          <button
-            key={p.label}
-            onClick={() => setPeriod(p.days)}
-            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors flex-shrink-0 ${period === p.days ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        {/* Period pills */}
+        <div className="flex gap-1.5 px-4 py-3 overflow-x-auto no-scrollbar">
+          {PERIODS.map(p => (
+            <button
+              key={p.label}
+              onClick={() => setPeriod(p.days)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors flex-shrink-0 ${period === p.days ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-6">
-        <Chart data={weightData} color="hsl(145, 80%, 45%)" title={`Weight (${unitLabel})`} unit={unitLabel} />
-        <Chart data={bfData} color="hsl(38, 92%, 50%)" title="Body Fat (%)" unit="%" />
-        <Chart data={mmData} color="hsl(190, 80%, 50%)" title="Muscle Mass (%)" unit="%" />
+        <div className="px-4" style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}>
+          <Chart data={weightData} color="hsl(145, 80%, 45%)" title={`Weight (${unitLabel})`} unit={unitLabel} />
+          <Chart data={bfData} color="hsl(38, 92%, 50%)" title="Body Fat (%)" unit="%" />
+          <Chart data={mmData} color="hsl(190, 80%, 50%)" title="Muscle Mass (%)" unit="%" />
 
-        {historicMeasurementKeys.length > 0 && (
-          <div className="flex items-center justify-between mb-3 mt-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">More Measurements</p>
-            <div className="inline-flex rounded-full border border-border overflow-hidden">
-              {(['cm', 'in'] as const).map(u => (
-                <button
-                  key={u}
-                  onClick={() => setMeasurementUnit(u)}
-                  className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${
-                    measurementUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
-                  }`}
-                >
-                  {u}
-                </button>
-              ))}
+          {historicMeasurementKeys.length > 0 && (
+            <div className="flex items-center justify-between mb-3 mt-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">More Measurements</p>
+              <div className="inline-flex rounded-full border border-border overflow-hidden">
+                {(['cm', 'in'] as const).map(u => (
+                  <button
+                    key={u}
+                    onClick={() => setMeasurementUnit(u)}
+                    className={`px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                      measurementUnit === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {u}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {measurementSeries.map((s, i) => (
-          <Chart
-            key={s.key}
-            data={s.data}
-            color={MEASUREMENT_COLORS[i % MEASUREMENT_COLORS.length]}
-            title={`${measurementLabel(s.key)} (${measurementUnit})`}
-            unit={measurementUnit}
-          />
-        ))}
+          {measurementSeries.map((s, i) => (
+            <Chart
+              key={s.key}
+              data={s.data}
+              color={MEASUREMENT_COLORS[i % MEASUREMENT_COLORS.length]}
+              title={`${measurementLabel(s.key)} (${measurementUnit})`}
+              unit={measurementUnit}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
