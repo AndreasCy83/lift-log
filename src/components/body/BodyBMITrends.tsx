@@ -90,13 +90,16 @@ export default function BodyBMITrends({ entries, onBack }: Props) {
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
+    <div className="flex flex-col h-[100dvh] bg-background">
+      <div
+        className="sticky top-0 z-20 bg-background flex items-center gap-3 px-4 py-3 border-b border-border"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+      >
         <button onClick={onBack} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
         <h2 className="font-display text-lg font-semibold">BMI & Trends</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-4" style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}>
         {/* BMI */}
         <div className="gym-card text-center">
           {currentBMI && bmiCat ? (

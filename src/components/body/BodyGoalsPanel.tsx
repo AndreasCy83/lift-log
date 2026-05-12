@@ -125,13 +125,13 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+    <div className="flex flex-col h-[100dvh] bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <div className="sticky top-0 z-20 bg-background flex items-center gap-3 px-4 py-3 border-b border-border">
         <button onClick={onBack} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
         <h2 className="font-display text-lg font-semibold">Body Goals</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 200px)' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-6" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 200px)' }}>
         <div className="gym-card space-y-3">
           <label className="text-sm font-medium">Target Weight ({unitLabel})</label>
           <Input
