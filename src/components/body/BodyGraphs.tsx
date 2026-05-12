@@ -121,16 +121,18 @@ export default function BodyGraphs({ entries, onBack }: Props) {
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         {/* Period pills */}
-        <div className="flex gap-1.5 px-4 py-3 overflow-x-auto no-scrollbar">
-          {PERIODS.map(p => (
-            <button
-              key={p.label}
-              onClick={() => setPeriod(p.days)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors flex-shrink-0 ${period === p.days ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="overflow-x-auto no-scrollbar">
+          <div className="flex w-max gap-1.5 px-4 py-3 pr-8">
+            {PERIODS.map(p => (
+              <button
+                key={p.label}
+                onClick={() => setPeriod(p.days)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors flex-shrink-0 ${period === p.days ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="px-4" style={{ paddingBottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}>
