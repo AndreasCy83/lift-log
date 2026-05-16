@@ -73,15 +73,14 @@ function bandFor(score: number): FatigueBand {
 }
 
 // Project hours forward until decayed score drops below "Ready now" (2.5).
-function estimateRetrainHours(currentScore: number, currentSetsByAgeHours: { age: number; raw: number }[]): number {
+function estimateRetrainHours(currentScore: number, contribs: { raw: number; ageHours: number }[], weeklyMod: number): number {
   if (currentScore < 2.5) return 0;
-  // Try each 6h step up to 120h.
   for (let h = 6; h <= 120; h += 6) {
     let projected = 0;
-    for (const s of currentSetsByAgeHours) {
-      projected += s.raw * recencyDecay(s.age + h);
+    for (const s of contribs) {
+      projected += s.raw * recencyDecay(s.ageHours + h);
     }
-    if (projected < 2.5) return h;
+    if (projected * weeklyMod < 2.5) return h;
   }
   return 120;
 }
@@ -145,8 +144,9 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
   const out: MuscleFatigue[] = MUSCLE_GROUPS.map(m => {
     const contribs = rawByMuscle[m];
     const decayed = contribs.reduce((sum, c) => sum + c.raw * recencyDecay(c.ageHours), 0);
-    const adjusted = decayed * weeklyModifier(weeklyCount[m]);
-    const hours = estimateRetrainHours(adjusted, contribs);
+    const wMod = weeklyModifier(weeklyCount[m]);
+    const adjusted = decayed * wMod;
+    const hours = estimateRetrainHours(adjusted, contribs, wMod);
     const pct = Math.min(100, Math.round((adjusted / 10) * 100));
     return {
       muscle: m,
