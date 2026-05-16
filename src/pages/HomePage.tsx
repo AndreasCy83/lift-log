@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
+import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -239,8 +240,11 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Recovery / Fatigue */}
+        <RecoveryFatigueCard refreshKey={refreshKey} />
+
         {/* Selected day summary */}
-        <div className="gym-card">
+        <div className="gym-card mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-display text-sm font-semibold">
               {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
