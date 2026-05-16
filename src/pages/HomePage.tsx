@@ -240,8 +240,11 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Recovery / Fatigue */}
+        <RecoveryFatigueCard refreshKey={refreshKey} />
+
         {/* Selected day summary */}
-        <div className="gym-card">
+        <div className="gym-card mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-display text-sm font-semibold">
               {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
