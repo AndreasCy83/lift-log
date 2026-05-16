@@ -18,8 +18,12 @@ export function isCountedSet(set: Pick<WorkoutSet, 'isCompleted'>): boolean {
   return set.isCompleted === true;
 }
 
-function n(v: number | null | undefined): number {
-  return typeof v === 'number' && v > 0 ? v : 0;
+/**
+ * Is a numeric field "present"? 0 counts as a real entered value;
+ * only null/undefined/NaN are treated as missing.
+ */
+function present(v: number | null | undefined): boolean {
+  return typeof v === 'number' && Number.isFinite(v);
 }
 
 /**
@@ -30,63 +34,62 @@ export function hasRequiredSetData(
   set: Pick<WorkoutSet, 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
   setType: SetType | undefined,
 ): boolean {
-  const w = n(set.weightKg);
-  const r = n(set.reps);
-  const d = n(set.distanceKm);
-  const t = n(set.durationMinutes);
+  const w = present(set.weightKg);
+  const r = present(set.reps);
+  const d = present(set.distanceKm);
+  const t = present(set.durationMinutes);
   switch (setType) {
     case 'WEIGHT_REPS':
-      return w > 0 || r > 0;
+      return w || r;
     case 'WEIGHT_TIME':
-      return w > 0 || t > 0;
+      return w || t;
     case 'WEIGHT_ONLY':
-      return w > 0;
+      return w;
     case 'REPS_DISTANCE':
-      return r > 0 || d > 0;
+      return r || d;
     case 'REPS_TIME':
-      return r > 0 || t > 0;
+      return r || t;
     default:
-      // Fallback: any positive value counts as "has data".
-      return w > 0 || r > 0 || d > 0 || t > 0;
+      return w || r || d || t;
   }
 }
 
 /**
  * Strict required-data check for ALLOWING a set to be toggled ON.
  * RPE is always optional and never required.
- * Returns { ok, missing[] } where `missing` is a list of human field names.
+ * 0 is a valid entered value; only empty/null/undefined/NaN is missing.
  */
 export function getMissingRequiredFields(
   set: Pick<WorkoutSet, 'weightKg' | 'reps' | 'distanceKm' | 'durationMinutes'>,
   setType: SetType | undefined,
 ): string[] {
-  const w = n(set.weightKg);
-  const r = n(set.reps);
-  const d = n(set.distanceKm);
-  const t = n(set.durationMinutes);
+  const w = present(set.weightKg);
+  const r = present(set.reps);
+  const d = present(set.distanceKm);
+  const t = present(set.durationMinutes);
   const missing: string[] = [];
   switch (setType) {
     case 'WEIGHT_REPS':
-      if (w <= 0) missing.push('weight');
-      if (r <= 0) missing.push('reps');
+      if (!w) missing.push('weight');
+      if (!r) missing.push('reps');
       break;
     case 'WEIGHT_TIME':
-      if (w <= 0) missing.push('weight');
-      if (t <= 0) missing.push('duration');
+      if (!w) missing.push('weight');
+      if (!t) missing.push('duration');
       break;
     case 'WEIGHT_ONLY':
-      if (w <= 0) missing.push('weight');
+      if (!w) missing.push('weight');
       break;
     case 'REPS_DISTANCE':
-      if (r <= 0) missing.push('reps');
-      if (d <= 0) missing.push('distance');
+      if (!r) missing.push('reps');
+      if (!d) missing.push('distance');
       break;
     case 'REPS_TIME':
-      if (r <= 0) missing.push('reps');
-      if (t <= 0) missing.push('duration');
+      if (!r) missing.push('reps');
+      if (!t) missing.push('duration');
       break;
     default:
-      if (w <= 0 && r <= 0 && d <= 0 && t <= 0) missing.push('values');
+      if (!w && !r && !d && !t) missing.push('values');
   }
   return missing;
 }
