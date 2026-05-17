@@ -74,7 +74,7 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           <Activity className="h-3.5 w-3.5 text-primary" />
           <h3 className="font-display text-sm font-semibold">Recovery</h3>
         </div>
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
           {expanded ? 'By muscle' : hasNeedsRest ? 'Needs rest' : 'All ready'}
         </span>
       </div>
@@ -93,11 +93,11 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
       <div
         className="overflow-hidden transition-all duration-300 ease-out"
         style={{
-          maxHeight: expanded ? `${ready.length * 32 + 8}px` : '0px',
+          maxHeight: expanded ? `${ready.length * 28 + 8}px` : '0px',
           opacity: expanded ? 1 : 0,
         }}
       >
-        <div className={`divide-y divide-border/40 ${hasNeedsRest ? 'border-t border-border/40' : ''}`}>
+        <div className={`divide-y divide-border/40 ${hasNeedsRest ? 'border-t border-border/40 mt-0.5 pt-0.5' : ''}`}>
           {ready.map((m, i) => <Row key={m.muscle} m={m} i={i} mounted={mounted && expanded} />)}
         </div>
       </div>
@@ -105,9 +105,9 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
       {ready.length > 0 && (
         <button
           onClick={() => setExpanded(e => !e)}
-          className="mt-1 flex w-full items-center justify-center gap-1 rounded-md py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="mt-0.5 flex w-full items-center justify-center gap-1 py-0 text-[10px] font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
         >
-          {expanded ? 'Show less' : 'Show all'}
+          {expanded ? 'Show less' : `Show all (+${ready.length})`}
           <ChevronDown
             className={`h-3 w-3 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}
           />
