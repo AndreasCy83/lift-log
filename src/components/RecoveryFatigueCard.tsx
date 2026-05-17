@@ -22,22 +22,29 @@ function shortRetrain(label: string): string {
   return label.replace(/^In\s+~?/i, '');
 }
 
+const BAND_SHORT: Record<FatigueBand, string> = {
+  'Low': 'LOW',
+  'Moderate': 'MOD',
+  'High': 'HIGH',
+  'Very High': 'V HIGH',
+};
+
 function Row({ m, i, mounted }: { m: MuscleFatigue; i: number; mounted: boolean }) {
   const style = BAND_STYLES[m.band];
   const width = mounted ? `${Math.max(4, m.pct)}%` : '0%';
   return (
-    <div className="flex items-center gap-2 py-1" style={{ transitionDelay: `${i * 25}ms` }}>
+    <div className="flex items-center gap-2 py-[3px]" style={{ transitionDelay: `${i * 25}ms` }}>
       <span className="w-14 shrink-0 text-[11px] font-semibold text-foreground truncate">{m.muscle}</span>
-      <span className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-semibold uppercase tracking-wide ${style.pill}`}>
-        {m.band}
+      <span className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-semibold uppercase tracking-wide tabular-nums ${style.pill}`}>
+        {BAND_SHORT[m.band]}
       </span>
-      <div className="flex-1 h-[2px] overflow-hidden rounded-full bg-background/70">
+      <div className="flex-1 h-[2px] overflow-hidden rounded-full bg-background/70 ml-0.5">
         <div
           className={`h-full rounded-full ${style.bar} ${style.glow}`}
           style={{ width, transition: 'width 700ms cubic-bezier(0.22,1,0.36,1)' }}
         />
       </div>
-      <span className="w-12 shrink-0 text-right text-[10px] tabular-nums text-muted-foreground">
+      <span className="w-10 shrink-0 text-right text-[10px] tabular-nums text-muted-foreground/80">
         {shortRetrain(m.retrainLabel)}
       </span>
     </div>
