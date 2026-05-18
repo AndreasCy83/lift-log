@@ -14,12 +14,8 @@ interface Props {
 }
 
 function shortRetrain(label: string): string {
-  if (/ready/i.test(label)) return 'Ready';
-  if (/tomorrow/i.test(label)) return 'Tomorrow';
-  // "In ~12h" -> "12h", "In ~48h" -> "48h", "In ~3d" -> "3d", "In 4+ days" -> "4d+"
-  const m = label.match(/(\d+)\s*([hd])/i);
-  if (m) return `${m[1]}${m[2].toLowerCase()}${/4\+/.test(label) ? '+' : ''}`;
-  return label.replace(/^In\s+~?/i, '');
+  // Labels from computeMuscleFatigue are already concise (Ready / 12h / Tomorrow / 2d).
+  return label;
 }
 
 const BAND_SHORT: Record<FatigueBand, string> = {
