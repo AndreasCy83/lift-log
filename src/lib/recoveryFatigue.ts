@@ -75,23 +75,22 @@ function bandFor(score: number): FatigueBand {
 // Project hours forward until decayed score drops below "Ready now" (2.5).
 function estimateRetrainHours(currentScore: number, contribs: { raw: number; ageHours: number }[], weeklyMod: number): number {
   if (currentScore < 2.5) return 0;
-  for (let h = 6; h <= 120; h += 6) {
+  for (let h = 1; h <= 168; h += 1) {
     let projected = 0;
     for (const s of contribs) {
       projected += s.raw * recencyDecay(s.ageHours + h);
     }
     if (projected * weeklyMod < 2.5) return h;
   }
-  return 120;
+  return 168;
 }
 
 function retrainLabel(hours: number): string {
-  if (hours <= 0) return 'Ready now';
-  if (hours <= 12) return 'In ~12h';
-  if (hours <= 24) return 'Tomorrow';
-  if (hours <= 48) return 'In ~48h';
-  if (hours <= 72) return 'In ~3d';
-  return 'In 4+ days';
+  if (hours <= 0) return 'Ready';
+  if (hours < 24) return `${Math.max(1, Math.round(hours))}h`;
+  if (hours <= 36) return 'Tomorrow';
+  const days = Math.round(hours / 24);
+  return `${days}d`;
 }
 
 export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
