@@ -75,14 +75,14 @@ function bandFor(score: number): FatigueBand {
 // Project hours forward until decayed score drops below "Ready now" (2.5).
 function estimateRetrainHours(currentScore: number, contribs: { raw: number; ageHours: number }[], weeklyMod: number): number {
   if (currentScore < 2.5) return 0;
-  for (let h = 6; h <= 120; h += 6) {
+  for (let h = 1; h <= 168; h += 1) {
     let projected = 0;
     for (const s of contribs) {
       projected += s.raw * recencyDecay(s.ageHours + h);
     }
     if (projected * weeklyMod < 2.5) return h;
   }
-  return 120;
+  return 168;
 }
 
 function retrainLabel(hours: number): string {
