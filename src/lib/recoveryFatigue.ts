@@ -109,9 +109,19 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
   const nowMs = now.getTime();
 
   for (const w of workouts) {
-    // Establish a session timestamp.
-    const tsStr = w.endTime || w.startTime || `${w.date}T12:00:00`;
-    const ts = new Date(tsStr).getTime();
+    // Establish session timestamp. `w.date` is the source of truth for when
+    // the workout happened (user-editable via move). Prefer startTime/endTime
+    // only when they fall on the same calendar date — otherwise the stored
+    // timestamps are stale from before a move and would freeze the age.
+    let ts = new Date(`${w.date}T12:00:00`).getTime();
+    const candidate = w.endTime || w.startTime;
+    if (candidate) {
+      const cTs = new Date(candidate).getTime();
+      if (!Number.isNaN(cTs)) {
+        const sameDay = new Date(cTs).toISOString().slice(0, 10) === w.date;
+        if (sameDay) ts = cTs;
+      }
+    }
     if (Number.isNaN(ts)) continue;
     const ageHours = (nowMs - ts) / (1000 * 60 * 60);
     if (ageHours < 0) continue;
