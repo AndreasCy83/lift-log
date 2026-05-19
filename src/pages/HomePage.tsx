@@ -29,6 +29,7 @@ export default function HomePage() {
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const [moveDialogOpen, setMoveDialogOpen] = useState(false);
   const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
+  const [calendarExpanded, setCalendarExpanded] = useState(false);
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
