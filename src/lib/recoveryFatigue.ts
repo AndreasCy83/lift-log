@@ -171,7 +171,7 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
     for (const we of wexs) {
       const ex = exById.get(we.exerciseId);
       if (!ex) continue;
-      const muscleMap = CATEGORY_TO_MUSCLES[ex.categoryId];
+      const muscleMap = resolveMuscles(ex.name, ex.categoryId);
       if (!muscleMap) continue;
       const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted === true && !s.isWarmup);
       for (const s of sets) {
