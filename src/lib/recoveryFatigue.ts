@@ -9,17 +9,57 @@ export const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders
 // Map category IDs to muscle groups with a share weight.
 // Each category contributes to a primary muscle (1.0) and optional secondaries.
 const CATEGORY_TO_MUSCLES: Record<string, Partial<Record<MuscleGroup, number>>> = {
-  'cat-chest':     { Chest: 1.0, Shoulders: 0.5, Arms: 0.25 },
-  'cat-back':      { Back: 1.0, Arms: 0.5 },
-  'cat-legs':      { Legs: 1.0, Core: 0.25 },
-  'cat-shoulders': { Shoulders: 1.0, Arms: 0.25 },
-  'cat-biceps':    { Arms: 1.0, Back: 0.25 },
-  'cat-triceps':   { Arms: 1.0, Chest: 0.25 },
+  'cat-chest':     { Chest: 1.0, Shoulders: 0.25, Arms: 0.10 },
+  'cat-back':      { Back: 1.0, Arms: 0.25 },
+  'cat-legs':      { Legs: 1.0, Core: 0.10 },
+  'cat-shoulders': { Shoulders: 1.0, Arms: 0.10 },
+  'cat-biceps':    { Arms: 1.0, Back: 0.10 },
+  'cat-triceps':   { Arms: 1.0, Chest: 0.10 },
   'cat-core':      { Core: 1.0 },
   'cat-abs':       { Core: 1.0 },
-  'cat-olympic':   { Legs: 1.0, Back: 0.5, Shoulders: 0.5, Core: 0.25 },
-  'cat-cardio':    { Legs: 0.5, Core: 0.25 },
+  'cat-olympic':   { Legs: 1.0, Back: 0.33, Shoulders: 0.25, Core: 0.10 },
+  'cat-cardio':    { Legs: 0.5, Core: 0.10 },
 };
+
+// Isolation exercises: name-keyword match → muscle-only mapping (overrides category spillover).
+// Keys are lowercase substrings checked against exercise.name.
+const ISOLATION_OVERRIDES: { match: string; muscles: Partial<Record<MuscleGroup, number>> }[] = [
+  { match: 'leg curl',       muscles: { Legs: 1.0 } },
+  { match: 'leg extension',  muscles: { Legs: 1.0 } },
+  { match: 'calf raise',     muscles: { Legs: 1.0 } },
+  { match: 'calf press',     muscles: { Legs: 1.0 } },
+  { match: 'lateral raise',  muscles: { Shoulders: 1.0 } },
+  { match: 'side raise',     muscles: { Shoulders: 1.0 } },
+  { match: 'rear delt',      muscles: { Shoulders: 1.0 } },
+  { match: 'rear cable',     muscles: { Shoulders: 1.0 } },
+  { match: 'reverse fly',    muscles: { Shoulders: 1.0 } },
+  { match: 'face pull',      muscles: { Shoulders: 1.0, Back: 0.33 } },
+  { match: 'shrug',          muscles: { Back: 1.0 } },
+  { match: 'bicep curl',     muscles: { Arms: 1.0 } },
+  { match: 'preacher curl',  muscles: { Arms: 1.0 } },
+  { match: 'hammer curl',    muscles: { Arms: 1.0 } },
+  { match: 'tricep',         muscles: { Arms: 1.0 } },
+  { match: 'pushdown',       muscles: { Arms: 1.0 } },
+  { match: 'skull crusher',  muscles: { Arms: 1.0 } },
+  { match: 'ab ',            muscles: { Core: 1.0 } },
+  { match: 'crunch',         muscles: { Core: 1.0 } },
+  { match: 'plank',          muscles: { Core: 1.0 } },
+  { match: 'sit up',         muscles: { Core: 1.0 } },
+  { match: 'sit-up',         muscles: { Core: 1.0 } },
+  { match: 'leg raise',      muscles: { Core: 1.0 } },
+  { match: 'prayer',         muscles: { Core: 1.0 } },
+  { match: 'pec deck',       muscles: { Chest: 1.0 } },
+  { match: 'chest fly',      muscles: { Chest: 1.0 } },
+  { match: 'cable fly',      muscles: { Chest: 1.0 } },
+];
+
+function resolveMuscles(exerciseName: string, categoryId: string): Partial<Record<MuscleGroup, number>> | null {
+  const n = (exerciseName || '').toLowerCase();
+  for (const o of ISOLATION_OVERRIDES) {
+    if (n.includes(o.match)) return o.muscles;
+  }
+  return CATEGORY_TO_MUSCLES[categoryId] ?? null;
+}
 
 export type FatigueBand = 'Low' | 'Moderate' | 'High' | 'Very High';
 
@@ -131,7 +171,7 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
     for (const we of wexs) {
       const ex = exById.get(we.exerciseId);
       if (!ex) continue;
-      const muscleMap = CATEGORY_TO_MUSCLES[ex.categoryId];
+      const muscleMap = resolveMuscles(ex.name, ex.categoryId);
       if (!muscleMap) continue;
       const sets = getSetsForWorkoutExercise(we.id).filter(s => s.isCompleted === true && !s.isWarmup);
       for (const s of sets) {
