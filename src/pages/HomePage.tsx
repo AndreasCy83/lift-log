@@ -51,15 +51,23 @@ export default function HomePage() {
   }, [workouts, allExercises]);
 
   const days = useMemo(() => {
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
-    return eachDayOfInterval({ start, end });
-  }, [currentMonth]);
+    if (calendarExpanded) {
+      const start = startOfMonth(currentMonth);
+      const end = endOfMonth(currentMonth);
+      return eachDayOfInterval({ start, end });
+    }
+    // Collapsed: 3 weeks = current week + previous 2 (Monday-start)
+    const today = new Date();
+    const endWeek = endOfWeek(today, { weekStartsOn: 1 });
+    const startWeek = startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 });
+    return eachDayOfInterval({ start: startWeek, end: endWeek });
+  }, [currentMonth, calendarExpanded]);
 
   const startDayOffset = useMemo(() => {
+    if (!calendarExpanded) return 0;
     const d = getDay(startOfMonth(currentMonth));
     return d === 0 ? 6 : d - 1; // Monday start
-  }, [currentMonth]);
+  }, [currentMonth, calendarExpanded]);
 
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const selectedWorkout = workouts.find(w => w.date === selectedDateStr);
