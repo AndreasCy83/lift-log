@@ -192,15 +192,29 @@ export default function HomePage() {
       </header>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4">
-        {/* Month navigation */}
+        {/* Month / range navigation */}
         <div className="mb-4 flex items-center justify-between">
-          <button onClick={() => setCurrentMonth(m => subMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <h2 className="font-display text-lg font-semibold">{format(currentMonth, 'MMMM yyyy')}</h2>
-          <button onClick={() => setCurrentMonth(m => addMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
-            <ChevronRight className="h-5 w-5" />
-          </button>
+          {calendarExpanded ? (
+            <button onClick={() => setCurrentMonth(m => subMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          ) : <div className="w-9" />}
+          <h2 className="font-display text-lg font-semibold">
+            {calendarExpanded
+              ? format(currentMonth, 'MMMM yyyy')
+              : (() => {
+                  const first = days[0];
+                  const last = days[days.length - 1];
+                  return isSameMonth(first, last)
+                    ? format(last, 'MMMM yyyy')
+                    : `${format(first, 'MMM')} – ${format(last, 'MMM yyyy')}`;
+                })()}
+          </h2>
+          {calendarExpanded ? (
+            <button onClick={() => setCurrentMonth(m => addMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          ) : <div className="w-9" />}
         </div>
 
         {/* Calendar */}
@@ -247,6 +261,14 @@ export default function HomePage() {
               );
             })}
           </div>
+
+          <button
+            onClick={() => setCalendarExpanded(e => !e)}
+            className="mt-2 flex w-full items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            {calendarExpanded ? 'Show 3 weeks' : 'Show full month'}
+            <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
+          </button>
         </div>
 
         {/* Recovery / Fatigue */}
