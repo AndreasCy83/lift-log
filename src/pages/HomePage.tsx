@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus, MoreVertical, Trash2 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday } from 'date-fns';
+import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2 } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { startSession, formatHMS } from '@/lib/workoutSession';
@@ -29,6 +29,7 @@ export default function HomePage() {
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const [moveDialogOpen, setMoveDialogOpen] = useState(false);
   const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
+  const [calendarExpanded, setCalendarExpanded] = useState(false);
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
@@ -50,15 +51,23 @@ export default function HomePage() {
   }, [workouts, allExercises]);
 
   const days = useMemo(() => {
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
-    return eachDayOfInterval({ start, end });
-  }, [currentMonth]);
+    if (calendarExpanded) {
+      const start = startOfMonth(currentMonth);
+      const end = endOfMonth(currentMonth);
+      return eachDayOfInterval({ start, end });
+    }
+    // Collapsed: 3 weeks = current week + previous 2 (Monday-start)
+    const today = new Date();
+    const endWeek = endOfWeek(today, { weekStartsOn: 1 });
+    const startWeek = startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 });
+    return eachDayOfInterval({ start: startWeek, end: endWeek });
+  }, [currentMonth, calendarExpanded]);
 
   const startDayOffset = useMemo(() => {
+    if (!calendarExpanded) return 0;
     const d = getDay(startOfMonth(currentMonth));
     return d === 0 ? 6 : d - 1; // Monday start
-  }, [currentMonth]);
+  }, [currentMonth, calendarExpanded]);
 
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const selectedWorkout = workouts.find(w => w.date === selectedDateStr);
@@ -183,15 +192,29 @@ export default function HomePage() {
       </header>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4">
-        {/* Month navigation */}
+        {/* Month / range navigation */}
         <div className="mb-4 flex items-center justify-between">
-          <button onClick={() => setCurrentMonth(m => subMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <h2 className="font-display text-lg font-semibold">{format(currentMonth, 'MMMM yyyy')}</h2>
-          <button onClick={() => setCurrentMonth(m => addMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
-            <ChevronRight className="h-5 w-5" />
-          </button>
+          {calendarExpanded ? (
+            <button onClick={() => setCurrentMonth(m => subMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          ) : <div className="w-9" />}
+          <h2 className="font-display text-lg font-semibold">
+            {calendarExpanded
+              ? format(currentMonth, 'MMMM yyyy')
+              : (() => {
+                  const first = days[0];
+                  const last = days[days.length - 1];
+                  return isSameMonth(first, last)
+                    ? format(last, 'MMMM yyyy')
+                    : `${format(first, 'MMM')} – ${format(last, 'MMM yyyy')}`;
+                })()}
+          </h2>
+          {calendarExpanded ? (
+            <button onClick={() => setCurrentMonth(m => addMonths(m, 1))} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          ) : <div className="w-9" />}
         </div>
 
         {/* Calendar */}
@@ -238,6 +261,14 @@ export default function HomePage() {
               );
             })}
           </div>
+
+          <button
+            onClick={() => setCalendarExpanded(e => !e)}
+            className="mt-2 flex w-full items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            {calendarExpanded ? 'Show 3 weeks' : 'Show full month'}
+            <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
+          </button>
         </div>
 
         {/* Recovery / Fatigue */}
