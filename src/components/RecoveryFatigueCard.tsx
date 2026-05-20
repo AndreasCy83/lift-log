@@ -27,20 +27,21 @@ const BAND_SHORT: Record<FatigueBand, string> = {
 
 function Row({ m, i, mounted }: { m: MuscleFatigue; i: number; mounted: boolean }) {
   const style = BAND_STYLES[m.band];
-  const width = mounted ? `${Math.max(4, m.pct)}%` : '0%';
+  const width = mounted ? `${Math.max(0, Math.min(100, m.pct))}%` : '0%';
+  const isReady = m.remainingHours <= 0;
   return (
     <div className="flex items-center gap-2 py-[3px]" style={{ transitionDelay: `${i * 25}ms` }}>
       <span className="w-14 shrink-0 text-[11px] font-semibold text-foreground truncate">{m.muscle}</span>
-      <span className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-semibold uppercase tracking-wide tabular-nums ${style.pill}`}>
+      <span className={`shrink-0 rounded-full px-1 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-70 ${style.pill}`}>
         {BAND_SHORT[m.band]}
       </span>
-      <div className="flex-1 h-[2px] overflow-hidden rounded-full bg-background/70 ml-0.5">
+      <div className="flex-1 h-[3px] overflow-hidden rounded-full bg-background/70 ml-0.5">
         <div
-          className={`h-full rounded-full ${style.bar} ${style.glow}`}
-          style={{ width, transition: 'width 700ms cubic-bezier(0.22,1,0.36,1)' }}
+          className={`h-full rounded-full ${isReady ? '' : `${style.bar} ${style.glow}`}`}
+          style={{ width: isReady ? '0%' : width, transition: 'width 700ms cubic-bezier(0.22,1,0.36,1)' }}
         />
       </div>
-      <span className="w-10 shrink-0 text-right text-[10px] tabular-nums text-muted-foreground/80">
+      <span className={`w-10 shrink-0 text-right text-[11px] font-semibold tabular-nums ${isReady ? 'text-primary' : 'text-foreground'}`}>
         {shortRetrain(m.retrainLabel)}
       </span>
     </div>

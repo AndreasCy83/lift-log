@@ -67,8 +67,10 @@ export interface MuscleFatigue {
   muscle: MuscleGroup;
   score: number;       // adjusted fatigue
   band: FatigueBand;
-  retrainLabel: string; // "Ready now" | "In ~12h" | etc.
-  pct: number;          // 0-100 for the bar
+  retrainLabel: string; // "Ready" | "12h" | "2d"
+  pct: number;          // 0-100: remaining recovery proportion (remaining/original)
+  remainingHours: number;
+  originalHours: number;
 }
 
 function effortMultiplier(rpe: number | null | undefined): number {
@@ -128,9 +130,7 @@ function estimateRetrainHours(currentScore: number, contribs: { raw: number; age
 function retrainLabel(hours: number): string {
   if (hours <= 0) return 'Ready';
   if (hours < 24) return `${Math.max(1, Math.round(hours))}h`;
-  if (hours <= 36) return 'Tomorrow';
-  const days = Math.round(hours / 24);
-  return `${days}d`;
+  return `${Math.max(1, Math.round(hours / 24))}d`;
 }
 
 export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
@@ -195,14 +195,22 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
     const decayed = contribs.reduce((sum, c) => sum + c.raw * recencyDecay(c.ageHours), 0);
     const wMod = weeklyModifier(weeklyCount[m]);
     const adjusted = decayed * wMod;
-    const hours = estimateRetrainHours(adjusted, contribs, wMod);
-    const pct = Math.min(100, Math.round((adjusted / 10) * 100));
+    const remainingHours = estimateRetrainHours(adjusted, contribs, wMod);
+    // "Original" total recovery window = remaining + time elapsed since most-recent contribution.
+    // This makes the bar shrink as real time passes after the workout.
+    const minAge = contribs.length ? Math.min(...contribs.map(c => c.ageHours)) : 0;
+    const originalHours = remainingHours + minAge;
+    const pct = originalHours > 0
+      ? Math.max(0, Math.min(100, Math.round((remainingHours / originalHours) * 100)))
+      : 0;
     return {
       muscle: m,
       score: adjusted,
       band: bandFor(adjusted),
-      retrainLabel: retrainLabel(hours),
+      retrainLabel: retrainLabel(remainingHours),
       pct,
+      remainingHours,
+      originalHours,
     };
   });
 
