@@ -10,6 +10,8 @@ import {
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
   reorderWorkoutExercises, markGoalAcknowledged
 } from '@/lib/storage';
+import { getRoutines } from '@/lib/storage';
+import { appendRoutineToWorkout } from '@/lib/routineRunner';
 import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
 import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
