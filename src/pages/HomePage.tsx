@@ -345,8 +345,10 @@ export default function HomePage() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No workout logged</p>
-          )}
-        </div>
+        )}
+        <div className="h-6" aria-hidden="true" />
+      </div>
+
         {/* Muscle Group Breakdown Pie Chart */}
         {categoryBreakdown.length > 0 && (
           <div className="gym-card mt-4">
