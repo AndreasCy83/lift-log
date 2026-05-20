@@ -67,8 +67,10 @@ export interface MuscleFatigue {
   muscle: MuscleGroup;
   score: number;       // adjusted fatigue
   band: FatigueBand;
-  retrainLabel: string; // "Ready now" | "In ~12h" | etc.
-  pct: number;          // 0-100 for the bar
+  retrainLabel: string; // "Ready" | "12h" | "2d"
+  pct: number;          // 0-100: remaining recovery proportion (remaining/original)
+  remainingHours: number;
+  originalHours: number;
 }
 
 function effortMultiplier(rpe: number | null | undefined): number {
