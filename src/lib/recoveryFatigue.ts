@@ -130,9 +130,7 @@ function estimateRetrainHours(currentScore: number, contribs: { raw: number; age
 function retrainLabel(hours: number): string {
   if (hours <= 0) return 'Ready';
   if (hours < 24) return `${Math.max(1, Math.round(hours))}h`;
-  if (hours <= 36) return 'Tomorrow';
-  const days = Math.round(hours / 24);
-  return `${days}d`;
+  return `${Math.max(1, Math.round(hours / 24))}d`;
 }
 
 export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
