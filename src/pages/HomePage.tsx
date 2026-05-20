@@ -175,7 +175,10 @@ export default function HomePage() {
   }, [selectedWorkout, pickerDate]);
 
   return (
-    <div className="flex min-h-screen flex-col pb-24">
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)' }}
+    >
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between">
@@ -342,8 +345,10 @@ export default function HomePage() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">No workout logged</p>
-          )}
-        </div>
+        )}
+        <div className="h-6" aria-hidden="true" />
+      </div>
+
         {/* Muscle Group Breakdown Pie Chart */}
         {categoryBreakdown.length > 0 && (
           <div className="gym-card mt-4">
