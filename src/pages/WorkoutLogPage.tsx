@@ -1004,6 +1004,62 @@ export default function WorkoutLogPage() {
           <Plus className="h-4 w-4" /> Add Exercise
         </button>
 
+        {/* Routines Button (secondary) */}
+        <button
+          onClick={() => setShowRoutinePicker(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground border border-border/60 rounded-lg bg-secondary/30 hover:bg-secondary/50 hover:text-foreground transition-colors"
+        >
+          <Plus className="h-4 w-4" /> Routines
+        </button>
+
+        {/* Routine Picker Dialog */}
+        <Dialog open={showRoutinePicker} onOpenChange={setShowRoutinePicker}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle>Apply a Routine</DialogTitle></DialogHeader>
+            {(() => {
+              const routines = getRoutines();
+              if (routines.length === 0) {
+                return (
+                  <div className="space-y-3 py-2 text-center">
+                    <p className="text-sm text-muted-foreground">No routines created yet.</p>
+                    <Button
+                      variant="outline"
+                      onClick={() => { setShowRoutinePicker(false); navigate('/routines'); }}
+                    >
+                      Go to Routines
+                    </Button>
+                  </div>
+                );
+              }
+              return (
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                  <p className="text-xs text-muted-foreground">
+                    Exercises will be appended to this workout. Current exercises are kept.
+                  </p>
+                  {routines.map(r => (
+                    <button
+                      key={r.id}
+                      onClick={() => {
+                        const added = appendRoutineToWorkout(r, workout.id);
+                        setShowRoutinePicker(false);
+                        refresh();
+                        toast(added > 0 ? `Added ${added} exercise${added === 1 ? '' : 's'} from ${r.name}` : `${r.name} has no exercises`);
+                      }}
+                      className="w-full text-left rounded-lg border border-border/60 bg-secondary/30 hover:bg-secondary/60 px-3 py-2.5 transition-colors"
+                    >
+                      <div className="text-sm font-medium">{r.name}</div>
+                      {r.description && (
+                        <div className="text-xs text-muted-foreground truncate">{r.description}</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
+
+
         {/* Dialogs */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
           <DialogContent className="flex flex-col p-4 sm:p-6 !max-w-none sm:!max-w-md !w-screen sm:!w-full !h-[100dvh] sm:!h-auto !max-h-[100dvh] sm:!max-h-[85vh] !left-0 !top-0 !translate-x-0 !translate-y-0 sm:!left-[50%] sm:!top-[50%] sm:!translate-x-[-50%] sm:!translate-y-[-50%] !rounded-none sm:!rounded-lg pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
