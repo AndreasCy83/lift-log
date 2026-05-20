@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import {
   generateId, getExercisesForRoutine, getExercises, getLatestSetsForExercise,
   addWorkout, addWorkoutExercise, addWorkoutSet, getWorkoutByDate, deleteWorkout,
+  getExercisesForWorkout,
 } from '@/lib/storage';
 import type { Routine, RoutineExercise, WorkoutSet, Exercise, SetTag } from '@/types/fitness';
 
@@ -170,4 +171,63 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
   });
 
   return dateStr;
+}
+
+/** Appends a routine's exercises into an existing workout WITHOUT removing current exercises. */
+export function appendRoutineToWorkout(routine: Routine, workoutId: string): number {
+  const entries = getExercisesForRoutine(routine.id);
+  if (entries.length === 0) return 0;
+  const allExercises = getExercises();
+
+  const startPos = getExercisesForWorkout(workoutId).length;
+
+  const previousSetsMap = new Map<string, WorkoutSet[]>();
+  entries.forEach(re => {
+    if ((re.populationMode ?? 'predefined') === 'copy_previous') {
+      previousSetsMap.set(re.exerciseId, getLatestSetsForExercise(re.exerciseId));
+    }
+  });
+
+  entries.forEach((re, idx) => {
+    const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
+    const weId = generateId();
+    const mode = re.populationMode ?? 'predefined';
+
+    addWorkoutExercise({
+      id: weId,
+      workoutId,
+      exerciseId: re.exerciseId,
+      position: startPos + idx,
+      notes: '',
+      defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
+    });
+
+    if (mode === 'blank') return;
+
+    if (mode === 'copy_previous') {
+      const previous = previousSetsMap.get(re.exerciseId) ?? [];
+      if (previous.length === 0) {
+        addWorkoutSet(blankSet(weId, 0, re.restSeconds ?? master?.defaultRestSeconds ?? null));
+        return;
+      }
+      previous.forEach((src, i) =>
+        addWorkoutSet(copiedSet(weId, i, src, re.restSeconds ?? master?.defaultRestSeconds ?? null))
+      );
+      return;
+    }
+
+    const setType = master?.setType;
+    if (re.predefinedRows && re.predefinedRows.length > 0) {
+      re.predefinedRows.forEach((row, i) => {
+        addWorkoutSet(predefinedSet(weId, i, re, setType, row));
+      });
+    } else {
+      const setsCount = Math.max(1, (re.sets ?? 1));
+      for (let i = 0; i < setsCount; i++) {
+        addWorkoutSet(predefinedSet(weId, i, re, setType));
+      }
+    }
+  });
+
+  return entries.length;
 }

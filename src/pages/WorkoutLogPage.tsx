@@ -10,6 +10,8 @@ import {
   getExerciseHistory, getSettings, getWorkoutSets, saveWorkoutSets, getWorkouts,
   reorderWorkoutExercises, markGoalAcknowledged
 } from '@/lib/storage';
+import { getRoutines } from '@/lib/storage';
+import { appendRoutineToWorkout } from '@/lib/routineRunner';
 import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
 import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
@@ -119,6 +121,7 @@ export default function WorkoutLogPage() {
   );
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [showAddExercise, setShowAddExercise] = useState(false);
+  const [showRoutinePicker, setShowRoutinePicker] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [updateKey, forceUpdate] = useState(0);
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
@@ -601,7 +604,7 @@ export default function WorkoutLogPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col pb-24">
+    <div className="flex min-h-screen flex-col" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}>
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-2">
           <button onClick={() => requestLeave('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
@@ -702,8 +705,8 @@ export default function WorkoutLogPage() {
             setWorkout(updated);
             updateWorkout(updated);
           }}
-          className="min-h-[48px] resize-none text-sm bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
-          rows={2}
+          className="min-h-[36px] resize-none text-sm bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60 py-1.5"
+          rows={1}
         />
       </div>
 
@@ -1000,6 +1003,62 @@ export default function WorkoutLogPage() {
         >
           <Plus className="h-4 w-4" /> Add Exercise
         </button>
+
+        {/* Routines Button (secondary) */}
+        <button
+          onClick={() => setShowRoutinePicker(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground border border-border/60 rounded-lg bg-secondary/30 hover:bg-secondary/50 hover:text-foreground transition-colors"
+        >
+          <Plus className="h-4 w-4" /> Routines
+        </button>
+
+        {/* Routine Picker Dialog */}
+        <Dialog open={showRoutinePicker} onOpenChange={setShowRoutinePicker}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle>Apply a Routine</DialogTitle></DialogHeader>
+            {(() => {
+              const routines = getRoutines();
+              if (routines.length === 0) {
+                return (
+                  <div className="space-y-3 py-2 text-center">
+                    <p className="text-sm text-muted-foreground">No routines created yet.</p>
+                    <Button
+                      variant="outline"
+                      onClick={() => { setShowRoutinePicker(false); navigate('/routines'); }}
+                    >
+                      Go to Routines
+                    </Button>
+                  </div>
+                );
+              }
+              return (
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                  <p className="text-xs text-muted-foreground">
+                    Exercises will be appended to this workout. Current exercises are kept.
+                  </p>
+                  {routines.map(r => (
+                    <button
+                      key={r.id}
+                      onClick={() => {
+                        const added = appendRoutineToWorkout(r, workout.id);
+                        setShowRoutinePicker(false);
+                        refresh();
+                        toast(added > 0 ? `Added ${added} exercise${added === 1 ? '' : 's'} from ${r.name}` : `${r.name} has no exercises`);
+                      }}
+                      className="w-full text-left rounded-lg border border-border/60 bg-secondary/30 hover:bg-secondary/60 px-3 py-2.5 transition-colors"
+                    >
+                      <div className="text-sm font-medium">{r.name}</div>
+                      {r.description && (
+                        <div className="text-xs text-muted-foreground truncate">{r.description}</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
+
 
         {/* Dialogs */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
