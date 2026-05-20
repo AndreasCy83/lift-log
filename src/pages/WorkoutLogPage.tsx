@@ -121,6 +121,7 @@ export default function WorkoutLogPage() {
   );
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [showAddExercise, setShowAddExercise] = useState(false);
+  const [showRoutinePicker, setShowRoutinePicker] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [updateKey, forceUpdate] = useState(0);
   const [noteExpanded, setNoteExpanded] = useState<string | null>(null);
