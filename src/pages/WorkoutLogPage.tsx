@@ -702,8 +702,8 @@ export default function WorkoutLogPage() {
             setWorkout(updated);
             updateWorkout(updated);
           }}
-          className="min-h-[48px] resize-none text-sm bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60"
-          rows={2}
+          className="min-h-[36px] resize-none text-sm bg-secondary/50 border-border/50 placeholder:text-muted-foreground/60 py-1.5"
+          rows={1}
         />
       </div>
 
