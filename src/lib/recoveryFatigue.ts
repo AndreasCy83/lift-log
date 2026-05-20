@@ -195,14 +195,22 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
     const decayed = contribs.reduce((sum, c) => sum + c.raw * recencyDecay(c.ageHours), 0);
     const wMod = weeklyModifier(weeklyCount[m]);
     const adjusted = decayed * wMod;
-    const hours = estimateRetrainHours(adjusted, contribs, wMod);
-    const pct = Math.min(100, Math.round((adjusted / 10) * 100));
+    const remainingHours = estimateRetrainHours(adjusted, contribs, wMod);
+    // "Original" total recovery window = remaining + time elapsed since most-recent contribution.
+    // This makes the bar shrink as real time passes after the workout.
+    const minAge = contribs.length ? Math.min(...contribs.map(c => c.ageHours)) : 0;
+    const originalHours = remainingHours + minAge;
+    const pct = originalHours > 0
+      ? Math.max(0, Math.min(100, Math.round((remainingHours / originalHours) * 100)))
+      : 0;
     return {
       muscle: m,
       score: adjusted,
       band: bandFor(adjusted),
-      retrainLabel: retrainLabel(hours),
+      retrainLabel: retrainLabel(remainingHours),
       pct,
+      remainingHours,
+      originalHours,
     };
   });
 
