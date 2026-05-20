@@ -179,7 +179,6 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
   if (entries.length === 0) return 0;
   const allExercises = getExercises();
 
-  const { getExercisesForWorkout } = require('@/lib/storage') as typeof import('@/lib/storage');
   const startPos = getExercisesForWorkout(workoutId).length;
 
   const previousSetsMap = new Map<string, WorkoutSet[]>();
