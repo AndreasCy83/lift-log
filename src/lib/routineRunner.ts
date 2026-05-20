@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import {
   generateId, getExercisesForRoutine, getExercises, getLatestSetsForExercise,
   addWorkout, addWorkoutExercise, addWorkoutSet, getWorkoutByDate, deleteWorkout,
+  getExercisesForWorkout,
 } from '@/lib/storage';
 import type { Routine, RoutineExercise, WorkoutSet, Exercise, SetTag } from '@/types/fitness';
 
