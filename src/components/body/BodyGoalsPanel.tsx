@@ -154,6 +154,8 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
             value={targetWeight}
             onChange={e => setTargetWeight(e.target.value)}
           />
+          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Target Date</label>
+          <Input type="date" value={targetWeightDate} onChange={e => setTargetWeightDate(e.target.value)} />
         </div>
 
         <div className="gym-card space-y-3">
@@ -165,6 +167,8 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
             value={targetBf}
             onChange={e => setTargetBf(e.target.value)}
           />
+          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Target Date</label>
+          <Input type="date" value={targetBfDate} onChange={e => setTargetBfDate(e.target.value)} />
         </div>
 
         <div className="gym-card space-y-3">
@@ -176,6 +180,8 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
             value={targetMm}
             onChange={e => setTargetMm(e.target.value)}
           />
+          <label className="text-[11px] uppercase tracking-wider text-muted-foreground">Target Date</label>
+          <Input type="date" value={targetMmDate} onChange={e => setTargetMmDate(e.target.value)} />
         </div>
 
         {/* More Measurements */}
@@ -215,28 +221,36 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
               </div>
 
               {measurementGoals.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {measurementGoals.map(g => {
                     const display = g.targetCm > 0 ? cmToDisplay(g.targetCm, measureUnit).toString() : '';
                     return (
-                      <div key={g.key} className="flex items-center gap-2">
-                        <span className="flex-1 text-sm">{measurementLabel(g.key)}</span>
+                      <div key={g.key} className="space-y-1.5 pb-2 border-b border-border/40 last:border-0">
+                        <div className="flex items-center gap-2">
+                          <span className="flex-1 text-sm">{measurementLabel(g.key)}</span>
+                          <Input
+                            type="number"
+                            inputMode="decimal"
+                            value={display}
+                            onChange={(e) => updateMeasurementGoalValue(g.key, e.target.value)}
+                            placeholder="0"
+                            className="w-20 h-8 bg-secondary border-0 text-sm text-right"
+                          />
+                          <span className="text-xs text-muted-foreground w-7">{measureUnit}</span>
+                          <button
+                            onClick={() => removeMeasurementGoal(g.key)}
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
+                            aria-label="Remove"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                         <Input
-                          type="number"
-                          inputMode="decimal"
-                          value={display}
-                          onChange={(e) => updateMeasurementGoalValue(g.key, e.target.value)}
-                          placeholder="0"
-                          className="w-20 h-8 bg-secondary border-0 text-sm text-right"
+                          type="date"
+                          value={g.targetDate ?? ''}
+                          onChange={(e) => updateMeasurementGoalDate(g.key, e.target.value)}
+                          className="h-8 text-xs"
                         />
-                        <span className="text-xs text-muted-foreground w-7">{measureUnit}</span>
-                        <button
-                          onClick={() => removeMeasurementGoal(g.key)}
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
-                          aria-label="Remove"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
                       </div>
                     );
                   })}
