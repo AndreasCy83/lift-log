@@ -38,8 +38,11 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
   const [targetWeight, setTargetWeight] = useState(
     goals.targetWeightKg != null ? String(toDisplayWeight(goals.targetWeightKg, wu) ?? '') : ''
   );
+  const [targetWeightDate, setTargetWeightDate] = useState(goals.targetWeightDate ?? '');
   const [targetBf, setTargetBf] = useState(goals.targetBodyFatPercent != null ? String(goals.targetBodyFatPercent) : '');
+  const [targetBfDate, setTargetBfDate] = useState(goals.targetBodyFatDate ?? '');
   const [targetMm, setTargetMm] = useState(goals.targetMuscleMassPercent != null ? String(goals.targetMuscleMassPercent) : '');
+  const [targetMmDate, setTargetMmDate] = useState(goals.targetMuscleMassDate ?? '');
 
   // Measurement goals
   const [measurementGoals, setMeasurementGoals] = useState<BodyMeasurementGoal[]>(
@@ -98,6 +101,12 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
     ));
   };
 
+  const updateMeasurementGoalDate = (k: BodyMeasurementKey, date: string) => {
+    setMeasurementGoals(prev => prev.map(g =>
+      g.key === k ? { ...g, targetDate: date || null } : g
+    ));
+  };
+
   const handleSave = () => {
     const tw = targetWeight ? parseFloat(targetWeight) : null;
     const cleanedGoals = measurementGoals
@@ -105,6 +114,7 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
       .map(g => ({
         ...g,
         startCm: g.startCm ?? findLatestMeasurementCm(g.key),
+        targetDate: g.targetDate || null,
       }));
 
     saveBodyGoals({
@@ -114,6 +124,9 @@ export default function BodyGoalsPanel({ onBack, onSaved }: Props) {
       startWeightKg: tw != null ? (goals.startWeightKg ?? latest?.weightKg ?? null) : null,
       startBodyFatPercent: targetBf ? (goals.startBodyFatPercent ?? latest?.bodyFatPercent ?? null) : null,
       startMuscleMassPercent: targetMm ? (goals.startMuscleMassPercent ?? latest?.muscleMassPercent ?? null) : null,
+      targetWeightDate: tw != null ? (targetWeightDate || null) : null,
+      targetBodyFatDate: targetBf ? (targetBfDate || null) : null,
+      targetMuscleMassDate: targetMm ? (targetMmDate || null) : null,
       measurementGoals: cleanedGoals,
     });
     toast.success('Goals saved');
