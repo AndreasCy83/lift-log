@@ -40,6 +40,8 @@ export interface BodyMeasurementGoal {
   targetCm: number;
   /** Starting value in cm (snapshot of latest at goal-set time) */
   startCm: number | null;
+  /** Optional target date (YYYY-MM-DD) */
+  targetDate?: string | null;
 }
 
 export interface BodyGoals {
@@ -49,6 +51,10 @@ export interface BodyGoals {
   startWeightKg: number | null;
   startBodyFatPercent: number | null;
   startMuscleMassPercent: number | null;
+  /** Optional target dates (YYYY-MM-DD) for primary metrics. */
+  targetWeightDate?: string | null;
+  targetBodyFatDate?: string | null;
+  targetMuscleMassDate?: string | null;
   /** Optional per-measurement goals (always stored in cm). */
   measurementGoals?: BodyMeasurementGoal[];
 }
