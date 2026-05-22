@@ -7,6 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import HomePage from "./pages/HomePage";
 import RoutinesPage from "./pages/RoutinesPage";
 import RoutineDetailPage from "./pages/RoutineDetailPage";
+import ProgramDetailPage from "./pages/ProgramDetailPage";
 import WorkoutLogPage from "./pages/WorkoutLogPage";
 import StatsPage from "./pages/StatsPage";
 import BodyTrackerPage from "./pages/BodyTrackerPage";
