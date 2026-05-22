@@ -1,6 +1,7 @@
 import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
-  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal
+  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal,
+  Program,
 } from '@/types/fitness';
 import type { WeightUnitSetting } from '@/lib/units';
 import { DEFAULT_CATEGORIES, DEFAULT_EXERCISES } from '@/data/seedData';
@@ -14,6 +15,7 @@ const STORAGE_KEYS = {
   workoutSets: 'gym-workout-sets',
   routines: 'gym-routines',
   routineExercises: 'gym-routine-exercises',
+  programs: 'gym-programs',
   bmiHistory: 'gym-bmi-history',
   weightHistory: 'gym-weight-history',
   settings: 'gym-settings',
@@ -251,6 +253,29 @@ export function updateRoutine(r: Routine) {
 export function deleteRoutine(id: string) {
   saveRoutines(getRoutines().filter(r => r.id !== id));
   saveRoutineExercises(getRoutineExercises().filter(re => re.routineId !== id));
+}
+
+// Programs
+export function getPrograms(): Program[] { return get<Program[]>(STORAGE_KEYS.programs, []); }
+export function savePrograms(p: Program[]) { set(STORAGE_KEYS.programs, p); }
+export function addProgram(p: Program) { const all = getPrograms(); all.push(p); savePrograms(all); }
+export function updateProgram(p: Program) {
+  const all = getPrograms();
+  const idx = all.findIndex(x => x.id === p.id);
+  if (idx >= 0) all[idx] = p;
+  savePrograms(all);
+}
+/** Deletes a program. Child routines become standalone (programId cleared). */
+export function deleteProgram(id: string) {
+  savePrograms(getPrograms().filter(p => p.id !== id));
+  const routines = getRoutines().map(r => r.programId === id ? { ...r, programId: null } : r);
+  saveRoutines(routines);
+}
+export function getRoutinesForProgram(programId: string): Routine[] {
+  return getRoutines().filter(r => r.programId === programId);
+}
+export function getStandaloneRoutines(): Routine[] {
+  return getRoutines().filter(r => !r.programId);
 }
 
 // RoutineExercises

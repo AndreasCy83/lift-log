@@ -97,6 +97,15 @@ export interface Routine {
   name: string;
   description: string;
   isActive: boolean;
+  /** Optional parent program. Null/undefined means a standalone routine. */
+  programId?: string | null;
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  description: string;
+  createdAt?: string;
 }
 
 export type RoutinePopulationMode = 'copy_previous' | 'predefined' | 'blank';
