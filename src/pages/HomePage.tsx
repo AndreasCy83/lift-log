@@ -77,12 +77,13 @@ export default function HomePage() {
   const selectedDayStats = useMemo(() => {
     if (!selectedWorkout) return null;
     const wExercises = getExercisesForWorkout(selectedWorkout.id);
-    let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
+    let totalVolume = 0, totalReps = 0, totalSets = 0, totalDistanceKm = 0, totalDurationMin = 0;
     let hasStrength = false, hasCardio = false;
     wExercises.forEach(we => {
       const ex = allExercises.find(e => e.id === we.exerciseId);
       const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
       sets.forEach(s => {
+        totalSets++;
         if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
           hasCardio = true;
           if (s.distanceKm) totalDistanceKm += s.distanceKm;
@@ -94,7 +95,7 @@ export default function HomePage() {
         }
       });
     });
-    return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
+    return { totalVolume, totalReps, totalSets, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
   }, [selectedWorkout, allExercises]);
 
   // Muscle group breakdown for pie chart
