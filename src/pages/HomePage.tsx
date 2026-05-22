@@ -328,18 +328,19 @@ export default function HomePage() {
                 )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">
+                <div className="mt-2 border-t border-border pt-2 space-y-1">
                   {selectedDayStats.hasStrength && (
-                    <>
-                      <span>Vol: <span className="font-semibold text-foreground">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
-                      <span>Reps: <span className="font-semibold text-foreground">{selectedDayStats.totalReps}</span></span>
-                    </>
+                    <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                      <span>Vol: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
+                      <span className="text-center">Reps: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
+                      <span className="text-right">Sets: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
+                    </div>
                   )}
                   {selectedDayStats.hasCardio && (
-                    <>
-                      <span>Dist: <span className="font-semibold text-foreground">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
-                      <span>Time: <span className="font-semibold text-foreground">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
-                    </>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                      <span>Dist: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span className="text-right">Time: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                    </div>
                   )}
                 </div>
               )}
