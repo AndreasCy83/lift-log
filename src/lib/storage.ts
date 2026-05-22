@@ -1,6 +1,7 @@
 import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
-  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal
+  WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal,
+  Program,
 } from '@/types/fitness';
 import type { WeightUnitSetting } from '@/lib/units';
 import { DEFAULT_CATEGORIES, DEFAULT_EXERCISES } from '@/data/seedData';
@@ -14,6 +15,7 @@ const STORAGE_KEYS = {
   workoutSets: 'gym-workout-sets',
   routines: 'gym-routines',
   routineExercises: 'gym-routine-exercises',
+  programs: 'gym-programs',
   bmiHistory: 'gym-bmi-history',
   weightHistory: 'gym-weight-history',
   settings: 'gym-settings',
