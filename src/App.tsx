@@ -112,6 +112,7 @@ const App = () => {
             } />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
+            <Route path="/program/:id" element={<ProgramDetailPage />} />
             <Route path="/workout/:date" element={<WorkoutLogPage />} />
             <Route path="/body" element={<BodyTrackerPage />} />
             <Route path="/stats" element={<StatsPage />} />
