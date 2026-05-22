@@ -77,12 +77,13 @@ export default function HomePage() {
   const selectedDayStats = useMemo(() => {
     if (!selectedWorkout) return null;
     const wExercises = getExercisesForWorkout(selectedWorkout.id);
-    let totalVolume = 0, totalReps = 0, totalDistanceKm = 0, totalDurationMin = 0;
+    let totalVolume = 0, totalReps = 0, totalSets = 0, totalDistanceKm = 0, totalDurationMin = 0;
     let hasStrength = false, hasCardio = false;
     wExercises.forEach(we => {
       const ex = allExercises.find(e => e.id === we.exerciseId);
       const sets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup && s.isCompleted === true);
       sets.forEach(s => {
+        totalSets++;
         if (ex?.setType === 'REPS_DISTANCE' || ex?.setType === 'REPS_TIME' || ex?.type === 'CARDIO') {
           hasCardio = true;
           if (s.distanceKm) totalDistanceKm += s.distanceKm;
@@ -94,7 +95,7 @@ export default function HomePage() {
         }
       });
     });
-    return { totalVolume, totalReps, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
+    return { totalVolume, totalReps, totalSets, totalDistanceKm, totalDurationMin, hasStrength, hasCardio };
   }, [selectedWorkout, allExercises]);
 
   // Muscle group breakdown for pie chart
@@ -327,18 +328,19 @@ export default function HomePage() {
                 )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground border-t border-border pt-2">
+                <div className="mt-2 border-t border-border pt-2 space-y-1">
                   {selectedDayStats.hasStrength && (
-                    <>
-                      <span>Vol: <span className="font-semibold text-foreground">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
-                      <span>Reps: <span className="font-semibold text-foreground">{selectedDayStats.totalReps}</span></span>
-                    </>
+                    <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                      <span>Vol: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
+                      <span className="text-center">Reps: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
+                      <span className="text-right">Sets: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
+                    </div>
                   )}
                   {selectedDayStats.hasCardio && (
-                    <>
-                      <span>Dist: <span className="font-semibold text-foreground">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
-                      <span>Time: <span className="font-semibold text-foreground">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
-                    </>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                      <span>Dist: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span className="text-right">Time: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                    </div>
                   )}
                 </div>
               )}
