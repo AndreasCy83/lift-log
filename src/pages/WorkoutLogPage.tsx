@@ -723,15 +723,15 @@ export default function WorkoutLogPage() {
 
           return (
             <SortableExerciseCard key={we.id} id={we.id}>
-              <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-start justify-between gap-2 mb-2">
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</span>
+                  <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground shrink-0">{getCatName(we.exerciseId)}</span>
+                    {pr && (
+                      <span className="text-[10px] text-gym-pr">PR: {toDisplayWeight(pr.weight, globalWeightUnit)}{wuLabel} × {pr.reps}</span>
+                    )}
                   </div>
-                  {pr && (
-                    <p className="text-[10px] text-gym-pr mt-0.5">PR: {toDisplayWeight(pr.weight, globalWeightUnit)}{wuLabel} × {pr.reps}</p>
-                  )}
                 </button>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
