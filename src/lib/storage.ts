@@ -1,8 +1,9 @@
 import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
   WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal,
-  Program,
+  Program, SetTag, RoutinePredefinedRow,
 } from '@/types/fitness';
+
 import type { WeightUnitSetting } from '@/lib/units';
 import { DEFAULT_CATEGORIES, DEFAULT_EXERCISES } from '@/data/seedData';
 
