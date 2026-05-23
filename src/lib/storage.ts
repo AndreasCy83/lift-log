@@ -278,6 +278,107 @@ export function getStandaloneRoutines(): Routine[] {
   return getRoutines().filter(r => !r.programId);
 }
 
+/** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
+export function seedBuiltInPrograms() {
+  if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-ppl';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: 'PPL',
+      description: '3 day Split',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type SetSpec = { setTag: SetTag };
+  type Item = { exerciseId: string; specs: SetSpec[] };
+
+  const W: SetSpec = { setTag: 'W' };
+  const F: SetSpec = { setTag: 'F' };
+
+  const buildRows = (specs: SetSpec[]): RoutinePredefinedRow[] =>
+    specs.map(s => ({
+      weightKg: null, reps: null, distanceKm: null,
+      durationMinutes: null, restSeconds: null, setTag: s.setTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-ppl-push',
+      name: 'Push',
+      items: [
+        { exerciseId: 'ex-flat-barbell-bench-press', specs: [W, F, F, F] },
+        { exerciseId: 'ex-seated-dumbbell-press', specs: [F, F, F] },
+        { exerciseId: 'ex-incline-dumbbell-bench-press', specs: [F, F, F] },
+        { exerciseId: 'ex-tricep-dips', specs: [F, F] },
+        { exerciseId: 'ex-lateral-raise', specs: [F, F, F] },
+        { exerciseId: 'ex-tricep-pushdowns', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-ppl-pull',
+      name: 'Pull',
+      items: [
+        { exerciseId: 'ex-pull-up', specs: [W, F, F, F] },
+        { exerciseId: 'ex-barbell-row', specs: [F, F, F] },
+        { exerciseId: 'ex-lat-pull-down', specs: [F, F, F] },
+        { exerciseId: 'ex-barbell-curls', specs: [F, F, F] },
+        { exerciseId: 'ex-hammer-curl', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-ppl-legs',
+      name: 'Legs',
+      items: [
+        { exerciseId: 'ex-back-squat', specs: [W, F, F, F] },
+        { exerciseId: 'ex-deadlift', specs: [F, F, F] },
+        { exerciseId: 'ex-leg-press', specs: [F, F, F] },
+        { exerciseId: 'ex-lying-leg-curl', specs: [F, F, F] },
+        { exerciseId: 'ex-standing-calf-raise', specs: [F, F, F] },
+        { exerciseId: 'ex-leg-extension', specs: [F, F, F] },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    // Add exercises only if none exist yet for this routine
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        const rows = buildRows(item.specs);
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedRows: rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_ppl_v1', 'true');
+}
+
+
 // RoutineExercises
 export function getRoutineExercises(): RoutineExercise[] {
   // Migrate older routine entries that lack populationMode → 'predefined' (preserves prior behavior)
