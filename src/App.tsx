@@ -14,7 +14,7 @@ import BodyTrackerPage from "./pages/BodyTrackerPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
-import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises } from "@/lib/storage";
+import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises, seedBuiltInPrograms } from "@/lib/storage";
 import { checkPendingBackup } from "@/lib/autoBackup";
 import { initBilling } from "@/lib/billing";
 import { preloadAudioCues } from "@/lib/ttsVoice";
