@@ -30,11 +30,13 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showCustomForm, setShowCustomForm] = useState(false);
   const listScrollRef = useRef<HTMLDivElement>(null);
+  const listRefreshKey = `${selectedCategory ?? 'all'}-${search.trim().toLowerCase()}`;
 
   // Always derive the visible list from the latest state in a single pass.
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const base = exercises.filter(e => {
+    const sourceExercises = [...exercises];
+    const base = sourceExercises.filter(e => {
       if (selectedCategory && e.categoryId !== selectedCategory) return false;
       if (q && !e.name.toLowerCase().includes(q)) return false;
       return true;
@@ -162,7 +164,13 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
       </div>
 
-      <div ref={listScrollRef} className="flex-1 min-h-0 overflow-y-auto">
+      <div
+        key={listRefreshKey}
+        ref={listScrollRef}
+        data-active-category={selectedCategory ?? 'all'}
+        data-search-query={search.trim().toLowerCase()}
+        className="flex-1 min-h-0 overflow-y-auto"
+      >
         <div className="space-y-1">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
