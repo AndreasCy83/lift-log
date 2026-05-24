@@ -29,19 +29,33 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const listScrollRef = React.useRef<HTMLDivElement>(null);
 
+  // Always derive the visible list from the latest state in a single pass.
   const filtered = useMemo(() => {
-    let list = exercises;
-    if (selectedCategory) list = list.filter(e => e.categoryId === selectedCategory);
-    if (search) list = list.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
-    // Sort by most frequently used, then alphabetically
-    return [...list].sort((a, b) => {
+    const q = search.trim().toLowerCase();
+    const base = exercises.filter(e => {
+      if (selectedCategory && e.categoryId !== selectedCategory) return false;
+      if (q && !e.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    return base.sort((a, b) => {
       const freqA = usageFrequency[a.id] || 0;
       const freqB = usageFrequency[b.id] || 0;
       if (freqB !== freqA) return freqB - freqA;
       return a.name.localeCompare(b.name);
     });
   }, [exercises, selectedCategory, search, usageFrequency]);
+
+  // Reset scroll position whenever the filter inputs change so the user sees the new list from the top.
+  useEffect(() => {
+    if (listScrollRef.current) listScrollRef.current.scrollTop = 0;
+  }, [selectedCategory, search]);
+
+  const handleSelectCategory = (catId: string | null) => {
+    setSelectedCategory(prev => (catId !== null && prev === catId ? null : catId));
+  };
+
 
   const toggleSelect = (id: string) => {
     setSelected(prev => {
