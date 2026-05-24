@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Plus, Dumbbell, Timer, Route, Clock, Weight } from 'lucide-react';
 import { getExercises, getCategories, getExerciseUsageFrequency } from '@/lib/storage';
 import { Input } from '@/components/ui/input';
@@ -29,19 +29,33 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const listScrollRef = useRef<HTMLDivElement>(null);
 
+  // Always derive the visible list from the latest state in a single pass.
   const filtered = useMemo(() => {
-    let list = exercises;
-    if (selectedCategory) list = list.filter(e => e.categoryId === selectedCategory);
-    if (search) list = list.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
-    // Sort by most frequently used, then alphabetically
-    return [...list].sort((a, b) => {
+    const q = search.trim().toLowerCase();
+    const base = exercises.filter(e => {
+      if (selectedCategory && e.categoryId !== selectedCategory) return false;
+      if (q && !e.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    return base.sort((a, b) => {
       const freqA = usageFrequency[a.id] || 0;
       const freqB = usageFrequency[b.id] || 0;
       if (freqB !== freqA) return freqB - freqA;
       return a.name.localeCompare(b.name);
     });
   }, [exercises, selectedCategory, search, usageFrequency]);
+
+  // Reset scroll position whenever the filter inputs change so the user sees the new list from the top.
+  useEffect(() => {
+    if (listScrollRef.current) listScrollRef.current.scrollTop = 0;
+  }, [selectedCategory, search]);
+
+  const handleSelectCategory = (catId: string | null) => {
+    setSelectedCategory(prev => (catId !== null && prev === catId ? null : catId));
+  };
+
 
   const toggleSelect = (id: string) => {
     setSelected(prev => {
@@ -112,7 +126,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
           style={{ WebkitOverflowScrolling: 'touch', minHeight: 40, height: 40, flexShrink: 0 }}
         >
         <button
-          onClick={() => setSelectedCategory(null)}
+          onClick={() => handleSelectCategory(null)}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
             !selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
           }`}
@@ -125,8 +139,9 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
           return (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id === selectedCategory ? null : cat.id)}
+              onClick={() => handleSelectCategory(cat.id)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+
                 selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
               style={{ flexShrink: 0, minWidth: 40 }}
@@ -147,7 +162,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
       </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div ref={listScrollRef} className="flex-1 min-h-0 overflow-y-auto">
         <div className="space-y-1">
           {filtered.map(ex => {
             const isSelected = selected.has(ex.id);
