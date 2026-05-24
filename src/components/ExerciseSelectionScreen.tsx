@@ -29,7 +29,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showCustomForm, setShowCustomForm] = useState(false);
-  const listScrollRef = React.useRef<HTMLDivElement>(null);
+  const listScrollRef = useRef<HTMLDivElement>(null);
 
   // Always derive the visible list from the latest state in a single pass.
   const filtered = useMemo(() => {
