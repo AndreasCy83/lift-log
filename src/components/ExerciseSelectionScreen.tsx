@@ -126,7 +126,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
           style={{ WebkitOverflowScrolling: 'touch', minHeight: 40, height: 40, flexShrink: 0 }}
         >
         <button
-          onClick={() => setSelectedCategory(null)}
+          onClick={() => handleSelectCategory(null)}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
             !selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
           }`}
@@ -139,8 +139,9 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
           return (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id === selectedCategory ? null : cat.id)}
+              onClick={() => handleSelectCategory(cat.id)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+
                 selectedCategory === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
               style={{ flexShrink: 0, minWidth: 40 }}
