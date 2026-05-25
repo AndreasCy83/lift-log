@@ -281,7 +281,9 @@ export function getStandaloneRoutines(): Routine[] {
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
 export function seedBuiltInPrograms() {
+  seedBuiltInFullBodyProgram();
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
+
 
   const PROGRAM_ID = 'program-builtin-ppl';
   const programs = getPrograms();
