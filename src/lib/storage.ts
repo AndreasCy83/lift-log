@@ -377,6 +377,108 @@ export function seedBuiltInPrograms() {
   });
 
   localStorage.setItem('builtinPrograms_ppl_v1', 'true');
+  seedBuiltInFullBodyProgram();
+}
+
+/** One-time seed: insert the built-in "Full Body" 3-day split program. */
+function seedBuiltInFullBodyProgram() {
+  if (localStorage.getItem('builtinPrograms_fullbody_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-fullbody';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: 'Full Body',
+      description: '3 day split',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type SetSpec = { setTag: SetTag };
+  type Item = { exerciseId: string; specs: SetSpec[] };
+  const N: SetSpec = { setTag: 'N' };
+  const W: SetSpec = { setTag: 'W' };
+  const F: SetSpec = { setTag: 'F' };
+
+  const buildRows = (specs: SetSpec[]): RoutinePredefinedRow[] =>
+    specs.map(s => ({
+      weightKg: null, reps: null, distanceKm: null,
+      durationMinutes: null, restSeconds: null, setTag: s.setTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-fullbody-day1',
+      name: 'Day 1',
+      items: [
+        { exerciseId: 'ex-incline-bench-press', specs: [N, N, F] },
+        { exerciseId: 'ex-lat-pull-down', specs: [F, F, F] },
+        { exerciseId: 'ex-romanian-deadlift', specs: [N, N, F] },
+        { exerciseId: 'ex-leg-extension', specs: [F, F, F] },
+        { exerciseId: 'ex-overhead-tricep-extension', specs: [F, F, F] },
+        { exerciseId: 'ex-bicep-curls', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-fullbody-day2',
+      name: 'Day 2',
+      items: [
+        { exerciseId: 'ex-hack-squat', specs: [W, F, F] },
+        { exerciseId: 'ex-overhead-press', specs: [F, F, F] },
+        { exerciseId: 'ex-dumbbell-bench-press', specs: [W, F, F] },
+        { exerciseId: 'ex-t-bar-row', specs: [F, F, F] },
+        { exerciseId: 'ex-machine-crunch', specs: [F, F, F, F] },
+        { exerciseId: 'ex-standing-calf-raise', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-fullbody-day3',
+      name: 'Day 3',
+      items: [
+        { exerciseId: 'ex-seated-cable-fly', specs: [F, F] },
+        { exerciseId: 'ex-seated-row', specs: [F, F, F] },
+        { exerciseId: 'ex-lateral-raise', specs: [W, F, F] },
+        { exerciseId: 'ex-leg-press', specs: [F, F, F] },
+        { exerciseId: 'ex-lying-leg-curl', specs: [F, F, F] },
+        { exerciseId: 'ex-preacher-curls', specs: [F, F, F] },
+        { exerciseId: 'ex-tricep-pushdowns', specs: [F, F, F] },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        const rows = buildRows(item.specs);
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedRows: rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_fullbody_v1', 'true');
 }
 
 
