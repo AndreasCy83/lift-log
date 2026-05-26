@@ -281,6 +281,7 @@ export function getStandaloneRoutines(): Routine[] {
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
 export function seedBuiltInPrograms() {
+  seedBuiltIn5DaySplitProgram();
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
@@ -595,6 +596,126 @@ function seedBuiltInFullBodyProgram() {
 
   localStorage.setItem('builtinPrograms_fullbody_v1', 'true');
 }
+
+/** One-time seed: insert the built-in "5 Day Split Hypertrophy" program. */
+function seedBuiltIn5DaySplitProgram() {
+  if (localStorage.getItem('builtinPrograms_5daysplit_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-5daysplit';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: '5 Day Split Hypertrophy',
+      description: '5 day split',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type SetSpec = { setTag: SetTag };
+  type Item = { exerciseId: string; specs: SetSpec[] };
+  const W: SetSpec = { setTag: 'W' };
+  const F: SetSpec = { setTag: 'F' };
+
+  const buildRows = (specs: SetSpec[]): RoutinePredefinedRow[] =>
+    specs.map(s => ({
+      weightKg: null, reps: null, distanceKm: null,
+      durationMinutes: null, restSeconds: null, setTag: s.setTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-5daysplit-chest',
+      name: 'Chest Day',
+      items: [
+        { exerciseId: 'ex-flat-barbell-bench-press', specs: [F, F, F, F] },
+        { exerciseId: 'ex-incline-bench-press', specs: [F, F, F] },
+        { exerciseId: 'ex-flat-barbell-bench-press', specs: [F, F, F] },
+        { exerciseId: 'ex-standing-cable-flyes', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-5daysplit-back',
+      name: 'Back Day',
+      items: [
+        { exerciseId: 'ex-pull-up', specs: [F, F, F] },
+        { exerciseId: 'ex-bent-over-row', specs: [F, F, F, F] },
+        { exerciseId: 'ex-lat-pull-down', specs: [F, F, F] },
+        { exerciseId: 'ex-t-bar-row', specs: [F, F, F] },
+        { exerciseId: 'ex-seated-row', specs: [F, F, F] },
+        { exerciseId: 'ex-dumbbell-shrug', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-5daysplit-legs',
+      name: 'Leg Day',
+      items: [
+        { exerciseId: 'ex-back-squat', specs: [W, F, F, F] },
+        { exerciseId: 'ex-deadlift', specs: [F, F, F, F] },
+        { exerciseId: 'ex-leg-press', specs: [F, F, F] },
+        { exerciseId: 'ex-leg-extension', specs: [F, F, F] },
+        { exerciseId: 'ex-lying-leg-curl', specs: [F, F, F] },
+        { exerciseId: 'ex-standing-calf-raise', specs: [F, F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-5daysplit-shoulders',
+      name: 'Shoulder Day',
+      items: [
+        { exerciseId: 'ex-military-press', specs: [F, F, F, F] },
+        { exerciseId: 'ex-lateral-raise', specs: [F, F, F, F] },
+        { exerciseId: 'ex-rear-delt-fly', specs: [F, F, F, F] },
+        { exerciseId: 'ex-arnold-press', specs: [F, F, F] },
+        { exerciseId: 'ex-face-pull', specs: [F, F, F] },
+      ],
+    },
+    {
+      id: 'routine-builtin-5daysplit-arms',
+      name: 'Arm Day',
+      items: [
+        { exerciseId: 'ex-barbell-curls', specs: [F, F, F] },
+        { exerciseId: 'ex-hammer-curls', specs: [F, F, F] },
+        { exerciseId: 'ex-tricep-pushdowns', specs: [F, F, F] },
+        { exerciseId: 'ex-overhead-tricep-extension', specs: [F, F, F] },
+        { exerciseId: 'ex-tricep-dips', specs: [F, F] },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        const rows = buildRows(item.specs);
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedRows: rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_5daysplit_v1', 'true');
+}
+
 
 
 // RoutineExercises
