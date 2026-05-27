@@ -148,8 +148,16 @@ export default function SettingsPage() {
               <Input type="number" value={profile.heightCm} onChange={e => setProfile({ ...profile, heightCm: parseInt(e.target.value) || 0 })} className="bg-secondary border-0" />
             </div>
             <div>
-              <label className="text-[10px] uppercase text-muted-foreground">Weight (kg)</label>
-              <Input type="number" value={profile.currentWeightKg} onChange={e => setProfile({ ...profile, currentWeightKg: parseFloat(e.target.value) || 0 })} className="bg-secondary border-0" />
+              <label className="text-[10px] uppercase text-muted-foreground">Weight ({weightUnitLabel(settings.weightUnit)})</label>
+              <Input
+                type="number"
+                value={toDisplayWeight(profile.currentWeightKg, settings.weightUnit) ?? ''}
+                onChange={e => {
+                  const v = parseFloat(e.target.value);
+                  setProfile({ ...profile, currentWeightKg: toStorageKg(isNaN(v) ? 0 : v, settings.weightUnit) ?? 0 });
+                }}
+                className="bg-secondary border-0"
+              />
             </div>
           </div>
           <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">Save Profile</Button>
