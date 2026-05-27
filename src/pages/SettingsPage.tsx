@@ -17,7 +17,7 @@ import { handlePurchase } from '@/lib/billing';
 import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
-import type { WeightUnitSetting } from '@/lib/units';
+import { type WeightUnitSetting, toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
