@@ -29,7 +29,7 @@ export default function RoutinesPage() {
     all.forEach(p => (p.isFavorite ? favs : rest).push(p));
     return [...favs, ...rest];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [force]);
+  }, [tick]);
   const standaloneRoutines = useMemo(() => getStandaloneRoutines(), []);
   const allRoutines = useMemo(() => getRoutines(), []);
   // re-read each render via deps on force
