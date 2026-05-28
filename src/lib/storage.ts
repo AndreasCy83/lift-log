@@ -284,6 +284,8 @@ export function seedBuiltInPrograms() {
   seedBuiltIn5DaySplitProgram();
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
+  seedBuiltInArnoldPplProgram();
+
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
 
 
@@ -715,6 +717,108 @@ function seedBuiltIn5DaySplitProgram() {
 
   localStorage.setItem('builtinPrograms_5daysplit_v1', 'true');
 }
+
+/** One-time seed: insert the built-in "Arnold PPL" program. */
+function seedBuiltInArnoldPplProgram() {
+  if (localStorage.getItem('builtinPrograms_arnoldppl_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-arnoldppl';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: 'Arnold PPL',
+      description: '3 day split',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type RowSpec = { reps: number; setTag: SetTag };
+  type Item = { exerciseId: string; rows: RowSpec[] };
+
+  const make = (count: number, reps: number, setTag: SetTag = 'N'): RowSpec[] =>
+    Array.from({ length: count }, () => ({ reps, setTag }));
+
+  const buildRows = (specs: RowSpec[]): RoutinePredefinedRow[] =>
+    specs.map(s => ({
+      weightKg: null, reps: s.reps, distanceKm: null,
+      durationMinutes: null, restSeconds: null, setTag: s.setTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-arnoldppl-push',
+      name: 'Push Day',
+      items: [
+        { exerciseId: 'ex-flat-barbell-bench-press', rows: make(3, 12) },
+        { exerciseId: 'ex-incline-dumbbell-bench-press', rows: make(4, 10) },
+        { exerciseId: 'ex-lateral-raise', rows: make(3, 12) },
+        { exerciseId: 'ex-machine-chest-press', rows: make(3, 12) },
+        { exerciseId: 'ex-tricep-dips', rows: make(3, 14) },
+        { exerciseId: 'ex-tricep-pushdowns', rows: make(3, 16) },
+      ],
+    },
+    {
+      id: 'routine-builtin-arnoldppl-pull',
+      name: 'Pull Day',
+      items: [
+        { exerciseId: 'ex-bent-over-row', rows: make(4, 12) },
+        { exerciseId: 'ex-lat-pull-down', rows: make(4, 10) },
+        { exerciseId: 'ex-seated-row', rows: make(4, 10) },
+        { exerciseId: 'ex-preacher-curls', rows: make(4, 10) },
+        { exerciseId: 'ex-dumbbell-shrug', rows: make(4, 12) },
+        { exerciseId: 'ex-alternating-dumbbell-curl', rows: make(4, 12) },
+      ],
+    },
+    {
+      id: 'routine-builtin-arnoldppl-legs',
+      name: 'Leg Day',
+      items: [
+        { exerciseId: 'ex-back-squat', rows: make(4, 12) },
+        { exerciseId: 'ex-deadlift', rows: make(4, 8) },
+        { exerciseId: 'ex-romanian-deadlift', rows: make(3, 10) },
+        { exerciseId: 'ex-leg-extension', rows: make(3, 12) },
+        { exerciseId: 'ex-seated-leg-curl', rows: make(3, 12) },
+        { exerciseId: 'ex-leg-press-calf-raise', rows: make(3, 12, 'F') },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        const rows = buildRows(item.rows);
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedRows: rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_arnoldppl_v1', 'true');
+}
+
+
 
 
 
