@@ -106,6 +106,7 @@ export interface Program {
   name: string;
   description: string;
   createdAt?: string;
+  isFavorite?: boolean;
 }
 
 export type RoutinePopulationMode = 'copy_previous' | 'predefined' | 'blank';

@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight } from 'lucide-react';
+import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight, Star } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
-  getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines,
+  getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
 import { Button } from '@/components/ui/button';
@@ -19,10 +19,17 @@ type Tab = 'programs' | 'routines';
 
 export default function RoutinesPage() {
   const navigate = useNavigate();
-  const [, force] = useState(0);
-  const refresh = () => force(n => n + 1);
+  const [tick, setTick] = useState(0);
+  const refresh = () => setTick(n => n + 1);
 
-  const programs = useMemo(() => getPrograms(), []);
+  const programs = useMemo(() => {
+    const all = getPrograms();
+    const favs: Program[] = [];
+    const rest: Program[] = [];
+    all.forEach(p => (p.isFavorite ? favs : rest).push(p));
+    return [...favs, ...rest];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick]);
   const standaloneRoutines = useMemo(() => getStandaloneRoutines(), []);
   const allRoutines = useMemo(() => getRoutines(), []);
   // re-read each render via deps on force
@@ -159,6 +166,22 @@ export default function RoutinesPage() {
                         <p className="text-xs text-muted-foreground mt-1">{count} workout day{count === 1 ? '' : 's'}</p>
                       </button>
                       <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          aria-label={p.isFavorite ? 'Unfavorite program' : 'Favorite program'}
+                          aria-pressed={!!p.isFavorite}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleProgramFavorite(p.id);
+                            try { (navigator as any).vibrate?.(15); } catch {}
+                            refresh();
+                          }}
+                          className="p-2 text-muted-foreground active:scale-90 transition-transform"
+                        >
+                          <Star
+                            className={`h-4 w-4 transition-colors ${p.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                          />
+                        </button>
                         <button onClick={() => navigate(`/program/${p.id}`)} className="p-2 text-muted-foreground">
                           <ChevronRight className="h-4 w-4" />
                         </button>

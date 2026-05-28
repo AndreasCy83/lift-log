@@ -266,6 +266,11 @@ export function updateProgram(p: Program) {
   if (idx >= 0) all[idx] = p;
   savePrograms(all);
 }
+export function toggleProgramFavorite(id: string) {
+  const all = getPrograms();
+  const idx = all.findIndex(x => x.id === id);
+  if (idx >= 0) { all[idx].isFavorite = !all[idx].isFavorite; savePrograms(all); }
+}
 /** Deletes a program. Child routines become standalone (programId cleared). */
 export function deleteProgram(id: string) {
   savePrograms(getPrograms().filter(p => p.id !== id));
