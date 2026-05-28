@@ -1,12 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight } from 'lucide-react';
+import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight, Star } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
-  getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines,
+  getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
 } from '@/lib/storage';
-import { createWorkoutFromRoutine } from '@/lib/routineRunner';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
