@@ -19,8 +19,8 @@ type Tab = 'programs' | 'routines';
 
 export default function RoutinesPage() {
   const navigate = useNavigate();
-  const [, force] = useState(0);
-  const refresh = () => force(n => n + 1);
+  const [tick, setTick] = useState(0);
+  const refresh = () => setTick(n => n + 1);
 
   const programs = useMemo(() => {
     const all = getPrograms();
