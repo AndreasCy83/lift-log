@@ -125,12 +125,13 @@ export interface RoutineExercise {
   exerciseId: string;
   position: number;
   /** How sets are populated when this routine runs */
-  populationMode?: RoutinePopulationMode;
-  // Predefined-mode fields (used only when populationMode === 'predefined')
-  sets: number;
-  repsMin: number | null;
-  repsMax: number | null;
-  restSeconds: number | null;
+export interface Program {
+  id: string;
+  name: string;
+  description: string;
+  createdAt?: string;
+  isFavorite?: boolean;
+}
   /** Predefined set type override; falls back to exercise.setType */
   predefinedSetType?: SetType | null;
   /** Per-row predefined set data; when present, takes precedence over sets/repsMin/repsMax. */
