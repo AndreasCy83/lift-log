@@ -284,6 +284,8 @@ export function seedBuiltInPrograms() {
   seedBuiltIn5DaySplitProgram();
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
+  seedBuiltInArnoldPplProgram();
+
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
 
 
