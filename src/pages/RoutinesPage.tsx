@@ -22,7 +22,14 @@ export default function RoutinesPage() {
   const [, force] = useState(0);
   const refresh = () => force(n => n + 1);
 
-  const programs = useMemo(() => getPrograms(), []);
+  const programs = useMemo(() => {
+    const all = getPrograms();
+    const favs: Program[] = [];
+    const rest: Program[] = [];
+    all.forEach(p => (p.isFavorite ? favs : rest).push(p));
+    return [...favs, ...rest];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [force]);
   const standaloneRoutines = useMemo(() => getStandaloneRoutines(), []);
   const allRoutines = useMemo(() => getRoutines(), []);
   // re-read each render via deps on force
