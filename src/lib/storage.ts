@@ -286,6 +286,7 @@ export function getStandaloneRoutines(): Routine[] {
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
 export function seedBuiltInPrograms() {
+  seedBuiltIn12WeekFatLossProgram();
   seedBuiltIn5DaySplitProgram();
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
@@ -933,6 +934,120 @@ function seedBuiltIn4DaySplitProgram() {
   });
 
   localStorage.setItem('builtinPrograms_4daysplit_v1', 'true');
+}
+
+function seedBuiltIn12WeekFatLossProgram() {
+  if (localStorage.getItem('builtinPrograms_12wkfatloss_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-12wkfatloss';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: '12 Week Fat Loss',
+      description: '4 day split',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type Item = {
+    exerciseId: string;
+    rows: RoutinePredefinedRow[];
+    predefinedSetType?: SetType | null;
+  };
+
+  const repRows = (count: number, reps: number): RoutinePredefinedRow[] =>
+    Array.from({ length: count }, () => ({
+      weightKg: null, reps, distanceKm: null, durationMinutes: null, restSeconds: null, setTag: 'N' as SetTag,
+    }));
+
+  const timeRows = (count: number, durationMinutes: number): RoutinePredefinedRow[] =>
+    Array.from({ length: count }, () => ({
+      weightKg: null, reps: null, distanceKm: null, durationMinutes, restSeconds: null, setTag: 'N' as SetTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-12wkfatloss-uppera',
+      name: 'Upper A',
+      items: [
+        { exerciseId: 'ex-incline-bench-press', rows: repRows(3, 10) },
+        { exerciseId: 'ex-single-arm-dumbbell-row', rows: repRows(3, 12) },
+        { exerciseId: 'ex-military-press', rows: repRows(3, 10) },
+        { exerciseId: 'ex-lat-pull-down', rows: repRows(3, 10) },
+        { exerciseId: 'ex-skull-crushers', rows: repRows(2, 12) },
+        { exerciseId: 'ex-barbell-curls', rows: repRows(2, 12) },
+      ],
+    },
+    {
+      id: 'routine-builtin-12wkfatloss-lowera',
+      name: 'Lower A',
+      items: [
+        { exerciseId: 'ex-back-squat', rows: repRows(3, 10) },
+        { exerciseId: 'ex-seated-leg-curl', rows: repRows(3, 15) },
+        { exerciseId: 'ex-leg-extension', rows: repRows(3, 15) },
+        { exerciseId: 'ex-standing-calf-raise', rows: repRows(3, 20) },
+        { exerciseId: 'ex-plank-abs', rows: timeRows(2, 1), predefinedSetType: 'WEIGHT_TIME' },
+        { exerciseId: 'ex-hanging-oblique-raise', rows: repRows(2, 12) },
+      ],
+    },
+    {
+      id: 'routine-builtin-12wkfatloss-upperb',
+      name: 'Upper B',
+      items: [
+        { exerciseId: 'ex-dumbbell-bench-press', rows: repRows(3, 12) },
+        { exerciseId: 'ex-bent-over-row', rows: repRows(3, 10) },
+        { exerciseId: 'ex-lateral-raise', rows: repRows(3, 15) },
+        { exerciseId: 'ex-pull-up-olympic', rows: repRows(3, 8) },
+        { exerciseId: 'ex-tricep-pushdowns', rows: repRows(2, 12) },
+        { exerciseId: 'ex-preacher-curl', rows: repRows(2, 12) },
+      ],
+    },
+    {
+      id: 'routine-builtin-12wkfatloss-lowerb',
+      name: 'Lower B',
+      items: [
+        { exerciseId: 'ex-leg-press', rows: repRows(3, 20) },
+        { exerciseId: 'ex-romanian-deadlift', rows: repRows(3, 12) },
+        { exerciseId: 'ex-walking-lunge', rows: repRows(3, 10) },
+        { exerciseId: 'ex-seated-calf-raise', rows: repRows(3, 20) },
+        { exerciseId: 'ex-kneeling-cable-crunch', rows: repRows(2, 20) },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: item.rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedSetType: item.predefinedSetType ?? null,
+          predefinedRows: item.rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_12wkfatloss_v1', 'true');
 }
 
 
