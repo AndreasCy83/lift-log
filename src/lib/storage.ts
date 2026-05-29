@@ -286,6 +286,7 @@ export function getStandaloneRoutines(): Routine[] {
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
 export function seedBuiltInPrograms() {
+  seedBuiltIn12WeekFatLossProgram();
   seedBuiltIn5DaySplitProgram();
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
