@@ -1,7 +1,7 @@
 import {
   UserProfile, Exercise, ExerciseCategory, Workout, WorkoutExercise,
   WorkoutSet, Routine, RoutineExercise, BMIEntry, WeightEntry, ExerciseGoal,
-  Program, SetTag, RoutinePredefinedRow,
+  Program, SetTag, SetType, RoutinePredefinedRow,
 } from '@/types/fitness';
 
 import type { WeightUnitSetting } from '@/lib/units';
