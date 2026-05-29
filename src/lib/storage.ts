@@ -290,6 +290,7 @@ export function seedBuiltInPrograms() {
   seedBuiltInUpperLowerProgram();
   seedBuiltInFullBodyProgram();
   seedBuiltInArnoldPplProgram();
+  seedBuiltIn4DaySplitProgram();
 
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
 
@@ -821,6 +822,117 @@ function seedBuiltInArnoldPplProgram() {
   });
 
   localStorage.setItem('builtinPrograms_arnoldppl_v1', 'true');
+}
+
+function seedBuiltIn4DaySplitProgram() {
+  if (localStorage.getItem('builtinPrograms_4daysplit_v1')) return;
+
+  const PROGRAM_ID = 'program-builtin-4daysplit';
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: '4 Day Split',
+      description: 'Fundamentals to build confidence and power',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  type Item = {
+    exerciseId: string;
+    rows: RoutinePredefinedRow[];
+    predefinedSetType?: SetType | null;
+  };
+
+  const repRows = (count: number, reps: number, weightKg: number | null = null): RoutinePredefinedRow[] =>
+    Array.from({ length: count }, () => ({
+      weightKg, reps, distanceKm: null, durationMinutes: null, restSeconds: null, setTag: 'F' as SetTag,
+    }));
+
+  const timeRows = (count: number, durationMinutes: number): RoutinePredefinedRow[] =>
+    Array.from({ length: count }, () => ({
+      weightKg: null, reps: null, distanceKm: null, durationMinutes, restSeconds: null, setTag: 'F' as SetTag,
+    }));
+
+  const routines: { id: string; name: string; items: Item[] }[] = [
+    {
+      id: 'routine-builtin-4daysplit-upper',
+      name: 'Upper Body',
+      items: [
+        { exerciseId: 'ex-incline-bench-press', rows: repRows(3, 12) },
+        { exerciseId: 'ex-single-arm-dumbbell-row', rows: repRows(3, 12) },
+        { exerciseId: 'ex-seated-dumbbell-press', rows: repRows(3, 10) },
+        { exerciseId: 'ex-seated-row', rows: repRows(3, 10) },
+        { exerciseId: 'ex-alternating-dumbbell-curl', rows: repRows(3, 8) },
+        { exerciseId: 'ex-lying-tricep-extensions', rows: repRows(3, 8) },
+      ],
+    },
+    {
+      id: 'routine-builtin-4daysplit-lower',
+      name: 'Lower Body',
+      items: [
+        { exerciseId: 'ex-reverse-lunge', rows: repRows(3, 12) },
+        { exerciseId: 'ex-split-squat', rows: repRows(3, 12) },
+        { exerciseId: 'ex-leg-press', rows: repRows(3, 10) },
+        { exerciseId: 'ex-leg-extension', rows: repRows(3, 15) },
+        { exerciseId: 'ex-lying-leg-curl', rows: repRows(3, 15) },
+      ],
+    },
+    {
+      id: 'routine-builtin-4daysplit-core',
+      name: 'Core Essentials',
+      items: [
+        { exerciseId: 'ex-hyperextension', rows: repRows(3, 15) },
+        { exerciseId: 'ex-reverse-crunch', rows: repRows(3, 20) },
+        { exerciseId: 'ex-cable-russian-twist', rows: repRows(2, 15) },
+        { exerciseId: 'ex-plank-hip-dip', rows: repRows(2, 15) },
+        { exerciseId: 'ex-plank-abs', rows: timeRows(3, 1), predefinedSetType: 'WEIGHT_TIME' },
+      ],
+    },
+    {
+      id: 'routine-builtin-4daysplit-compound',
+      name: 'Compound',
+      items: [
+        { exerciseId: 'ex-deadlift', rows: repRows(3, 5) },
+        { exerciseId: 'ex-flat-barbell-bench-press', rows: repRows(3, 8, 10) },
+        { exerciseId: 'ex-back-squat', rows: repRows(3, 8, 10) },
+        { exerciseId: 'ex-military-press', rows: repRows(3, 8) },
+      ],
+    },
+  ];
+
+  const existingRoutines = getRoutines();
+  routines.forEach(r => {
+    if (!existingRoutines.some(x => x.id === r.id)) {
+      addRoutine({
+        id: r.id,
+        name: r.name,
+        description: '',
+        isActive: true,
+        programId: PROGRAM_ID,
+      });
+    }
+    if (getExercisesForRoutine(r.id).length === 0) {
+      r.items.forEach((item, idx) => {
+        addRoutineExercise({
+          id: generateId(),
+          routineId: r.id,
+          exerciseId: item.exerciseId,
+          position: idx,
+          populationMode: 'predefined',
+          sets: item.rows.length,
+          repsMin: null,
+          repsMax: null,
+          restSeconds: null,
+          predefinedSetType: item.predefinedSetType ?? null,
+          predefinedRows: item.rows,
+          supersetGroup: null,
+        });
+      });
+    }
+  });
+
+  localStorage.setItem('builtinPrograms_4daysplit_v1', 'true');
 }
 
 
