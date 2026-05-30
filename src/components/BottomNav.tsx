@@ -1,19 +1,21 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, Dumbbell, BarChart3, Settings, Scale } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAnyActiveSession } from '@/hooks/useWorkoutSession';
 
 const tabs = [
-  { to: '/', icon: Calendar, label: 'Home' },
-  { to: '/routines', icon: Dumbbell, label: 'Routines' },
-  { to: '/body', icon: Scale, label: 'Body' },
-  { to: '/stats', icon: BarChart3, label: 'Stats' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/', icon: Calendar, key: 'home' as const },
+  { to: '/routines', icon: Dumbbell, key: 'routines' as const },
+  { to: '/body', icon: Scale, key: 'body' as const },
+  { to: '/stats', icon: BarChart3, key: 'stats' as const },
+  { to: '/settings', icon: Settings, key: 'settings' as const },
 ];
 
 /** Custom event used by WorkoutLogPage to intercept nav while a session is live. */
 export const REQUEST_LEAVE_WORKOUT_EVENT = 'request-leave-workout';
 
 export default function BottomNav() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const session = useAnyActiveSession();
@@ -23,7 +25,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <div className="mx-auto flex max-w-lg items-center justify-around py-2 px-4">
-        {tabs.map(({ to, icon: Icon, label }) => {
+        {tabs.map(({ to, icon: Icon, key }) => {
           const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
           return (
             <NavLink
@@ -47,7 +49,7 @@ export default function BottomNav() {
               <span
                 className={`text-[10px] font-medium transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground'}`}
               >
-                {label}
+                {t(`nav.${key}`)}
               </span>
             </NavLink>
           );

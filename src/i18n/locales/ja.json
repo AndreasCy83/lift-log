@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "保存", "cancel": "キャンセル", "delete": "削除", "edit": "編集",
+    "close": "閉じる", "done": "完了", "back": "戻る", "next": "次へ",
+    "yes": "はい", "no": "いいえ", "confirm": "確認", "loading": "読み込み中…",
+    "search": "検索", "add": "追加", "remove": "削除", "create": "作成",
+    "update": "更新", "reset": "リセット", "rename": "名前を変更",
+    "copy": "コピー", "move": "移動", "share": "共有",
+    "import": "インポート", "export": "エクスポート", "settings": "設定", "more": "もっと", "ok": "OK"
+  },
+  "nav": { "home": "ホーム", "routines": "ルーティン", "body": "身体", "stats": "統計", "settings": "設定" },
+  "home": {
+    "title": "ホーム", "startWorkout": "ワークアウト開始", "quickStart": "クイックスタート",
+    "recentWorkouts": "最近のワークアウト", "noWorkoutsYet": "まだワークアウトがありません",
+    "today": "今日", "yesterday": "昨日"
+  },
+  "routines": {
+    "title": "ルーティン",
+    "tabs": { "routines": "ルーティン", "programs": "プログラム" },
+    "newRoutine": "新しいルーティン", "newProgram": "新しいプログラム",
+    "noRoutines": "ルーティンなし", "noPrograms": "プログラムなし",
+    "addExercise": "種目を追加", "favorite": "お気に入り", "unfavorite": "お気に入り解除"
+  },
+  "workout": {
+    "start": "開始", "pause": "一時停止", "resume": "再開", "finish": "終了", "discard": "破棄",
+    "addSet": "セット追加", "addExercise": "種目を追加",
+    "set": "セット", "reps": "回数", "weight": "重量", "rest": "休憩", "duration": "時間", "notes": "メモ",
+    "warmup": "ウォームアップ", "failure": "限界", "drop": "ドロップ", "newPR": "新記録!",
+    "leaveTitle": "ワークアウトを離れますか?", "leaveDescription": "進行中のワークアウトはバックグラウンドで続行されます。",
+    "stayHere": "ここに残る", "leave": "離れる"
+  },
+  "body": {
+    "title": "ボディトラッカー", "weight": "体重", "bodyFat": "体脂肪", "muscleMass": "筋肉量",
+    "addEntry": "記録を追加", "goals": "目標", "history": "履歴", "trends": "トレンド", "bmi": "BMI"
+  },
+  "stats": {
+    "title": "統計",
+    "tabs": { "workouts": "ワークアウト", "exercises": "種目", "records": "記録", "goals": "目標", "breakdown": "内訳" },
+    "totalWorkouts": "総ワークアウト数", "totalVolume": "総ボリューム", "totalSets": "総セット数", "totalReps": "総レップ数"
+  },
+  "settings": {
+    "title": "設定", "profile": "プロフィール", "name": "名前", "height": "身長 (cm)", "weight": "体重",
+    "saveProfile": "プロフィールを保存",
+    "supportCreator": "開発者をサポート 🙌", "rateApp": "FitLog X を気に入っていますか? ⭐", "rateOnPlay": "Google Play で評価",
+    "language": "言語", "languageHint": "アプリの言語を選択してください。",
+    "weightUnit": "重量単位", "weightUnitHint": "データはkgで保存されます。この設定は表示と入力にのみ影響します。",
+    "theme": "テーマ", "themeSystem": "システム", "themeLight": "ライト", "themeDark": "ダーク",
+    "keepScreenOn": "画面を常にオン", "keepScreenOnHint": "ワークアウト中",
+    "autoRest": "セット完了時に自動で休憩タイマー", "autoRestHint": "セット完了時に休憩タイマーを自動で開始します。",
+    "viewExercises": "種目を見る",
+    "data": "データ", "importBackup": "バックアップをインポート", "importCsv": "CSV インポート",
+    "importCsvHint": "FitNotes やその他の CSV 形式に対応",
+    "tutorial": "チュートリアル", "resetTutorials": "チュートリアルをリセット",
+    "dangerZone": "危険な操作", "resetExercises": "種目をリセット", "deleteAllData": "全データ削除",
+    "about": "アプリ情報", "whatsNew": "新機能",
+    "legal": "法的事項", "privacyPolicy": "プライバシーポリシー",
+    "feedback": "フィードバック", "sendFeedback": "フィードバック送信",
+    "feedbackHint": "ご意見・コメント・ご提案をお寄せください。",
+    "deleteAllTitle": "全データを削除しますか?",
+    "deleteAllDescription": "このデバイス上のすべてのワークアウト、ルーティン、計測値、目標、プロフィール、設定が完全に削除されます。元に戻せません。",
+    "typeDeleteToConfirm": "確認のため {{word}} と入力してください:",
+    "resetExercisesTitle": "種目をリセットしますか?",
+    "resetExercisesDescription": "ライブラリがデフォルトの種目に置き換わり、カスタム種目は削除されます。元に戻せません。"
+  }
+}

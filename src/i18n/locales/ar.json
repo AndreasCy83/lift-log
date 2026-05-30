@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "حفظ", "cancel": "إلغاء", "delete": "حذف", "edit": "تعديل",
+    "close": "إغلاق", "done": "تم", "back": "رجوع", "next": "التالي",
+    "yes": "نعم", "no": "لا", "confirm": "تأكيد", "loading": "جارٍ التحميل…",
+    "search": "بحث", "add": "إضافة", "remove": "إزالة", "create": "إنشاء",
+    "update": "تحديث", "reset": "إعادة تعيين", "rename": "إعادة تسمية",
+    "copy": "نسخ", "move": "نقل", "share": "مشاركة",
+    "import": "استيراد", "export": "تصدير", "settings": "الإعدادات", "more": "المزيد", "ok": "حسناً"
+  },
+  "nav": { "home": "الرئيسية", "routines": "الروتينات", "body": "الجسم", "stats": "الإحصاءات", "settings": "الإعدادات" },
+  "home": {
+    "title": "الرئيسية", "startWorkout": "ابدأ التمرين", "quickStart": "بداية سريعة",
+    "recentWorkouts": "التمارين الأخيرة", "noWorkoutsYet": "لا توجد تمارين بعد",
+    "today": "اليوم", "yesterday": "أمس"
+  },
+  "routines": {
+    "title": "الروتينات",
+    "tabs": { "routines": "روتينات", "programs": "برامج" },
+    "newRoutine": "روتين جديد", "newProgram": "برنامج جديد",
+    "noRoutines": "لا توجد روتينات", "noPrograms": "لا توجد برامج",
+    "addExercise": "إضافة تمرين", "favorite": "مفضّل", "unfavorite": "إزالة من المفضلة"
+  },
+  "workout": {
+    "start": "ابدأ", "pause": "إيقاف مؤقت", "resume": "استئناف", "finish": "إنهاء", "discard": "تجاهل",
+    "addSet": "إضافة مجموعة", "addExercise": "إضافة تمرين",
+    "set": "مجموعة", "reps": "تكرارات", "weight": "الوزن", "rest": "راحة", "duration": "المدة", "notes": "ملاحظات",
+    "warmup": "إحماء", "failure": "إجهاد", "drop": "تنازلي", "newPR": "رقم قياسي جديد!",
+    "leaveTitle": "مغادرة التمرين؟", "leaveDescription": "سيستمر تمرينك النشط في الخلفية.",
+    "stayHere": "البقاء هنا", "leave": "مغادرة"
+  },
+  "body": {
+    "title": "متتبع الجسم", "weight": "الوزن", "bodyFat": "نسبة الدهون", "muscleMass": "الكتلة العضلية",
+    "addEntry": "إضافة سجل", "goals": "الأهداف", "history": "السجل", "trends": "الاتجاهات", "bmi": "مؤشر كتلة الجسم"
+  },
+  "stats": {
+    "title": "الإحصاءات",
+    "tabs": { "workouts": "تمارين", "exercises": "حركات", "records": "أرقام قياسية", "goals": "أهداف", "breakdown": "تفصيل" },
+    "totalWorkouts": "إجمالي التمارين", "totalVolume": "إجمالي الحجم", "totalSets": "إجمالي المجموعات", "totalReps": "إجمالي التكرارات"
+  },
+  "settings": {
+    "title": "الإعدادات", "profile": "الملف الشخصي", "name": "الاسم", "height": "الطول (سم)", "weight": "الوزن",
+    "saveProfile": "حفظ الملف الشخصي",
+    "supportCreator": "ادعم المطور 🙌", "rateApp": "تستمتع بـ FitLog X؟ ⭐", "rateOnPlay": "قيّم على Google Play",
+    "language": "اللغة", "languageHint": "اختر لغة التطبيق المفضلة.",
+    "weightUnit": "وحدة الوزن", "weightUnitHint": "تُخزَّن البيانات بالكيلوغرام داخلياً. يؤثر هذا الإعداد على العرض والإدخال فقط.",
+    "theme": "المظهر", "themeSystem": "النظام", "themeLight": "فاتح", "themeDark": "داكن",
+    "keepScreenOn": "إبقاء الشاشة مضاءة", "keepScreenOnHint": "أثناء التمارين",
+    "autoRest": "بدء مؤقت الراحة تلقائياً", "autoRestHint": "يبدأ مؤقت الراحة تلقائياً عند إكمال المجموعة.",
+    "viewExercises": "عرض التمارين",
+    "data": "البيانات", "importBackup": "استيراد نسخة احتياطية", "importCsv": "استيراد CSV",
+    "importCsvHint": "يدعم FitNotes وصيغ CSV الأخرى",
+    "tutorial": "البرنامج التعليمي", "resetTutorials": "إعادة تعيين البرامج التعليمية",
+    "dangerZone": "منطقة الخطر", "resetExercises": "إعادة تعيين التمارين", "deleteAllData": "حذف جميع البيانات",
+    "about": "حول", "whatsNew": "ما الجديد",
+    "legal": "قانوني", "privacyPolicy": "سياسة الخصوصية",
+    "feedback": "تعليقات", "sendFeedback": "إرسال تعليقات",
+    "feedbackHint": "شاركنا أفكارك وتعليقاتك واقتراحاتك.",
+    "deleteAllTitle": "حذف جميع البيانات؟",
+    "deleteAllDescription": "سيتم حذف جميع التمارين والروتينات والقياسات والأهداف والملف الشخصي والإعدادات نهائياً من هذا الجهاز. لا يمكن التراجع.",
+    "typeDeleteToConfirm": "اكتب {{word}} للتأكيد:",
+    "resetExercisesTitle": "إعادة تعيين التمارين؟",
+    "resetExercisesDescription": "سيتم استبدال مكتبتك بالتمارين الافتراضية. تُحذف التمارين المخصصة. لا يمكن التراجع."
+  }
+}

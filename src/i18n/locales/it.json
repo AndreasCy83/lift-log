@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "Salva", "cancel": "Annulla", "delete": "Elimina", "edit": "Modifica",
+    "close": "Chiudi", "done": "Fatto", "back": "Indietro", "next": "Avanti",
+    "yes": "Sì", "no": "No", "confirm": "Conferma", "loading": "Caricamento…",
+    "search": "Cerca", "add": "Aggiungi", "remove": "Rimuovi", "create": "Crea",
+    "update": "Aggiorna", "reset": "Reimposta", "rename": "Rinomina",
+    "copy": "Copia", "move": "Sposta", "share": "Condividi",
+    "import": "Importa", "export": "Esporta", "settings": "Impostazioni", "more": "Altro", "ok": "OK"
+  },
+  "nav": { "home": "Home", "routines": "Routine", "body": "Corpo", "stats": "Statistiche", "settings": "Impostazioni" },
+  "home": {
+    "title": "Home", "startWorkout": "Inizia allenamento", "quickStart": "Avvio rapido",
+    "recentWorkouts": "Allenamenti recenti", "noWorkoutsYet": "Nessun allenamento",
+    "today": "Oggi", "yesterday": "Ieri"
+  },
+  "routines": {
+    "title": "Routine",
+    "tabs": { "routines": "Routine", "programs": "Programmi" },
+    "newRoutine": "Nuova routine", "newProgram": "Nuovo programma",
+    "noRoutines": "Nessuna routine", "noPrograms": "Nessun programma",
+    "addExercise": "Aggiungi esercizio", "favorite": "Preferito", "unfavorite": "Rimuovi preferito"
+  },
+  "workout": {
+    "start": "Inizia", "pause": "Pausa", "resume": "Riprendi", "finish": "Termina", "discard": "Annulla",
+    "addSet": "Aggiungi serie", "addExercise": "Aggiungi esercizio",
+    "set": "Serie", "reps": "Rip", "weight": "Peso", "rest": "Recupero", "duration": "Durata", "notes": "Note",
+    "warmup": "Riscaldamento", "failure": "Cedimento", "drop": "Drop", "newPR": "Nuovo record!",
+    "leaveTitle": "Uscire dall'allenamento?", "leaveDescription": "L'allenamento attivo continuerà in background.",
+    "stayHere": "Resta qui", "leave": "Esci"
+  },
+  "body": {
+    "title": "Monitor corpo", "weight": "Peso", "bodyFat": "Massa grassa", "muscleMass": "Massa muscolare",
+    "addEntry": "Aggiungi voce", "goals": "Obiettivi", "history": "Cronologia", "trends": "Tendenze", "bmi": "IMC"
+  },
+  "stats": {
+    "title": "Statistiche",
+    "tabs": { "workouts": "Allenamenti", "exercises": "Esercizi", "records": "Record", "goals": "Obiettivi", "breakdown": "Dettaglio" },
+    "totalWorkouts": "Allenamenti totali", "totalVolume": "Volume totale", "totalSets": "Serie totali", "totalReps": "Rip totali"
+  },
+  "settings": {
+    "title": "Impostazioni", "profile": "Profilo", "name": "Nome", "height": "Altezza (cm)", "weight": "Peso",
+    "saveProfile": "Salva profilo",
+    "supportCreator": "Sostieni il creatore 🙌", "rateApp": "Ti piace FitLog X? ⭐", "rateOnPlay": "Valuta su Google Play",
+    "language": "Lingua", "languageHint": "Scegli la lingua dell'app.",
+    "weightUnit": "Unità di peso", "weightUnitHint": "I dati sono salvati in kg. Questa impostazione influenza solo visualizzazione e input.",
+    "theme": "Tema", "themeSystem": "Sistema", "themeLight": "Chiaro", "themeDark": "Scuro",
+    "keepScreenOn": "Tieni schermo acceso", "keepScreenOnHint": "Durante gli allenamenti",
+    "autoRest": "Avvio auto del timer di recupero", "autoRestHint": "Avvia il timer quando completi una serie.",
+    "viewExercises": "Vedi esercizi",
+    "data": "Dati", "importBackup": "Importa backup", "importCsv": "Importa CSV",
+    "importCsvHint": "Compatibile con FitNotes e altri formati CSV",
+    "tutorial": "Tutorial", "resetTutorials": "Reimposta tutorial",
+    "dangerZone": "Zona pericolosa", "resetExercises": "Reimposta esercizi", "deleteAllData": "Elimina tutti i dati",
+    "about": "Info", "whatsNew": "Novità",
+    "legal": "Legale", "privacyPolicy": "Privacy Policy",
+    "feedback": "Feedback", "sendFeedback": "Invia feedback",
+    "feedbackHint": "Condividi i tuoi pensieri, commenti e suggerimenti.",
+    "deleteAllTitle": "Eliminare tutti i dati?",
+    "deleteAllDescription": "Tutti gli allenamenti, routine, misure, obiettivi, profilo e impostazioni saranno eliminati da questo dispositivo. Azione irreversibile.",
+    "typeDeleteToConfirm": "Digita {{word}} per confermare:",
+    "resetExercisesTitle": "Reimpostare gli esercizi?",
+    "resetExercisesDescription": "La tua libreria sarà sostituita con gli esercizi predefiniti. Quelli personalizzati saranno rimossi. Azione irreversibile."
+  }
+}
