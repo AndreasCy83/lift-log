@@ -762,7 +762,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                     className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                    title="Exercise stats"
+                    title={t('workout.tooltips.exerciseStats')}
                     data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                   >
                     <BarChart3 className="h-[18px] w-[18px]" />
