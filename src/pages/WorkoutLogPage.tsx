@@ -948,8 +948,8 @@ export default function WorkoutLogPage() {
 
               {!isExpanded && (
                 <div className="flex gap-2 text-xs text-muted-foreground">
-                  <span>{sets.length} sets</span>
-                  {we.defaultRestSeconds && <span>• {Math.floor(we.defaultRestSeconds / 60)}:{(we.defaultRestSeconds % 60).toString().padStart(2, '0')} rest</span>}
+                  <span>{t('workout.setsCount', { count: sets.length })}</span>
+                  {we.defaultRestSeconds && <span>• {t('workout.restSuffix', { time: `${Math.floor(we.defaultRestSeconds / 60)}:${(we.defaultRestSeconds % 60).toString().padStart(2, '0')}` })}</span>}
                 </div>
               )}
             </SortableExerciseCard>
