@@ -1,74 +1,56 @@
-# Multi-Language Support
+## Goal
+Localize all user-facing strings on the Home screen using the existing `react-i18next` setup. No dependency changes, no other screens touched.
 
-Add full app internationalization with a language picker in Settings. All UI strings, exercise names, and seeded program/routine names will be translatable.
+## Scope (files)
+- `src/pages/HomePage.tsx` — main Home screen
+- `src/components/RecoveryFatigueCard.tsx` — embedded on Home
+- `src/i18n/locales/*.json` (all 10) — extend `home` namespace
 
-## Languages (10)
-English (default/fallback), French, Italian, Portuguese, Russian, Turkish, Chinese (Simplified), Hindi, Arabic, Japanese.
+## Strings to translate on Home
+Header: `Fit Log X` (brand — keep as-is), `Start Workout`
+Calendar: weekday short labels (Mon–Sun), `Show 3 weeks`, `Show full month`, month range separator
+Selected day card: `Today`, `No workout logged`, `View Workout →`, `Copy Workout`, `Move this Workout`, `exercise/exercises` (pluralized), `Duration:`, `Vol:`, `Reps:`, `Sets:`, `Dist:`, `Time:`
+Muscle Group Breakdown: `Muscle Group Breakdown` + category names already come from seed data (NOT translated per seed rule)
+Delete dialog: `Delete Workout`, description, `Yes`, `No`
+Copy dialog: `Copy Workout`, `Select a date to copy this workout to.`, `Copy to {{date}}`
+Move dialog: `Move Workout`, `Select a date to move this workout to.`, `Move to {{date}}`
+RecoveryFatigueCard: card title + band labels (`Low`, `Moderate`, `High`, `Very High` short forms) + `Ready` label — only translate the visible chrome shown in the card header/legend, keep computed muscle names as-is (seeded).
 
-## Scope
-Every screen: Home, Workouts, Routines, Programs, Body Tracker, Stats, Settings, all dialogs, toasts, empty states, bottom nav, splash, onboarding, tutorial overlays, changelog, privacy policy.
-
-Built-in exercise names (Bench Press, Deadlift…) and seeded program/routine names (5 Day Split Hypertrophy, Push Day…) translated too. User-created exercises/routines stay as the user typed them.
-
-## Approach
-
-### Library
-Use `react-i18next` + `i18next` + `i18next-browser-languagedetector`. Mature, offline-friendly (no network), tiny runtime, works perfectly with Capacitor.
-
-### File structure
+## Key structure (added under existing `home.*`)
 ```
-src/i18n/
-  index.ts              ← init, language detection, persistence
-  languages.ts          ← language list + native labels + RTL flag
-  locales/
-    en.json             ← source of truth
-    fr.json  it.json  pt.json  ru.json  tr.json
-    zh.json  hi.json  ar.json  ja.json
-```
-
-Each locale file is one flat JSON namespaced by area:
-```json
-{
-  "nav": { "home": "...", "workouts": "..." },
-  "settings": { "title": "...", "language": "...", ... },
-  "workout": { "addSet": "...", "rest": "...", ... },
-  "exercise": { "ex-bench-press": "Bench Press", ... },
-  "program": { "program-builtin-5daysplit": "5 Day Split Hypertrophy", ... },
-  "routine": { "Push Day": "...", ... }
+home: {
+  brand, startWorkout, today, noWorkoutLogged, viewWorkout,
+  showThreeWeeks, showFullMonth,
+  exercise_one, exercise_other,
+  duration, vol, reps, sets, dist, time,
+  muscleGroupBreakdown,
+  weekdays: { mon, tue, wed, thu, fri, sat, sun },
+  actions: { copyWorkout, moveWorkout },
+  delete: { title, description, yes, no },
+  copy: { title, description, cta },
+  move: { title, description, cta },
+  recovery: { title, ready, bandLow, bandModerate, bandHigh, bandVeryHigh }
 }
 ```
+Uses i18next plural suffix (`_one`/`_other`) for the exercise count.
 
-### Settings integration
-- Add `language: SupportedLang` to `AppSettings` in `storage.ts` (default `'en'`, falls back to device language on first launch via the detector).
-- Add a "Language" card in `SettingsPage.tsx` above "Weight Unit" — a `Select` showing each language in its native script (English, Français, Italiano, Português, Русский, Türkçe, 中文, हिन्दी, العربية, 日本語).
-- Selecting persists to localStorage via `saveSettings` and calls `i18n.changeLanguage(...)`.
+## Implementation
+1. Extend `home` namespace in `en.json` with all keys above.
+2. Add translated equivalents in the other 9 locale files (fr, it, pt, ru, tr, zh, hi, ar, ja). Brand name kept in Latin. Arabic strings stay logical-order; RTL already wired globally.
+3. In `HomePage.tsx`: add `const { t } = useTranslation();`, replace every literal string above. Pluralize via `t('home.exercise', { count })`. Interpolate dates via `t('home.copy.cta', { date: format(...) })`.
+4. Replace `WEEKDAYS` constant with a `useMemo` that reads from `t`.
+5. In `RecoveryFatigueCard.tsx`: thread `useTranslation` and translate header + band pills + `Ready` label only. Muscle names stay as computed (seed-derived).
+6. No styling changes beyond letting flex items truncate (already in place) — verify in Arabic and Russian (long words).
 
-### RTL handling
-Arabic only. When `ar` is active, set `document.documentElement.dir = "rtl"`; otherwise `"ltr"`. Tailwind classes already work with logical properties for most layouts; any directional `left-*`/`right-*` that breaks will be swapped to `start-*`/`end-*` where needed.
+## Out of scope
+- Routines / Programs / Workout / Body / Stats screens
+- Seed/exercise/category/program/routine names
+- i18n dependency versions or init code
+- Any business logic, storage, navigation
 
-### Exercise & program translation strategy
-- Exercises: `getExerciseDisplayName(ex)` helper — returns `t('exercise.'+ex.id, { defaultValue: ex.name })`. Used everywhere instead of `ex.name` directly. Custom exercises (no translation key) fall through to stored name automatically.
-- Seeded programs/routines: same pattern with `program.*` and `routine.*` namespaces, keyed by stable IDs already used in `storage.ts`.
-- Storage stays English — no migration needed. Switching language re-renders display only.
-
-### Translation source
-I'll write all 10 locale files in code. English is authoritative; the other 9 are translated by me. You don't need to upload anything. After delivery you can refine any wording by editing the relevant `src/i18n/locales/*.json` file.
-
-## Implementation steps
-
-1. **Install** `i18next`, `react-i18next`, `i18next-browser-languagedetector`.
-2. **Create `src/i18n/`** with init module, language list, and the 10 locale JSONs (full UI + exercise + program/routine keys).
-3. **Wire init** in `src/main.tsx` before `<App />` renders.
-4. **Extend `AppSettings`** with `language` field + migration default.
-5. **Refactor all screens/components** to use `useTranslation()` + `t('...')`. Touches: BottomNav, HomePage, WorkoutLogPage, RoutinesPage, ProgramDetailPage, RoutineDetailPage, BodyTrackerPage, StatsPage (+ all stats tabs), SettingsPage, OnboardingWizard, SplashScreen, ChangelogDialog, PrivacyPolicyModal, all dialogs/sheets under `components/`, all toasts.
-6. **Replace `ex.name`/program name reads** with the display helpers.
-7. **Add language picker UI** to SettingsPage.
-8. **Apply `dir` attribute** based on active language.
-9. **QA pass** by switching each language in preview.
-
-## Technical notes
-
-- All translation files bundled at build time — fully offline, no runtime fetch. Bundle size impact ≈ 80–150 KB gzipped total for 10 languages of this app's surface.
-- Plurals use i18next's built-in plural rules (handles ru/ar/pl-style complexity automatically).
-- Date/number formatting will use `Intl.DateTimeFormat`/`Intl.NumberFormat` with the active locale where dates are user-facing.
-- This is a large mechanical refactor across ~40 files. No business logic changes — kg storage, calculations, persistence, RLS-equivalent localStorage keys all untouched.
+## QA checklist
+- Switch language in Settings → Home updates immediately
+- Arabic: layout mirrors via existing `dir="rtl"` on `<html>`
+- Missing keys fall back to English (already configured via `fallbackLng: 'en'`)
+- Pluralization renders correctly for 0/1/many exercises
+- No layout overflow in long-string locales (ru/de-style words)
