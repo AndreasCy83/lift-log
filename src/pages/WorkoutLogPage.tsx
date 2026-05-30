@@ -1075,7 +1075,7 @@ export default function WorkoutLogPage() {
                     <div className="space-y-1.5">
                       {programs.length > 0 && (
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold px-1">
-                          My Routines
+                          {t('workout.routinePicker.myRoutines')}
                         </div>
                       )}
                       <div className="space-y-2">
