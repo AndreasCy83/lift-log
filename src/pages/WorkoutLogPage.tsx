@@ -336,7 +336,7 @@ export default function WorkoutLogPage() {
       restSeconds: last.restSeconds ?? null,
     });
     forceUpdate(n => n + 1);
-    toast('Last set duplicated');
+    toast(t('workout.toasts.lastSetDuplicated'));
   };
 
   /** Has the user entered any meaningful data in the current exercise's sets? */
