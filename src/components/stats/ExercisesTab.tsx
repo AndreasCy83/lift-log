@@ -104,6 +104,7 @@ function computeMetric(
 }
 
 export default function ExercisesTab() {
+  const tExName = useExerciseName();
   const exercises = useMemo(() => {
     const all = getExercises();
     const withHistory = all.filter(e => getExerciseHistory(e.id).length > 0);
