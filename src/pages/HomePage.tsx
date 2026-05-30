@@ -286,7 +286,7 @@ export default function HomePage() {
         <div className="gym-card mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-display text-sm font-semibold">
-              {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
+              {isToday(selectedDate) ? t('home.today') : format(selectedDate, 'EEE, MMM d')}
             </h3>
             {selectedWorkout && (
               <div className="flex items-center gap-1">
@@ -298,10 +298,10 @@ export default function HomePage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => { setPickerDate(undefined); setCopyDialogOpen(true); }}>
-                      Copy Workout
+                      {t('home.actions.copyWorkout')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
-                      Move this Workout
+                      {t('home.actions.moveWorkout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -315,7 +315,7 @@ export default function HomePage() {
                   onClick={() => navigate(`/workout/${selectedDateStr}`)}
                   className="text-xs font-medium text-primary ml-1"
                 >
-                  View Workout →
+                  {t('home.viewWorkout')}
                 </button>
               </div>
             )}
