@@ -15,6 +15,7 @@ import { computeCelebrationData, formatDurationShort, type WorkoutCelebrationDat
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { getSettings } from '@/lib/storage';
 import { cn } from '@/lib/utils';
+import { translateExerciseName } from '@/i18n/exerciseNames';
 import appIcon from '@/assets/app-icon.png';
 
 interface Props {
@@ -310,7 +311,7 @@ const highlightsCard: CardDef = {
             <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-wider">
               <TrendingUp className="w-4 h-4" /> Top Volume
             </div>
-            <div className="mt-1 text-lg font-bold text-white truncate">{d.topVolumeExercise!.name}</div>
+            <div className="mt-1 text-lg font-bold text-white truncate">{translateExerciseName(d.topVolumeExercise!)}</div>
             <div className="text-2xl font-extrabold text-white mt-0.5 tabular-nums">
               {fmtNum(dw(d.topVolumeExercise!.volumeKg))} {unit}
             </div>

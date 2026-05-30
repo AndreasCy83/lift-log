@@ -13,6 +13,7 @@ import {
 import { getRoutines, getPrograms } from '@/lib/storage';
 import { appendRoutineToWorkout } from '@/lib/routineRunner';
 import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
+import { useExerciseName } from '@/i18n/exerciseNames';
 import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
   DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
@@ -95,6 +96,7 @@ function SortableExerciseCard({ id, children }: { id: string; children: React.Re
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
+  const tExName = useExerciseName();
   const allExercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
   const globalWeightUnit = getSettings().weightUnit;
@@ -597,7 +599,10 @@ export default function WorkoutLogPage() {
   };
 
   const getEx = (exId: string) => exercises.find(e => e.id === exId);
-  const getExName = (exId: string) => getEx(exId)?.name ?? 'Unknown';
+  const getExName = (exId: string) => {
+    const e = getEx(exId);
+    return e ? tExName(e) : 'Unknown';
+  };
   const getCatName = (exId: string) => {
     const ex = getEx(exId);
     return ex ? categories.find(c => c.id === ex.categoryId)?.name ?? '' : '';

@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
 import { getCategoryColor } from '@/lib/categoryColors';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 const SET_TYPE_ICONS: Record<SetType, React.ReactNode> = {
   WEIGHT_REPS: <Dumbbell className="h-3.5 w-3.5" />,
@@ -24,6 +25,7 @@ interface Props {
 export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
   const [exercises, setExercises] = useState(() => getExercises());
   const categories = useMemo(() => getCategories(), []);
+  const tExName = useExerciseName();
   const usageFrequency = useMemo(() => getExerciseUsageFrequency(), []);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -194,7 +196,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                 </div>
 
                 <div className="flex-1">
-                  <span className="text-sm font-medium">{ex.name}</span>
+                  <span className="text-sm font-medium">{tExName(ex)}</span>
                   <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5 flex-wrap">
                     <span
                       className="h-1.5 w-1.5 rounded-full shrink-0"

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import type { WorkoutSet } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 const GRAPH_OPTIONS = [
   { value: 'e1rm', label: 'Estimated 1RM' },
@@ -103,6 +104,7 @@ function computeMetric(
 }
 
 export default function ExercisesTab() {
+  const tExName = useExerciseName();
   const exercises = useMemo(() => {
     const all = getExercises();
     const withHistory = all.filter(e => getExerciseHistory(e.id).length > 0);
@@ -214,7 +216,7 @@ export default function ExercisesTab() {
               </SelectTrigger>
               <SelectContent>
                 {exercises.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                  <SelectItem key={ex.id} value={ex.id}>{tExName(ex)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -373,7 +375,7 @@ export default function ExercisesTab() {
           open={showHistory}
           onOpenChange={setShowHistory}
           exerciseId={selectedEx.id}
-          exerciseName={selectedEx.name}
+          exerciseName={tExName(selectedEx)}
           weightUnit={selectedEx.weightUnit}
         />
       )}

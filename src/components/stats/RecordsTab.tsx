@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import type { Exercise, WorkoutSet } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 type SortMode = 'recent' | 'alpha' | 'category';
 const SORT_LABELS: Record<SortMode, string> = {
@@ -40,6 +41,7 @@ function hasMeaningfulData(s: WorkoutSet) {
 }
 
 export default function RecordsTab() {
+  const tExName = useExerciseName();
   const exercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
   const workouts = useMemo(() => getWorkouts(), []);
@@ -77,7 +79,7 @@ export default function RecordsTab() {
     for (const [exId, sessions] of exSessionMap) {
       const ex = exercises.find(e => e.id === exId);
       // Tolerate orphan exerciseIds (e.g. deleted custom exercises) so PRs still appear
-      const exName = ex?.name ?? '(Custom exercise)';
+      const exName = ex ? tExName(ex) : '(Custom exercise)';
       const exCategoryId = ex?.categoryId ?? '';
 
       let e1rm: PRData['e1rm'] = null;
@@ -148,7 +150,7 @@ export default function RecordsTab() {
     }
 
     return results;
-  }, [exercises, categories, workouts, allWEs, allSets]);
+  }, [exercises, categories, workouts, allWEs, allSets, tExName]);
 
   // Categories that have PR data
   const availableCategories = useMemo(() => {
@@ -321,7 +323,7 @@ export default function RecordsTab() {
           open={!!historyExId}
           onOpenChange={open => { if (!open) setHistoryExId(null); }}
           exerciseId={historyEx.id}
-          exerciseName={historyEx.name}
+          exerciseName={tExName(historyEx)}
           weightUnit={historyEx.weightUnit ?? 'kg'}
         />
       )}

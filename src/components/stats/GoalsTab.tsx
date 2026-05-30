@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { ExerciseGoal, Exercise, WorkoutSet } from '@/types/fitness';
+import { useExerciseName, translateExerciseName } from '@/i18n/exerciseNames';
 
 const GOAL_TYPES = [
   { value: 'MAX_WEIGHT', label: 'Max Weight', needsWeight: true, needsReps: false },
@@ -133,6 +134,7 @@ interface GoalsTabProps {
 
 export default function GoalsTab({ onAddGoal }: GoalsTabProps) {
   const exercises = useMemo(() => getExercises(), []);
+  const tExName = useExerciseName();
   const [goals, setGoals] = useState<ExerciseGoal[]>(() => getExerciseGoals());
   const [filterExId, setFilterExId] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -278,7 +280,7 @@ export default function GoalsTab({ onAddGoal }: GoalsTabProps) {
             <SelectContent>
               <SelectItem value="all">All Exercises</SelectItem>
               {exercisesWithGoals.map(ex => (
-                <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                <SelectItem key={ex.id} value={ex.id}>{tExName(ex)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -347,7 +349,7 @@ function GoalCard({
     <div className={`gym-card space-y-3 ${allAchieved ? 'ring-1 ring-primary/50' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-display text-sm font-semibold">{exercise.name}</h3>
+          <h3 className="font-display text-sm font-semibold">{translateExerciseName(exercise)}</h3>
           {allAchieved && <Check className="h-4 w-4 text-primary" />}
         </div>
       </div>
@@ -477,7 +479,7 @@ function AddGoalDialog({
               </SelectTrigger>
               <SelectContent>
                 {exercises.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                  <SelectItem key={ex.id} value={ex.id}>{translateExerciseName(ex)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

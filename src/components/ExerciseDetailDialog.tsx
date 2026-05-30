@@ -5,6 +5,7 @@ import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import ExerciseGoalsDialog from '@/components/ExerciseGoalsDialog';
 import type { Exercise } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 interface Props {
   open: boolean;
@@ -14,14 +15,16 @@ interface Props {
 
 export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: Props) {
   const [tab, setTab] = useState('history');
+  const tExName = useExerciseName();
 
   if (!exercise) return null;
+  const displayName = tExName(exercise);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[85vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-4 pt-4 pb-2">
-          <DialogTitle className="font-display text-base">{exercise.name}</DialogTitle>
+          <DialogTitle className="font-display text-base">{displayName}</DialogTitle>
         </DialogHeader>
 
         <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
@@ -34,18 +37,18 @@ export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: P
           <TabsContent value="history" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
             <ExerciseDetailPanel
               exerciseId={exercise.id}
-              exerciseName={exercise.name}
+              exerciseName={displayName}
               weightUnit={exercise.weightUnit}
               onPrefill={() => {}}
             />
           </TabsContent>
 
           <TabsContent value="stats" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
-            <InlineStats exerciseId={exercise.id} exerciseName={exercise.name} weightUnit={exercise.weightUnit} />
+            <InlineStats exerciseId={exercise.id} exerciseName={displayName} weightUnit={exercise.weightUnit} />
           </TabsContent>
 
           <TabsContent value="goals" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
-            <InlineGoals exerciseId={exercise.id} exerciseName={exercise.name} weightUnit={exercise.weightUnit} />
+            <InlineGoals exerciseId={exercise.id} exerciseName={displayName} weightUnit={exercise.weightUnit} />
           </TabsContent>
         </Tabs>
       </DialogContent>
