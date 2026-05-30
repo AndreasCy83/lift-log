@@ -246,7 +246,7 @@ export default function WorkoutLogPage() {
     return () => clearTimeout(t);
   }, [expandedExercise, tutorialOpen]);
 
-  if (!date || !workout) return <div className="p-4">Invalid date</div>;
+  if (!date || !workout) return <div className="p-4">{t('workout.invalidDate')}</div>;
 
   const getLastSessionFirstSet = (exerciseId: string) => {
     const history = getExerciseHistory(exerciseId);
