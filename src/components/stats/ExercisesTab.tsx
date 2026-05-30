@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import type { WorkoutSet } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 const GRAPH_OPTIONS = [
   { value: 'e1rm', label: 'Estimated 1RM' },
