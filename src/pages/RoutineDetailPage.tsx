@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import type { RoutineExercise, RoutinePopulationMode } from '@/types/fitness';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import RoutineExerciseSetupSheet from '@/components/RoutineExerciseSetupSheet';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 const MODE_SHORT: Record<RoutinePopulationMode, string> = {
   copy_previous: 'Copy previous',
