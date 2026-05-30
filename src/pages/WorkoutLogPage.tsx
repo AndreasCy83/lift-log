@@ -754,7 +754,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                     className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
-                    title="Exercise goals"
+                    title={t('workout.tooltips.exerciseGoals')}
                     data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
                   >
                     <Trophy className="h-[18px] w-[18px]" />
