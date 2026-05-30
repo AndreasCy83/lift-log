@@ -679,20 +679,20 @@ export default function WorkoutLogPage() {
       <AlertDialog open={incompleteWarnOpen} onOpenChange={setIncompleteWarnOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Incomplete Sets Remaining</AlertDialogTitle>
+            <AlertDialogTitle>{t('workout.incompleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Some sets are not marked as completed yet. Do you want to finish the workout anyway or return and complete them?
+              {t('workout.incompleteDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIncompleteWarnOpen(false)}>
-              Complete Exercises
+              {t('workout.incompleteDialog.complete')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => { setIncompleteWarnOpen(false); performFinishWorkout(); }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Finish Anyway
+              {t('workout.incompleteDialog.finishAnyway')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
