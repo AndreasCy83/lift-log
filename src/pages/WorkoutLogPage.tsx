@@ -665,11 +665,11 @@ export default function WorkoutLogPage() {
               </button>
             </div>
           )}
-          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
+          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title={t('workout.timers.restTimer')}>
             <Timer className="h-4 w-4" />
           </Button>
           <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground">
-            Finish
+            {t('workout.finish')}
           </Button>
         </div>
       </header>
