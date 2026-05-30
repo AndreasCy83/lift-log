@@ -1002,7 +1002,7 @@ export default function WorkoutLogPage() {
           onClick={() => setShowAddExercise(true)}
           className="w-full gym-card flex items-center justify-center gap-2 py-4 text-sm font-medium text-primary border-dashed border-2 border-primary/30 hover:border-primary/50 transition-colors"
         >
-          <Plus className="h-4 w-4" /> Add Exercise
+          <Plus className="h-4 w-4" /> {t('workout.addExercise')}
         </button>
 
         {/* Routines Button (secondary) */}
