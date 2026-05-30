@@ -152,7 +152,115 @@
     "leaveTitle": "वर्कआउट छोड़ें?",
     "leaveDescription": "आपका सक्रिय वर्कआउट पृष्ठभूमि में जारी रहेगा।",
     "stayHere": "यहाँ रहें",
-    "leave": "छोड़ें"
+    "leave": "छोड़ें",
+    "title": "वर्कआउट",
+    "unknown": "अज्ञात",
+    "invalidDate": "अमान्य तिथि",
+    "commentPlaceholder": "इस वर्कआउट के बारे में टिप्पणी जोड़ें…",
+    "exerciseNotePlaceholder": "इस व्यायाम के लिए नोट जोड़ें…",
+    "setNotePlaceholder": "इस सेट के लिए नोट जोड़ें…",
+    "duplicateLastSet": "अंतिम सेट की कॉपी",
+    "routinesButton": "रूटीन",
+    "addExerciseDialogTitle": "व्यायाम जोड़ें",
+    "setsCount_one": "{{count}} सेट",
+    "setsCount_other": "{{count}} सेट",
+    "restSuffix": "{{time}} विश्राम",
+    "timers": {
+      "startWorkout": "टाइमर शुरू करें",
+      "pauseWorkout": "टाइमर रोकें",
+      "resumeWorkout": "टाइमर जारी रखें",
+      "restTimer": "विश्राम टाइमर"
+    },
+    "tooltips": {
+      "exerciseNote": "व्यायाम नोट",
+      "exerciseGoals": "व्यायाम लक्ष्य",
+      "exerciseStats": "व्यायाम आँकड़े",
+      "removeExercise": "व्यायाम हटाएँ",
+      "setNote": "सेट नोट",
+      "markComplete": "पूर्ण के रूप में चिह्नित करें",
+      "markIncomplete": "अधूरा के रूप में चिह्नित करें",
+      "deleteSet": "सेट हटाएँ"
+    },
+    "headers": {
+      "set": "सेट",
+      "type": "प्रकार"
+    },
+    "setTags": {
+      "normal": "सामान्य",
+      "warmup": "वार्म-अप",
+      "dropset": "ड्रॉप",
+      "failure": "थकान"
+    },
+    "totals": {
+      "volume": "कुल वॉल्यूम",
+      "reps": "कुल दोहराव",
+      "distance": "कुल दूरी",
+      "duration": "कुल अवधि",
+      "min": "मिनट"
+    },
+    "incompleteDialog": {
+      "title": "अधूरे सेट बचे हैं",
+      "description": "कुछ सेट पूर्ण के रूप में चिह्नित नहीं हैं। क्या आप वैसे ही समाप्त करना चाहते हैं या वापस जाकर पूरा करना चाहते हैं?",
+      "complete": "व्यायाम पूरे करें",
+      "finishAnyway": "फिर भी समाप्त करें"
+    },
+    "deleteSetDialog": {
+      "title": "यह सेट हटाएँ?",
+      "description": "यह सेट हटा दिया जाएगा और शेष सेट पुनः क्रमांकित होंगे। यह क्रिया पूर्ववत नहीं हो सकती।",
+      "confirm": "हाँ, हटाएँ"
+    },
+    "repeatDialog": {
+      "title": "मौजूदा सेट बदलें?",
+      "description": "इस व्यायाम के मौजूदा सेट पिछली रूटीन से बदल दिए जाएँगे।",
+      "confirm": "बदलें"
+    },
+    "routinePicker": {
+      "title": "रूटीन लागू करें",
+      "empty": "अभी तक कोई रूटीन नहीं।",
+      "goToRoutines": "रूटीन पर जाएँ",
+      "hint": "व्यायाम इस वर्कआउट में जोड़े जाएँगे। मौजूदा व्यायाम बने रहेंगे।",
+      "myRoutines": "मेरी रूटीन"
+    },
+    "toasts": {
+      "lastSetDuplicated": "अंतिम सेट कॉपी हुआ",
+      "previousRoutineLoaded": "पिछली रूटीन लोड हुई",
+      "addedFromRoutine_one": "{{name}} से {{count}} व्यायाम जोड़ा गया",
+      "addedFromRoutine_other": "{{name}} से {{count}} व्यायाम जोड़े गए",
+      "routineEmpty": "{{name}} में कोई व्यायाम नहीं",
+      "enterBeforeComplete": "इस सेट को पूर्ण करने से पहले {{fields}} दर्ज करें"
+    },
+    "fields": {
+      "weight": "वज़न",
+      "reps": "दोहराव",
+      "distance": "दूरी",
+      "duration": "अवधि"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "व्यायाम नोट्स",
+        "text": "पूरे व्यायाम के लिए नोट्स जोड़ने हेतु यहाँ टैप करें।"
+      },
+      "goals": {
+        "title": "व्यायाम लक्ष्य",
+        "text": "वज़न/दोहराव लक्ष्य सेट और ट्रैक करने हेतु यहाँ टैप करें।"
+      },
+      "stats": {
+        "title": "व्यायाम आँकड़े",
+        "text": "पिछले प्रदर्शन, इतिहास और ग्राफ़ देखने हेतु यहाँ टैप करें।"
+      },
+      "timer": {
+        "title": "वैश्विक टाइमर",
+        "text": "सभी सेट के लिए डिफ़ॉल्ट विश्राम टाइमर सेट करें।"
+      },
+      "setTag": {
+        "title": "सेट प्रकार",
+        "text": "सामान्य (N), वार्म-अप (W), ड्रॉप (D) और थकान (F) के बीच टैप करें।"
+      },
+      "setRest": {
+        "title": "सेट टाइमर",
+        "text": "इस सेट के बाद विश्राम को व्यक्तिगत रूप से अनुकूलित करें।"
+      }
+    }
   },
   "body": {
     "title": "बॉडी ट्रैकर",

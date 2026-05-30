@@ -152,7 +152,115 @@
     "leaveTitle": "Uscire dall'allenamento?",
     "leaveDescription": "L'allenamento attivo continuerà in background.",
     "stayHere": "Resta qui",
-    "leave": "Esci"
+    "leave": "Esci",
+    "title": "Allenamento",
+    "unknown": "Sconosciuto",
+    "invalidDate": "Data non valida",
+    "commentPlaceholder": "Aggiungi un commento su questo allenamento…",
+    "exerciseNotePlaceholder": "Aggiungi una nota per questo esercizio…",
+    "setNotePlaceholder": "Aggiungi una nota per questa serie…",
+    "duplicateLastSet": "Duplica ultima serie",
+    "routinesButton": "Routine",
+    "addExerciseDialogTitle": "Aggiungi esercizio",
+    "setsCount_one": "{{count}} serie",
+    "setsCount_other": "{{count}} serie",
+    "restSuffix": "{{time}} recupero",
+    "timers": {
+      "startWorkout": "Avvia timer",
+      "pauseWorkout": "Metti in pausa",
+      "resumeWorkout": "Riprendi timer",
+      "restTimer": "Timer di recupero"
+    },
+    "tooltips": {
+      "exerciseNote": "Nota esercizio",
+      "exerciseGoals": "Obiettivi esercizio",
+      "exerciseStats": "Statistiche esercizio",
+      "removeExercise": "Rimuovi esercizio",
+      "setNote": "Nota serie",
+      "markComplete": "Segna come completata",
+      "markIncomplete": "Segna come non completata",
+      "deleteSet": "Elimina serie"
+    },
+    "headers": {
+      "set": "Serie",
+      "type": "Tipo"
+    },
+    "setTags": {
+      "normal": "Normale",
+      "warmup": "Riscaldamento",
+      "dropset": "Drop",
+      "failure": "Cedimento"
+    },
+    "totals": {
+      "volume": "Volume totale",
+      "reps": "Rip totali",
+      "distance": "Distanza totale",
+      "duration": "Durata totale",
+      "min": "min"
+    },
+    "incompleteDialog": {
+      "title": "Serie non completate",
+      "description": "Alcune serie non sono ancora segnate come completate. Vuoi terminare comunque o tornare a completarle?",
+      "complete": "Completa esercizi",
+      "finishAnyway": "Termina comunque"
+    },
+    "deleteSetDialog": {
+      "title": "Eliminare questa serie?",
+      "description": "Questa serie sarà rimossa e le restanti rinumerate. L'azione non può essere annullata.",
+      "confirm": "Sì, elimina"
+    },
+    "repeatDialog": {
+      "title": "Sostituire le serie attuali?",
+      "description": "Le serie attuali di questo esercizio saranno sostituite con quelle dell'ultima sessione.",
+      "confirm": "Sostituisci"
+    },
+    "routinePicker": {
+      "title": "Applica una routine",
+      "empty": "Nessuna routine creata.",
+      "goToRoutines": "Vai alle routine",
+      "hint": "Gli esercizi saranno aggiunti a questo allenamento. Gli esercizi attuali sono mantenuti.",
+      "myRoutines": "Le mie routine"
+    },
+    "toasts": {
+      "lastSetDuplicated": "Ultima serie duplicata",
+      "previousRoutineLoaded": "Routine precedente caricata",
+      "addedFromRoutine_one": "Aggiunto {{count}} esercizio da {{name}}",
+      "addedFromRoutine_other": "Aggiunti {{count}} esercizi da {{name}}",
+      "routineEmpty": "{{name}} non ha esercizi",
+      "enterBeforeComplete": "Inserisci {{fields}} prima di completare questa serie"
+    },
+    "fields": {
+      "weight": "peso",
+      "reps": "ripetizioni",
+      "distance": "distanza",
+      "duration": "durata"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "Note esercizio",
+        "text": "Tocca qui per aggiungere note per tutto questo esercizio."
+      },
+      "goals": {
+        "title": "Obiettivi esercizio",
+        "text": "Tocca qui per impostare e monitorare obiettivi di peso/ripetizioni."
+      },
+      "stats": {
+        "title": "Statistiche esercizio",
+        "text": "Tocca qui per vedere prestazioni passate, cronologia e grafici."
+      },
+      "timer": {
+        "title": "Timer globale",
+        "text": "Tocca qui per impostare un timer di recupero predefinito per tutte le serie."
+      },
+      "setTag": {
+        "title": "Tipi di serie",
+        "text": "Tocca per alternare Normale (N), Riscaldamento (W), Drop (D) e Cedimento (F)."
+      },
+      "setRest": {
+        "title": "Timer serie",
+        "text": "Tocca per personalizzare il recupero dopo questa singola serie."
+      }
+    }
   },
   "body": {
     "title": "Monitor corpo",

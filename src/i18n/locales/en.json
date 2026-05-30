@@ -154,7 +154,115 @@
     "leaveTitle": "Leave workout?",
     "leaveDescription": "Your active workout will continue in the background.",
     "stayHere": "Stay here",
-    "leave": "Leave"
+    "leave": "Leave",
+    "title": "Workout",
+    "unknown": "Unknown",
+    "invalidDate": "Invalid date",
+    "commentPlaceholder": "Add a comment about this workout…",
+    "exerciseNotePlaceholder": "Add a note for this exercise…",
+    "setNotePlaceholder": "Add a note for this set…",
+    "duplicateLastSet": "Duplicate Last Set",
+    "routinesButton": "Routines",
+    "addExerciseDialogTitle": "Add Exercise",
+    "setsCount_one": "{{count}} set",
+    "setsCount_other": "{{count}} sets",
+    "restSuffix": "{{time}} rest",
+    "timers": {
+      "startWorkout": "Start workout timer",
+      "pauseWorkout": "Pause workout timer",
+      "resumeWorkout": "Resume workout timer",
+      "restTimer": "Rest timer"
+    },
+    "tooltips": {
+      "exerciseNote": "Exercise note",
+      "exerciseGoals": "Exercise goals",
+      "exerciseStats": "Exercise stats",
+      "removeExercise": "Remove exercise",
+      "setNote": "Set note",
+      "markComplete": "Mark set complete",
+      "markIncomplete": "Mark set incomplete",
+      "deleteSet": "Delete set"
+    },
+    "headers": {
+      "set": "Set",
+      "type": "Type"
+    },
+    "setTags": {
+      "normal": "Normal",
+      "warmup": "Warmup",
+      "dropset": "Dropset",
+      "failure": "Failure"
+    },
+    "totals": {
+      "volume": "Total Volume",
+      "reps": "Total Reps",
+      "distance": "Total Distance",
+      "duration": "Total Duration",
+      "min": "min"
+    },
+    "incompleteDialog": {
+      "title": "Incomplete Sets Remaining",
+      "description": "Some sets are not marked as completed yet. Do you want to finish the workout anyway or return and complete them?",
+      "complete": "Complete Exercises",
+      "finishAnyway": "Finish Anyway"
+    },
+    "deleteSetDialog": {
+      "title": "Delete this set?",
+      "description": "This set will be removed and remaining sets will be renumbered. This action cannot be undone.",
+      "confirm": "Yes, delete"
+    },
+    "repeatDialog": {
+      "title": "Replace current sets?",
+      "description": "This will replace the current sets for this exercise with the last routine.",
+      "confirm": "Replace"
+    },
+    "routinePicker": {
+      "title": "Apply a Routine",
+      "empty": "No routines created yet.",
+      "goToRoutines": "Go to Routines",
+      "hint": "Exercises will be appended to this workout. Current exercises are kept.",
+      "myRoutines": "My Routines"
+    },
+    "toasts": {
+      "lastSetDuplicated": "Last set duplicated",
+      "previousRoutineLoaded": "Previous routine loaded",
+      "addedFromRoutine_one": "Added {{count}} exercise from {{name}}",
+      "addedFromRoutine_other": "Added {{count}} exercises from {{name}}",
+      "routineEmpty": "{{name}} has no exercises",
+      "enterBeforeComplete": "Enter {{fields}} before completing this set"
+    },
+    "fields": {
+      "weight": "weight",
+      "reps": "reps",
+      "distance": "distance",
+      "duration": "duration"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "Exercise Notes",
+        "text": "Tap here to add specific notes for this entire exercise."
+      },
+      "goals": {
+        "title": "Exercise Goals",
+        "text": "Tap here to set and track specific weight/rep goals for this exercise."
+      },
+      "stats": {
+        "title": "Exercise Stats",
+        "text": "Tap here to view your past performance, history, and graphs for this exercise."
+      },
+      "timer": {
+        "title": "Global Timer",
+        "text": "Tap here to set a default rest timer that applies to all sets for this exercise."
+      },
+      "setTag": {
+        "title": "Set Types",
+        "text": "Tap to cycle between Normal (N), Warmup (W), Dropset (D), and Failure (F)."
+      },
+      "setRest": {
+        "title": "Set Timer",
+        "text": "Tap to customize the rest time specifically after this individual set."
+      }
+    }
   },
   "body": {
     "title": "Body Tracker",

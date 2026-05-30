@@ -152,7 +152,115 @@
     "leaveTitle": "مغادرة التمرين؟",
     "leaveDescription": "سيستمر تمرينك النشط في الخلفية.",
     "stayHere": "البقاء هنا",
-    "leave": "مغادرة"
+    "leave": "مغادرة",
+    "title": "التمرين",
+    "unknown": "غير معروف",
+    "invalidDate": "تاريخ غير صالح",
+    "commentPlaceholder": "أضف تعليقًا حول هذا التمرين…",
+    "exerciseNotePlaceholder": "أضف ملاحظة لهذا التمرين…",
+    "setNotePlaceholder": "أضف ملاحظة لهذه المجموعة…",
+    "duplicateLastSet": "تكرار آخر مجموعة",
+    "routinesButton": "الروتينات",
+    "addExerciseDialogTitle": "إضافة تمرين",
+    "setsCount_one": "{{count}} مجموعة",
+    "setsCount_other": "{{count}} مجموعات",
+    "restSuffix": "{{time}} راحة",
+    "timers": {
+      "startWorkout": "بدء مؤقت التمرين",
+      "pauseWorkout": "إيقاف المؤقت مؤقتًا",
+      "resumeWorkout": "استئناف المؤقت",
+      "restTimer": "مؤقت الراحة"
+    },
+    "tooltips": {
+      "exerciseNote": "ملاحظة التمرين",
+      "exerciseGoals": "أهداف التمرين",
+      "exerciseStats": "إحصاءات التمرين",
+      "removeExercise": "إزالة التمرين",
+      "setNote": "ملاحظة المجموعة",
+      "markComplete": "وضع علامة كمكتمل",
+      "markIncomplete": "وضع علامة كغير مكتمل",
+      "deleteSet": "حذف المجموعة"
+    },
+    "headers": {
+      "set": "مجموعة",
+      "type": "النوع"
+    },
+    "setTags": {
+      "normal": "عادي",
+      "warmup": "إحماء",
+      "dropset": "تنازلي",
+      "failure": "إجهاد"
+    },
+    "totals": {
+      "volume": "الحجم الكلي",
+      "reps": "إجمالي التكرارات",
+      "distance": "إجمالي المسافة",
+      "duration": "إجمالي المدة",
+      "min": "د"
+    },
+    "incompleteDialog": {
+      "title": "هناك مجموعات غير مكتملة",
+      "description": "بعض المجموعات لم تُعلَّم كمكتملة. هل تريد إنهاء التمرين على أي حال أم العودة لإكمالها؟",
+      "complete": "إكمال التمارين",
+      "finishAnyway": "إنهاء على أي حال"
+    },
+    "deleteSetDialog": {
+      "title": "حذف هذه المجموعة؟",
+      "description": "ستُحذف هذه المجموعة وتُعاد ترقيم الباقية. لا يمكن التراجع عن هذا الإجراء.",
+      "confirm": "نعم، احذف"
+    },
+    "repeatDialog": {
+      "title": "استبدال المجموعات الحالية؟",
+      "description": "سيؤدي ذلك إلى استبدال المجموعات الحالية لهذا التمرين بأخر روتين.",
+      "confirm": "استبدال"
+    },
+    "routinePicker": {
+      "title": "تطبيق روتين",
+      "empty": "لا توجد روتينات بعد.",
+      "goToRoutines": "الذهاب إلى الروتينات",
+      "hint": "ستُضاف التمارين إلى هذا التمرين. التمارين الحالية تُحفظ.",
+      "myRoutines": "روتيناتي"
+    },
+    "toasts": {
+      "lastSetDuplicated": "تم تكرار آخر مجموعة",
+      "previousRoutineLoaded": "تم تحميل الروتين السابق",
+      "addedFromRoutine_one": "تمت إضافة {{count}} تمرين من {{name}}",
+      "addedFromRoutine_other": "تمت إضافة {{count}} تمارين من {{name}}",
+      "routineEmpty": "{{name}} لا يحتوي على تمارين",
+      "enterBeforeComplete": "أدخل {{fields}} قبل إكمال هذه المجموعة"
+    },
+    "fields": {
+      "weight": "الوزن",
+      "reps": "التكرارات",
+      "distance": "المسافة",
+      "duration": "المدة"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "ملاحظات التمرين",
+        "text": "اضغط هنا لإضافة ملاحظات لهذا التمرين بأكمله."
+      },
+      "goals": {
+        "title": "أهداف التمرين",
+        "text": "اضغط هنا لتحديد ومتابعة أهداف الوزن/التكرارات."
+      },
+      "stats": {
+        "title": "إحصاءات التمرين",
+        "text": "اضغط هنا لعرض الأداء السابق والتاريخ والرسوم البيانية."
+      },
+      "timer": {
+        "title": "المؤقت العام",
+        "text": "اضغط لتحديد مؤقت راحة افتراضي لكل المجموعات."
+      },
+      "setTag": {
+        "title": "أنواع المجموعات",
+        "text": "اضغط للتبديل بين عادي (N) وإحماء (W) وتنازلي (D) وإجهاد (F)."
+      },
+      "setRest": {
+        "title": "مؤقت المجموعة",
+        "text": "اضغط لتخصيص الراحة بعد هذه المجموعة بالتحديد."
+      }
+    }
   },
   "body": {
     "title": "متتبع الجسم",

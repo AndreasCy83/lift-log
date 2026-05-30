@@ -152,7 +152,115 @@
     "leaveTitle": "离开训练？",
     "leaveDescription": "当前训练将在后台继续。",
     "stayHere": "留在这里",
-    "leave": "离开"
+    "leave": "离开",
+    "title": "训练",
+    "unknown": "未知",
+    "invalidDate": "无效日期",
+    "commentPlaceholder": "为本次训练添加备注…",
+    "exerciseNotePlaceholder": "为该动作添加备注…",
+    "setNotePlaceholder": "为该组添加备注…",
+    "duplicateLastSet": "复制上一组",
+    "routinesButton": "训练计划",
+    "addExerciseDialogTitle": "添加动作",
+    "setsCount_one": "{{count}} 组",
+    "setsCount_other": "{{count}} 组",
+    "restSuffix": "{{time}} 休息",
+    "timers": {
+      "startWorkout": "开始训练计时",
+      "pauseWorkout": "暂停训练计时",
+      "resumeWorkout": "继续训练计时",
+      "restTimer": "休息计时"
+    },
+    "tooltips": {
+      "exerciseNote": "动作备注",
+      "exerciseGoals": "动作目标",
+      "exerciseStats": "动作统计",
+      "removeExercise": "移除动作",
+      "setNote": "组备注",
+      "markComplete": "标记为已完成",
+      "markIncomplete": "标记为未完成",
+      "deleteSet": "删除该组"
+    },
+    "headers": {
+      "set": "组",
+      "type": "类型"
+    },
+    "setTags": {
+      "normal": "普通",
+      "warmup": "热身",
+      "dropset": "递减",
+      "failure": "力竭"
+    },
+    "totals": {
+      "volume": "总容量",
+      "reps": "总次数",
+      "distance": "总距离",
+      "duration": "总时长",
+      "min": "分钟"
+    },
+    "incompleteDialog": {
+      "title": "仍有未完成的组",
+      "description": "还有未标记完成的组。是否仍要结束训练，或返回完成它们？",
+      "complete": "完成动作",
+      "finishAnyway": "仍然结束"
+    },
+    "deleteSetDialog": {
+      "title": "删除该组？",
+      "description": "该组将被移除，其余组将重新编号。此操作无法撤销。",
+      "confirm": "是，删除"
+    },
+    "repeatDialog": {
+      "title": "替换当前组？",
+      "description": "将使用上一次训练的数据替换该动作当前的组。",
+      "confirm": "替换"
+    },
+    "routinePicker": {
+      "title": "应用训练计划",
+      "empty": "暂无训练计划。",
+      "goToRoutines": "前往训练计划",
+      "hint": "动作将追加到本次训练。当前动作保留。",
+      "myRoutines": "我的计划"
+    },
+    "toasts": {
+      "lastSetDuplicated": "已复制上一组",
+      "previousRoutineLoaded": "已加载上次训练",
+      "addedFromRoutine_one": "已从 {{name}} 添加 {{count}} 个动作",
+      "addedFromRoutine_other": "已从 {{name}} 添加 {{count}} 个动作",
+      "routineEmpty": "{{name}} 中没有动作",
+      "enterBeforeComplete": "完成该组前请输入 {{fields}}"
+    },
+    "fields": {
+      "weight": "重量",
+      "reps": "次数",
+      "distance": "距离",
+      "duration": "时长"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "动作备注",
+        "text": "点击此处为整个动作添加备注。"
+      },
+      "goals": {
+        "title": "动作目标",
+        "text": "点击此处设置和跟踪重量/次数目标。"
+      },
+      "stats": {
+        "title": "动作统计",
+        "text": "点击此处查看过往表现、历史和图表。"
+      },
+      "timer": {
+        "title": "全局计时",
+        "text": "点击此处为所有组设置默认休息时间。"
+      },
+      "setTag": {
+        "title": "组类型",
+        "text": "点击在 普通 (N)、热身 (W)、递减 (D)、力竭 (F) 之间切换。"
+      },
+      "setRest": {
+        "title": "组计时",
+        "text": "点击为该组之后单独设置休息时间。"
+      }
+    }
   },
   "body": {
     "title": "身体追踪",
