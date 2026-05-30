@@ -135,25 +135,25 @@ export default function SettingsPage() {
           <button onClick={() => navigate('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="font-display text-lg font-bold">Settings</h1>
+          <h1 className="font-display text-lg font-bold">{t('settings.title')}</h1>
         </div>
       </header>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-4">
         {/* Profile */}
         <div className="gym-card space-y-3">
-          <h3 className="font-display text-sm font-semibold">Profile</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.profile')}</h3>
           <div>
-            <label className="text-[10px] uppercase text-muted-foreground">Name</label>
+            <label className="text-[10px] uppercase text-muted-foreground">{t('settings.name')}</label>
             <Input value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} className="bg-secondary border-0" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] uppercase text-muted-foreground">Height (cm)</label>
+              <label className="text-[10px] uppercase text-muted-foreground">{t('settings.height')}</label>
               <Input type="number" value={profile.heightCm} onChange={e => setProfile({ ...profile, heightCm: parseInt(e.target.value) || 0 })} className="bg-secondary border-0" />
             </div>
             <div>
-              <label className="text-[10px] uppercase text-muted-foreground">Weight ({weightUnitLabel(settings.weightUnit)})</label>
+              <label className="text-[10px] uppercase text-muted-foreground">{t('settings.weight')} ({weightUnitLabel(settings.weightUnit)})</label>
               <Input
                 type="number"
                 value={toDisplayWeight(profile.currentWeightKg, settings.weightUnit) ?? ''}
@@ -165,13 +165,13 @@ export default function SettingsPage() {
               />
             </div>
           </div>
-          <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">Save Profile</Button>
+          <Button onClick={handleSaveProfile} size="sm" className="bg-primary text-primary-foreground">{t('settings.saveProfile')}</Button>
         </div>
 
         {/* Support the Creator (compact) */}
         <div className="gym-card space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-sm font-semibold">Support the Creator 🙌</h3>
+            <h3 className="font-display text-sm font-semibold">{t('settings.supportCreator')}</h3>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -198,14 +198,41 @@ export default function SettingsPage() {
 
         {/* Rate the App */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">Enjoying FitLog X? ⭐</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.rateApp')}</h3>
           <button
             onClick={() => window.open('https://play.google.com/store/apps/details?id=com.andreascy83.liftlog', '_blank')}
             className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-secondary px-2 py-1.5 hover:bg-secondary/80 transition-colors"
           >
             <span className="text-base leading-none">⭐</span>
-            <span className="text-[11px] font-medium">Rate on Google Play</span>
+            <span className="text-[11px] font-medium">{t('settings.rateOnPlay')}</span>
           </button>
+        </div>
+
+        {/* Language */}
+        <div className="gym-card">
+          <h3 className="font-display text-sm font-semibold mb-3 flex items-center gap-2">
+            <Languages className="h-4 w-4" /> {t('settings.language')}
+          </h3>
+          <Select
+            value={i18n.language}
+            onValueChange={(v) => {
+              setLanguage(v as SupportedLang);
+              setSettings({ ...settings, language: v as SupportedLang });
+            }}
+          >
+            <SelectTrigger className="bg-secondary border-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LANGUAGES.map((l) => (
+                <SelectItem key={l.code} value={l.code}>
+                  <span className="font-medium">{l.nativeName}</span>
+                  <span className="text-muted-foreground text-xs ml-2">({l.englishName})</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-[10px] text-muted-foreground mt-2">{t('settings.languageHint')}</p>
         </div>
 
         {/* Weight Unit */}
