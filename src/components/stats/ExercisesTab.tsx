@@ -216,7 +216,7 @@ export default function ExercisesTab() {
               </SelectTrigger>
               <SelectContent>
                 {exercises.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                  <SelectItem key={ex.id} value={ex.id}>{tExName(ex)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
