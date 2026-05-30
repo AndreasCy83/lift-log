@@ -905,7 +905,7 @@ export default function WorkoutLogPage() {
                       {setNoteOpen === s.id && (
                         <div className="ml-6 mr-1 mt-1 mb-1 animate-slide-up">
                           <Textarea
-                            placeholder="Add a note for this set…"
+                            placeholder={t('workout.setNotePlaceholder')}
                             value={s.notes}
                             onChange={(e) => {
                               handleUpdateSet(s, 'notes', e.target.value);
