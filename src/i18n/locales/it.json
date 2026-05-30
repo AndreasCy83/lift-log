@@ -26,7 +26,8 @@
     "export": "Esporta",
     "settings": "Impostazioni",
     "more": "Altro",
-    "ok": "OK"
+    "ok": "OK",
+    "and": "e"
   },
   "nav": {
     "home": "Home",
