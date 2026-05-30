@@ -51,6 +51,13 @@ function Row({ m, i, mounted, bandLabels }: { m: MuscleFatigue; i: number; mount
 
 
 export default function RecoveryFatigueCard({ refreshKey }: Props) {
+  const { t: tr } = useTranslation();
+  const bandLabels: Record<FatigueBand, string> = {
+    'Low': tr('home.recovery.bandLow'),
+    'Moderate': tr('home.recovery.bandModerate'),
+    'High': tr('home.recovery.bandHigh'),
+    'Very High': tr('home.recovery.bandVeryHigh'),
+  };
   const [tick, setTick] = useState(0);
   useEffect(() => {
     const onVis = () => { if (document.visibilityState === 'visible') setTick(t => t + 1); };
