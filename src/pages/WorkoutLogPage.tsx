@@ -14,6 +14,7 @@ import { getRoutines, getPrograms } from '@/lib/storage';
 import { appendRoutineToWorkout } from '@/lib/routineRunner';
 import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
 import { useExerciseName } from '@/i18n/exerciseNames';
+import { useTranslation } from 'react-i18next';
 import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
   DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
