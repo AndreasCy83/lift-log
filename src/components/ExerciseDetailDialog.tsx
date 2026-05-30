@@ -15,14 +15,16 @@ interface Props {
 
 export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: Props) {
   const [tab, setTab] = useState('history');
+  const tExName = useExerciseName();
 
   if (!exercise) return null;
+  const displayName = tExName(exercise);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[85vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-4 pt-4 pb-2">
-          <DialogTitle className="font-display text-base">{exercise.name}</DialogTitle>
+          <DialogTitle className="font-display text-base">{displayName}</DialogTitle>
         </DialogHeader>
 
         <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
