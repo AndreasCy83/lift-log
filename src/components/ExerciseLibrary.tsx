@@ -9,6 +9,7 @@ import { SET_TYPE_LABELS } from '@/types/fitness';
 import type { Exercise } from '@/types/fitness';
 import CustomExerciseForm from '@/components/CustomExerciseForm';
 import ExerciseDetailDialog from '@/components/ExerciseDetailDialog';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 interface Props {
   onClose: () => void;
