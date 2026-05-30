@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { ExerciseGoal, Exercise, WorkoutSet } from '@/types/fitness';
-import { useExerciseName } from '@/i18n/exerciseNames';
+import { useExerciseName, translateExerciseName } from '@/i18n/exerciseNames';
 
 const GOAL_TYPES = [
   { value: 'MAX_WEIGHT', label: 'Max Weight', needsWeight: true, needsReps: false },
