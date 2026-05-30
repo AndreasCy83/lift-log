@@ -67,14 +67,7 @@ import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutD
 import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
 import WorkoutCelebrationModal from '@/components/workout/WorkoutCelebrationModal';
 
-const TUTORIAL_STEPS: TutorialStep[] = [
-  { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
-  { selector: '[data-tutorial="exercise-goals"]', title: 'Exercise Goals', text: 'Tap here to set and track specific weight/rep goals for this exercise.' },
-  { selector: '[data-tutorial="exercise-stats"]', title: 'Exercise Stats', text: 'Tap here to view your past performance, history, and graphs for this exercise.' },
-  { selector: '[data-tutorial="exercise-timer"]', title: 'Global Timer', text: 'Tap here to set a default rest timer that applies to all sets for this exercise.' },
-  { selector: '[data-tutorial="set-tag"]', title: 'Set Types', text: 'Tap to cycle between Normal (N), Warmup (W), Dropset (D), and Failure (F).' },
-  { selector: '[data-tutorial="set-rest"]', title: 'Set Timer', text: 'Tap to customize the rest time specifically after this individual set.' },
-];
+// Tutorial steps are built inside the component to read from i18n.
 
 function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
