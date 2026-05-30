@@ -707,7 +707,7 @@ export default function WorkoutLogPage() {
       {/* Workout Comment */}
       <div className="mx-auto w-full max-w-lg px-4 pt-4">
         <Textarea
-          placeholder="Add a comment about this workout…"
+          placeholder={t('workout.commentPlaceholder')}
           value={workout.notes}
           onChange={(e) => {
             const updated = { ...workout, notes: e.target.value };
