@@ -237,7 +237,7 @@ export default function SettingsPage() {
 
         {/* Weight Unit */}
         <div className="gym-card">
-          <h3 className="font-display text-sm font-semibold mb-3">Weight Unit</h3>
+          <h3 className="font-display text-sm font-semibold mb-3">{t('settings.weightUnit')}</h3>
           <div className="flex gap-2">
             {(['kg', 'lbs'] as const).map(u => (
               <button
@@ -250,23 +250,24 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
-          <p className="text-[10px] text-muted-foreground mt-2">All data is stored internally in kg. This setting only affects display and input.</p>
+          <p className="text-[10px] text-muted-foreground mt-2">{t('settings.weightUnitHint')}</p>
         </div>
 
         {/* Theme */}
         <div className="gym-card">
-          <h3 className="font-display text-sm font-semibold mb-3">Theme</h3>
+          <h3 className="font-display text-sm font-semibold mb-3">{t('settings.theme')}</h3>
           <div className="flex gap-2">
-            {(['system', 'light', 'dark'] as const).map(t => {
-              const Icon = themeIcons[t];
+            {(['system', 'light', 'dark'] as const).map(th => {
+              const Icon = themeIcons[th];
+              const themeLabelKey = th === 'system' ? 'settings.themeSystem' : th === 'light' ? 'settings.themeLight' : 'settings.themeDark';
               return (
                 <button
-                  key={t}
-                  onClick={() => setSettings({ ...settings, theme: t })}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors capitalize
-                    ${settings.theme === t ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+                  key={th}
+                  onClick={() => setSettings({ ...settings, theme: th })}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors
+                    ${settings.theme === th ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                 >
-                  <Icon className="h-4 w-4" /> {t}
+                  <Icon className="h-4 w-4" /> {t(themeLabelKey)}
                 </button>
               );
             })}
@@ -276,8 +277,8 @@ export default function SettingsPage() {
         {/* Keep screen on */}
         <div className="gym-card flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-medium">Keep Screen On</h3>
-            <p className="text-xs text-muted-foreground">During workouts</p>
+            <h3 className="text-sm font-medium">{t('settings.keepScreenOn')}</h3>
+            <p className="text-xs text-muted-foreground">{t('settings.keepScreenOnHint')}</p>
           </div>
           <Switch checked={settings.keepScreenOn} onCheckedChange={v => setSettings({ ...settings, keepScreenOn: v })} />
         </div>
@@ -285,8 +286,8 @@ export default function SettingsPage() {
         {/* Auto-start rest timer */}
         <div className="gym-card flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-medium">Auto-start rest timer when set completed</h3>
-            <p className="text-xs text-muted-foreground">Starts the rest timer automatically when you mark a set complete.</p>
+            <h3 className="text-sm font-medium">{t('settings.autoRest')}</h3>
+            <p className="text-xs text-muted-foreground">{t('settings.autoRestHint')}</p>
           </div>
           <Switch checked={settings.autoStartRestTimer} onCheckedChange={v => setSettings({ ...settings, autoStartRestTimer: v })} />
         </div>
@@ -294,7 +295,7 @@ export default function SettingsPage() {
         {/* Exercise Library */}
         <div className="gym-card">
           <Button onClick={() => setShowExerciseLibrary(true)} variant="outline" size="sm" className="w-full gap-2">
-            <Dumbbell className="h-4 w-4" /> View Exercises
+            <Dumbbell className="h-4 w-4" /> {t('settings.viewExercises')}
           </Button>
         </div>
 
@@ -308,8 +309,8 @@ export default function SettingsPage() {
 
         {/* Data */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">Data</h3>
-          <Button onClick={handleImport} variant="outline" size="sm" className="w-full">Import Backup</Button>
+          <h3 className="font-display text-sm font-semibold">{t('settings.data')}</h3>
+          <Button onClick={handleImport} variant="outline" size="sm" className="w-full">{t('settings.importBackup')}</Button>
           <Button
             variant="outline"
             size="sm"
@@ -336,14 +337,14 @@ export default function SettingsPage() {
             }}
           >
             <FileUp className="h-4 w-4" />
-            Import CSV
+            {t('settings.importCsv')}
           </Button>
-          <p className="text-[10px] text-muted-foreground text-center">Supports FitNotes and other CSV formats</p>
+          <p className="text-[10px] text-muted-foreground text-center">{t('settings.importCsvHint')}</p>
         </div>
 
         {/* Tutorial */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">Tutorial</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.tutorial')}</h3>
           <Button
             variant="outline"
             size="sm"
@@ -354,20 +355,20 @@ export default function SettingsPage() {
               toast({ title: 'Tutorials reset', description: 'Open an exercise or the Body tab to replay the tutorials.' });
             }}
           >
-            Reset Tutorials
+            {t('settings.resetTutorials')}
           </Button>
         </div>
 
         {/* Danger Zone */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold text-destructive">Danger Zone</h3>
+          <h3 className="font-display text-sm font-semibold text-destructive">{t('settings.dangerZone')}</h3>
           <Button
             variant="outline"
             size="sm"
             className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
             onClick={() => setConfirmAction('reset')}
           >
-            Reset Exercises to Defaults
+            {t('settings.resetExercises')}
           </Button>
           <Button
             variant="outline"
@@ -375,20 +376,20 @@ export default function SettingsPage() {
             className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
             onClick={() => { setDeleteConfirmText(''); setConfirmAction('delete'); }}
           >
-            Delete All Data
+            {t('settings.deleteAllData')}
           </Button>
         </div>
 
         {/* About */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">About</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.about')}</h3>
           <button
             onClick={() => setShowChangelog(true)}
             className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
           >
             <span className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" />
-              What's New
+              {t('settings.whatsNew')}
             </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -396,12 +397,12 @@ export default function SettingsPage() {
 
         {/* Legal */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">Legal</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.legal')}</h3>
           <button
             onClick={() => setShowPrivacyPolicy(true)}
             className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
           >
-            <span>Privacy Policy</span>
+            <span>{t('settings.privacyPolicy')}</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
@@ -411,7 +412,7 @@ export default function SettingsPage() {
 
         {/* Feedback */}
         <div className="gym-card space-y-2">
-          <h3 className="font-display text-sm font-semibold">Feedback</h3>
+          <h3 className="font-display text-sm font-semibold">{t('settings.feedback')}</h3>
           <button
             onClick={() => {
               const mailto = 'mailto:fitlogx@gmail.com?subject=Fit%20Log%20X%20-%20Feedback';
@@ -423,10 +424,10 @@ export default function SettingsPage() {
             }}
             className="flex w-full items-center justify-between rounded-lg py-2 text-sm text-foreground hover:bg-secondary px-1 transition-colors"
           >
-            <span>Send Feedback</span>
+            <span>{t('settings.sendFeedback')}</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
-          <p className="text-[10px] text-muted-foreground text-center">Share your thoughts, comments and suggestions.</p>
+          <p className="text-[10px] text-muted-foreground text-center">{t('settings.feedbackHint')}</p>
         </div>
 
         {/* Confirmation Dialog */}
@@ -434,15 +435,15 @@ export default function SettingsPage() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {confirmAction === 'delete' ? 'Delete All Data?' : 'Reset Exercises to Defaults?'}
+                {confirmAction === 'delete' ? t('settings.deleteAllTitle') : t('settings.resetExercisesTitle')}
               </AlertDialogTitle>
               <AlertDialogDescription asChild>
                 <div className="space-y-3 text-sm text-muted-foreground">
                   {confirmAction === 'delete' ? (
                     <>
-                      <p>This will permanently delete all your workouts, routines, body measurements, goals, profile data, and personal settings from this device. This action cannot be undone.</p>
+                      <p>{t('settings.deleteAllDescription')}</p>
                       <div>
-                        <p className="mb-1.5 font-medium text-foreground">Type <span className="font-mono text-destructive">DELETE</span> to confirm:</p>
+                        <p className="mb-1.5 font-medium text-foreground">{t('settings.typeDeleteToConfirm', { word: 'DELETE' })}</p>
                         <Input
                           value={deleteConfirmText}
                           onChange={(e) => setDeleteConfirmText(e.target.value)}
@@ -453,13 +454,13 @@ export default function SettingsPage() {
                       </div>
                     </>
                   ) : (
-                    <p>This will replace your exercise library with the default exercises. Custom exercises will be removed. This action cannot be undone.</p>
+                    <p>{t('settings.resetExercisesDescription')}</p>
                   )}
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 disabled={confirmAction === 'delete' && deleteConfirmText !== 'DELETE'}
@@ -497,7 +498,7 @@ export default function SettingsPage() {
                   window.location.reload();
                 }}
               >
-                {confirmAction === 'delete' ? 'Delete All Data' : 'Yes, Reset'}
+                {confirmAction === 'delete' ? t('settings.deleteAllData') : t('common.confirm')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
