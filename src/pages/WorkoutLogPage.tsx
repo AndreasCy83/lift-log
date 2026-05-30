@@ -620,7 +620,7 @@ export default function WorkoutLogPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-base font-bold leading-tight truncate">Workout</h1>
+            <h1 className="font-display text-base font-bold leading-tight truncate">{t('workout.title')}</h1>
             <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
           {/* Live workout session timer (independent from rest timer) */}
