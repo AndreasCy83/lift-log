@@ -349,7 +349,7 @@ function GoalCard({
     <div className={`gym-card space-y-3 ${allAchieved ? 'ring-1 ring-primary/50' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-display text-sm font-semibold">{exercise.name}</h3>
+          <h3 className="font-display text-sm font-semibold">{translateExerciseName(exercise)}</h3>
           {allAchieved && <Check className="h-4 w-4 text-primary" />}
         </div>
       </div>
