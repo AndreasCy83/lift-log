@@ -323,7 +323,7 @@ export default function RecordsTab() {
           open={!!historyExId}
           onOpenChange={open => { if (!open) setHistoryExId(null); }}
           exerciseId={historyEx.id}
-          exerciseName={historyEx.name}
+          exerciseName={tExName(historyEx)}
           weightUnit={historyEx.weightUnit ?? 'kg'}
         />
       )}
