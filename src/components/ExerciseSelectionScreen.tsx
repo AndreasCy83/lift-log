@@ -196,7 +196,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                 </div>
 
                 <div className="flex-1">
-                  <span className="text-sm font-medium">{ex.name}</span>
+                  <span className="text-sm font-medium">{tExName(ex)}</span>
                   <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5 flex-wrap">
                     <span
                       className="h-1.5 w-1.5 rounded-full shrink-0"
