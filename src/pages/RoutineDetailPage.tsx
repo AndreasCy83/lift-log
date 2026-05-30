@@ -22,6 +22,7 @@ const MODE_SHORT: Record<RoutinePopulationMode, string> = {
 export default function RoutineDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const tExName = useExerciseName();
   const routine = getRoutines().find(r => r.id === id);
   const [routineExercises, setRoutineExercises] = useState(() => id ? getExercisesForRoutine(id) : []);
   const exercises = useMemo(() => getExercises(), []);
