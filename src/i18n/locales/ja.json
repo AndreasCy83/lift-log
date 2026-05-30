@@ -102,16 +102,34 @@
   "routines": {
     "title": "ルーティン",
     "tabs": {
-      "routines": "ルーティン",
+      "routines": "マイルーティン",
       "programs": "プログラム"
     },
-    "newRoutine": "新しいルーティン",
-    "newProgram": "新しいプログラム",
+    "newRoutine": "新規ルーティン",
+    "newProgram": "新規プログラム",
     "noRoutines": "ルーティンなし",
     "noPrograms": "プログラムなし",
     "addExercise": "種目を追加",
     "favorite": "お気に入り",
-    "unfavorite": "お気に入り解除"
+    "unfavorite": "お気に入り解除",
+    "createRoutineTitle": "ルーティンを作成",
+    "createRoutineNamePh": "ルーティン名",
+    "descriptionPh": "説明（任意）",
+    "create": "作成",
+    "save": "保存",
+    "noStandalone": "単独のルーティンはありません",
+    "noStandaloneHint": "ルーティンを作成して素早く開始しましょう",
+    "exercises_one": "{{count}} 種目",
+    "exercises_other": "{{count}} 種目",
+    "actions": {
+      "logToDate": "日付に記録",
+      "duplicate": "複製",
+      "delete": "削除",
+      "removeFromProgram": "プログラムから外す"
+    },
+    "logToDateTitle": "「{{name}}」を日付に記録",
+    "logToDateHint": "このルーティンをワークアウトとして複製する日付を選択：",
+    "copySuffix": "（コピー）"
   },
   "workout": {
     "start": "開始",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "確認のため {{word}} と入力してください:",
     "resetExercisesTitle": "種目をリセットしますか?",
     "resetExercisesDescription": "ライブラリがデフォルトの種目に置き換わり、カスタム種目は削除されます。元に戻せません。"
+  },
+  "programs": {
+    "title": "プログラム",
+    "createTitle": "プログラムを作成",
+    "namePh": "プログラム名（例：PPL）",
+    "descPh": "説明（例：初心者向け PPL）",
+    "emptyTitle": "プログラムなし",
+    "emptyHint": "ルーティンを PPL や上下分割などにまとめましょう",
+    "workoutDays_one": "{{count}} 日",
+    "workoutDays_other": "{{count}} 日",
+    "favorite": "お気に入り",
+    "unfavorite": "お気に入り解除",
+    "deleteProgram": "プログラムを削除",
+    "deleteConfirm": "このプログラムを削除しますか？ルーティンは単独になります。",
+    "notFound": "プログラムが見つかりません",
+    "editTitle": "プログラムを編集",
+    "editProgram": "プログラムを編集",
+    "workoutDaysHeader": "ワークアウト日 · {{count}}",
+    "attach": "追加",
+    "new": "新規",
+    "newWorkoutDay": "新しいワークアウト日",
+    "workoutDayNamePh": "例：Push",
+    "noWorkoutDays": "ワークアウト日なし",
+    "noWorkoutDaysHint": "Push、Pull、Legs などのルーティンを追加しましょう",
+    "attachExisting": "既存ルーティンを追加",
+    "noStandaloneToAttach": "追加できる単独ルーティンはありません。",
+    "deleteRoutineConfirm": "このルーティンを削除しますか？",
+    "logToDateTitle": "「{{name}}」を日付に記録"
   }
 }

@@ -102,7 +102,7 @@
   "routines": {
     "title": "Routines",
     "tabs": {
-      "routines": "Routines",
+      "routines": "Mes routines",
       "programs": "Programmes"
     },
     "newRoutine": "Nouvelle routine",
@@ -111,7 +111,25 @@
     "noPrograms": "Aucun programme",
     "addExercise": "Ajouter un exercice",
     "favorite": "Favori",
-    "unfavorite": "Retirer des favoris"
+    "unfavorite": "Retirer des favoris",
+    "createRoutineTitle": "Créer une routine",
+    "createRoutineNamePh": "Nom de la routine",
+    "descriptionPh": "Description (optionnel)",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "noStandalone": "Aucune routine autonome",
+    "noStandaloneHint": "Créez une routine pour démarrer rapidement",
+    "exercises_one": "{{count}} exercice",
+    "exercises_other": "{{count}} exercices",
+    "actions": {
+      "logToDate": "Programmer à une date",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "removeFromProgram": "Retirer du programme"
+    },
+    "logToDateTitle": "Programmer « {{name}} »",
+    "logToDateHint": "Choisissez une date pour copier cette routine comme séance :",
+    "copySuffix": "(Copie)"
   },
   "workout": {
     "start": "Démarrer",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "Tapez {{word}} pour confirmer :",
     "resetExercisesTitle": "Réinitialiser les exercices ?",
     "resetExercisesDescription": "Votre bibliothèque sera remplacée par les exercices par défaut. Les exercices personnalisés seront supprimés. Action irréversible."
+  },
+  "programs": {
+    "title": "Programmes",
+    "createTitle": "Créer un programme",
+    "namePh": "Nom du programme (ex. PPL)",
+    "descPh": "Description (ex. PPL débutant)",
+    "emptyTitle": "Aucun programme",
+    "emptyHint": "Regroupez vos routines en plans comme PPL ou Haut/Bas",
+    "workoutDays_one": "{{count}} jour d'entraînement",
+    "workoutDays_other": "{{count}} jours d'entraînement",
+    "favorite": "Mettre en favori",
+    "unfavorite": "Retirer des favoris",
+    "deleteProgram": "Supprimer le programme",
+    "deleteConfirm": "Supprimer ce programme ? Ses routines deviendront autonomes.",
+    "notFound": "Programme introuvable",
+    "editTitle": "Modifier le programme",
+    "editProgram": "Modifier le programme",
+    "workoutDaysHeader": "Jours d'entraînement · {{count}}",
+    "attach": "Attacher",
+    "new": "Nouveau",
+    "newWorkoutDay": "Nouveau jour d'entraînement",
+    "workoutDayNamePh": "ex. Push",
+    "noWorkoutDays": "Aucun jour d'entraînement",
+    "noWorkoutDaysHint": "Ajoutez des routines comme Push, Pull, Jambes à ce programme",
+    "attachExisting": "Attacher une routine existante",
+    "noStandaloneToAttach": "Aucune routine autonome à attacher.",
+    "deleteRoutineConfirm": "Supprimer cette routine ?",
+    "logToDateTitle": "Programmer « {{name}} »"
   }
 }

@@ -104,16 +104,34 @@
   "routines": {
     "title": "Routines",
     "tabs": {
-      "routines": "Routines",
+      "routines": "My Routines",
       "programs": "Programs"
     },
-    "newRoutine": "New Routine",
-    "newProgram": "New Program",
+    "newRoutine": "New routine",
+    "newProgram": "New program",
     "noRoutines": "No routines yet",
     "noPrograms": "No programs yet",
     "addExercise": "Add Exercise",
     "favorite": "Favorite",
-    "unfavorite": "Unfavorite"
+    "unfavorite": "Unfavorite",
+    "createRoutineTitle": "Create routine",
+    "createRoutineNamePh": "Routine name",
+    "descriptionPh": "Description (optional)",
+    "create": "Create",
+    "save": "Save",
+    "noStandalone": "No standalone routines",
+    "noStandaloneHint": "Create a routine to quickly start workouts",
+    "exercises_one": "{{count}} exercise",
+    "exercises_other": "{{count}} exercises",
+    "actions": {
+      "logToDate": "Log to Date",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "removeFromProgram": "Remove from program"
+    },
+    "logToDateTitle": "Log \"{{name}}\" to Date",
+    "logToDateHint": "Pick a date to copy this routine as a workout:",
+    "copySuffix": "(Copy)"
   },
   "workout": {
     "start": "Start",
@@ -207,5 +225,33 @@
     "typeDeleteToConfirm": "Type {{word}} to confirm:",
     "resetExercisesTitle": "Reset Exercises to Defaults?",
     "resetExercisesDescription": "This will replace your exercise library with the default exercises. Custom exercises will be removed. This action cannot be undone."
+  },
+  "programs": {
+    "title": "Programs",
+    "createTitle": "Create program",
+    "namePh": "Program name (e.g. PPL)",
+    "descPh": "Description (e.g. Beginner Push Pull Legs)",
+    "emptyTitle": "No programs yet",
+    "emptyHint": "Group routines into training plans like PPL or Upper/Lower",
+    "workoutDays_one": "{{count}} workout day",
+    "workoutDays_other": "{{count}} workout days",
+    "favorite": "Favorite program",
+    "unfavorite": "Unfavorite program",
+    "deleteProgram": "Delete program",
+    "deleteConfirm": "Delete this program? Its routines will become standalone routines.",
+    "notFound": "Program not found",
+    "editTitle": "Edit program",
+    "editProgram": "Edit program",
+    "workoutDaysHeader": "Workout days · {{count}}",
+    "attach": "Attach",
+    "new": "New",
+    "newWorkoutDay": "New workout day",
+    "workoutDayNamePh": "e.g. Push",
+    "noWorkoutDays": "No workout days yet",
+    "noWorkoutDaysHint": "Add routines like Push, Pull, Legs to this program",
+    "attachExisting": "Attach existing routine",
+    "noStandaloneToAttach": "No standalone routines to attach.",
+    "deleteRoutineConfirm": "Delete this routine?",
+    "logToDateTitle": "Log \"{{name}}\" to date"
   }
 }

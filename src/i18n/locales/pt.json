@@ -102,7 +102,7 @@
   "routines": {
     "title": "Rotinas",
     "tabs": {
-      "routines": "Rotinas",
+      "routines": "Minhas rotinas",
       "programs": "Programas"
     },
     "newRoutine": "Nova rotina",
@@ -111,7 +111,25 @@
     "noPrograms": "Sem programas",
     "addExercise": "Adicionar exercício",
     "favorite": "Favorito",
-    "unfavorite": "Remover favorito"
+    "unfavorite": "Remover favorito",
+    "createRoutineTitle": "Criar rotina",
+    "createRoutineNamePh": "Nome da rotina",
+    "descriptionPh": "Descrição (opcional)",
+    "create": "Criar",
+    "save": "Salvar",
+    "noStandalone": "Sem rotinas avulsas",
+    "noStandaloneHint": "Crie uma rotina para iniciar treinos rapidamente",
+    "exercises_one": "{{count}} exercício",
+    "exercises_other": "{{count}} exercícios",
+    "actions": {
+      "logToDate": "Agendar data",
+      "duplicate": "Duplicar",
+      "delete": "Excluir",
+      "removeFromProgram": "Remover do programa"
+    },
+    "logToDateTitle": "Agendar \"{{name}}\"",
+    "logToDateHint": "Escolha uma data para copiar esta rotina como treino:",
+    "copySuffix": "(Cópia)"
   },
   "workout": {
     "start": "Iniciar",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "Digite {{word}} para confirmar:",
     "resetExercisesTitle": "Redefinir exercícios?",
     "resetExercisesDescription": "Sua biblioteca será substituída pelos exercícios padrão. Os personalizados serão removidos. Ação irreversível."
+  },
+  "programs": {
+    "title": "Programas",
+    "createTitle": "Criar programa",
+    "namePh": "Nome do programa (ex. PPL)",
+    "descPh": "Descrição (ex. PPL iniciante)",
+    "emptyTitle": "Sem programas",
+    "emptyHint": "Agrupe rotinas em planos como PPL ou Upper/Lower",
+    "workoutDays_one": "{{count}} dia de treino",
+    "workoutDays_other": "{{count}} dias de treino",
+    "favorite": "Favoritar",
+    "unfavorite": "Desfavoritar",
+    "deleteProgram": "Excluir programa",
+    "deleteConfirm": "Excluir este programa? Suas rotinas se tornarão avulsas.",
+    "notFound": "Programa não encontrado",
+    "editTitle": "Editar programa",
+    "editProgram": "Editar programa",
+    "workoutDaysHeader": "Dias de treino · {{count}}",
+    "attach": "Anexar",
+    "new": "Novo",
+    "newWorkoutDay": "Novo dia de treino",
+    "workoutDayNamePh": "ex. Push",
+    "noWorkoutDays": "Sem dias de treino",
+    "noWorkoutDaysHint": "Adicione rotinas como Push, Pull, Pernas a este programa",
+    "attachExisting": "Anexar rotina existente",
+    "noStandaloneToAttach": "Sem rotinas avulsas para anexar.",
+    "deleteRoutineConfirm": "Excluir esta rotina?",
+    "logToDateTitle": "Agendar \"{{name}}\""
   }
 }

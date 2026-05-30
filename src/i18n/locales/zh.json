@@ -100,18 +100,36 @@
     }
   },
   "routines": {
-    "title": "训练",
+    "title": "训练计划",
     "tabs": {
-      "routines": "例程",
-      "programs": "计划"
+      "routines": "我的计划",
+      "programs": "方案"
     },
-    "newRoutine": "新建例程",
-    "newProgram": "新建计划",
+    "newRoutine": "新建计划",
+    "newProgram": "新建方案",
     "noRoutines": "暂无例程",
     "noPrograms": "暂无计划",
     "addExercise": "添加动作",
     "favorite": "收藏",
-    "unfavorite": "取消收藏"
+    "unfavorite": "取消收藏",
+    "createRoutineTitle": "创建训练计划",
+    "createRoutineNamePh": "计划名称",
+    "descriptionPh": "描述（可选）",
+    "create": "创建",
+    "save": "保存",
+    "noStandalone": "暂无独立计划",
+    "noStandaloneHint": "创建计划以快速开始训练",
+    "exercises_one": "{{count}} 个动作",
+    "exercises_other": "{{count}} 个动作",
+    "actions": {
+      "logToDate": "记录到日期",
+      "duplicate": "复制",
+      "delete": "删除",
+      "removeFromProgram": "从方案移除"
+    },
+    "logToDateTitle": "将“{{name}}”记录到日期",
+    "logToDateHint": "选择日期以将此计划复制为训练：",
+    "copySuffix": "（副本）"
   },
   "workout": {
     "start": "开始",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "输入 {{word}} 确认：",
     "resetExercisesTitle": "重置动作库？",
     "resetExercisesDescription": "你的动作库将被替换为默认动作，自定义动作会被移除。无法撤销。"
+  },
+  "programs": {
+    "title": "方案",
+    "createTitle": "创建方案",
+    "namePh": "方案名称（如 PPL）",
+    "descPh": "描述（如 新手 PPL）",
+    "emptyTitle": "暂无方案",
+    "emptyHint": "将训练计划组合成 PPL 或上下身等方案",
+    "workoutDays_one": "{{count}} 个训练日",
+    "workoutDays_other": "{{count}} 个训练日",
+    "favorite": "收藏",
+    "unfavorite": "取消收藏",
+    "deleteProgram": "删除方案",
+    "deleteConfirm": "删除此方案？其训练计划将变为独立计划。",
+    "notFound": "未找到方案",
+    "editTitle": "编辑方案",
+    "editProgram": "编辑方案",
+    "workoutDaysHeader": "训练日 · {{count}}",
+    "attach": "添加",
+    "new": "新建",
+    "newWorkoutDay": "新建训练日",
+    "workoutDayNamePh": "如 Push",
+    "noWorkoutDays": "暂无训练日",
+    "noWorkoutDaysHint": "为此方案添加 Push、Pull、Legs 等计划",
+    "attachExisting": "添加现有计划",
+    "noStandaloneToAttach": "没有可添加的独立计划。",
+    "deleteRoutineConfirm": "删除此计划？",
+    "logToDateTitle": "将“{{name}}”记录到日期"
   }
 }

@@ -102,7 +102,7 @@
   "routines": {
     "title": "Routine",
     "tabs": {
-      "routines": "Routine",
+      "routines": "Le mie routine",
       "programs": "Programmi"
     },
     "newRoutine": "Nuova routine",
@@ -111,7 +111,25 @@
     "noPrograms": "Nessun programma",
     "addExercise": "Aggiungi esercizio",
     "favorite": "Preferito",
-    "unfavorite": "Rimuovi preferito"
+    "unfavorite": "Rimuovi preferito",
+    "createRoutineTitle": "Crea routine",
+    "createRoutineNamePh": "Nome routine",
+    "descriptionPh": "Descrizione (opzionale)",
+    "create": "Crea",
+    "save": "Salva",
+    "noStandalone": "Nessuna routine indipendente",
+    "noStandaloneHint": "Crea una routine per iniziare rapidamente",
+    "exercises_one": "{{count}} esercizio",
+    "exercises_other": "{{count}} esercizi",
+    "actions": {
+      "logToDate": "Registra in data",
+      "duplicate": "Duplica",
+      "delete": "Elimina",
+      "removeFromProgram": "Rimuovi dal programma"
+    },
+    "logToDateTitle": "Registra «{{name}}» in data",
+    "logToDateHint": "Scegli una data per copiare questa routine come allenamento:",
+    "copySuffix": "(Copia)"
   },
   "workout": {
     "start": "Inizia",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "Digita {{word}} per confermare:",
     "resetExercisesTitle": "Reimpostare gli esercizi?",
     "resetExercisesDescription": "La tua libreria sarà sostituita con gli esercizi predefiniti. Quelli personalizzati saranno rimossi. Azione irreversibile."
+  },
+  "programs": {
+    "title": "Programmi",
+    "createTitle": "Crea programma",
+    "namePh": "Nome programma (es. PPL)",
+    "descPh": "Descrizione (es. PPL principianti)",
+    "emptyTitle": "Nessun programma",
+    "emptyHint": "Raggruppa le routine in piani come PPL o Upper/Lower",
+    "workoutDays_one": "{{count}} giorno",
+    "workoutDays_other": "{{count}} giorni",
+    "favorite": "Preferito",
+    "unfavorite": "Rimuovi preferito",
+    "deleteProgram": "Elimina programma",
+    "deleteConfirm": "Eliminare questo programma? Le sue routine diventeranno indipendenti.",
+    "notFound": "Programma non trovato",
+    "editTitle": "Modifica programma",
+    "editProgram": "Modifica programma",
+    "workoutDaysHeader": "Giorni di allenamento · {{count}}",
+    "attach": "Aggiungi",
+    "new": "Nuovo",
+    "newWorkoutDay": "Nuovo giorno",
+    "workoutDayNamePh": "es. Push",
+    "noWorkoutDays": "Nessun giorno di allenamento",
+    "noWorkoutDaysHint": "Aggiungi routine come Push, Pull, Gambe a questo programma",
+    "attachExisting": "Aggiungi routine esistente",
+    "noStandaloneToAttach": "Nessuna routine indipendente disponibile.",
+    "deleteRoutineConfirm": "Eliminare questa routine?",
+    "logToDateTitle": "Registra «{{name}}» in data"
   }
 }

@@ -102,7 +102,7 @@
   "routines": {
     "title": "Rutinler",
     "tabs": {
-      "routines": "Rutinler",
+      "routines": "Rutinlerim",
       "programs": "Programlar"
     },
     "newRoutine": "Yeni rutin",
@@ -111,7 +111,25 @@
     "noPrograms": "Program yok",
     "addExercise": "Egzersiz ekle",
     "favorite": "Favori",
-    "unfavorite": "Favoriden çıkar"
+    "unfavorite": "Favoriden çıkar",
+    "createRoutineTitle": "Rutin oluştur",
+    "createRoutineNamePh": "Rutin adı",
+    "descriptionPh": "Açıklama (isteğe bağlı)",
+    "create": "Oluştur",
+    "save": "Kaydet",
+    "noStandalone": "Bağımsız rutin yok",
+    "noStandaloneHint": "Hızlı başlamak için bir rutin oluştur",
+    "exercises_one": "{{count}} egzersiz",
+    "exercises_other": "{{count}} egzersiz",
+    "actions": {
+      "logToDate": "Bir tarihe kaydet",
+      "duplicate": "Çoğalt",
+      "delete": "Sil",
+      "removeFromProgram": "Programdan kaldır"
+    },
+    "logToDateTitle": "“{{name}}” tarihe kaydet",
+    "logToDateHint": "Bu rutini antrenman olarak kopyalamak için bir tarih seç:",
+    "copySuffix": "(Kopya)"
   },
   "workout": {
     "start": "Başla",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "Onaylamak için {{word}} yaz:",
     "resetExercisesTitle": "Egzersizler sıfırlansın mı?",
     "resetExercisesDescription": "Kitaplığın varsayılan egzersizlerle değiştirilir. Özel egzersizler silinir. Geri alınamaz."
+  },
+  "programs": {
+    "title": "Programlar",
+    "createTitle": "Program oluştur",
+    "namePh": "Program adı (ör. PPL)",
+    "descPh": "Açıklama (ör. Başlangıç PPL)",
+    "emptyTitle": "Henüz program yok",
+    "emptyHint": "Rutinleri PPL veya Üst/Alt gibi planlarda grupla",
+    "workoutDays_one": "{{count}} antrenman günü",
+    "workoutDays_other": "{{count}} antrenman günü",
+    "favorite": "Favori",
+    "unfavorite": "Favoriden çıkar",
+    "deleteProgram": "Programı sil",
+    "deleteConfirm": "Bu program silinsin mi? Rutinleri bağımsız hale gelir.",
+    "notFound": "Program bulunamadı",
+    "editTitle": "Programı düzenle",
+    "editProgram": "Programı düzenle",
+    "workoutDaysHeader": "Antrenman günleri · {{count}}",
+    "attach": "Ekle",
+    "new": "Yeni",
+    "newWorkoutDay": "Yeni antrenman günü",
+    "workoutDayNamePh": "ör. Push",
+    "noWorkoutDays": "Henüz antrenman günü yok",
+    "noWorkoutDaysHint": "Bu programa Push, Pull, Bacak gibi rutinler ekle",
+    "attachExisting": "Mevcut rutini ekle",
+    "noStandaloneToAttach": "Eklenecek bağımsız rutin yok.",
+    "deleteRoutineConfirm": "Bu rutin silinsin mi?",
+    "logToDateTitle": "“{{name}}” tarihe kaydet"
   }
 }
