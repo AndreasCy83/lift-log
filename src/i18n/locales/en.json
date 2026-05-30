@@ -42,7 +42,64 @@
     "recentWorkouts": "Recent Workouts",
     "noWorkoutsYet": "No workouts yet",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "noWorkoutLogged": "No workout logged",
+    "viewWorkout": "View Workout →",
+    "showThreeWeeks": "Show 3 weeks",
+    "showFullMonth": "Show full month",
+    "exercise_one": "{{count}} exercise",
+    "exercise_other": "{{count}} exercises",
+    "duration": "Duration",
+    "vol": "Vol",
+    "reps": "Reps",
+    "sets": "Sets",
+    "dist": "Dist",
+    "time": "Time",
+    "muscleGroupBreakdown": "Muscle Group Breakdown",
+    "weekdays": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "actions": {
+      "copyWorkout": "Copy Workout",
+      "moveWorkout": "Move this Workout"
+    },
+    "delete": {
+      "title": "Delete Workout",
+      "description": "Are you sure you want to delete the workout on {{date}}? This action cannot be undone.",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "copy": {
+      "title": "Copy Workout",
+      "description": "Select a date to copy this workout to.",
+      "cta": "Copy to {{date}}",
+      "placeholder": "…"
+    },
+    "move": {
+      "title": "Move Workout",
+      "description": "Select a date to move this workout to.",
+      "cta": "Move to {{date}}",
+      "placeholder": "…"
+    },
+    "recovery": {
+      "title": "Recovery",
+      "byMuscle": "By muscle",
+      "needsRest": "Needs rest",
+      "allReady": "All ready",
+      "allMuscleGroupsReady": "All muscle groups ready",
+      "showLess": "Show less",
+      "showAll": "Show all (+{{count}})",
+      "bandLow": "LOW",
+      "bandModerate": "MOD",
+      "bandHigh": "HIGH",
+      "bandVeryHigh": "V HIGH"
+    }
   },
   "routines": {
     "title": "Routines",

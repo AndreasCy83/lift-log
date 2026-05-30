@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
@@ -14,10 +15,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Calendar } from '@/components/ui/calendar';
 import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 export default function HomePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const WEEKDAYS = [
+    t('home.weekdays.mon'), t('home.weekdays.tue'), t('home.weekdays.wed'),
+    t('home.weekdays.thu'), t('home.weekdays.fri'), t('home.weekdays.sat'), t('home.weekdays.sun'),
+  ];
   const globalWeightUnit = getSettings().weightUnit;
   const unit = weightUnitLabel(globalWeightUnit);
   const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
@@ -190,7 +194,7 @@ export default function HomePage() {
             className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
-            Start Workout
+            {t('home.startWorkout')}
           </Button>
         </div>
       </header>
@@ -270,7 +274,7 @@ export default function HomePage() {
             onClick={() => setCalendarExpanded(e => !e)}
             className="mt-2 flex w-full items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
           >
-            {calendarExpanded ? 'Show 3 weeks' : 'Show full month'}
+            {calendarExpanded ? t('home.showThreeWeeks') : t('home.showFullMonth')}
             <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
           </button>
         </div>
@@ -282,7 +286,7 @@ export default function HomePage() {
         <div className="gym-card mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-display text-sm font-semibold">
-              {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEE, MMM d')}
+              {isToday(selectedDate) ? t('home.today') : format(selectedDate, 'EEE, MMM d')}
             </h3>
             {selectedWorkout && (
               <div className="flex items-center gap-1">
@@ -294,10 +298,10 @@ export default function HomePage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => { setPickerDate(undefined); setCopyDialogOpen(true); }}>
-                      Copy Workout
+                      {t('home.actions.copyWorkout')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
-                      Move this Workout
+                      {t('home.actions.moveWorkout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -311,7 +315,7 @@ export default function HomePage() {
                   onClick={() => navigate(`/workout/${selectedDateStr}`)}
                   className="text-xs font-medium text-primary ml-1"
                 >
-                  View Workout →
+                  {t('home.viewWorkout')}
                 </button>
               </div>
             )}
@@ -322,31 +326,31 @@ export default function HomePage() {
                 <p className="text-sm text-foreground/80 italic">"{selectedWorkout.notes}"</p>
               ) : null}
               <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-                <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+                <span>{t('home.exercise', { count: selectedExercises.length })}</span>
                 {typeof selectedWorkout.durationSeconds === 'number' && selectedWorkout.durationSeconds > 0 && (
-                  <span>Duration: <span className="font-semibold text-foreground tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
+                  <span>{t('home.duration')}: <span className="font-semibold text-foreground tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
                 )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
                 <div className="mt-2 border-t border-border pt-2 space-y-1">
                   {selectedDayStats.hasStrength && (
                     <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                      <span>Vol: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
-                      <span className="text-center">Reps: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
-                      <span className="text-right">Sets: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
+                      <span>{t('home.vol')}: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
+                      <span className="text-center">{t('home.reps')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
+                      <span className="text-right">{t('home.sets')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
                     </div>
                   )}
                   {selectedDayStats.hasCardio && (
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                      <span>Dist: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
-                      <span className="text-right">Time: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                      <span>{t('home.dist')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span className="text-right">{t('home.time')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
                     </div>
                   )}
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No workout logged</p>
+            <p className="text-sm text-muted-foreground">{t('home.noWorkoutLogged')}</p>
         )}
         <div className="h-6" aria-hidden="true" />
       </div>
@@ -354,7 +358,7 @@ export default function HomePage() {
         {/* Muscle Group Breakdown Pie Chart */}
         {categoryBreakdown.length > 0 && (
           <div className="gym-card mt-4">
-            <h3 className="font-display text-sm font-semibold mb-3 text-center">Muscle Group Breakdown</h3>
+            <h3 className="font-display text-sm font-semibold mb-3 text-center">{t('home.muscleGroupBreakdown')}</h3>
             <div className="flex flex-col items-center gap-4">
               <div className="h-36 w-36 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
@@ -395,14 +399,14 @@ export default function HomePage() {
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Workout</AlertDialogTitle>
+            <AlertDialogTitle>{t('home.delete.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the workout on {format(selectedDate, 'MMM d, yyyy')}? This action cannot be undone.
+              {t('home.delete.description', { date: format(selectedDate, 'MMM d, yyyy') })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteWorkout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Yes</AlertDialogAction>
+            <AlertDialogCancel>{t('home.delete.no')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteWorkout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('home.delete.yes')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -411,14 +415,14 @@ export default function HomePage() {
       <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Copy Workout</DialogTitle>
-            <DialogDescription>Select a date to copy this workout to.</DialogDescription>
+            <DialogTitle>{t('home.copy.title')}</DialogTitle>
+            <DialogDescription>{t('home.copy.description')}</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center">
             <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
           </div>
           <Button disabled={!pickerDate} onClick={handleCopyWorkout} className="w-full">
-            Copy to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+            {t('home.copy.cta', { date: pickerDate ? format(pickerDate, 'MMM d, yyyy') : '…' })}
           </Button>
         </DialogContent>
       </Dialog>
@@ -427,14 +431,14 @@ export default function HomePage() {
       <Dialog open={moveDialogOpen} onOpenChange={setMoveDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Move Workout</DialogTitle>
-            <DialogDescription>Select a date to move this workout to.</DialogDescription>
+            <DialogTitle>{t('home.move.title')}</DialogTitle>
+            <DialogDescription>{t('home.move.description')}</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center">
             <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
           </div>
           <Button disabled={!pickerDate} onClick={handleMoveWorkout} className="w-full">
-            Move to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+            {t('home.move.cta', { date: pickerDate ? format(pickerDate, 'MMM d, yyyy') : '…' })}
           </Button>
         </DialogContent>
       </Dialog>
