@@ -381,7 +381,7 @@ export default function WorkoutLogPage() {
     }));
     saveWorkoutSets([...all, ...newSets]);
     forceUpdate(n => n + 1);
-    toast('Previous routine loaded');
+    toast(t('workout.toasts.previousRoutineLoaded'));
   };
 
   const handleRepeatLastRoutine = (weId: string, exerciseId: string) => {
