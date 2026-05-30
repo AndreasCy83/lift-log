@@ -1055,7 +1055,7 @@ export default function WorkoutLogPage() {
               return (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                   <p className="text-xs text-muted-foreground">
-                    Exercises will be appended to this workout. Current exercises are kept.
+                    {t('workout.routinePicker.hint')}
                   </p>
                   {programs.map(p => {
                     const children = routines.filter(r => r.programId === p.id);
