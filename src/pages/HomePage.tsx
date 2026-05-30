@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
@@ -14,10 +15,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Calendar } from '@/components/ui/calendar';
 import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 export default function HomePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const WEEKDAYS = [
+    t('home.weekdays.mon'), t('home.weekdays.tue'), t('home.weekdays.wed'),
+    t('home.weekdays.thu'), t('home.weekdays.fri'), t('home.weekdays.sat'), t('home.weekdays.sun'),
+  ];
   const globalWeightUnit = getSettings().weightUnit;
   const unit = weightUnitLabel(globalWeightUnit);
   const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
