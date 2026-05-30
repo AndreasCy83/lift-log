@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight, Star } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
@@ -19,6 +20,7 @@ type Tab = 'programs' | 'routines';
 
 export default function RoutinesPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [tick, setTick] = useState(0);
   const refresh = () => setTick(n => n + 1);
 
@@ -76,12 +78,12 @@ export default function RoutinesPage() {
 
   const handleDeleteRoutine = (id: string) => { deleteRoutine(id); refresh(); };
   const handleDeleteProgram = (id: string) => {
-    if (!confirm('Delete this program? Its routines will become standalone routines.')) return;
+    if (!confirm(t('programs.deleteConfirm'))) return;
     deleteProgram(id); refresh();
   };
 
   const handleDuplicate = (r: Routine) => {
-    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} (Copy)` };
+    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} ${t('routines.copySuffix')}` };
     addRoutine(newRoutine);
     getExercisesForRoutine(r.id).forEach(re => {
       const { id: _i, routineId: _r, ...rest } = re;
@@ -100,20 +102,20 @@ export default function RoutinesPage() {
     <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2">
-          <h1 className="font-display text-xl font-bold">Routines</h1>
+          <h1 className="font-display text-xl font-bold">{t('routines.title')}</h1>
           {tab === 'programs' ? (
             <Dialog open={showCreateProgram} onOpenChange={setShowCreateProgram}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gap-1.5 rounded-full bg-primary text-primary-foreground">
-                  <Plus className="h-4 w-4" /> New program
+                  <Plus className="h-4 w-4" /> {t('routines.newProgram')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Create program</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{t('programs.createTitle')}</DialogTitle></DialogHeader>
                 <div className="space-y-3">
-                  <Input placeholder="Program name (e.g. PPL)" value={newProgramName} onChange={e => setNewProgramName(e.target.value)} />
-                  <Textarea placeholder="Description (e.g. Beginner Push Pull Legs)" value={newProgramDesc} onChange={e => setNewProgramDesc(e.target.value)} />
-                  <Button onClick={handleCreateProgram} className="w-full bg-primary text-primary-foreground">Create</Button>
+                  <Input placeholder={t('programs.namePh')} value={newProgramName} onChange={e => setNewProgramName(e.target.value)} />
+                  <Textarea placeholder={t('programs.descPh')} value={newProgramDesc} onChange={e => setNewProgramDesc(e.target.value)} />
+                  <Button onClick={handleCreateProgram} className="w-full bg-primary text-primary-foreground">{t('routines.create')}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -121,15 +123,15 @@ export default function RoutinesPage() {
             <Dialog open={showCreateRoutine} onOpenChange={setShowCreateRoutine}>
               <DialogTrigger asChild>
                 <Button size="sm" className="gap-1.5 rounded-full bg-primary text-primary-foreground">
-                  <Plus className="h-4 w-4" /> New routine
+                  <Plus className="h-4 w-4" /> {t('routines.newRoutine')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Create routine</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{t('routines.createRoutineTitle')}</DialogTitle></DialogHeader>
                 <div className="space-y-3">
-                  <Input placeholder="Routine name" value={newRoutineName} onChange={e => setNewRoutineName(e.target.value)} />
-                  <Textarea placeholder="Description (optional)" value={newRoutineDesc} onChange={e => setNewRoutineDesc(e.target.value)} />
-                  <Button onClick={handleCreateRoutine} className="w-full bg-primary text-primary-foreground">Create</Button>
+                  <Input placeholder={t('routines.createRoutineNamePh')} value={newRoutineName} onChange={e => setNewRoutineName(e.target.value)} />
+                  <Textarea placeholder={t('routines.descriptionPh')} value={newRoutineDesc} onChange={e => setNewRoutineDesc(e.target.value)} />
+                  <Button onClick={handleCreateRoutine} className="w-full bg-primary text-primary-foreground">{t('routines.create')}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -140,16 +142,16 @@ export default function RoutinesPage() {
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4">
         <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="programs">Programs</TabsTrigger>
-            <TabsTrigger value="routines">My Routines</TabsTrigger>
+            <TabsTrigger value="programs">{t('routines.tabs.programs')}</TabsTrigger>
+            <TabsTrigger value="routines">{t('routines.tabs.routines')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="programs" className="space-y-3 mt-0">
             {programs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <Layers className="h-8 w-8 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground mb-1">No programs yet</p>
-                <p className="text-sm text-muted-foreground">Group routines into training plans like PPL or Upper/Lower</p>
+                <p className="text-muted-foreground mb-1">{t('programs.emptyTitle')}</p>
+                <p className="text-sm text-muted-foreground">{t('programs.emptyHint')}</p>
               </div>
             ) : (
               programs.map(p => {
@@ -163,12 +165,12 @@ export default function RoutinesPage() {
                           <h3 className="font-display font-semibold truncate">{p.name}</h3>
                         </div>
                         {p.description && <p className="text-xs text-muted-foreground mt-1 truncate">{p.description}</p>}
-                        <p className="text-xs text-muted-foreground mt-1">{count} workout day{count === 1 ? '' : 's'}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('programs.workoutDays', { count })}</p>
                       </button>
                       <div className="flex items-center gap-1 shrink-0">
                         <button
                           type="button"
-                          aria-label={p.isFavorite ? 'Unfavorite program' : 'Favorite program'}
+                          aria-label={p.isFavorite ? t('programs.unfavorite') : t('programs.favorite')}
                           aria-pressed={!!p.isFavorite}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -191,7 +193,7 @@ export default function RoutinesPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => handleDeleteProgram(p.id)} className="text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" /> Delete program
+                              <Trash2 className="h-4 w-4 mr-2" /> {t('programs.deleteProgram')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -206,8 +208,8 @@ export default function RoutinesPage() {
           <TabsContent value="routines" className="space-y-3 mt-0">
             {standaloneRoutines.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <p className="text-muted-foreground mb-1">No standalone routines</p>
-                <p className="text-sm text-muted-foreground">Create a routine to quickly start workouts</p>
+                <p className="text-muted-foreground mb-1">{t('routines.noStandalone')}</p>
+                <p className="text-sm text-muted-foreground">{t('routines.noStandaloneHint')}</p>
               </div>
             ) : (
               standaloneRoutines.map(r => {
@@ -218,7 +220,7 @@ export default function RoutinesPage() {
                       <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 text-left min-w-0">
                         <h3 className="font-display font-semibold truncate">{r.name}</h3>
                         {r.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{r.description}</p>}
-                        <p className="text-xs text-muted-foreground mt-1">{routineExercises.length} exercises</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
                       <div className="flex items-center gap-1">
                         <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="text-primary">
@@ -229,9 +231,9 @@ export default function RoutinesPage() {
                             <Button size="sm" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> Log to Date</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> Duplicate</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -248,9 +250,9 @@ export default function RoutinesPage() {
       <Dialog open={!!logToDateRoutine} onOpenChange={open => { if (!open) setLogToDateRoutine(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="font-display text-base">Log "{logToDateRoutine?.name}" to Date</DialogTitle>
+            <DialogTitle className="font-display text-base">{t('routines.logToDateTitle', { name: logToDateRoutine?.name ?? '' })}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">Pick a date to copy this routine as a workout:</p>
+          <p className="text-sm text-muted-foreground">{t('routines.logToDateHint')}</p>
           <div className="flex justify-center">
             <Calendar
               mode="single"
