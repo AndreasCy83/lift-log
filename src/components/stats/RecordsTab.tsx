@@ -41,6 +41,7 @@ function hasMeaningfulData(s: WorkoutSet) {
 }
 
 export default function RecordsTab() {
+  const tExName = useExerciseName();
   const exercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
   const workouts = useMemo(() => getWorkouts(), []);
