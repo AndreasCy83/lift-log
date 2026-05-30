@@ -5,6 +5,7 @@ import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import ExerciseGoalsDialog from '@/components/ExerciseGoalsDialog';
 import type { Exercise } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 interface Props {
   open: boolean;
