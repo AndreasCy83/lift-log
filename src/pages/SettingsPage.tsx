@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -8,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ExerciseLibrary from '@/components/ExerciseLibrary';
 import CsvExportButtons from '@/components/CsvExportButtons';
 import AutoBackupSection from '@/components/AutoBackupSection';
@@ -18,6 +20,8 @@ import { importCsvData } from '@/lib/csvImport';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/types/fitness';
 import { type WeightUnitSetting, toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
+import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
+import { setLanguage } from '@/i18n';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
