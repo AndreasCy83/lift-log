@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "Salvar", "cancel": "Cancelar", "delete": "Excluir", "edit": "Editar",
+    "close": "Fechar", "done": "Concluído", "back": "Voltar", "next": "Próximo",
+    "yes": "Sim", "no": "Não", "confirm": "Confirmar", "loading": "Carregando…",
+    "search": "Pesquisar", "add": "Adicionar", "remove": "Remover", "create": "Criar",
+    "update": "Atualizar", "reset": "Redefinir", "rename": "Renomear",
+    "copy": "Copiar", "move": "Mover", "share": "Compartilhar",
+    "import": "Importar", "export": "Exportar", "settings": "Configurações", "more": "Mais", "ok": "OK"
+  },
+  "nav": { "home": "Início", "routines": "Rotinas", "body": "Corpo", "stats": "Estatísticas", "settings": "Ajustes" },
+  "home": {
+    "title": "Início", "startWorkout": "Iniciar treino", "quickStart": "Início rápido",
+    "recentWorkouts": "Treinos recentes", "noWorkoutsYet": "Sem treinos ainda",
+    "today": "Hoje", "yesterday": "Ontem"
+  },
+  "routines": {
+    "title": "Rotinas",
+    "tabs": { "routines": "Rotinas", "programs": "Programas" },
+    "newRoutine": "Nova rotina", "newProgram": "Novo programa",
+    "noRoutines": "Sem rotinas", "noPrograms": "Sem programas",
+    "addExercise": "Adicionar exercício", "favorite": "Favorito", "unfavorite": "Remover favorito"
+  },
+  "workout": {
+    "start": "Iniciar", "pause": "Pausar", "resume": "Continuar", "finish": "Finalizar", "discard": "Descartar",
+    "addSet": "Adicionar série", "addExercise": "Adicionar exercício",
+    "set": "Série", "reps": "Reps", "weight": "Peso", "rest": "Descanso", "duration": "Duração", "notes": "Notas",
+    "warmup": "Aquecimento", "failure": "Falha", "drop": "Drop", "newPR": "Novo recorde!",
+    "leaveTitle": "Sair do treino?", "leaveDescription": "Seu treino ativo continuará em segundo plano.",
+    "stayHere": "Ficar aqui", "leave": "Sair"
+  },
+  "body": {
+    "title": "Monitor corporal", "weight": "Peso", "bodyFat": "Gordura corporal", "muscleMass": "Massa muscular",
+    "addEntry": "Adicionar entrada", "goals": "Metas", "history": "Histórico", "trends": "Tendências", "bmi": "IMC"
+  },
+  "stats": {
+    "title": "Estatísticas",
+    "tabs": { "workouts": "Treinos", "exercises": "Exercícios", "records": "Recordes", "goals": "Metas", "breakdown": "Detalhe" },
+    "totalWorkouts": "Treinos totais", "totalVolume": "Volume total", "totalSets": "Séries totais", "totalReps": "Reps totais"
+  },
+  "settings": {
+    "title": "Ajustes", "profile": "Perfil", "name": "Nome", "height": "Altura (cm)", "weight": "Peso",
+    "saveProfile": "Salvar perfil",
+    "supportCreator": "Apoie o criador 🙌", "rateApp": "Gostando do FitLog X? ⭐", "rateOnPlay": "Avaliar no Google Play",
+    "language": "Idioma", "languageHint": "Escolha o idioma do app.",
+    "weightUnit": "Unidade de peso", "weightUnitHint": "Os dados são salvos em kg. Esta opção afeta apenas exibição e entrada.",
+    "theme": "Tema", "themeSystem": "Sistema", "themeLight": "Claro", "themeDark": "Escuro",
+    "keepScreenOn": "Manter tela ligada", "keepScreenOnHint": "Durante os treinos",
+    "autoRest": "Iniciar auto cronômetro de descanso", "autoRestHint": "Inicia o cronômetro quando você completa uma série.",
+    "viewExercises": "Ver exercícios",
+    "data": "Dados", "importBackup": "Importar backup", "importCsv": "Importar CSV",
+    "importCsvHint": "Compatível com FitNotes e outros formatos CSV",
+    "tutorial": "Tutorial", "resetTutorials": "Redefinir tutoriais",
+    "dangerZone": "Zona de perigo", "resetExercises": "Redefinir exercícios", "deleteAllData": "Excluir todos os dados",
+    "about": "Sobre", "whatsNew": "Novidades",
+    "legal": "Legal", "privacyPolicy": "Política de Privacidade",
+    "feedback": "Feedback", "sendFeedback": "Enviar feedback",
+    "feedbackHint": "Compartilhe seus pensamentos, comentários e sugestões.",
+    "deleteAllTitle": "Excluir todos os dados?",
+    "deleteAllDescription": "Todos os seus treinos, rotinas, medidas, metas, perfil e ajustes serão excluídos deste dispositivo. Ação irreversível.",
+    "typeDeleteToConfirm": "Digite {{word}} para confirmar:",
+    "resetExercisesTitle": "Redefinir exercícios?",
+    "resetExercisesDescription": "Sua biblioteca será substituída pelos exercícios padrão. Os personalizados serão removidos. Ação irreversível."
+  }
+}

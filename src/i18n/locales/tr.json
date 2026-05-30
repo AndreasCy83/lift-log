@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "Kaydet", "cancel": "İptal", "delete": "Sil", "edit": "Düzenle",
+    "close": "Kapat", "done": "Tamam", "back": "Geri", "next": "İleri",
+    "yes": "Evet", "no": "Hayır", "confirm": "Onayla", "loading": "Yükleniyor…",
+    "search": "Ara", "add": "Ekle", "remove": "Kaldır", "create": "Oluştur",
+    "update": "Güncelle", "reset": "Sıfırla", "rename": "Yeniden adlandır",
+    "copy": "Kopyala", "move": "Taşı", "share": "Paylaş",
+    "import": "İçe aktar", "export": "Dışa aktar", "settings": "Ayarlar", "more": "Daha fazla", "ok": "Tamam"
+  },
+  "nav": { "home": "Ana sayfa", "routines": "Rutinler", "body": "Vücut", "stats": "İstatistik", "settings": "Ayarlar" },
+  "home": {
+    "title": "Ana sayfa", "startWorkout": "Antrenmanı başlat", "quickStart": "Hızlı başlat",
+    "recentWorkouts": "Son antrenmanlar", "noWorkoutsYet": "Henüz antrenman yok",
+    "today": "Bugün", "yesterday": "Dün"
+  },
+  "routines": {
+    "title": "Rutinler",
+    "tabs": { "routines": "Rutinler", "programs": "Programlar" },
+    "newRoutine": "Yeni rutin", "newProgram": "Yeni program",
+    "noRoutines": "Rutin yok", "noPrograms": "Program yok",
+    "addExercise": "Egzersiz ekle", "favorite": "Favori", "unfavorite": "Favoriden çıkar"
+  },
+  "workout": {
+    "start": "Başla", "pause": "Duraklat", "resume": "Devam", "finish": "Bitir", "discard": "İptal",
+    "addSet": "Set ekle", "addExercise": "Egzersiz ekle",
+    "set": "Set", "reps": "Tekrar", "weight": "Ağırlık", "rest": "Dinlenme", "duration": "Süre", "notes": "Notlar",
+    "warmup": "Isınma", "failure": "Tükenme", "drop": "Drop", "newPR": "Yeni rekor!",
+    "leaveTitle": "Antrenmandan çık?", "leaveDescription": "Aktif antrenmanın arka planda devam edecek.",
+    "stayHere": "Kal", "leave": "Çık"
+  },
+  "body": {
+    "title": "Vücut takibi", "weight": "Ağırlık", "bodyFat": "Yağ oranı", "muscleMass": "Kas kütlesi",
+    "addEntry": "Kayıt ekle", "goals": "Hedefler", "history": "Geçmiş", "trends": "Trendler", "bmi": "BKİ"
+  },
+  "stats": {
+    "title": "İstatistik",
+    "tabs": { "workouts": "Antrenmanlar", "exercises": "Egzersizler", "records": "Rekorlar", "goals": "Hedefler", "breakdown": "Detay" },
+    "totalWorkouts": "Toplam antrenman", "totalVolume": "Toplam hacim", "totalSets": "Toplam set", "totalReps": "Toplam tekrar"
+  },
+  "settings": {
+    "title": "Ayarlar", "profile": "Profil", "name": "Ad", "height": "Boy (cm)", "weight": "Ağırlık",
+    "saveProfile": "Profili kaydet",
+    "supportCreator": "Geliştiriciyi destekle 🙌", "rateApp": "FitLog X'i beğeniyor musun? ⭐", "rateOnPlay": "Google Play'de değerlendir",
+    "language": "Dil", "languageHint": "Tercih ettiğin dili seç.",
+    "weightUnit": "Ağırlık birimi", "weightUnitHint": "Veriler kg cinsinden saklanır. Bu ayar yalnızca görüntü ve girişi etkiler.",
+    "theme": "Tema", "themeSystem": "Sistem", "themeLight": "Açık", "themeDark": "Koyu",
+    "keepScreenOn": "Ekranı açık tut", "keepScreenOnHint": "Antrenman sırasında",
+    "autoRest": "Set bittiğinde otomatik dinlenme", "autoRestHint": "Set tamamlandığında dinlenme sayacını otomatik başlatır.",
+    "viewExercises": "Egzersizleri gör",
+    "data": "Veri", "importBackup": "Yedeği içe aktar", "importCsv": "CSV içe aktar",
+    "importCsvHint": "FitNotes ve diğer CSV formatlarını destekler",
+    "tutorial": "Eğitim", "resetTutorials": "Eğitimleri sıfırla",
+    "dangerZone": "Tehlikeli alan", "resetExercises": "Egzersizleri sıfırla", "deleteAllData": "Tüm veriyi sil",
+    "about": "Hakkında", "whatsNew": "Yenilikler",
+    "legal": "Yasal", "privacyPolicy": "Gizlilik Politikası",
+    "feedback": "Geri bildirim", "sendFeedback": "Geri bildirim gönder",
+    "feedbackHint": "Düşüncelerini, yorumlarını ve önerilerini paylaş.",
+    "deleteAllTitle": "Tüm veri silinsin mi?",
+    "deleteAllDescription": "Tüm antrenmanların, rutinlerin, ölçümlerin, hedeflerin, profilin ve ayarların bu cihazdan kalıcı olarak silinir. Geri alınamaz.",
+    "typeDeleteToConfirm": "Onaylamak için {{word}} yaz:",
+    "resetExercisesTitle": "Egzersizler sıfırlansın mı?",
+    "resetExercisesDescription": "Kitaplığın varsayılan egzersizlerle değiştirilir. Özel egzersizler silinir. Geri alınamaz."
+  }
+}

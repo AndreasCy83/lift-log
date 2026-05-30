@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "保存", "cancel": "取消", "delete": "删除", "edit": "编辑",
+    "close": "关闭", "done": "完成", "back": "返回", "next": "下一步",
+    "yes": "是", "no": "否", "confirm": "确认", "loading": "加载中…",
+    "search": "搜索", "add": "添加", "remove": "移除", "create": "创建",
+    "update": "更新", "reset": "重置", "rename": "重命名",
+    "copy": "复制", "move": "移动", "share": "分享",
+    "import": "导入", "export": "导出", "settings": "设置", "more": "更多", "ok": "确定"
+  },
+  "nav": { "home": "主页", "routines": "训练", "body": "身体", "stats": "统计", "settings": "设置" },
+  "home": {
+    "title": "主页", "startWorkout": "开始训练", "quickStart": "快速开始",
+    "recentWorkouts": "最近训练", "noWorkoutsYet": "还没有训练记录",
+    "today": "今天", "yesterday": "昨天"
+  },
+  "routines": {
+    "title": "训练",
+    "tabs": { "routines": "例程", "programs": "计划" },
+    "newRoutine": "新建例程", "newProgram": "新建计划",
+    "noRoutines": "暂无例程", "noPrograms": "暂无计划",
+    "addExercise": "添加动作", "favorite": "收藏", "unfavorite": "取消收藏"
+  },
+  "workout": {
+    "start": "开始", "pause": "暂停", "resume": "继续", "finish": "完成", "discard": "放弃",
+    "addSet": "添加组", "addExercise": "添加动作",
+    "set": "组", "reps": "次数", "weight": "重量", "rest": "休息", "duration": "时长", "notes": "备注",
+    "warmup": "热身", "failure": "力竭", "drop": "递减", "newPR": "新纪录！",
+    "leaveTitle": "离开训练？", "leaveDescription": "当前训练将在后台继续。",
+    "stayHere": "留在这里", "leave": "离开"
+  },
+  "body": {
+    "title": "身体追踪", "weight": "体重", "bodyFat": "体脂", "muscleMass": "肌肉量",
+    "addEntry": "添加记录", "goals": "目标", "history": "历史", "trends": "趋势", "bmi": "BMI"
+  },
+  "stats": {
+    "title": "统计",
+    "tabs": { "workouts": "训练", "exercises": "动作", "records": "记录", "goals": "目标", "breakdown": "分布" },
+    "totalWorkouts": "总训练数", "totalVolume": "总容量", "totalSets": "总组数", "totalReps": "总次数"
+  },
+  "settings": {
+    "title": "设置", "profile": "个人资料", "name": "姓名", "height": "身高 (cm)", "weight": "体重",
+    "saveProfile": "保存资料",
+    "supportCreator": "支持作者 🙌", "rateApp": "喜欢 FitLog X 吗？⭐", "rateOnPlay": "在 Google Play 评分",
+    "language": "语言", "languageHint": "选择应用语言。",
+    "weightUnit": "重量单位", "weightUnitHint": "数据以公斤存储。此设置仅影响显示和输入。",
+    "theme": "主题", "themeSystem": "系统", "themeLight": "浅色", "themeDark": "深色",
+    "keepScreenOn": "保持屏幕常亮", "keepScreenOnHint": "训练期间",
+    "autoRest": "完成组后自动开始休息计时", "autoRestHint": "在你标记完成时自动启动休息计时器。",
+    "viewExercises": "查看动作",
+    "data": "数据", "importBackup": "导入备份", "importCsv": "导入 CSV",
+    "importCsvHint": "支持 FitNotes 及其他 CSV 格式",
+    "tutorial": "教程", "resetTutorials": "重置教程",
+    "dangerZone": "危险区域", "resetExercises": "重置动作库", "deleteAllData": "删除全部数据",
+    "about": "关于", "whatsNew": "新功能",
+    "legal": "法律", "privacyPolicy": "隐私政策",
+    "feedback": "反馈", "sendFeedback": "发送反馈",
+    "feedbackHint": "分享你的想法、评论和建议。",
+    "deleteAllTitle": "删除全部数据？",
+    "deleteAllDescription": "本设备上所有训练、例程、身体测量、目标、资料和设置都将被永久删除。无法撤销。",
+    "typeDeleteToConfirm": "输入 {{word}} 确认：",
+    "resetExercisesTitle": "重置动作库？",
+    "resetExercisesDescription": "你的动作库将被替换为默认动作，自定义动作会被移除。无法撤销。"
+  }
+}
