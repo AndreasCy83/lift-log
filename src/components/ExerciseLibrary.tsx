@@ -131,7 +131,7 @@ export default function ExerciseLibrary({ onClose }: Props) {
                 style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{ex.name}</p>
+                <p className="text-sm font-medium truncate">{tExName(ex)}</p>
                 <p className="text-[10px] text-muted-foreground">
                   {getCatName(ex.categoryId)} · {SET_TYPE_LABELS[ex.setType]}
                 </p>
