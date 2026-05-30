@@ -479,7 +479,7 @@ function AddGoalDialog({
               </SelectTrigger>
               <SelectContent>
                 {exercises.map(ex => (
-                  <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                  <SelectItem key={ex.id} value={ex.id}>{translateExerciseName(ex)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
