@@ -134,6 +134,7 @@ interface GoalsTabProps {
 
 export default function GoalsTab({ onAddGoal }: GoalsTabProps) {
   const exercises = useMemo(() => getExercises(), []);
+  const tExName = useExerciseName();
   const [goals, setGoals] = useState<ExerciseGoal[]>(() => getExerciseGoals());
   const [filterExId, setFilterExId] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
