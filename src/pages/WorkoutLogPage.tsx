@@ -597,7 +597,10 @@ export default function WorkoutLogPage() {
   };
 
   const getEx = (exId: string) => exercises.find(e => e.id === exId);
-  const getExName = (exId: string) => getEx(exId)?.name ?? 'Unknown';
+  const getExName = (exId: string) => {
+    const e = getEx(exId);
+    return e ? tExName(e) : 'Unknown';
+  };
   const getCatName = (exId: string) => {
     const ex = getEx(exId);
     return ex ? categories.find(c => c.id === ex.categoryId)?.name ?? '' : '';
