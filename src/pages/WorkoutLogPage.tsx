@@ -1016,7 +1016,7 @@ export default function WorkoutLogPage() {
         {/* Routine Picker Dialog */}
         <Dialog open={showRoutinePicker} onOpenChange={setShowRoutinePicker}>
           <DialogContent className="max-w-sm">
-            <DialogHeader><DialogTitle>Apply a Routine</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t('workout.routinePicker.title')}</DialogTitle></DialogHeader>
             {(() => {
               const routines = getRoutines();
               const programs = getPrograms();
