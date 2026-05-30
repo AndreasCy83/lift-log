@@ -631,8 +631,8 @@ export default function WorkoutLogPage() {
               <button
                 onClick={() => (session.isRunning ? session.pause() : session.resume())}
                 className="ml-0.5 rounded p-0.5 hover:bg-secondary"
-                title={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
-                aria-label={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+                title={session.isRunning ? t('workout.timers.pauseWorkout') : t('workout.timers.resumeWorkout')}
+                aria-label={session.isRunning ? t('workout.timers.pauseWorkout') : t('workout.timers.resumeWorkout')}
               >
                 {session.isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
               </button>
