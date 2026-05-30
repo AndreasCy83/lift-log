@@ -149,7 +149,10 @@ export default function RoutineDetailPage() {
     refresh();
   };
 
-  const getExerciseName = (exId: string) => exercises.find(e => e.id === exId)?.name ?? 'Unknown';
+  const getExerciseName = (exId: string) => {
+    const e = exercises.find(x => x.id === exId);
+    return e ? tExName(e) : 'Unknown';
+  };
   const getCategoryName = (exId: string) => {
     const ex = exercises.find(e => e.id === exId);
     return ex ? categories.find(c => c.id === ex.categoryId)?.name ?? '' : '';
