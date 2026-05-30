@@ -1179,20 +1179,20 @@ export default function WorkoutLogPage() {
       <AlertDialog open={!!deleteSetTarget} onOpenChange={(open) => !open && setDeleteSetTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this set?</AlertDialogTitle>
+            <AlertDialogTitle>{t('workout.deleteSetDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This set will be removed and remaining sets will be renumbered. This action cannot be undone.
+              {t('workout.deleteSetDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteSetTarget) handleDeleteSet(deleteSetTarget);
                 setDeleteSetTarget(null);
               }}
             >
-              Yes, delete
+              {t('workout.deleteSetDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
