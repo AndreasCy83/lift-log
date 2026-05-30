@@ -79,7 +79,7 @@ export default function RecordsTab() {
     for (const [exId, sessions] of exSessionMap) {
       const ex = exercises.find(e => e.id === exId);
       // Tolerate orphan exerciseIds (e.g. deleted custom exercises) so PRs still appear
-      const exName = ex?.name ?? '(Custom exercise)';
+      const exName = ex ? tExName(ex) : '(Custom exercise)';
       const exCategoryId = ex?.categoryId ?? '';
 
       let e1rm: PRData['e1rm'] = null;
