@@ -1038,7 +1038,7 @@ export default function WorkoutLogPage() {
                 const added = appendRoutineToWorkout(r, workout.id);
                 setShowRoutinePicker(false);
                 refresh();
-                toast(added > 0 ? `Added ${added} exercise${added === 1 ? '' : 's'} from ${r.name}` : `${r.name} has no exercises`);
+                toast(added > 0 ? t('workout.toasts.addedFromRoutine', { count: added, name: r.name }) : t('workout.toasts.routineEmpty', { name: r.name }));
               };
               const renderRoutine = (r: typeof routines[number]) => (
                 <button
