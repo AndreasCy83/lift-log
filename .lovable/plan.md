@@ -1,88 +1,74 @@
+# Multi-Language Support
 
+Add full app internationalization with a language picker in Settings. All UI strings, exercise names, and seeded program/routine names will be translatable.
 
-## Goal
+## Languages (10)
+English (default/fallback), French, Italian, Portuguese, Russian, Turkish, Chinese (Simplified), Hindi, Arabic, Japanese.
 
-Make routine "predefined sets" mode aware of each exercise's existing `setType`, so the routine builder shows the correct fields per row and the generated workout sets carry the right values into `WorkoutSet`. Strictly scoped to the routine flow.
+## Scope
+Every screen: Home, Workouts, Routines, Programs, Body Tracker, Stats, Settings, all dialogs, toasts, empty states, bottom nav, splash, onboarding, tutorial overlays, changelog, privacy policy.
 
-## Scope (touched files only)
+Built-in exercise names (Bench Press, Deadlift…) and seeded program/routine names (5 Day Split Hypertrophy, Push Day…) translated too. User-created exercises/routines stay as the user typed them.
 
-1. `src/types/fitness.ts` — extend `RoutineExercise` with an optional `predefinedRows` array.
-2. `src/components/RoutineExerciseSetupSheet.tsx` — replace the single sets/reps/rest block with a per-row editor branched by `setType`.
-3. `src/lib/routineRunner.ts` — rewrite `predefinedSet` to map per-row data into `WorkoutSet` by `setType`; fall back to legacy aggregate fields when `predefinedRows` is absent.
-4. `src/pages/RoutineDetailPage.tsx` — pass the resolved `setType` into the setup sheet and seed initial `predefinedRows` from exercise defaults when a new routine exercise is added.
+## Approach
 
-Nothing else changes. Workout log, stats, goals, seed data, copy_previous mode, blank mode, and the manual-add flow remain untouched.
+### Library
+Use `react-i18next` + `i18next` + `i18next-browser-languagedetector`. Mature, offline-friendly (no network), tiny runtime, works perfectly with Capacitor.
 
-## Data model change (minimum)
+### File structure
+```
+src/i18n/
+  index.ts              ← init, language detection, persistence
+  languages.ts          ← language list + native labels + RTL flag
+  locales/
+    en.json             ← source of truth
+    fr.json  it.json  pt.json  ru.json  tr.json
+    zh.json  hi.json  ar.json  ja.json
+```
 
-Add to `RoutineExercise`:
-
-```ts
-export interface RoutinePredefinedRow {
-  weightKg: number | null;
-  reps: number | null;
-  distanceKm: number | null;
-  durationMinutes: number | null;
-  restSeconds: number | null;
+Each locale file is one flat JSON namespaced by area:
+```json
+{
+  "nav": { "home": "...", "workouts": "..." },
+  "settings": { "title": "...", "language": "...", ... },
+  "workout": { "addSet": "...", "rest": "...", ... },
+  "exercise": { "ex-bench-press": "Bench Press", ... },
+  "program": { "program-builtin-5daysplit": "5 Day Split Hypertrophy", ... },
+  "routine": { "Push Day": "...", ... }
 }
-
-predefinedRows?: RoutinePredefinedRow[]; // optional; legacy entries fall back to sets/repsMin/restSeconds
 ```
 
-Existing `sets`, `repsMin`, `repsMax`, `restSeconds` fields stay as-is for backward compatibility with already-saved routines.
+### Settings integration
+- Add `language: SupportedLang` to `AppSettings` in `storage.ts` (default `'en'`, falls back to device language on first launch via the detector).
+- Add a "Language" card in `SettingsPage.tsx` above "Weight Unit" — a `Select` showing each language in its native script (English, Français, Italiano, Português, Русский, Türkçe, 中文, हिन्दी, العربية, 日本語).
+- Selecting persists to localStorage via `saveSettings` and calls `i18n.changeLanguage(...)`.
 
-## Field mapping (per row, by exercise.setType)
+### RTL handling
+Arabic only. When `ar` is active, set `document.documentElement.dir = "rtl"`; otherwise `"ltr"`. Tailwind classes already work with logical properties for most layouts; any directional `left-*`/`right-*` that breaks will be swapped to `start-*`/`end-*` where needed.
 
-| setType         | Inputs shown            | WorkoutSet fields written            |
-|-----------------|-------------------------|--------------------------------------|
-| WEIGHT_REPS     | KG, Reps, Rest          | weightKg, reps                       |
-| REPS_DISTANCE   | Reps, KM, Rest          | reps, distanceKm                     |
-| REPS_TIME       | Reps, Time (min), Rest  | reps, durationMinutes                |
-| WEIGHT_TIME     | KG, Time (min), Rest    | weightKg, durationMinutes            |
-| WEIGHT_ONLY     | KG, Rest (fallback)     | weightKg                             |
+### Exercise & program translation strategy
+- Exercises: `getExerciseDisplayName(ex)` helper — returns `t('exercise.'+ex.id, { defaultValue: ex.name })`. Used everywhere instead of `ex.name` directly. Custom exercises (no translation key) fall through to stored name automatically.
+- Seeded programs/routines: same pattern with `program.*` and `routine.*` namespaces, keyed by stable IDs already used in `storage.ts`.
+- Storage stays English — no migration needed. Switching language re-renders display only.
 
-Irrelevant fields stay `null`.
+### Translation source
+I'll write all 10 locale files in code. English is authoritative; the other 9 are translated by me. You don't need to upload anything. After delivery you can refine any wording by editing the relevant `src/i18n/locales/*.json` file.
 
-## Setup sheet UX (predefined mode only)
+## Implementation steps
 
-```text
-[ Mode selector — unchanged ]
-─ Predefined sets ──────────────
- # 1   [KG] [Reps]      [Rest s]   ✕
- # 2   [KG] [Reps]      [Rest s]   ✕
- # 3   [KG] [Reps]      [Rest s]   ✕
- [ + Add set ]
-```
+1. **Install** `i18next`, `react-i18next`, `i18next-browser-languagedetector`.
+2. **Create `src/i18n/`** with init module, language list, and the 10 locale JSONs (full UI + exercise + program/routine keys).
+3. **Wire init** in `src/main.tsx` before `<App />` renders.
+4. **Extend `AppSettings`** with `language` field + migration default.
+5. **Refactor all screens/components** to use `useTranslation()` + `t('...')`. Touches: BottomNav, HomePage, WorkoutLogPage, RoutinesPage, ProgramDetailPage, RoutineDetailPage, BodyTrackerPage, StatsPage (+ all stats tabs), SettingsPage, OnboardingWizard, SplashScreen, ChangelogDialog, PrivacyPolicyModal, all dialogs/sheets under `components/`, all toasts.
+6. **Replace `ex.name`/program name reads** with the display helpers.
+7. **Add language picker UI** to SettingsPage.
+8. **Apply `dir` attribute** based on active language.
+9. **QA pass** by switching each language in preview.
 
-- Field columns are chosen from `exercise.setType` resolved by the parent (passed in as a new `setType` prop).
-- "Add set" duplicates the last row's values (or a blank row if none).
-- "Remove" disabled when only 1 row remains.
-- First-time open with no `predefinedRows`: seed from legacy aggregates — `sets` rows, each with `reps = repsMin`, `restSeconds = restSeconds`.
+## Technical notes
 
-## Routine generation (`routineRunner.ts`)
-
-`predefinedSet` becomes setType-aware:
-
-- If `re.predefinedRows` exists, iterate it and write only the fields valid for the exercise's `setType`.
-- Else (legacy), keep current behavior: build `re.sets` rows with `reps = re.repsMin` (preserves existing routines).
-- `restSeconds` per row falls back to `re.restSeconds` then exercise default.
-
-The runner needs `exercise.setType`, which it already loads via `allExercises.find(...)`.
-
-## Other modes
-
-- `copy_previous`: unchanged.
-- `blank`: unchanged.
-
-## Backward compatibility
-
-Old saved routines have no `predefinedRows` → runner uses the existing aggregate path → identical output to today. Opening an old entry in the setup sheet seeds `predefinedRows` from the aggregates so the new editor shows them, and saving migrates that single entry forward.
-
-## Acceptance mapping
-
-1–4. Setup sheet renders KG+Reps / Reps+KM / Reps+Time / KG+Time per row driven by `exercise.setType`.
-5. Generated `WorkoutSet`s carry the correct fields (verified in `predefinedSet`).
-6–7. blank and copy_previous code paths are not touched.
-8. Workout log reads `WorkoutSet` exactly as before; field names are unchanged.
-9–10. No seed data edits, no new set type added.
-
+- All translation files bundled at build time — fully offline, no runtime fetch. Bundle size impact ≈ 80–150 KB gzipped total for 10 languages of this app's surface.
+- Plurals use i18next's built-in plural rules (handles ru/ar/pl-style complexity automatically).
+- Date/number formatting will use `Intl.DateTimeFormat`/`Intl.NumberFormat` with the active locale where dates are user-facing.
+- This is a large mechanical refactor across ~40 files. No business logic changes — kg storage, calculations, persistence, RLS-equivalent localStorage keys all untouched.
