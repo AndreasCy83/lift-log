@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
 import type { Exercise, WorkoutSet } from '@/types/fitness';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 type SortMode = 'recent' | 'alpha' | 'category';
 const SORT_LABELS: Record<SortMode, string> = {
