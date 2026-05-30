@@ -102,8 +102,8 @@
   "routines": {
     "title": "الروتينات",
     "tabs": {
-      "routines": "روتينات",
-      "programs": "برامج"
+      "routines": "روتيناتي",
+      "programs": "البرامج"
     },
     "newRoutine": "روتين جديد",
     "newProgram": "برنامج جديد",
@@ -111,7 +111,25 @@
     "noPrograms": "لا توجد برامج",
     "addExercise": "إضافة تمرين",
     "favorite": "مفضّل",
-    "unfavorite": "إزالة من المفضلة"
+    "unfavorite": "إزالة من المفضلة",
+    "createRoutineTitle": "إنشاء روتين",
+    "createRoutineNamePh": "اسم الروتين",
+    "descriptionPh": "الوصف (اختياري)",
+    "create": "إنشاء",
+    "save": "حفظ",
+    "noStandalone": "لا توجد روتينات مستقلة",
+    "noStandaloneHint": "أنشئ روتينًا لبدء التمارين بسرعة",
+    "exercises_one": "{{count}} تمرين",
+    "exercises_other": "{{count}} تمارين",
+    "actions": {
+      "logToDate": "تسجيل في تاريخ",
+      "duplicate": "تكرار",
+      "delete": "حذف",
+      "removeFromProgram": "إزالة من البرنامج"
+    },
+    "logToDateTitle": "تسجيل «{{name}}» في تاريخ",
+    "logToDateHint": "اختر تاريخًا لنسخ هذا الروتين كتمرين:",
+    "copySuffix": "(نسخة)"
   },
   "workout": {
     "start": "ابدأ",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "اكتب {{word}} للتأكيد:",
     "resetExercisesTitle": "إعادة تعيين التمارين؟",
     "resetExercisesDescription": "سيتم استبدال مكتبتك بالتمارين الافتراضية. تُحذف التمارين المخصصة. لا يمكن التراجع."
+  },
+  "programs": {
+    "title": "البرامج",
+    "createTitle": "إنشاء برنامج",
+    "namePh": "اسم البرنامج (مثل PPL)",
+    "descPh": "الوصف (مثل PPL للمبتدئين)",
+    "emptyTitle": "لا توجد برامج",
+    "emptyHint": "اجمع روتيناتك في خطط مثل PPL أو علوي/سفلي",
+    "workoutDays_one": "{{count}} يوم تمرين",
+    "workoutDays_other": "{{count}} أيام تمرين",
+    "favorite": "إضافة للمفضلة",
+    "unfavorite": "إزالة من المفضلة",
+    "deleteProgram": "حذف البرنامج",
+    "deleteConfirm": "حذف هذا البرنامج؟ ستصبح روتيناته مستقلة.",
+    "notFound": "البرنامج غير موجود",
+    "editTitle": "تعديل البرنامج",
+    "editProgram": "تعديل البرنامج",
+    "workoutDaysHeader": "أيام التمرين · {{count}}",
+    "attach": "إرفاق",
+    "new": "جديد",
+    "newWorkoutDay": "يوم تمرين جديد",
+    "workoutDayNamePh": "مثل Push",
+    "noWorkoutDays": "لا توجد أيام تمرين",
+    "noWorkoutDaysHint": "أضف روتينات مثل Push وPull والأرجل لهذا البرنامج",
+    "attachExisting": "إرفاق روتين موجود",
+    "noStandaloneToAttach": "لا توجد روتينات مستقلة للإرفاق.",
+    "deleteRoutineConfirm": "حذف هذا الروتين؟",
+    "logToDateTitle": "تسجيل «{{name}}» في تاريخ"
   }
 }

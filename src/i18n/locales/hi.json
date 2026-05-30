@@ -102,7 +102,7 @@
   "routines": {
     "title": "रूटीन",
     "tabs": {
-      "routines": "रूटीन",
+      "routines": "मेरी रूटीन",
       "programs": "प्रोग्राम"
     },
     "newRoutine": "नई रूटीन",
@@ -111,7 +111,25 @@
     "noPrograms": "कोई प्रोग्राम नहीं",
     "addExercise": "व्यायाम जोड़ें",
     "favorite": "पसंदीदा",
-    "unfavorite": "पसंदीदा हटाएं"
+    "unfavorite": "पसंदीदा हटाएं",
+    "createRoutineTitle": "रूटीन बनाएँ",
+    "createRoutineNamePh": "रूटीन का नाम",
+    "descriptionPh": "विवरण (वैकल्पिक)",
+    "create": "बनाएँ",
+    "save": "सहेजें",
+    "noStandalone": "कोई स्वतंत्र रूटीन नहीं",
+    "noStandaloneHint": "जल्दी शुरू करने के लिए रूटीन बनाएँ",
+    "exercises_one": "{{count}} व्यायाम",
+    "exercises_other": "{{count}} व्यायाम",
+    "actions": {
+      "logToDate": "तारीख पर दर्ज करें",
+      "duplicate": "डुप्लिकेट",
+      "delete": "हटाएँ",
+      "removeFromProgram": "प्रोग्राम से हटाएँ"
+    },
+    "logToDateTitle": "“{{name}}” को तारीख पर दर्ज करें",
+    "logToDateHint": "इस रूटीन को वर्कआउट के रूप में कॉपी करने हेतु तारीख चुनें:",
+    "copySuffix": "(कॉपी)"
   },
   "workout": {
     "start": "शुरू",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "पुष्टि के लिए {{word}} टाइप करें:",
     "resetExercisesTitle": "व्यायाम रीसेट करें?",
     "resetExercisesDescription": "आपकी लाइब्रेरी डिफ़ॉल्ट व्यायामों से बदल दी जाएगी। कस्टम व्यायाम हटा दिए जाएंगे। यह क्रिया वापस नहीं की जा सकती।"
+  },
+  "programs": {
+    "title": "प्रोग्राम",
+    "createTitle": "प्रोग्राम बनाएँ",
+    "namePh": "प्रोग्राम नाम (जैसे PPL)",
+    "descPh": "विवरण (जैसे शुरुआती PPL)",
+    "emptyTitle": "कोई प्रोग्राम नहीं",
+    "emptyHint": "रूटीन को PPL या Upper/Lower जैसे प्लान में समूहित करें",
+    "workoutDays_one": "{{count}} वर्कआउट दिन",
+    "workoutDays_other": "{{count}} वर्कआउट दिन",
+    "favorite": "पसंदीदा",
+    "unfavorite": "पसंदीदा हटाएँ",
+    "deleteProgram": "प्रोग्राम हटाएँ",
+    "deleteConfirm": "यह प्रोग्राम हटाएँ? इसकी रूटीन स्वतंत्र बन जाएँगी।",
+    "notFound": "प्रोग्राम नहीं मिला",
+    "editTitle": "प्रोग्राम संपादित करें",
+    "editProgram": "प्रोग्राम संपादित करें",
+    "workoutDaysHeader": "वर्कआउट दिन · {{count}}",
+    "attach": "जोड़ें",
+    "new": "नया",
+    "newWorkoutDay": "नया वर्कआउट दिन",
+    "workoutDayNamePh": "जैसे Push",
+    "noWorkoutDays": "कोई वर्कआउट दिन नहीं",
+    "noWorkoutDaysHint": "इस प्रोग्राम में Push, Pull, Legs जैसी रूटीन जोड़ें",
+    "attachExisting": "मौजूदा रूटीन जोड़ें",
+    "noStandaloneToAttach": "जोड़ने के लिए कोई स्वतंत्र रूटीन नहीं।",
+    "deleteRoutineConfirm": "यह रूटीन हटाएँ?",
+    "logToDateTitle": "“{{name}}” को तारीख पर दर्ज करें"
   }
 }

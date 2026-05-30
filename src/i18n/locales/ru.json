@@ -100,9 +100,9 @@
     }
   },
   "routines": {
-    "title": "Программы",
+    "title": "Рутины",
     "tabs": {
-      "routines": "Рутины",
+      "routines": "Мои рутины",
       "programs": "Программы"
     },
     "newRoutine": "Новая рутина",
@@ -111,7 +111,25 @@
     "noPrograms": "Нет программ",
     "addExercise": "Добавить упражнение",
     "favorite": "В избранное",
-    "unfavorite": "Убрать из избранного"
+    "unfavorite": "Убрать из избранного",
+    "createRoutineTitle": "Создать рутину",
+    "createRoutineNamePh": "Название рутины",
+    "descriptionPh": "Описание (необязательно)",
+    "create": "Создать",
+    "save": "Сохранить",
+    "noStandalone": "Нет отдельных рутин",
+    "noStandaloneHint": "Создайте рутину для быстрого старта тренировок",
+    "exercises_one": "{{count}} упражнение",
+    "exercises_other": "{{count}} упражнений",
+    "actions": {
+      "logToDate": "Запланировать на дату",
+      "duplicate": "Дублировать",
+      "delete": "Удалить",
+      "removeFromProgram": "Убрать из программы"
+    },
+    "logToDateTitle": "Запланировать «{{name}}»",
+    "logToDateHint": "Выберите дату, чтобы скопировать рутину как тренировку:",
+    "copySuffix": "(Копия)"
   },
   "workout": {
     "start": "Старт",
@@ -205,5 +223,33 @@
     "typeDeleteToConfirm": "Введите {{word}} для подтверждения:",
     "resetExercisesTitle": "Сбросить упражнения?",
     "resetExercisesDescription": "Библиотека будет заменена стандартными упражнениями. Пользовательские будут удалены. Действие нельзя отменить."
+  },
+  "programs": {
+    "title": "Программы",
+    "createTitle": "Создать программу",
+    "namePh": "Название программы (например, PPL)",
+    "descPh": "Описание (например, PPL для новичков)",
+    "emptyTitle": "Нет программ",
+    "emptyHint": "Объедините рутины в планы, например PPL или Верх/Низ",
+    "workoutDays_one": "{{count}} день тренировки",
+    "workoutDays_other": "{{count}} дней тренировок",
+    "favorite": "В избранное",
+    "unfavorite": "Убрать из избранного",
+    "deleteProgram": "Удалить программу",
+    "deleteConfirm": "Удалить эту программу? Её рутины станут отдельными.",
+    "notFound": "Программа не найдена",
+    "editTitle": "Изменить программу",
+    "editProgram": "Изменить программу",
+    "workoutDaysHeader": "Дни тренировок · {{count}}",
+    "attach": "Привязать",
+    "new": "Новый",
+    "newWorkoutDay": "Новый день",
+    "workoutDayNamePh": "например, Push",
+    "noWorkoutDays": "Нет дней тренировок",
+    "noWorkoutDaysHint": "Добавьте рутины Push, Pull, Ноги в эту программу",
+    "attachExisting": "Привязать существующую рутину",
+    "noStandaloneToAttach": "Нет отдельных рутин для привязки.",
+    "deleteRoutineConfirm": "Удалить эту рутину?",
+    "logToDateTitle": "Запланировать «{{name}}»"
   }
 }

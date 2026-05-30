@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Play, MoreVertical, Trash2, Pencil, CalendarPlus, Copy } from 'lucide-react';
 import {
   getPrograms, updateProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines,
@@ -22,6 +23,7 @@ import type { Routine } from '@/types/fitness';
 export default function ProgramDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [, force] = useState(0);
   const refresh = () => force(n => n + 1);
 
@@ -40,7 +42,7 @@ export default function ProgramDetailPage() {
   const [showAddExisting, setShowAddExisting] = useState(false);
   const [logToDateRoutine, setLogToDateRoutine] = useState<Routine | null>(null);
 
-  if (!program || !id) return <div className="p-4">Program not found</div>;
+  if (!program || !id) return <div className="p-4">{t('programs.notFound')}</div>;
 
   const handleSaveProgram = () => {
     updateProgram({ ...program, name: editName.trim() || program.name, description: editDesc.trim() });
@@ -49,7 +51,7 @@ export default function ProgramDetailPage() {
   };
 
   const handleDeleteProgram = () => {
-    if (!confirm('Delete this program? Its routines will become standalone routines.')) return;
+    if (!confirm(t('programs.deleteConfirm'))) return;
     deleteProgram(program.id);
     navigate('/routines');
   };
@@ -77,7 +79,7 @@ export default function ProgramDetailPage() {
   };
 
   const handleDuplicateRoutine = (r: Routine) => {
-    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} (Copy)`, programId: program.id };
+    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} ${t('routines.copySuffix')}`, programId: program.id };
     addRoutine(newRoutine);
     const res = getExercisesForRoutine(r.id);
     res.forEach(re => {
@@ -94,7 +96,7 @@ export default function ProgramDetailPage() {
   };
 
   const handleDeleteRoutine = (rid: string) => {
-    if (!confirm('Delete this routine?')) return;
+    if (!confirm(t('programs.deleteRoutineConfirm'))) return;
     deleteRoutine(rid);
     refresh();
   };
@@ -123,10 +125,10 @@ export default function ProgramDetailPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => { setEditName(program.name); setEditDesc(program.description); setShowEdit(true); }}>
-                <Pencil className="h-4 w-4 mr-2" /> Edit program
+                <Pencil className="h-4 w-4 mr-2" /> {t('programs.editProgram')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleDeleteProgram} className="text-destructive">
-                <Trash2 className="h-4 w-4 mr-2" /> Delete program
+                <Trash2 className="h-4 w-4 mr-2" /> {t('programs.deleteProgram')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -136,22 +138,22 @@ export default function ProgramDetailPage() {
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Workout days · {routines.length}
+            {t('programs.workoutDaysHeader', { count: routines.length })}
           </h2>
           <div className="flex gap-1.5">
             <Button size="sm" variant="outline" onClick={() => setShowAddExisting(true)} className="h-8 text-xs">
-              Attach
+              {t('programs.attach')}
             </Button>
             <Button size="sm" onClick={() => setShowCreate(true)} className="h-8 gap-1 rounded-full bg-primary text-primary-foreground text-xs">
-              <Plus className="h-3.5 w-3.5" /> New
+              <Plus className="h-3.5 w-3.5" /> {t('programs.new')}
             </Button>
           </div>
         </div>
 
         {routines.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-muted-foreground mb-1">No workout days yet</p>
-            <p className="text-xs text-muted-foreground">Add routines like Push, Pull, Legs to this program</p>
+            <p className="text-muted-foreground mb-1">{t('programs.noWorkoutDays')}</p>
+            <p className="text-xs text-muted-foreground">{t('programs.noWorkoutDaysHint')}</p>
           </div>
         ) : (
           routines.map(r => {
@@ -162,7 +164,7 @@ export default function ProgramDetailPage() {
                   <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 text-left min-w-0">
                     <h3 className="font-display font-semibold truncate">{r.name}</h3>
                     {r.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{r.description}</p>}
-                    <p className="text-xs text-muted-foreground mt-1">{exCount} exercises</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('routines.exercises', { count: exCount })}</p>
                   </button>
                   <div className="flex items-center gap-1 shrink-0">
                     <Button size="sm" variant="ghost" onClick={() => handleStart(r)} className="text-primary">
@@ -174,16 +176,16 @@ export default function ProgramDetailPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}>
-                          <CalendarPlus className="h-4 w-4 mr-2" /> Log to date
+                          <CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDuplicateRoutine(r)}>
-                          <Copy className="h-4 w-4 mr-2" /> Duplicate
+                          <Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDetachRoutine(r.id)}>
-                          Remove from program
+                          {t('routines.actions.removeFromProgram')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete
+                          <Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -198,11 +200,11 @@ export default function ProgramDetailPage() {
       {/* Edit program */}
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
         <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Edit program</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('programs.editTitle')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <Input placeholder="Program name" value={editName} onChange={e => setEditName(e.target.value)} />
-            <Textarea placeholder="Description" value={editDesc} onChange={e => setEditDesc(e.target.value)} />
-            <Button onClick={handleSaveProgram} className="w-full bg-primary text-primary-foreground">Save</Button>
+            <Input placeholder={t('programs.namePh')} value={editName} onChange={e => setEditName(e.target.value)} />
+            <Textarea placeholder={t('routines.descriptionPh')} value={editDesc} onChange={e => setEditDesc(e.target.value)} />
+            <Button onClick={handleSaveProgram} className="w-full bg-primary text-primary-foreground">{t('routines.save')}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -210,11 +212,11 @@ export default function ProgramDetailPage() {
       {/* New routine in program */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>New workout day</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('programs.newWorkoutDay')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <Input placeholder="e.g. Push" value={newName} onChange={e => setNewName(e.target.value)} />
-            <Textarea placeholder="Description (optional)" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
-            <Button onClick={handleCreateRoutine} className="w-full bg-primary text-primary-foreground">Create</Button>
+            <Input placeholder={t('programs.workoutDayNamePh')} value={newName} onChange={e => setNewName(e.target.value)} />
+            <Textarea placeholder={t('routines.descriptionPh')} value={newDesc} onChange={e => setNewDesc(e.target.value)} />
+            <Button onClick={handleCreateRoutine} className="w-full bg-primary text-primary-foreground">{t('routines.create')}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -222,9 +224,9 @@ export default function ProgramDetailPage() {
       {/* Attach existing standalone routine */}
       <Dialog open={showAddExisting} onOpenChange={setShowAddExisting}>
         <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Attach existing routine</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('programs.attachExisting')}</DialogTitle></DialogHeader>
           {standalone.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No standalone routines to attach.</p>
+            <p className="text-sm text-muted-foreground">{t('programs.noStandaloneToAttach')}</p>
           ) : (
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
               {standalone.map(r => (
@@ -246,7 +248,7 @@ export default function ProgramDetailPage() {
       <Dialog open={!!logToDateRoutine} onOpenChange={o => { if (!o) setLogToDateRoutine(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="font-display text-base">Log "{logToDateRoutine?.name}" to date</DialogTitle>
+            <DialogTitle className="font-display text-base">{t('programs.logToDateTitle', { name: logToDateRoutine?.name ?? '' })}</DialogTitle>
           </DialogHeader>
           <div className="flex justify-center">
             <Calendar
