@@ -280,7 +280,7 @@ export default function GoalsTab({ onAddGoal }: GoalsTabProps) {
             <SelectContent>
               <SelectItem value="all">All Exercises</SelectItem>
               {exercisesWithGoals.map(ex => (
-                <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
+                <SelectItem key={ex.id} value={ex.id}>{tExName(ex)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
