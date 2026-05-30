@@ -418,10 +418,11 @@ export default function WorkoutLogPage() {
     if (!wasCompleted && nextCompleted) {
       const missing = getMissingRequiredFields(s, setType);
       if (missing.length > 0) {
-        const msg =
-          missing.length === 1
-            ? `Enter ${missing[0]} before completing this set`
-            : `Enter ${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]} before completing this set`;
+        const translated = missing.map(m => t(`workout.fields.${m}`, m));
+        const list = translated.length === 1
+          ? translated[0]
+          : `${translated.slice(0, -1).join(', ')} ${t('common.and', 'and')} ${translated[translated.length - 1]}`;
+        const msg = t('workout.toasts.enterBeforeComplete', { fields: list });
         toast.error(msg);
         // Try to focus the first missing field within this set's row.
         try {
