@@ -26,7 +26,7 @@ const BAND_SHORT: Record<FatigueBand, string> = {
   'Very High': 'V HIGH',
 };
 
-function Row({ m, i, mounted }: { m: MuscleFatigue; i: number; mounted: boolean }) {
+function Row({ m, i, mounted, bandLabels }: { m: MuscleFatigue; i: number; mounted: boolean; bandLabels: Record<FatigueBand, string> }) {
   const style = BAND_STYLES[m.band];
   const width = mounted ? `${Math.max(0, Math.min(100, m.pct))}%` : '0%';
   const isReady = m.remainingHours <= 0;
@@ -34,7 +34,7 @@ function Row({ m, i, mounted }: { m: MuscleFatigue; i: number; mounted: boolean 
     <div className="flex items-center gap-2 py-[3px]" style={{ transitionDelay: `${i * 25}ms` }}>
       <span className="w-14 shrink-0 text-[11px] font-semibold text-foreground truncate">{m.muscle}</span>
       <span className={`shrink-0 rounded-full px-1 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-70 ${style.pill}`}>
-        {BAND_SHORT[m.band]}
+        {bandLabels[m.band]}
       </span>
       <div className="flex-1 h-[3px] overflow-hidden rounded-full bg-background/70 ml-0.5">
         <div
@@ -48,6 +48,7 @@ function Row({ m, i, mounted }: { m: MuscleFatigue; i: number; mounted: boolean 
     </div>
   );
 }
+
 
 export default function RecoveryFatigueCard({ refreshKey }: Props) {
   const [tick, setTick] = useState(0);
