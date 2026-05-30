@@ -88,6 +88,15 @@ function SortableExerciseCard({ id, children }: { id: string; children: React.Re
 }
 
 export default function WorkoutLogPage() {
+  const { t } = useTranslation();
+  const TUTORIAL_STEPS: TutorialStep[] = useMemo(() => [
+    { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
+    { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
+    { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
+    { selector: '[data-tutorial="exercise-timer"]', title: t('workout.tutorial.timer.title'), text: t('workout.tutorial.timer.text') },
+    { selector: '[data-tutorial="set-tag"]', title: t('workout.tutorial.setTag.title'), text: t('workout.tutorial.setTag.text') },
+    { selector: '[data-tutorial="set-rest"]', title: t('workout.tutorial.setRest.title'), text: t('workout.tutorial.setRest.text') },
+  ], [t]);
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
   const tExName = useExerciseName();
