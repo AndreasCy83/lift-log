@@ -983,14 +983,14 @@ export default function WorkoutLogPage() {
             <div className="gym-card flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
               {hasStrength && (
                 <>
-                  <span>Total Volume: <span className="font-semibold text-foreground">{displayVolume?.toLocaleString()} {wuLabel}</span></span>
-                  <span>Total Reps: <span className="font-semibold text-foreground">{totalReps}</span></span>
+                  <span>{t('workout.totals.volume')}: <span className="font-semibold text-foreground">{displayVolume?.toLocaleString()} {wuLabel}</span></span>
+                  <span>{t('workout.totals.reps')}: <span className="font-semibold text-foreground">{totalReps}</span></span>
                 </>
               )}
               {hasCardio && (
                 <>
-                  <span>Total Distance: <span className="font-semibold text-foreground">{totalDistanceKm.toFixed(2)} km</span></span>
-                  <span>Total Duration: <span className="font-semibold text-foreground">{totalDurationMin.toFixed(0)} min</span></span>
+                  <span>{t('workout.totals.distance')}: <span className="font-semibold text-foreground">{totalDistanceKm.toFixed(2)} km</span></span>
+                  <span>{t('workout.totals.duration')}: <span className="font-semibold text-foreground">{totalDurationMin.toFixed(0)} {t('workout.totals.min')}</span></span>
                 </>
               )}
             </div>
