@@ -645,8 +645,8 @@ export default function WorkoutLogPage() {
               <button
                 onClick={() => session.start(workout.durationSeconds ?? 0)}
                 className="ml-0.5 rounded p-0.5 hover:bg-secondary"
-                title="Resume workout timer"
-                aria-label="Resume workout timer"
+                title={t('workout.timers.resumeWorkout')}
+                aria-label={t('workout.timers.resumeWorkout')}
               >
                 <Play className="h-3.5 w-3.5" />
               </button>
