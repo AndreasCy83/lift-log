@@ -853,7 +853,7 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => setSetNoteOpen(setNoteOpen === s.id ? null : s.id)}
                             className={`p-0.5 transition-colors ${s.notes ? 'text-primary' : 'text-muted-foreground/40 hover:text-foreground'}`}
-                            title="Set note"
+                            title={t('workout.tooltips.setNote')}
                           >
                             <StickyNote className="h-3 w-3" />
                           </button>
