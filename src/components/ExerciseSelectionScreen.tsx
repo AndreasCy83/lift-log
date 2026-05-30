@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
 import { getCategoryColor } from '@/lib/categoryColors';
+import { useExerciseName } from '@/i18n/exerciseNames';
 
 const SET_TYPE_ICONS: Record<SetType, React.ReactNode> = {
   WEIGHT_REPS: <Dumbbell className="h-3.5 w-3.5" />,
