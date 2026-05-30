@@ -880,7 +880,7 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
-                            title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
+                            title={s.isCompleted ? t('workout.tooltips.markIncomplete') : t('workout.tooltips.markComplete')}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
                               s.isCompleted
                                 ? 'bg-green-500 border-green-500 text-white'
