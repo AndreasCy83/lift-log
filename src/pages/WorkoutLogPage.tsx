@@ -96,6 +96,7 @@ function SortableExerciseCard({ id, children }: { id: string; children: React.Re
 export default function WorkoutLogPage() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
+  const tExName = useExerciseName();
   const allExercises = useMemo(() => getExercises(), []);
   const categories = useMemo(() => getCategories(), []);
   const globalWeightUnit = getSettings().weightUnit;
