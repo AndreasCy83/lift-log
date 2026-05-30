@@ -15,6 +15,7 @@ import { computeCelebrationData, formatDurationShort, type WorkoutCelebrationDat
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { getSettings } from '@/lib/storage';
 import { cn } from '@/lib/utils';
+import { translateExerciseName } from '@/i18n/exerciseNames';
 import appIcon from '@/assets/app-icon.png';
 
 interface Props {
