@@ -17,6 +17,7 @@ interface Props {
 
 export default function ExerciseLibrary({ onClose }: Props) {
   const [exercises, setExercises] = useState(() => getExercises());
+  const tExName = useExerciseName();
   const categories = useMemo(() => getCategories(), []);
   const usageFrequency = useMemo(() => getExerciseUsageFrequency(), []);
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
