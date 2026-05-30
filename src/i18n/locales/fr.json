@@ -26,7 +26,8 @@
     "export": "Exporter",
     "settings": "Paramètres",
     "more": "Plus",
-    "ok": "OK"
+    "ok": "OK",
+    "and": "et"
   },
   "nav": {
     "home": "Accueil",
@@ -152,7 +153,115 @@
     "leaveTitle": "Quitter la séance ?",
     "leaveDescription": "Votre séance active continuera en arrière-plan.",
     "stayHere": "Rester ici",
-    "leave": "Quitter"
+    "leave": "Quitter",
+    "title": "Séance",
+    "unknown": "Inconnu",
+    "invalidDate": "Date invalide",
+    "commentPlaceholder": "Ajouter un commentaire sur cette séance…",
+    "exerciseNotePlaceholder": "Ajouter une note pour cet exercice…",
+    "setNotePlaceholder": "Ajouter une note pour cette série…",
+    "duplicateLastSet": "Dupliquer la dernière série",
+    "routinesButton": "Routines",
+    "addExerciseDialogTitle": "Ajouter un exercice",
+    "setsCount_one": "{{count}} série",
+    "setsCount_other": "{{count}} séries",
+    "restSuffix": "{{time}} repos",
+    "timers": {
+      "startWorkout": "Démarrer le minuteur",
+      "pauseWorkout": "Mettre en pause",
+      "resumeWorkout": "Reprendre le minuteur",
+      "restTimer": "Minuteur de repos"
+    },
+    "tooltips": {
+      "exerciseNote": "Note d'exercice",
+      "exerciseGoals": "Objectifs d'exercice",
+      "exerciseStats": "Statistiques d'exercice",
+      "removeExercise": "Retirer l'exercice",
+      "setNote": "Note de série",
+      "markComplete": "Marquer comme terminée",
+      "markIncomplete": "Marquer comme non terminée",
+      "deleteSet": "Supprimer la série"
+    },
+    "headers": {
+      "set": "Série",
+      "type": "Type"
+    },
+    "setTags": {
+      "normal": "Normale",
+      "warmup": "Échauffement",
+      "dropset": "Drop",
+      "failure": "Échec"
+    },
+    "totals": {
+      "volume": "Volume total",
+      "reps": "Reps totales",
+      "distance": "Distance totale",
+      "duration": "Durée totale",
+      "min": "min"
+    },
+    "incompleteDialog": {
+      "title": "Séries non terminées",
+      "description": "Certaines séries ne sont pas marquées comme terminées. Voulez-vous terminer la séance quand même ou revenir les compléter ?",
+      "complete": "Compléter les exercices",
+      "finishAnyway": "Terminer quand même"
+    },
+    "deleteSetDialog": {
+      "title": "Supprimer cette série ?",
+      "description": "Cette série sera supprimée et les autres renumérotées. Cette action est irréversible.",
+      "confirm": "Oui, supprimer"
+    },
+    "repeatDialog": {
+      "title": "Remplacer les séries actuelles ?",
+      "description": "Cela remplacera les séries actuelles de cet exercice par celles de la dernière séance.",
+      "confirm": "Remplacer"
+    },
+    "routinePicker": {
+      "title": "Appliquer une routine",
+      "empty": "Aucune routine créée.",
+      "goToRoutines": "Aller aux routines",
+      "hint": "Les exercices seront ajoutés à cette séance. Les exercices actuels sont conservés.",
+      "myRoutines": "Mes routines"
+    },
+    "toasts": {
+      "lastSetDuplicated": "Dernière série dupliquée",
+      "previousRoutineLoaded": "Routine précédente chargée",
+      "addedFromRoutine_one": "{{count}} exercice ajouté depuis {{name}}",
+      "addedFromRoutine_other": "{{count}} exercices ajoutés depuis {{name}}",
+      "routineEmpty": "{{name}} n'a pas d'exercices",
+      "enterBeforeComplete": "Saisissez {{fields}} avant de terminer cette série"
+    },
+    "fields": {
+      "weight": "poids",
+      "reps": "reps",
+      "distance": "distance",
+      "duration": "durée"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "Notes d'exercice",
+        "text": "Touchez ici pour ajouter des notes pour cet exercice."
+      },
+      "goals": {
+        "title": "Objectifs d'exercice",
+        "text": "Touchez ici pour définir et suivre des objectifs de poids/reps."
+      },
+      "stats": {
+        "title": "Statistiques d'exercice",
+        "text": "Touchez ici pour voir vos performances passées, l'historique et les graphiques."
+      },
+      "timer": {
+        "title": "Minuteur global",
+        "text": "Touchez ici pour définir un minuteur de repos par défaut pour toutes les séries."
+      },
+      "setTag": {
+        "title": "Types de série",
+        "text": "Touchez pour alterner Normale (N), Échauffement (W), Drop (D) et Échec (F)."
+      },
+      "setRest": {
+        "title": "Minuteur de série",
+        "text": "Touchez pour personnaliser le repos après cette série."
+      }
+    }
   },
   "body": {
     "title": "Suivi corporel",

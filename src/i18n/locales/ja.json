@@ -26,7 +26,8 @@
     "export": "エクスポート",
     "settings": "設定",
     "more": "もっと",
-    "ok": "OK"
+    "ok": "OK",
+    "and": "と"
   },
   "nav": {
     "home": "ホーム",
@@ -152,7 +153,115 @@
     "leaveTitle": "ワークアウトを離れますか?",
     "leaveDescription": "進行中のワークアウトはバックグラウンドで続行されます。",
     "stayHere": "ここに残る",
-    "leave": "離れる"
+    "leave": "離れる",
+    "title": "ワークアウト",
+    "unknown": "不明",
+    "invalidDate": "無効な日付",
+    "commentPlaceholder": "このワークアウトについてコメントを追加…",
+    "exerciseNotePlaceholder": "この種目にメモを追加…",
+    "setNotePlaceholder": "このセットにメモを追加…",
+    "duplicateLastSet": "最後のセットを複製",
+    "routinesButton": "ルーティン",
+    "addExerciseDialogTitle": "種目を追加",
+    "setsCount_one": "{{count}} セット",
+    "setsCount_other": "{{count}} セット",
+    "restSuffix": "{{time}} 休憩",
+    "timers": {
+      "startWorkout": "タイマー開始",
+      "pauseWorkout": "タイマー一時停止",
+      "resumeWorkout": "タイマー再開",
+      "restTimer": "休憩タイマー"
+    },
+    "tooltips": {
+      "exerciseNote": "種目メモ",
+      "exerciseGoals": "種目目標",
+      "exerciseStats": "種目統計",
+      "removeExercise": "種目を削除",
+      "setNote": "セットメモ",
+      "markComplete": "完了にする",
+      "markIncomplete": "未完了に戻す",
+      "deleteSet": "セットを削除"
+    },
+    "headers": {
+      "set": "セット",
+      "type": "種別"
+    },
+    "setTags": {
+      "normal": "通常",
+      "warmup": "ウォームアップ",
+      "dropset": "ドロップ",
+      "failure": "限界"
+    },
+    "totals": {
+      "volume": "総ボリューム",
+      "reps": "総レップ",
+      "distance": "総距離",
+      "duration": "総時間",
+      "min": "分"
+    },
+    "incompleteDialog": {
+      "title": "未完了のセットがあります",
+      "description": "完了マークの付いていないセットがあります。このまま終了しますか、それとも戻って完了しますか?",
+      "complete": "種目を完了する",
+      "finishAnyway": "このまま終了"
+    },
+    "deleteSetDialog": {
+      "title": "このセットを削除?",
+      "description": "このセットは削除され、残りのセットが再番号付けされます。元に戻せません。",
+      "confirm": "はい、削除"
+    },
+    "repeatDialog": {
+      "title": "現在のセットを置き換える?",
+      "description": "この種目の現在のセットを前回のセッションの内容で置き換えます。",
+      "confirm": "置き換える"
+    },
+    "routinePicker": {
+      "title": "ルーティンを適用",
+      "empty": "作成済みのルーティンはありません。",
+      "goToRoutines": "ルーティンへ",
+      "hint": "種目はこのワークアウトに追加されます。現在の種目は保持されます。",
+      "myRoutines": "マイルーティン"
+    },
+    "toasts": {
+      "lastSetDuplicated": "最後のセットを複製しました",
+      "previousRoutineLoaded": "前回のセッションを読み込みました",
+      "addedFromRoutine_one": "{{name}} から {{count}} 種目を追加しました",
+      "addedFromRoutine_other": "{{name}} から {{count}} 種目を追加しました",
+      "routineEmpty": "{{name}} に種目がありません",
+      "enterBeforeComplete": "このセットを完了する前に {{fields}} を入力してください"
+    },
+    "fields": {
+      "weight": "重量",
+      "reps": "レップ",
+      "distance": "距離",
+      "duration": "時間"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "種目メモ",
+        "text": "この種目全体のメモを追加するにはここをタップ。"
+      },
+      "goals": {
+        "title": "種目目標",
+        "text": "重量/レップ目標を設定・追跡するにはここをタップ。"
+      },
+      "stats": {
+        "title": "種目統計",
+        "text": "過去のパフォーマンス、履歴、グラフを表示。"
+      },
+      "timer": {
+        "title": "全体タイマー",
+        "text": "すべてのセットの既定休憩タイマーを設定。"
+      },
+      "setTag": {
+        "title": "セット種別",
+        "text": "通常 (N)、ウォームアップ (W)、ドロップ (D)、限界 (F) を切替。"
+      },
+      "setRest": {
+        "title": "セットタイマー",
+        "text": "このセット直後の休憩時間を個別に設定。"
+      }
+    }
   },
   "body": {
     "title": "ボディトラッカー",

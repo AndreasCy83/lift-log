@@ -26,7 +26,8 @@
     "export": "Dışa aktar",
     "settings": "Ayarlar",
     "more": "Daha fazla",
-    "ok": "Tamam"
+    "ok": "Tamam",
+    "and": "ve"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -152,7 +153,115 @@
     "leaveTitle": "Antrenmandan çık?",
     "leaveDescription": "Aktif antrenmanın arka planda devam edecek.",
     "stayHere": "Kal",
-    "leave": "Çık"
+    "leave": "Çık",
+    "title": "Antrenman",
+    "unknown": "Bilinmiyor",
+    "invalidDate": "Geçersiz tarih",
+    "commentPlaceholder": "Bu antrenman hakkında yorum ekle…",
+    "exerciseNotePlaceholder": "Bu egzersiz için bir not ekle…",
+    "setNotePlaceholder": "Bu set için bir not ekle…",
+    "duplicateLastSet": "Son seti çoğalt",
+    "routinesButton": "Rutinler",
+    "addExerciseDialogTitle": "Egzersiz ekle",
+    "setsCount_one": "{{count}} set",
+    "setsCount_other": "{{count}} set",
+    "restSuffix": "{{time}} dinlenme",
+    "timers": {
+      "startWorkout": "Zamanlayıcıyı başlat",
+      "pauseWorkout": "Zamanlayıcıyı duraklat",
+      "resumeWorkout": "Zamanlayıcıyı sürdür",
+      "restTimer": "Dinlenme zamanlayıcısı"
+    },
+    "tooltips": {
+      "exerciseNote": "Egzersiz notu",
+      "exerciseGoals": "Egzersiz hedefleri",
+      "exerciseStats": "Egzersiz istatistikleri",
+      "removeExercise": "Egzersizi kaldır",
+      "setNote": "Set notu",
+      "markComplete": "Tamamlandı olarak işaretle",
+      "markIncomplete": "Tamamlanmadı olarak işaretle",
+      "deleteSet": "Seti sil"
+    },
+    "headers": {
+      "set": "Set",
+      "type": "Tür"
+    },
+    "setTags": {
+      "normal": "Normal",
+      "warmup": "Isınma",
+      "dropset": "Drop",
+      "failure": "Tükenme"
+    },
+    "totals": {
+      "volume": "Toplam hacim",
+      "reps": "Toplam tekrar",
+      "distance": "Toplam mesafe",
+      "duration": "Toplam süre",
+      "min": "dk"
+    },
+    "incompleteDialog": {
+      "title": "Tamamlanmamış setler var",
+      "description": "Bazı setler tamamlandı olarak işaretlenmedi. Yine de bitirmek mi yoksa dönüp tamamlamak mı istiyorsun?",
+      "complete": "Egzersizleri tamamla",
+      "finishAnyway": "Yine de bitir"
+    },
+    "deleteSetDialog": {
+      "title": "Bu set silinsin mi?",
+      "description": "Bu set kaldırılır ve diğerleri yeniden numaralanır. Bu işlem geri alınamaz.",
+      "confirm": "Evet, sil"
+    },
+    "repeatDialog": {
+      "title": "Mevcut setler değiştirilsin mi?",
+      "description": "Bu egzersizin mevcut setleri, son rutinden gelenlerle değiştirilecek.",
+      "confirm": "Değiştir"
+    },
+    "routinePicker": {
+      "title": "Rutin uygula",
+      "empty": "Henüz rutin oluşturulmamış.",
+      "goToRoutines": "Rutinlere git",
+      "hint": "Egzersizler bu antrenmana eklenecek. Mevcut egzersizler korunur.",
+      "myRoutines": "Rutinlerim"
+    },
+    "toasts": {
+      "lastSetDuplicated": "Son set çoğaltıldı",
+      "previousRoutineLoaded": "Önceki rutin yüklendi",
+      "addedFromRoutine_one": "{{name}} rutininden {{count}} egzersiz eklendi",
+      "addedFromRoutine_other": "{{name}} rutininden {{count}} egzersiz eklendi",
+      "routineEmpty": "{{name}} egzersiz içermiyor",
+      "enterBeforeComplete": "Bu seti tamamlamadan önce {{fields}} gir"
+    },
+    "fields": {
+      "weight": "ağırlık",
+      "reps": "tekrar",
+      "distance": "mesafe",
+      "duration": "süre"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "Egzersiz notları",
+        "text": "Bu egzersize özel notlar eklemek için dokunun."
+      },
+      "goals": {
+        "title": "Egzersiz hedefleri",
+        "text": "Ağırlık/tekrar hedefleri belirlemek ve takip etmek için dokunun."
+      },
+      "stats": {
+        "title": "Egzersiz istatistikleri",
+        "text": "Geçmiş performans, geçmiş ve grafikleri görmek için dokunun."
+      },
+      "timer": {
+        "title": "Genel zamanlayıcı",
+        "text": "Tüm setler için varsayılan bir dinlenme zamanlayıcısı belirleyin."
+      },
+      "setTag": {
+        "title": "Set türleri",
+        "text": "Normal (N), Isınma (W), Drop (D) ve Tükenme (F) arasında geçiş için dokunun."
+      },
+      "setRest": {
+        "title": "Set zamanlayıcısı",
+        "text": "Bu setten sonraki dinlenme süresini özelleştirmek için dokunun."
+      }
+    }
   },
   "body": {
     "title": "Vücut takibi",

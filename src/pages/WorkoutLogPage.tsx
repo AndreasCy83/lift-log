@@ -14,6 +14,7 @@ import { getRoutines, getPrograms } from '@/lib/storage';
 import { appendRoutineToWorkout } from '@/lib/routineRunner';
 import { detectNewlyCompletedGoals } from '@/lib/goalProgress';
 import { useExerciseName } from '@/i18n/exerciseNames';
+import { useTranslation } from 'react-i18next';
 import GoalCelebrationModal from '@/components/workout/GoalCelebrationModal';
 import {
   DndContext, MouseSensor, TouchSensor, useSensor, useSensors,
@@ -66,14 +67,7 @@ import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutD
 import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
 import WorkoutCelebrationModal from '@/components/workout/WorkoutCelebrationModal';
 
-const TUTORIAL_STEPS: TutorialStep[] = [
-  { selector: '[data-tutorial="exercise-notes"]', title: 'Exercise Notes', text: 'Tap here to add specific notes for this entire exercise.' },
-  { selector: '[data-tutorial="exercise-goals"]', title: 'Exercise Goals', text: 'Tap here to set and track specific weight/rep goals for this exercise.' },
-  { selector: '[data-tutorial="exercise-stats"]', title: 'Exercise Stats', text: 'Tap here to view your past performance, history, and graphs for this exercise.' },
-  { selector: '[data-tutorial="exercise-timer"]', title: 'Global Timer', text: 'Tap here to set a default rest timer that applies to all sets for this exercise.' },
-  { selector: '[data-tutorial="set-tag"]', title: 'Set Types', text: 'Tap to cycle between Normal (N), Warmup (W), Dropset (D), and Failure (F).' },
-  { selector: '[data-tutorial="set-rest"]', title: 'Set Timer', text: 'Tap to customize the rest time specifically after this individual set.' },
-];
+// Tutorial steps are built inside the component to read from i18n.
 
 function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -94,6 +88,15 @@ function SortableExerciseCard({ id, children }: { id: string; children: React.Re
 }
 
 export default function WorkoutLogPage() {
+  const { t } = useTranslation();
+  const TUTORIAL_STEPS: TutorialStep[] = useMemo(() => [
+    { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
+    { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
+    { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
+    { selector: '[data-tutorial="exercise-timer"]', title: t('workout.tutorial.timer.title'), text: t('workout.tutorial.timer.text') },
+    { selector: '[data-tutorial="set-tag"]', title: t('workout.tutorial.setTag.title'), text: t('workout.tutorial.setTag.text') },
+    { selector: '[data-tutorial="set-rest"]', title: t('workout.tutorial.setRest.title'), text: t('workout.tutorial.setRest.text') },
+  ], [t]);
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
   const tExName = useExerciseName();
@@ -243,7 +246,7 @@ export default function WorkoutLogPage() {
     return () => clearTimeout(t);
   }, [expandedExercise, tutorialOpen]);
 
-  if (!date || !workout) return <div className="p-4">Invalid date</div>;
+  if (!date || !workout) return <div className="p-4">{t('workout.invalidDate')}</div>;
 
   const getLastSessionFirstSet = (exerciseId: string) => {
     const history = getExerciseHistory(exerciseId);
@@ -333,7 +336,7 @@ export default function WorkoutLogPage() {
       restSeconds: last.restSeconds ?? null,
     });
     forceUpdate(n => n + 1);
-    toast('Last set duplicated');
+    toast(t('workout.toasts.lastSetDuplicated'));
   };
 
   /** Has the user entered any meaningful data in the current exercise's sets? */
@@ -378,7 +381,7 @@ export default function WorkoutLogPage() {
     }));
     saveWorkoutSets([...all, ...newSets]);
     forceUpdate(n => n + 1);
-    toast('Previous routine loaded');
+    toast(t('workout.toasts.previousRoutineLoaded'));
   };
 
   const handleRepeatLastRoutine = (weId: string, exerciseId: string) => {
@@ -415,10 +418,11 @@ export default function WorkoutLogPage() {
     if (!wasCompleted && nextCompleted) {
       const missing = getMissingRequiredFields(s, setType);
       if (missing.length > 0) {
-        const msg =
-          missing.length === 1
-            ? `Enter ${missing[0]} before completing this set`
-            : `Enter ${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]} before completing this set`;
+        const translated = missing.map(m => t(`workout.fields.${m}`, m));
+        const list = translated.length === 1
+          ? translated[0]
+          : `${translated.slice(0, -1).join(', ')} ${t('common.and', 'and')} ${translated[translated.length - 1]}`;
+        const msg = t('workout.toasts.enterBeforeComplete', { fields: list });
         toast.error(msg);
         // Try to focus the first missing field within this set's row.
         try {
@@ -601,7 +605,7 @@ export default function WorkoutLogPage() {
   const getEx = (exId: string) => exercises.find(e => e.id === exId);
   const getExName = (exId: string) => {
     const e = getEx(exId);
-    return e ? tExName(e) : 'Unknown';
+    return e ? tExName(e) : t('workout.unknown');
   };
   const getCatName = (exId: string) => {
     const ex = getEx(exId);
@@ -616,7 +620,7 @@ export default function WorkoutLogPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-base font-bold leading-tight truncate">Workout</h1>
+            <h1 className="font-display text-base font-bold leading-tight truncate">{t('workout.title')}</h1>
             <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
           {/* Live workout session timer (independent from rest timer) */}
@@ -627,8 +631,8 @@ export default function WorkoutLogPage() {
               <button
                 onClick={() => (session.isRunning ? session.pause() : session.resume())}
                 className="ml-0.5 rounded p-0.5 hover:bg-secondary"
-                title={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
-                aria-label={session.isRunning ? 'Pause workout timer' : 'Resume workout timer'}
+                title={session.isRunning ? t('workout.timers.pauseWorkout') : t('workout.timers.resumeWorkout')}
+                aria-label={session.isRunning ? t('workout.timers.pauseWorkout') : t('workout.timers.resumeWorkout')}
               >
                 {session.isRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
               </button>
@@ -641,8 +645,8 @@ export default function WorkoutLogPage() {
               <button
                 onClick={() => session.start(workout.durationSeconds ?? 0)}
                 className="ml-0.5 rounded p-0.5 hover:bg-secondary"
-                title="Resume workout timer"
-                aria-label="Resume workout timer"
+                title={t('workout.timers.resumeWorkout')}
+                aria-label={t('workout.timers.resumeWorkout')}
               >
                 <Play className="h-3.5 w-3.5" />
               </button>
@@ -654,18 +658,18 @@ export default function WorkoutLogPage() {
               <button
                 onClick={() => session.start(0)}
                 className="ml-0.5 rounded p-0.5 hover:bg-secondary"
-                title="Start workout timer"
-                aria-label="Start workout timer"
+                title={t('workout.timers.startWorkout')}
+                aria-label={t('workout.timers.startWorkout')}
               >
                 <Play className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
-          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title="Rest timer">
+          <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title={t('workout.timers.restTimer')}>
             <Timer className="h-4 w-4" />
           </Button>
           <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground">
-            Finish
+            {t('workout.finish')}
           </Button>
         </div>
       </header>
@@ -675,20 +679,20 @@ export default function WorkoutLogPage() {
       <AlertDialog open={incompleteWarnOpen} onOpenChange={setIncompleteWarnOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Incomplete Sets Remaining</AlertDialogTitle>
+            <AlertDialogTitle>{t('workout.incompleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Some sets are not marked as completed yet. Do you want to finish the workout anyway or return and complete them?
+              {t('workout.incompleteDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIncompleteWarnOpen(false)}>
-              Complete Exercises
+              {t('workout.incompleteDialog.complete')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => { setIncompleteWarnOpen(false); performFinishWorkout(); }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Finish Anyway
+              {t('workout.incompleteDialog.finishAnyway')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -703,7 +707,7 @@ export default function WorkoutLogPage() {
       {/* Workout Comment */}
       <div className="mx-auto w-full max-w-lg px-4 pt-4">
         <Textarea
-          placeholder="Add a comment about this workout…"
+          placeholder={t('workout.commentPlaceholder')}
           value={workout.notes}
           onChange={(e) => {
             const updated = { ...workout, notes: e.target.value };
@@ -742,7 +746,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
                     className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    title="Exercise note"
+                    title={t('workout.tooltips.exerciseNote')}
                     data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
                   >
                     <StickyNote className="h-[18px] w-[18px]" />
@@ -750,7 +754,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                     className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
-                    title="Exercise goals"
+                    title={t('workout.tooltips.exerciseGoals')}
                     data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
                   >
                     <Trophy className="h-[18px] w-[18px]" />
@@ -758,7 +762,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                     className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                    title="Exercise stats"
+                    title={t('workout.tooltips.exerciseStats')}
                     data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                   >
                     <BarChart3 className="h-[18px] w-[18px]" />
@@ -766,7 +770,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => handleRemoveExercise(we.id)}
                     className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
-                    title="Remove exercise"
+                    title={t('workout.tooltips.removeExercise')}
                   >
                     <Trash2 className="h-[18px] w-[18px]" />
                   </button>
@@ -775,7 +779,7 @@ export default function WorkoutLogPage() {
               {noteExpanded === we.id && (
                 <div className="mb-2 animate-slide-up">
                   <Textarea
-                    placeholder="Add a note for this exercise…"
+                    placeholder={t('workout.exerciseNotePlaceholder')}
                     value={we.notes}
                     onChange={(e) => {
                       const updated = { ...we, notes: e.target.value };
@@ -819,9 +823,9 @@ export default function WorkoutLogPage() {
                   />
                   {/* Dynamic Headers */}
                   <div className="grid gap-1 text-[10px] uppercase text-muted-foreground font-medium px-1 [&>div]:text-center" style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}>
-                    <div>Set</div>
+                    <div>{t('workout.headers.set')}</div>
                     <div></div>
-                    <div>Type</div>
+                    <div>{t('workout.headers.type')}</div>
                     <div></div>
                     <SetColumnHeaders setType={exSetType} weightUnit={globalWeightUnit} />
                     <div></div>
@@ -849,7 +853,7 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => setSetNoteOpen(setNoteOpen === s.id ? null : s.id)}
                             className={`p-0.5 transition-colors ${s.notes ? 'text-primary' : 'text-muted-foreground/40 hover:text-foreground'}`}
-                            title="Set note"
+                            title={t('workout.tooltips.setNote')}
                           >
                             <StickyNote className="h-3 w-3" />
                           </button>
@@ -858,7 +862,7 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => handleUpdateSet(s, 'setTag', nextTag[tag])}
                             className={`h-6 w-6 rounded text-[10px] font-bold flex items-center justify-center transition-colors ${tagColors[tag]}`}
-                            title={tag === 'N' ? 'Normal' : tag === 'W' ? 'Warmup' : tag === 'D' ? 'Dropset' : 'Failure'}
+                            title={tag === 'N' ? t('workout.setTags.normal') : tag === 'W' ? t('workout.setTags.warmup') : tag === 'D' ? t('workout.setTags.dropset') : t('workout.setTags.failure')}
                             data-tutorial={isTutorialTarget && idx === 0 ? 'set-tag' : undefined}
                           >
                             {tag === 'N' ? '–' : tag}
@@ -876,7 +880,7 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
-                            title={s.isCompleted ? 'Mark set incomplete' : 'Mark set complete'}
+                            title={s.isCompleted ? t('workout.tooltips.markIncomplete') : t('workout.tooltips.markComplete')}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
                               s.isCompleted
                                 ? 'bg-green-500 border-green-500 text-white'
@@ -891,8 +895,8 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => setDeleteSetTarget(s.id)}
                             className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors"
-                            title="Delete set"
-                            aria-label="Delete set"
+                            title={t('workout.tooltips.deleteSet')}
+                            aria-label={t('workout.tooltips.deleteSet')}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -901,7 +905,7 @@ export default function WorkoutLogPage() {
                       {setNoteOpen === s.id && (
                         <div className="ml-6 mr-1 mt-1 mb-1 animate-slide-up">
                           <Textarea
-                            placeholder="Add a note for this set…"
+                            placeholder={t('workout.setNotePlaceholder')}
                             value={s.notes}
                             onChange={(e) => {
                               handleUpdateSet(s, 'notes', e.target.value);
@@ -927,7 +931,7 @@ export default function WorkoutLogPage() {
 
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="flex-1 min-w-[7rem] text-xs text-primary">
-                      <Plus className="h-3 w-3 mr-1" /> Add Set
+                      <Plus className="h-3 w-3 mr-1" /> {t('workout.addSet')}
                     </Button>
                     <Button
                       size="sm"
@@ -936,7 +940,7 @@ export default function WorkoutLogPage() {
                       disabled={sets.length === 0}
                       className="flex-1 min-w-[7rem] text-xs text-muted-foreground hover:text-foreground"
                     >
-                      <CopyPlus className="h-3 w-3 mr-1" /> Duplicate Last Set
+                      <CopyPlus className="h-3 w-3 mr-1" /> {t('workout.duplicateLastSet')}
                     </Button>
                   </div>
                 </div>
@@ -944,8 +948,8 @@ export default function WorkoutLogPage() {
 
               {!isExpanded && (
                 <div className="flex gap-2 text-xs text-muted-foreground">
-                  <span>{sets.length} sets</span>
-                  {we.defaultRestSeconds && <span>• {Math.floor(we.defaultRestSeconds / 60)}:{(we.defaultRestSeconds % 60).toString().padStart(2, '0')} rest</span>}
+                  <span>{t('workout.setsCount', { count: sets.length })}</span>
+                  {we.defaultRestSeconds && <span>• {t('workout.restSuffix', { time: `${Math.floor(we.defaultRestSeconds / 60)}:${(we.defaultRestSeconds % 60).toString().padStart(2, '0')}` })}</span>}
                 </div>
               )}
             </SortableExerciseCard>
@@ -979,14 +983,14 @@ export default function WorkoutLogPage() {
             <div className="gym-card flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
               {hasStrength && (
                 <>
-                  <span>Total Volume: <span className="font-semibold text-foreground">{displayVolume?.toLocaleString()} {wuLabel}</span></span>
-                  <span>Total Reps: <span className="font-semibold text-foreground">{totalReps}</span></span>
+                  <span>{t('workout.totals.volume')}: <span className="font-semibold text-foreground">{displayVolume?.toLocaleString()} {wuLabel}</span></span>
+                  <span>{t('workout.totals.reps')}: <span className="font-semibold text-foreground">{totalReps}</span></span>
                 </>
               )}
               {hasCardio && (
                 <>
-                  <span>Total Distance: <span className="font-semibold text-foreground">{totalDistanceKm.toFixed(2)} km</span></span>
-                  <span>Total Duration: <span className="font-semibold text-foreground">{totalDurationMin.toFixed(0)} min</span></span>
+                  <span>{t('workout.totals.distance')}: <span className="font-semibold text-foreground">{totalDistanceKm.toFixed(2)} km</span></span>
+                  <span>{t('workout.totals.duration')}: <span className="font-semibold text-foreground">{totalDurationMin.toFixed(0)} {t('workout.totals.min')}</span></span>
                 </>
               )}
             </div>
@@ -998,7 +1002,7 @@ export default function WorkoutLogPage() {
           onClick={() => setShowAddExercise(true)}
           className="w-full gym-card flex items-center justify-center gap-2 py-4 text-sm font-medium text-primary border-dashed border-2 border-primary/30 hover:border-primary/50 transition-colors"
         >
-          <Plus className="h-4 w-4" /> Add Exercise
+          <Plus className="h-4 w-4" /> {t('workout.addExercise')}
         </button>
 
         {/* Routines Button (secondary) */}
@@ -1006,25 +1010,25 @@ export default function WorkoutLogPage() {
           onClick={() => setShowRoutinePicker(true)}
           className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground border border-border/60 rounded-lg bg-secondary/30 hover:bg-secondary/50 hover:text-foreground transition-colors"
         >
-          <Plus className="h-4 w-4" /> Routines
+          <Plus className="h-4 w-4" /> {t('workout.routinesButton')}
         </button>
 
         {/* Routine Picker Dialog */}
         <Dialog open={showRoutinePicker} onOpenChange={setShowRoutinePicker}>
           <DialogContent className="max-w-sm">
-            <DialogHeader><DialogTitle>Apply a Routine</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t('workout.routinePicker.title')}</DialogTitle></DialogHeader>
             {(() => {
               const routines = getRoutines();
               const programs = getPrograms();
               if (routines.length === 0 && programs.length === 0) {
                 return (
                   <div className="space-y-3 py-2 text-center">
-                    <p className="text-sm text-muted-foreground">No routines created yet.</p>
+                    <p className="text-sm text-muted-foreground">{t('workout.routinePicker.empty')}</p>
                     <Button
                       variant="outline"
                       onClick={() => { setShowRoutinePicker(false); navigate('/routines'); }}
                     >
-                      Go to Routines
+                      {t('workout.routinePicker.goToRoutines')}
                     </Button>
                   </div>
                 );
@@ -1034,7 +1038,7 @@ export default function WorkoutLogPage() {
                 const added = appendRoutineToWorkout(r, workout.id);
                 setShowRoutinePicker(false);
                 refresh();
-                toast(added > 0 ? `Added ${added} exercise${added === 1 ? '' : 's'} from ${r.name}` : `${r.name} has no exercises`);
+                toast(added > 0 ? t('workout.toasts.addedFromRoutine', { count: added, name: r.name }) : t('workout.toasts.routineEmpty', { name: r.name }));
               };
               const renderRoutine = (r: typeof routines[number]) => (
                 <button
@@ -1051,7 +1055,7 @@ export default function WorkoutLogPage() {
               return (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                   <p className="text-xs text-muted-foreground">
-                    Exercises will be appended to this workout. Current exercises are kept.
+                    {t('workout.routinePicker.hint')}
                   </p>
                   {programs.map(p => {
                     const children = routines.filter(r => r.programId === p.id);
@@ -1071,7 +1075,7 @@ export default function WorkoutLogPage() {
                     <div className="space-y-1.5">
                       {programs.length > 0 && (
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold px-1">
-                          My Routines
+                          {t('workout.routinePicker.myRoutines')}
                         </div>
                       )}
                       <div className="space-y-2">
@@ -1089,7 +1093,7 @@ export default function WorkoutLogPage() {
         {/* Dialogs */}
         <Dialog open={showAddExercise} onOpenChange={setShowAddExercise}>
           <DialogContent className="flex flex-col p-4 sm:p-6 !max-w-none sm:!max-w-md !w-screen sm:!w-full !h-[100dvh] sm:!h-auto !max-h-[100dvh] sm:!max-h-[85vh] !left-0 !top-0 !translate-x-0 !translate-y-0 sm:!left-[50%] sm:!top-[50%] sm:!translate-x-[-50%] sm:!translate-y-[-50%] !rounded-none sm:!rounded-lg pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
-            <DialogHeader><DialogTitle>Add Exercise</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t('workout.addExerciseDialogTitle')}</DialogTitle></DialogHeader>
             <ExerciseSelectionScreen
               onSelect={handleAddExercises}
               onClose={() => setShowAddExercise(false)}
@@ -1153,20 +1157,20 @@ export default function WorkoutLogPage() {
       <AlertDialog open={!!repeatTarget} onOpenChange={(open) => !open && setRepeatTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Replace current sets?</AlertDialogTitle>
+            <AlertDialogTitle>{t('workout.repeatDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will replace the current sets for this exercise with the last routine.
+              {t('workout.repeatDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (repeatTarget) performRepeatLastRoutine(repeatTarget.weId, repeatTarget.exerciseId);
                 setRepeatTarget(null);
               }}
             >
-              Replace
+              {t('workout.repeatDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1175,20 +1179,20 @@ export default function WorkoutLogPage() {
       <AlertDialog open={!!deleteSetTarget} onOpenChange={(open) => !open && setDeleteSetTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this set?</AlertDialogTitle>
+            <AlertDialogTitle>{t('workout.deleteSetDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This set will be removed and remaining sets will be renumbered. This action cannot be undone.
+              {t('workout.deleteSetDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteSetTarget) handleDeleteSet(deleteSetTarget);
                 setDeleteSetTarget(null);
               }}
             >
-              Yes, delete
+              {t('workout.deleteSetDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

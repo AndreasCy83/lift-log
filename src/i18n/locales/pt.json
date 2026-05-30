@@ -26,7 +26,8 @@
     "export": "Exportar",
     "settings": "Configurações",
     "more": "Mais",
-    "ok": "OK"
+    "ok": "OK",
+    "and": "e"
   },
   "nav": {
     "home": "Início",
@@ -152,7 +153,115 @@
     "leaveTitle": "Sair do treino?",
     "leaveDescription": "Seu treino ativo continuará em segundo plano.",
     "stayHere": "Ficar aqui",
-    "leave": "Sair"
+    "leave": "Sair",
+    "title": "Treino",
+    "unknown": "Desconhecido",
+    "invalidDate": "Data inválida",
+    "commentPlaceholder": "Adicionar um comentário sobre este treino…",
+    "exerciseNotePlaceholder": "Adicionar uma nota para este exercício…",
+    "setNotePlaceholder": "Adicionar uma nota para esta série…",
+    "duplicateLastSet": "Duplicar última série",
+    "routinesButton": "Rotinas",
+    "addExerciseDialogTitle": "Adicionar exercício",
+    "setsCount_one": "{{count}} série",
+    "setsCount_other": "{{count}} séries",
+    "restSuffix": "{{time}} descanso",
+    "timers": {
+      "startWorkout": "Iniciar cronômetro",
+      "pauseWorkout": "Pausar cronômetro",
+      "resumeWorkout": "Retomar cronômetro",
+      "restTimer": "Cronômetro de descanso"
+    },
+    "tooltips": {
+      "exerciseNote": "Nota do exercício",
+      "exerciseGoals": "Metas do exercício",
+      "exerciseStats": "Estatísticas do exercício",
+      "removeExercise": "Remover exercício",
+      "setNote": "Nota da série",
+      "markComplete": "Marcar como concluída",
+      "markIncomplete": "Marcar como não concluída",
+      "deleteSet": "Excluir série"
+    },
+    "headers": {
+      "set": "Série",
+      "type": "Tipo"
+    },
+    "setTags": {
+      "normal": "Normal",
+      "warmup": "Aquecimento",
+      "dropset": "Drop",
+      "failure": "Falha"
+    },
+    "totals": {
+      "volume": "Volume total",
+      "reps": "Reps totais",
+      "distance": "Distância total",
+      "duration": "Duração total",
+      "min": "min"
+    },
+    "incompleteDialog": {
+      "title": "Séries incompletas",
+      "description": "Algumas séries não estão marcadas como concluídas. Quer terminar o treino mesmo assim ou voltar e completá-las?",
+      "complete": "Completar exercícios",
+      "finishAnyway": "Terminar mesmo assim"
+    },
+    "deleteSetDialog": {
+      "title": "Excluir esta série?",
+      "description": "Esta série será removida e as demais renumeradas. Esta ação não pode ser desfeita.",
+      "confirm": "Sim, excluir"
+    },
+    "repeatDialog": {
+      "title": "Substituir séries atuais?",
+      "description": "Isto substituirá as séries atuais deste exercício pelas da última sessão.",
+      "confirm": "Substituir"
+    },
+    "routinePicker": {
+      "title": "Aplicar uma rotina",
+      "empty": "Nenhuma rotina criada.",
+      "goToRoutines": "Ir para rotinas",
+      "hint": "Os exercícios serão adicionados a este treino. Os exercícios atuais são mantidos.",
+      "myRoutines": "Minhas rotinas"
+    },
+    "toasts": {
+      "lastSetDuplicated": "Última série duplicada",
+      "previousRoutineLoaded": "Rotina anterior carregada",
+      "addedFromRoutine_one": "{{count}} exercício adicionado de {{name}}",
+      "addedFromRoutine_other": "{{count}} exercícios adicionados de {{name}}",
+      "routineEmpty": "{{name}} não tem exercícios",
+      "enterBeforeComplete": "Insira {{fields}} antes de concluir esta série"
+    },
+    "fields": {
+      "weight": "peso",
+      "reps": "reps",
+      "distance": "distância",
+      "duration": "duração"
+    },
+    "tutorial": {
+      "notes": {
+        "title": "Notas do exercício",
+        "text": "Toque aqui para adicionar notas para este exercício."
+      },
+      "goals": {
+        "title": "Metas do exercício",
+        "text": "Toque aqui para definir e acompanhar metas de peso/reps."
+      },
+      "stats": {
+        "title": "Estatísticas do exercício",
+        "text": "Toque aqui para ver desempenho passado, histórico e gráficos."
+      },
+      "timer": {
+        "title": "Cronômetro global",
+        "text": "Toque aqui para definir um cronômetro de descanso padrão para todas as séries."
+      },
+      "setTag": {
+        "title": "Tipos de série",
+        "text": "Toque para alternar entre Normal (N), Aquecimento (W), Drop (D) e Falha (F)."
+      },
+      "setRest": {
+        "title": "Cronômetro da série",
+        "text": "Toque para personalizar o descanso após esta série."
+      }
+    }
   },
   "body": {
     "title": "Monitor corporal",
