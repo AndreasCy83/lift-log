@@ -274,7 +274,7 @@ export default function HomePage() {
             onClick={() => setCalendarExpanded(e => !e)}
             className="mt-2 flex w-full items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
           >
-            {calendarExpanded ? 'Show 3 weeks' : 'Show full month'}
+            {calendarExpanded ? t('home.showThreeWeeks') : t('home.showFullMonth')}
             <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
           </button>
         </div>
