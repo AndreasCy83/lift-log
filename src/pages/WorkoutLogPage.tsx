@@ -895,8 +895,8 @@ export default function WorkoutLogPage() {
                           <button
                             onClick={() => setDeleteSetTarget(s.id)}
                             className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-colors"
-                            title="Delete set"
-                            aria-label="Delete set"
+                            title={t('workout.tooltips.deleteSet')}
+                            aria-label={t('workout.tooltips.deleteSet')}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
