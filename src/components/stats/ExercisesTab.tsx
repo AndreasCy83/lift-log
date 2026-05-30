@@ -375,7 +375,7 @@ export default function ExercisesTab() {
           open={showHistory}
           onOpenChange={setShowHistory}
           exerciseId={selectedEx.id}
-          exerciseName={selectedEx.name}
+          exerciseName={tExName(selectedEx)}
           weightUnit={selectedEx.weightUnit}
         />
       )}
