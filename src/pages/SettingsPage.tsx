@@ -25,6 +25,7 @@ import { setLanguage } from '@/i18n';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
