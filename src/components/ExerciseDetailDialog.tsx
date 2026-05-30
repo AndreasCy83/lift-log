@@ -37,18 +37,18 @@ export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: P
           <TabsContent value="history" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
             <ExerciseDetailPanel
               exerciseId={exercise.id}
-              exerciseName={exercise.name}
+              exerciseName={displayName}
               weightUnit={exercise.weightUnit}
               onPrefill={() => {}}
             />
           </TabsContent>
 
           <TabsContent value="stats" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
-            <InlineStats exerciseId={exercise.id} exerciseName={exercise.name} weightUnit={exercise.weightUnit} />
+            <InlineStats exerciseId={exercise.id} exerciseName={displayName} weightUnit={exercise.weightUnit} />
           </TabsContent>
 
           <TabsContent value="goals" className="flex-1 overflow-y-auto px-4 pb-4 mt-2">
-            <InlineGoals exerciseId={exercise.id} exerciseName={exercise.name} weightUnit={exercise.weightUnit} />
+            <InlineGoals exerciseId={exercise.id} exerciseName={displayName} weightUnit={exercise.weightUnit} />
           </TabsContent>
         </Tabs>
       </DialogContent>
