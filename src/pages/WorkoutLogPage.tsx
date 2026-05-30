@@ -746,7 +746,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
                     className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    title="Exercise note"
+                    title={t('workout.tooltips.exerciseNote')}
                     data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
                   >
                     <StickyNote className="h-[18px] w-[18px]" />
