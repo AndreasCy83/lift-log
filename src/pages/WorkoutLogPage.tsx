@@ -770,7 +770,7 @@ export default function WorkoutLogPage() {
                   <button
                     onClick={() => handleRemoveExercise(we.id)}
                     className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
-                    title="Remove exercise"
+                    title={t('workout.tooltips.removeExercise')}
                   >
                     <Trash2 className="h-[18px] w-[18px]" />
                   </button>
