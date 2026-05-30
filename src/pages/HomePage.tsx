@@ -194,7 +194,7 @@ export default function HomePage() {
             className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
-            Start Workout
+            {t('home.startWorkout')}
           </Button>
         </div>
       </header>
