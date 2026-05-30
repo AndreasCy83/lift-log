@@ -326,31 +326,31 @@ export default function HomePage() {
                 <p className="text-sm text-foreground/80 italic">"{selectedWorkout.notes}"</p>
               ) : null}
               <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-                <span>{selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''}</span>
+                <span>{t('home.exercise', { count: selectedExercises.length })}</span>
                 {typeof selectedWorkout.durationSeconds === 'number' && selectedWorkout.durationSeconds > 0 && (
-                  <span>Duration: <span className="font-semibold text-foreground tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
+                  <span>{t('home.duration')}: <span className="font-semibold text-foreground tabular-nums">{formatHMS(selectedWorkout.durationSeconds)}</span></span>
                 )}
               </div>
               {selectedDayStats && (selectedDayStats.hasStrength || selectedDayStats.hasCardio) && (
                 <div className="mt-2 border-t border-border pt-2 space-y-1">
                   {selectedDayStats.hasStrength && (
                     <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                      <span>Vol: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
-                      <span className="text-center">Reps: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
-                      <span className="text-right">Sets: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
+                      <span>{t('home.vol')}: <span className="font-semibold text-foreground tabular-nums">{Math.round(dw(selectedDayStats.totalVolume)).toLocaleString()} {unit}</span></span>
+                      <span className="text-center">{t('home.reps')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalReps}</span></span>
+                      <span className="text-right">{t('home.sets')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalSets}</span></span>
                     </div>
                   )}
                   {selectedDayStats.hasCardio && (
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                      <span>Dist: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
-                      <span className="text-right">Time: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
+                      <span>{t('home.dist')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDistanceKm.toFixed(2)} km</span></span>
+                      <span className="text-right">{t('home.time')}: <span className="font-semibold text-foreground tabular-nums">{selectedDayStats.totalDurationMin.toFixed(0)} min</span></span>
                     </div>
                   )}
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No workout logged</p>
+            <p className="text-sm text-muted-foreground">{t('home.noWorkoutLogged')}</p>
         )}
         <div className="h-6" aria-hidden="true" />
       </div>
