@@ -1010,7 +1010,7 @@ export default function WorkoutLogPage() {
           onClick={() => setShowRoutinePicker(true)}
           className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium text-muted-foreground border border-border/60 rounded-lg bg-secondary/30 hover:bg-secondary/50 hover:text-foreground transition-colors"
         >
-          <Plus className="h-4 w-4" /> Routines
+          <Plus className="h-4 w-4" /> {t('workout.routinesButton')}
         </button>
 
         {/* Routine Picker Dialog */}
