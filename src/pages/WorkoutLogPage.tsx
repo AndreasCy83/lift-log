@@ -931,7 +931,7 @@ export default function WorkoutLogPage() {
 
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="ghost" onClick={() => handleAddSet(we.id)} className="flex-1 min-w-[7rem] text-xs text-primary">
-                      <Plus className="h-3 w-3 mr-1" /> Add Set
+                      <Plus className="h-3 w-3 mr-1" /> {t('workout.addSet')}
                     </Button>
                     <Button
                       size="sm"
@@ -940,7 +940,7 @@ export default function WorkoutLogPage() {
                       disabled={sets.length === 0}
                       className="flex-1 min-w-[7rem] text-xs text-muted-foreground hover:text-foreground"
                     >
-                      <CopyPlus className="h-3 w-3 mr-1" /> Duplicate Last Set
+                      <CopyPlus className="h-3 w-3 mr-1" /> {t('workout.duplicateLastSet')}
                     </Button>
                   </div>
                 </div>
