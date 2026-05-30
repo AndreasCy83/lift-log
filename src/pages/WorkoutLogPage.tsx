@@ -779,7 +779,7 @@ export default function WorkoutLogPage() {
               {noteExpanded === we.id && (
                 <div className="mb-2 animate-slide-up">
                   <Textarea
-                    placeholder="Add a note for this exercise…"
+                    placeholder={t('workout.exerciseNotePlaceholder')}
                     value={we.notes}
                     onChange={(e) => {
                       const updated = { ...we, notes: e.target.value };
