@@ -1023,12 +1023,12 @@ export default function WorkoutLogPage() {
               if (routines.length === 0 && programs.length === 0) {
                 return (
                   <div className="space-y-3 py-2 text-center">
-                    <p className="text-sm text-muted-foreground">No routines created yet.</p>
+                    <p className="text-sm text-muted-foreground">{t('workout.routinePicker.empty')}</p>
                     <Button
                       variant="outline"
                       onClick={() => { setShowRoutinePicker(false); navigate('/routines'); }}
                     >
-                      Go to Routines
+                      {t('workout.routinePicker.goToRoutines')}
                     </Button>
                   </div>
                 );
