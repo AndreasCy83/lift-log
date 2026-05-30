@@ -150,7 +150,7 @@ export default function RecordsTab() {
     }
 
     return results;
-  }, [exercises, categories, workouts, allWEs, allSets]);
+  }, [exercises, categories, workouts, allWEs, allSets, tExName]);
 
   // Categories that have PR data
   const availableCategories = useMemo(() => {
