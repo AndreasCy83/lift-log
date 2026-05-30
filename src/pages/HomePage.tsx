@@ -399,14 +399,14 @@ export default function HomePage() {
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Workout</AlertDialogTitle>
+            <AlertDialogTitle>{t('home.delete.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the workout on {format(selectedDate, 'MMM d, yyyy')}? This action cannot be undone.
+              {t('home.delete.description', { date: format(selectedDate, 'MMM d, yyyy') })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteWorkout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Yes</AlertDialogAction>
+            <AlertDialogCancel>{t('home.delete.no')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteWorkout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('home.delete.yes')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -415,14 +415,14 @@ export default function HomePage() {
       <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Copy Workout</DialogTitle>
-            <DialogDescription>Select a date to copy this workout to.</DialogDescription>
+            <DialogTitle>{t('home.copy.title')}</DialogTitle>
+            <DialogDescription>{t('home.copy.description')}</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center">
             <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
           </div>
           <Button disabled={!pickerDate} onClick={handleCopyWorkout} className="w-full">
-            Copy to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+            {t('home.copy.cta', { date: pickerDate ? format(pickerDate, 'MMM d, yyyy') : '…' })}
           </Button>
         </DialogContent>
       </Dialog>
@@ -431,14 +431,14 @@ export default function HomePage() {
       <Dialog open={moveDialogOpen} onOpenChange={setMoveDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Move Workout</DialogTitle>
-            <DialogDescription>Select a date to move this workout to.</DialogDescription>
+            <DialogTitle>{t('home.move.title')}</DialogTitle>
+            <DialogDescription>{t('home.move.description')}</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center">
             <Calendar mode="single" selected={pickerDate} onSelect={setPickerDate} />
           </div>
           <Button disabled={!pickerDate} onClick={handleMoveWorkout} className="w-full">
-            Move to {pickerDate ? format(pickerDate, 'MMM d, yyyy') : '...'}
+            {t('home.move.cta', { date: pickerDate ? format(pickerDate, 'MMM d, yyyy') : '…' })}
           </Button>
         </DialogContent>
       </Dialog>
