@@ -300,6 +300,7 @@
     "rateOnPlay": "Google Play で評価",
     "language": "言語",
     "languageHint": "アプリの言語を選択してください。",
+    "languageBeta": "翻訳は開発中であり、誤りが含まれる場合があります。",
     "weightUnit": "重量単位",
     "weightUnitHint": "データはkgで保存されます。この設定は表示と入力にのみ影響します。",
     "theme": "テーマ",
