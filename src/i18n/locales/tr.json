@@ -300,6 +300,7 @@
     "rateOnPlay": "Google Play'de değerlendir",
     "language": "Dil",
     "languageHint": "Tercih ettiğin dili seç.",
+    "languageBeta": "Çeviriler hâlâ geliştirme aşamasında ve hatalar içerebilir.",
     "weightUnit": "Ağırlık birimi",
     "weightUnitHint": "Veriler kg cinsinden saklanır. Bu ayar yalnızca görüntü ve girişi etkiler.",
     "theme": "Tema",
