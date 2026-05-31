@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
-import { Shield, Sun, Moon, Monitor, Cloud, Check } from 'lucide-react';
+import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   getSettings, saveSettings, getProfile, saveProfile, generateId,
 } from '@/lib/storage';
@@ -12,25 +13,31 @@ import { addBodyEntry } from '@/lib/bodyTrackerStorage';
 import { getBackupSettings, saveBackupSettings } from '@/lib/autoBackup';
 import { toStorageKg } from '@/lib/units';
 import { format } from 'date-fns';
+import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
+import { setLanguage } from '@/i18n';
+import i18n from '@/i18n';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export default function OnboardingWizard() {
   const [step, setStep] = useState(1);
 
-  // Step 1: weight unit (required)
+  // Step 1: language (preferred English)
+  const [language, setLanguageState] = useState<SupportedLang>('en');
+
+  // Step 2: weight unit (required)
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
 
-  // Step 2: theme
+  // Step 3: theme
   const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('dark');
 
-  // Step 3: profile
+  // Step 4: profile
   const [name, setName] = useState('');
   const [heightCm, setHeightCm] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
   const [profileSkipped, setProfileSkipped] = useState(false);
 
-  // Step 4: auto-backup
+  // Step 5: auto-backup
   const [autoBackup, setAutoBackup] = useState(false);
 
   const applyTheme = (t: 'system' | 'light' | 'dark') => {
@@ -45,11 +52,14 @@ export default function OnboardingWizard() {
   const persistStep = (current: number, skipped = false) => {
     const settings = getSettings();
     if (current === 1) {
+      saveSettings({ ...settings, language });
+      setLanguage(language);
+    } else if (current === 2) {
       saveSettings({ ...settings, weightUnit });
-    } else if (current === 2 && !skipped) {
+    } else if (current === 3 && !skipped) {
       saveSettings({ ...settings, theme });
       applyTheme(theme);
-    } else if (current === 3 && !skipped) {
+    } else if (current === 4 && !skipped) {
       const heightNum = parseFloat(heightCm);
       const weightNum = parseFloat(weight);
       const weightKg = !isNaN(weightNum) ? toStorageKg(weightNum, weightUnit) ?? weightNum : NaN;
@@ -80,9 +90,9 @@ export default function OnboardingWizard() {
         });
       }
       setProfileSkipped(false);
-    } else if (current === 3 && skipped) {
+    } else if (current === 4 && skipped) {
       setProfileSkipped(true);
-    } else if (current === 4 && !skipped) {
+    } else if (current === 5 && !skipped) {
       const bs = getBackupSettings();
       saveBackupSettings({ ...bs, enabled: autoBackup });
     }
@@ -105,7 +115,7 @@ export default function OnboardingWizard() {
     window.location.assign('/');
   };
 
-  const canSkip = step === 2 || step === 3 || step === 4;
+  const canSkip = step === 3 || step === 4 || step === 5;
 
   return (
     <Dialog open onOpenChange={() => { /* prevent closing */ }}>
@@ -133,6 +143,48 @@ export default function OnboardingWizard() {
 
         <div className="px-6 py-5 min-h-[340px]">
           {step === 1 && (
+            <div className="space-y-5">
+              <div className="text-center space-y-2">
+                <h2 className="font-display text-xl font-bold">Welcome to Fit Log X</h2>
+                <p className="text-sm text-muted-foreground">Choose your language to get started.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium flex items-center gap-2">
+                  <Languages className="h-4 w-4" /> Language
+                </label>
+                <Select
+                  value={language}
+                  onValueChange={(v) => {
+                    setLanguageState(v as SupportedLang);
+                    setLanguage(v as SupportedLang);
+                  }}
+                >
+                  <SelectTrigger className="bg-secondary border-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((l) => (
+                      <SelectItem key={l.code} value={l.code}>
+                        <span className="font-medium">{l.nativeName}</span>
+                        <span className="text-muted-foreground text-xs ml-2">({l.englishName})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[10px] text-muted-foreground">English is the recommended choice.</p>
+              </div>
+
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 flex gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-[11px] leading-relaxed text-foreground">
+                  Translations are still in development and may contain errors. You can change the language anytime in Settings.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
                 <h2 className="font-display text-xl font-bold">Welcome to Fit Log X</h2>
@@ -169,7 +221,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
                 <h2 className="font-display text-xl font-bold">Pick your look</h2>
@@ -198,7 +250,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="space-y-4">
               <div className="text-center space-y-2">
                 <h2 className="font-display text-xl font-bold">Tell us about you</h2>
@@ -226,7 +278,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
                 <h2 className="font-display text-xl font-bold">Auto-Backup</h2>
@@ -247,7 +299,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <div className="space-y-5 flex flex-col items-center justify-center min-h-[280px]">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <Check className="h-8 w-8 text-primary" />
