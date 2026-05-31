@@ -233,6 +233,7 @@ export default function SettingsPage() {
             </SelectContent>
           </Select>
           <p className="text-[10px] text-muted-foreground mt-2">{t('settings.languageHint')}</p>
+          <p className="text-[10px] text-amber-500 mt-1">⚠ {t('settings.languageBeta')}</p>
         </div>
 
         {/* Weight Unit */}
