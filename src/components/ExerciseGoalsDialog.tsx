@@ -101,6 +101,7 @@ function computeCurrentValue(exerciseId: string, goal: ExerciseGoal): number {
 }
 
 export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, exerciseName, weightUnit, initialAdding, initialGoalType }: Props) {
+  const { t } = useTranslation();
   const [goals, setGoals] = useState<ExerciseGoal[]>(() => getGoalsForExercise(exerciseId));
   const [adding, setAdding] = useState(!!initialAdding);
   const [newType, setNewType] = useState<GoalType>(initialGoalType ?? 'MAX_WEIGHT');
@@ -120,6 +121,8 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
   const globalWeightUnit = getSettings().weightUnit;
   const unitLabel = weightUnitLabel(globalWeightUnit);
   const dw = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
+
+  const goalTypeLabel = (gt: GoalType) => t(`exerciseGoals.types.${gt}`, GOAL_TYPE_LABELS[gt]);
 
   const refreshGoals = () => setGoals(getGoalsForExercise(exerciseId));
 
