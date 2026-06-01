@@ -261,6 +261,14 @@
         "title": "Cronômetro da série",
         "text": "Toque para personalizar o descanso após esta série."
       }
+    },
+    "leaveSessionDialog": {
+      "title": "Treino em andamento",
+      "description": "O cronômetro do seu treino ainda está rodando. O que deseja fazer?",
+      "keepRunning": "Manter o cronômetro e sair",
+      "pauseLeave": "Pausar o cronômetro e sair",
+      "endLeave": "Encerrar o cronômetro e sair",
+      "stay": "Permanecer nesta página"
     }
   },
   "body": {

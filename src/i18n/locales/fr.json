@@ -261,6 +261,14 @@
         "title": "Minuteur de série",
         "text": "Touchez pour personnaliser le repos après cette série."
       }
+    },
+    "leaveSessionDialog": {
+      "title": "Entraînement en cours",
+      "description": "Le minuteur de votre séance est toujours en marche. Que souhaitez-vous faire ?",
+      "keepRunning": "Garder le minuteur actif et quitter",
+      "pauseLeave": "Mettre en pause et quitter",
+      "endLeave": "Arrêter le minuteur et quitter",
+      "stay": "Rester sur cette page"
     }
   },
   "body": {

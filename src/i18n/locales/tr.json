@@ -261,6 +261,14 @@
         "title": "Set zamanlayıcısı",
         "text": "Bu setten sonraki dinlenme süresini özelleştirmek için dokunun."
       }
+    },
+    "leaveSessionDialog": {
+      "title": "Antrenman devam ediyor",
+      "description": "Antrenman zamanlayıcın hâlâ çalışıyor. Ne yapmak istersin?",
+      "keepRunning": "Zamanlayıcıyı çalışır bırak ve çık",
+      "pauseLeave": "Zamanlayıcıyı duraklat ve çık",
+      "endLeave": "Zamanlayıcıyı bitir ve çık",
+      "stay": "Bu sayfada kal"
     }
   },
   "body": {
