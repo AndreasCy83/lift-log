@@ -263,6 +263,14 @@
         "title": "Set Timer",
         "text": "Tap to customize the rest time specifically after this individual set."
       }
+    },
+    "leaveSessionDialog": {
+      "title": "Workout in progress",
+      "description": "Your workout session timer is still running. What would you like to do?",
+      "keepRunning": "Keep timer running & leave",
+      "pauseLeave": "Pause timer & leave",
+      "endLeave": "End timer & leave",
+      "stay": "Stay on this page"
     }
   },
   "body": {

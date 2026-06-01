@@ -261,6 +261,14 @@
         "title": "组计时",
         "text": "点击为该组之后单独设置休息时间。"
       }
+    },
+    "leaveSessionDialog": {
+      "title": "训练进行中",
+      "description": "您的训练计时器仍在运行。您想怎么做？",
+      "keepRunning": "保持计时器运行并离开",
+      "pauseLeave": "暂停计时器并离开",
+      "endLeave": "结束计时器并离开",
+      "stay": "留在此页面"
     }
   },
   "body": {

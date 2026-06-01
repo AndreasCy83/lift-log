@@ -261,6 +261,14 @@
         "title": "Timer serie",
         "text": "Tocca per personalizzare il recupero dopo questa singola serie."
       }
+    },
+    "leaveSessionDialog": {
+      "title": "Allenamento in corso",
+      "description": "Il timer della tua sessione è ancora attivo. Cosa vuoi fare?",
+      "keepRunning": "Mantieni il timer attivo ed esci",
+      "pauseLeave": "Metti in pausa il timer ed esci",
+      "endLeave": "Termina il timer ed esci",
+      "stay": "Resta su questa pagina"
     }
   },
   "body": {
