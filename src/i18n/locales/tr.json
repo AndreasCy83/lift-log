@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "Eklenecek bağımsız rutin yok.",
     "deleteRoutineConfirm": "Bu rutin silinsin mi?",
     "logToDateTitle": "“{{name}}” tarihe kaydet"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "Hedefler",
+    "noGoals": "Henüz hedef yok. İlerlemeni izlemek için bir hedef ekle!",
+    "addGoal": "Hedef ekle",
+    "saveGoal": "Hedefi kaydet",
+    "goalType": "Hedef türü",
+    "targetValue": "Hedef değer",
+    "targetReps": "Hedef tekrar",
+    "startDate": "Başlangıç tarihi (isteğe bağlı)",
+    "endDate": "Bitiş tarihi (isteğe bağlı)",
+    "forReps": "{{count}} tekrar için",
+    "from": "{{date}} tarihinden",
+    "to": "{{date}} tarihine kadar",
+    "placeholderTarget": "ör. 100",
+    "placeholderReps": "ör. 5",
+    "types": {
+      "MAX_WEIGHT": "Maks. ağırlık",
+      "MAX_REPS": "Maks. tekrar",
+      "MAX_VOLUME": "Maks. hacim (tek set)",
+      "MAX_WEIGHT_FOR_REPS": "Tekrar için maks. ağırlık",
+      "MAX_WORKOUT_VOLUME": "Maks. antrenman hacmi",
+      "MAX_WORKOUT_REPS": "Maks. antrenman tekrarı",
+      "TOTAL_VOLUME": "Toplam hacim",
+      "TOTAL_REPS": "Toplam tekrar",
+      "ESTIMATED_1RM": "Tahmini 1RM"
+    }
   }
 }

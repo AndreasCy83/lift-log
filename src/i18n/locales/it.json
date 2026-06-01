@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "Nessuna routine indipendente disponibile.",
     "deleteRoutineConfirm": "Eliminare questa routine?",
     "logToDateTitle": "Registra «{{name}}» in data"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "Obiettivi",
+    "noGoals": "Nessun obiettivo impostato. Aggiungine uno per tracciare i progressi!",
+    "addGoal": "Aggiungi obiettivo",
+    "saveGoal": "Salva obiettivo",
+    "goalType": "Tipo di obiettivo",
+    "targetValue": "Valore obiettivo",
+    "targetReps": "Ripetizioni obiettivo",
+    "startDate": "Data inizio (opzionale)",
+    "endDate": "Data fine (opzionale)",
+    "forReps": "per {{count}} ripetizioni",
+    "from": "Dal {{date}}",
+    "to": "Al {{date}}",
+    "placeholderTarget": "es. 100",
+    "placeholderReps": "es. 5",
+    "types": {
+      "MAX_WEIGHT": "Peso max",
+      "MAX_REPS": "Ripetizioni max",
+      "MAX_VOLUME": "Volume max (singola serie)",
+      "MAX_WEIGHT_FOR_REPS": "Peso max per ripetizioni",
+      "MAX_WORKOUT_VOLUME": "Volume max allenamento",
+      "MAX_WORKOUT_REPS": "Ripetizioni max allenamento",
+      "TOTAL_VOLUME": "Volume totale",
+      "TOTAL_REPS": "Ripetizioni totali",
+      "ESTIMATED_1RM": "1RM stimato"
+    }
   }
 }

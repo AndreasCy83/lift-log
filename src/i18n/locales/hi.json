@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "जोड़ने के लिए कोई स्वतंत्र रूटीन नहीं।",
     "deleteRoutineConfirm": "यह रूटीन हटाएँ?",
     "logToDateTitle": "“{{name}}” को तारीख पर दर्ज करें"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "लक्ष्य",
+    "noGoals": "अभी कोई लक्ष्य नहीं है। प्रगति ट्रैक करने के लिए एक जोड़ें!",
+    "addGoal": "लक्ष्य जोड़ें",
+    "saveGoal": "लक्ष्य सहेजें",
+    "goalType": "लक्ष्य प्रकार",
+    "targetValue": "लक्ष्य मान",
+    "targetReps": "लक्ष्य रेप्स",
+    "startDate": "प्रारंभ तिथि (वैकल्पिक)",
+    "endDate": "समाप्ति तिथि (वैकल्पिक)",
+    "forReps": "{{count}} रेप्स के लिए",
+    "from": "{{date}} से",
+    "to": "{{date}} तक",
+    "placeholderTarget": "जैसे 100",
+    "placeholderReps": "जैसे 5",
+    "types": {
+      "MAX_WEIGHT": "अधिकतम वज़न",
+      "MAX_REPS": "अधिकतम रेप्स",
+      "MAX_VOLUME": "अधिकतम वॉल्यूम (एकल सेट)",
+      "MAX_WEIGHT_FOR_REPS": "रेप्स के लिए अधिकतम वज़न",
+      "MAX_WORKOUT_VOLUME": "अधिकतम वर्कआउट वॉल्यूम",
+      "MAX_WORKOUT_REPS": "अधिकतम वर्कआउट रेप्स",
+      "TOTAL_VOLUME": "कुल वॉल्यूम",
+      "TOTAL_REPS": "कुल रेप्स",
+      "ESTIMATED_1RM": "अनुमानित 1RM"
+    }
   }
 }

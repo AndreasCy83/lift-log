@@ -371,5 +371,32 @@
     "noStandaloneToAttach": "No standalone routines to attach.",
     "deleteRoutineConfirm": "Delete this routine?",
     "logToDateTitle": "Log \"{{name}}\" to date"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "Goals",
+    "noGoals": "No goals set yet. Add one to track your progress!",
+    "addGoal": "Add Goal",
+    "saveGoal": "Save Goal",
+    "goalType": "Goal Type",
+    "targetValue": "Target Value",
+    "targetReps": "Target Reps",
+    "startDate": "Start Date (optional)",
+    "endDate": "End Date (optional)",
+    "forReps": "for {{count}} reps",
+    "from": "From {{date}}",
+    "to": "To {{date}}",
+    "placeholderTarget": "e.g. 100",
+    "placeholderReps": "e.g. 5",
+    "types": {
+      "MAX_WEIGHT": "Max Weight",
+      "MAX_REPS": "Max Reps",
+      "MAX_VOLUME": "Max Volume (single set)",
+      "MAX_WEIGHT_FOR_REPS": "Max Weight for Reps",
+      "MAX_WORKOUT_VOLUME": "Max Workout Volume",
+      "MAX_WORKOUT_REPS": "Max Workout Reps",
+      "TOTAL_VOLUME": "Total Volume",
+      "TOTAL_REPS": "Total Reps",
+      "ESTIMATED_1RM": "Estimated 1RM"
+    }
   }
 }

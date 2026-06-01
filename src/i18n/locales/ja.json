@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "追加できる単独ルーティンはありません。",
     "deleteRoutineConfirm": "このルーティンを削除しますか？",
     "logToDateTitle": "「{{name}}」を日付に記録"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "目標",
+    "noGoals": "目標が設定されていません。進捗を追跡するために追加しましょう！",
+    "addGoal": "目標を追加",
+    "saveGoal": "目標を保存",
+    "goalType": "目標タイプ",
+    "targetValue": "目標値",
+    "targetReps": "目標レップ数",
+    "startDate": "開始日（任意）",
+    "endDate": "終了日（任意）",
+    "forReps": "{{count}} レップ",
+    "from": "{{date}} から",
+    "to": "{{date}} まで",
+    "placeholderTarget": "例：100",
+    "placeholderReps": "例：5",
+    "types": {
+      "MAX_WEIGHT": "最大重量",
+      "MAX_REPS": "最大レップ数",
+      "MAX_VOLUME": "最大ボリューム（単一セット）",
+      "MAX_WEIGHT_FOR_REPS": "レップ数別最大重量",
+      "MAX_WORKOUT_VOLUME": "最大ワークアウトボリューム",
+      "MAX_WORKOUT_REPS": "最大ワークアウトレップ数",
+      "TOTAL_VOLUME": "総ボリューム",
+      "TOTAL_REPS": "総レップ数",
+      "ESTIMATED_1RM": "推定1RM"
+    }
   }
 }

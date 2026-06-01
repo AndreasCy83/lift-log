@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "Sem rotinas avulsas para anexar.",
     "deleteRoutineConfirm": "Excluir esta rotina?",
     "logToDateTitle": "Agendar \"{{name}}\""
+  },
+  "exerciseGoals": {
+    "titlePrefix": "Metas",
+    "noGoals": "Nenhuma meta definida ainda. Adicione uma para acompanhar seu progresso!",
+    "addGoal": "Adicionar meta",
+    "saveGoal": "Salvar meta",
+    "goalType": "Tipo de meta",
+    "targetValue": "Valor alvo",
+    "targetReps": "Repetições alvo",
+    "startDate": "Data de início (opcional)",
+    "endDate": "Data de término (opcional)",
+    "forReps": "para {{count}} repetições",
+    "from": "De {{date}}",
+    "to": "Até {{date}}",
+    "placeholderTarget": "ex. 100",
+    "placeholderReps": "ex. 5",
+    "types": {
+      "MAX_WEIGHT": "Peso máximo",
+      "MAX_REPS": "Repetições máximas",
+      "MAX_VOLUME": "Volume máximo (série única)",
+      "MAX_WEIGHT_FOR_REPS": "Peso máximo por repetições",
+      "MAX_WORKOUT_VOLUME": "Volume máximo do treino",
+      "MAX_WORKOUT_REPS": "Repetições máximas do treino",
+      "TOTAL_VOLUME": "Volume total",
+      "TOTAL_REPS": "Repetições totais",
+      "ESTIMATED_1RM": "1RM estimado"
+    }
   }
 }

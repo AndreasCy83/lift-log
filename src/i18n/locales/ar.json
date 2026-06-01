@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "لا توجد روتينات مستقلة للإرفاق.",
     "deleteRoutineConfirm": "حذف هذا الروتين؟",
     "logToDateTitle": "تسجيل «{{name}}» في تاريخ"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "الأهداف",
+    "noGoals": "لم تُحدد أهداف بعد. أضف هدفًا لتتبع تقدمك!",
+    "addGoal": "إضافة هدف",
+    "saveGoal": "حفظ الهدف",
+    "goalType": "نوع الهدف",
+    "targetValue": "القيمة المستهدفة",
+    "targetReps": "التكرارات المستهدفة",
+    "startDate": "تاريخ البدء (اختياري)",
+    "endDate": "تاريخ الانتهاء (اختياري)",
+    "forReps": "لـ {{count}} تكرار",
+    "from": "من {{date}}",
+    "to": "إلى {{date}}",
+    "placeholderTarget": "مثال: 100",
+    "placeholderReps": "مثال: 5",
+    "types": {
+      "MAX_WEIGHT": "أقصى وزن",
+      "MAX_REPS": "أقصى تكرارات",
+      "MAX_VOLUME": "أقصى حجم (مجموعة واحدة)",
+      "MAX_WEIGHT_FOR_REPS": "أقصى وزن لتكرارات",
+      "MAX_WORKOUT_VOLUME": "أقصى حجم تمرين",
+      "MAX_WORKOUT_REPS": "أقصى تكرارات تمرين",
+      "TOTAL_VOLUME": "إجمالي الحجم",
+      "TOTAL_REPS": "إجمالي التكرارات",
+      "ESTIMATED_1RM": "1RM المقدّر"
+    }
   }
 }
