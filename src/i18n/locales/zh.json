@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "没有可添加的独立计划。",
     "deleteRoutineConfirm": "删除此计划？",
     "logToDateTitle": "将“{{name}}”记录到日期"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "目标",
+    "noGoals": "尚未设定目标。添加一个以追踪你的进度！",
+    "addGoal": "添加目标",
+    "saveGoal": "保存目标",
+    "goalType": "目标类型",
+    "targetValue": "目标值",
+    "targetReps": "目标次数",
+    "startDate": "开始日期（可选）",
+    "endDate": "结束日期（可选）",
+    "forReps": "{{count}} 次",
+    "from": "从 {{date}}",
+    "to": "至 {{date}}",
+    "placeholderTarget": "例如 100",
+    "placeholderReps": "例如 5",
+    "types": {
+      "MAX_WEIGHT": "最大重量",
+      "MAX_REPS": "最大次数",
+      "MAX_VOLUME": "最大容量（单组）",
+      "MAX_WEIGHT_FOR_REPS": "指定次数最大重量",
+      "MAX_WORKOUT_VOLUME": "训练最大容量",
+      "MAX_WORKOUT_REPS": "训练最大次数",
+      "TOTAL_VOLUME": "总容量",
+      "TOTAL_REPS": "总次数",
+      "ESTIMATED_1RM": "估算1RM"
+    }
   }
 }

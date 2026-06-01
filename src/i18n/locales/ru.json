@@ -369,5 +369,32 @@
     "noStandaloneToAttach": "Нет отдельных рутин для привязки.",
     "deleteRoutineConfirm": "Удалить эту рутину?",
     "logToDateTitle": "Запланировать «{{name}}»"
+  },
+  "exerciseGoals": {
+    "titlePrefix": "Цели",
+    "noGoals": "Цели ещё не заданы. Добавьте, чтобы отслеживать прогресс!",
+    "addGoal": "Добавить цель",
+    "saveGoal": "Сохранить цель",
+    "goalType": "Тип цели",
+    "targetValue": "Целевое значение",
+    "targetReps": "Целевые повторения",
+    "startDate": "Дата начала (необязательно)",
+    "endDate": "Дата окончания (необязательно)",
+    "forReps": "на {{count}} повторений",
+    "from": "С {{date}}",
+    "to": "До {{date}}",
+    "placeholderTarget": "напр. 100",
+    "placeholderReps": "напр. 5",
+    "types": {
+      "MAX_WEIGHT": "Макс. вес",
+      "MAX_REPS": "Макс. повторений",
+      "MAX_VOLUME": "Макс. объём (один подход)",
+      "MAX_WEIGHT_FOR_REPS": "Макс. вес на повторения",
+      "MAX_WORKOUT_VOLUME": "Макс. объём тренировки",
+      "MAX_WORKOUT_REPS": "Макс. повторений за тренировку",
+      "TOTAL_VOLUME": "Общий объём",
+      "TOTAL_REPS": "Всего повторений",
+      "ESTIMATED_1RM": "Расчётный 1ПМ"
+    }
   }
 }
