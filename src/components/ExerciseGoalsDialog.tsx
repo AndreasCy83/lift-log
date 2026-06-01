@@ -165,13 +165,13 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-gym-pr" />
-            Goals — {exerciseName}
+            {t('exerciseGoals.titlePrefix')} — {exerciseName}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
           {goals.length === 0 && !adding && (
-            <p className="text-sm text-muted-foreground text-center py-4">No goals set yet. Add one to track your progress!</p>
+            <p className="text-sm text-muted-foreground text-center py-4">{t('exerciseGoals.noGoals')}</p>
           )}
 
           {goals.map(goal => {
@@ -183,9 +183,9 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
               <div key={goal.id} className="rounded-lg border border-border bg-secondary/30 p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold">{GOAL_TYPE_LABELS[goal.goalType]}</p>
+                    <p className="text-xs font-semibold">{goalTypeLabel(goal.goalType)}</p>
                     {goal.goalType === 'MAX_WEIGHT_FOR_REPS' && goal.targetReps && (
-                      <p className="text-[10px] text-muted-foreground">for {goal.targetReps} reps</p>
+                      <p className="text-[10px] text-muted-foreground">{t('exerciseGoals.forReps', { count: goal.targetReps })}</p>
                     )}
                   </div>
                   <button onClick={() => handleDelete(goal.id)} className="p-1 text-muted-foreground hover:text-destructive transition-colors">
@@ -208,9 +208,9 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
 
                 {(goal.startDate || goal.endDate) && (
                   <p className="text-[10px] text-muted-foreground">
-                    {goal.startDate && `From ${format(new Date(goal.startDate), 'MMM d, yyyy')}`}
+                    {goal.startDate && t('exerciseGoals.from', { date: format(new Date(goal.startDate), 'MMM d, yyyy') })}
                     {goal.startDate && goal.endDate && ' — '}
-                    {goal.endDate && `To ${format(new Date(goal.endDate), 'MMM d, yyyy')}`}
+                    {goal.endDate && t('exerciseGoals.to', { date: format(new Date(goal.endDate), 'MMM d, yyyy') })}
                   </p>
                 )}
               </div>
@@ -220,38 +220,38 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
           {adding ? (
             <div className="rounded-lg border border-primary/30 bg-secondary/30 p-3 space-y-3">
               <div className="space-y-1.5">
-                <Label className="text-xs">Goal Type</Label>
+                <Label className="text-xs">{t('exerciseGoals.goalType')}</Label>
                 <Select value={newType} onValueChange={(v) => setNewType(v as GoalType)}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {(Object.keys(GOAL_TYPE_LABELS) as GoalType[]).map(key => (
-                      <SelectItem key={key} value={key} className="text-xs">{GOAL_TYPE_LABELS[key]}</SelectItem>
+                      <SelectItem key={key} value={key} className="text-xs">{goalTypeLabel(key)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs">Target Value {getValueLabel(newType) && `(${getValueLabel(newType)})`}</Label>
+                <Label className="text-xs">{t('exerciseGoals.targetValue')} {getValueLabel(newType) && `(${getValueLabel(newType)})`}</Label>
                 <Input
                   type="number"
                   value={newTarget}
                   onChange={e => setNewTarget(e.target.value)}
-                  placeholder="e.g. 100"
+                  placeholder={t('exerciseGoals.placeholderTarget')}
                   className="h-8 text-xs"
                 />
               </div>
 
               {newType === 'MAX_WEIGHT_FOR_REPS' && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Target Reps</Label>
+                  <Label className="text-xs">{t('exerciseGoals.targetReps')}</Label>
                   <Input
                     type="number"
                     value={newTargetReps}
                     onChange={e => setNewTargetReps(e.target.value)}
-                    placeholder="e.g. 5"
+                    placeholder={t('exerciseGoals.placeholderReps')}
                     className="h-8 text-xs"
                   />
                 </div>
@@ -259,23 +259,23 @@ export default function ExerciseGoalsDialog({ open, onOpenChange, exerciseId, ex
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Start Date (optional)</Label>
+                  <Label className="text-xs">{t('exerciseGoals.startDate')}</Label>
                   <Input type="date" value={newStartDate} onChange={e => setNewStartDate(e.target.value)} className="h-8 text-xs" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">End Date (optional)</Label>
+                  <Label className="text-xs">{t('exerciseGoals.endDate')}</Label>
                   <Input type="date" value={newEndDate} onChange={e => setNewEndDate(e.target.value)} className="h-8 text-xs" />
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" onClick={handleAdd} className="flex-1 h-8 text-xs">Save Goal</Button>
-                <Button size="sm" variant="outline" onClick={() => setAdding(false)} className="h-8 text-xs">Cancel</Button>
+                <Button size="sm" onClick={handleAdd} className="flex-1 h-8 text-xs">{t('exerciseGoals.saveGoal')}</Button>
+                <Button size="sm" variant="outline" onClick={() => setAdding(false)} className="h-8 text-xs">{t('common.cancel')}</Button>
               </div>
             </div>
           ) : (
             <Button size="sm" variant="outline" onClick={() => setAdding(true)} className="w-full text-xs gap-1">
-              <Plus className="h-3.5 w-3.5" /> Add Goal
+              <Plus className="h-3.5 w-3.5" /> {t('exerciseGoals.addGoal')}
             </Button>
           )}
         </div>
