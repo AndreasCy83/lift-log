@@ -396,5 +396,53 @@
       "TOTAL_REPS": "总次数",
       "ESTIMATED_1RM": "估算1RM"
     }
+  },
+  "onboarding": {
+    "stepLabel": "第 {{current}} 步,共 {{total}} 步",
+    "back": "返回",
+    "next": "下一步",
+    "skip": "跳过",
+    "finish": "完成",
+    "s1": {
+      "title": "欢迎使用 Fit Log X",
+      "subtitle": "选择您的语言以开始。",
+      "language": "语言",
+      "recommended": "推荐选择英语。",
+      "betaWarning": "翻译仍在开发中,可能包含错误。您可以随时在设置中更改语言。"
+    },
+    "s2": {
+      "title": "欢迎使用 Fit Log X",
+      "subtitle": "让我们按您的方式进行设置。",
+      "privacy": "所有数据都安全地本地保存在您的设备上。从不共享或公开。",
+      "privacyBold": "您的数据 100% 属于您。",
+      "weightUnit": "首选重量单位",
+      "required": "应用正常运行所必需。"
+    },
+    "s3": {
+      "title": "选择外观",
+      "subtitle": "选择您喜欢的主题。",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "系统"
+    },
+    "s4": {
+      "title": "介绍一下您自己",
+      "subtitle": "用于 BMI 和身体跟踪。",
+      "name": "姓名",
+      "namePh": "您的姓名",
+      "height": "身高 (cm)",
+      "weight": "体重 ({{unit}})",
+      "hint": "输入体重将创建您的第一条身体跟踪记录。"
+    },
+    "s5": {
+      "title": "自动备份",
+      "subtitle": "自动保护您的数据。",
+      "enable": "启用自动备份",
+      "hint": "数据更改时自动将备份文件保存到设备。您还可以稍后在设置中启用 Google Drive 备份。"
+    },
+    "s6": {
+      "title": "全部就绪!",
+      "subtitle": "开始记录您的第一次训练吧。您可以稍后在设置中更改所有这些。"
+    }
   }
 }

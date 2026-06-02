@@ -396,5 +396,53 @@
       "TOTAL_REPS": "Repetições totais",
       "ESTIMATED_1RM": "1RM estimado"
     }
+  },
+  "onboarding": {
+    "stepLabel": "Etapa {{current}} de {{total}}",
+    "back": "Voltar",
+    "next": "Próximo",
+    "skip": "Pular",
+    "finish": "Concluir",
+    "s1": {
+      "title": "Bem-vindo ao Fit Log X",
+      "subtitle": "Escolha seu idioma para começar.",
+      "language": "Idioma",
+      "recommended": "Inglês é a escolha recomendada.",
+      "betaWarning": "As traduções ainda estão em desenvolvimento e podem conter erros. Você pode mudar o idioma a qualquer momento nas Configurações."
+    },
+    "s2": {
+      "title": "Bem-vindo ao Fit Log X",
+      "subtitle": "Vamos configurar do seu jeito.",
+      "privacy": "Todos os dados são salvos com segurança e localmente no seu dispositivo. Nunca são compartilhados nem publicados.",
+      "privacyBold": "Seus dados são 100% seus.",
+      "weightUnit": "Unidade de peso preferida",
+      "required": "Necessário para o funcionamento correto do app."
+    },
+    "s3": {
+      "title": "Escolha seu visual",
+      "subtitle": "Escolha o tema que preferir.",
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    },
+    "s4": {
+      "title": "Conte sobre você",
+      "subtitle": "Usado para IMC e monitoramento corporal.",
+      "name": "Nome",
+      "namePh": "Seu nome",
+      "height": "Altura (cm)",
+      "weight": "Peso ({{unit}})",
+      "hint": "Inserir seu peso cria sua primeira entrada de monitoramento corporal."
+    },
+    "s5": {
+      "title": "Backup automático",
+      "subtitle": "Mantenha seus dados seguros automaticamente.",
+      "enable": "Ativar backup automático",
+      "hint": "Salva automaticamente um arquivo de backup no dispositivo quando os dados mudam. Você também pode ativar o Google Drive depois nas Configurações."
+    },
+    "s6": {
+      "title": "Tudo pronto!",
+      "subtitle": "Hora de registrar seu primeiro treino. Você pode mudar tudo isso depois nas Configurações."
+    }
   }
 }
