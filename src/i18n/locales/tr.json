@@ -396,5 +396,53 @@
       "TOTAL_REPS": "Toplam tekrar",
       "ESTIMATED_1RM": "Tahmini 1RM"
     }
+  },
+  "onboarding": {
+    "stepLabel": "{{total}} adımdan {{current}}.",
+    "back": "Geri",
+    "next": "İleri",
+    "skip": "Atla",
+    "finish": "Bitir",
+    "s1": {
+      "title": "Fit Log X'e Hoş Geldiniz",
+      "subtitle": "Başlamak için dilinizi seçin.",
+      "language": "Dil",
+      "recommended": "İngilizce önerilen seçimdir.",
+      "betaWarning": "Çeviriler hâlâ geliştiriliyor ve hatalar içerebilir. Dili istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+    },
+    "s2": {
+      "title": "Fit Log X'e Hoş Geldiniz",
+      "subtitle": "Her şeyi size göre ayarlayalım.",
+      "privacy": "Tüm veriler cihazınızda güvenli ve yerel olarak saklanır. Asla paylaşılmaz veya herkese açık hale getirilmez.",
+      "privacyBold": "Verileriniz %100 size aittir.",
+      "weightUnit": "Tercih edilen ağırlık birimi",
+      "required": "Uygulamanın düzgün çalışması için gereklidir."
+    },
+    "s3": {
+      "title": "Görünümünüzü seçin",
+      "subtitle": "Tercih ettiğiniz temayı seçin.",
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem"
+    },
+    "s4": {
+      "title": "Kendinizden bahsedin",
+      "subtitle": "BKİ ve vücut takibi için kullanılır.",
+      "name": "İsim",
+      "namePh": "Adınız",
+      "height": "Boy (cm)",
+      "weight": "Kilo ({{unit}})",
+      "hint": "Kilonuzu girmek ilk vücut takibi girdinizi oluşturur."
+    },
+    "s5": {
+      "title": "Otomatik Yedekleme",
+      "subtitle": "Verilerinizi otomatik olarak güvende tutun.",
+      "enable": "Otomatik yedeklemeyi etkinleştir",
+      "hint": "Veriler değiştiğinde cihazınıza otomatik olarak bir yedek dosyası kaydeder. Google Drive yedeklemesini de daha sonra Ayarlar'dan etkinleştirebilirsiniz."
+    },
+    "s6": {
+      "title": "Hazırsınız!",
+      "subtitle": "İlk antrenmanınızı kaydetme zamanı. Tüm bunları daha sonra Ayarlar'dan değiştirebilirsiniz."
+    }
   }
 }

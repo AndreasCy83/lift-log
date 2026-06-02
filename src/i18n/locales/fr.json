@@ -396,5 +396,53 @@
       "TOTAL_REPS": "Répétitions totales",
       "ESTIMATED_1RM": "1RM estimé"
     }
+  },
+  "onboarding": {
+    "stepLabel": "Étape {{current}} sur {{total}}",
+    "back": "Retour",
+    "next": "Suivant",
+    "skip": "Passer",
+    "finish": "Terminer",
+    "s1": {
+      "title": "Bienvenue dans Fit Log X",
+      "subtitle": "Choisissez votre langue pour commencer.",
+      "language": "Langue",
+      "recommended": "L'anglais est le choix recommandé.",
+      "betaWarning": "Les traductions sont en cours de développement et peuvent contenir des erreurs. Vous pouvez changer la langue à tout moment dans Paramètres."
+    },
+    "s2": {
+      "title": "Bienvenue dans Fit Log X",
+      "subtitle": "Configurons l'app à votre façon.",
+      "privacy": "Toutes les données sont enregistrées en toute sécurité et localement sur votre appareil. Elles ne sont jamais partagées ni rendues publiques.",
+      "privacyBold": "Vos données vous appartiennent à 100 %.",
+      "weightUnit": "Unité de poids préférée",
+      "required": "Requis pour le bon fonctionnement de l'application."
+    },
+    "s3": {
+      "title": "Choisissez votre style",
+      "subtitle": "Choisissez le thème que vous préférez.",
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    },
+    "s4": {
+      "title": "Parlez-nous de vous",
+      "subtitle": "Utilisé pour l'IMC et le suivi corporel.",
+      "name": "Nom",
+      "namePh": "Votre nom",
+      "height": "Taille (cm)",
+      "weight": "Poids ({{unit}})",
+      "hint": "Saisir votre poids crée votre première entrée de suivi corporel."
+    },
+    "s5": {
+      "title": "Sauvegarde automatique",
+      "subtitle": "Protégez vos données automatiquement.",
+      "enable": "Activer la sauvegarde auto",
+      "hint": "Enregistre automatiquement une sauvegarde sur votre appareil quand les données changent. Vous pouvez aussi activer Google Drive plus tard dans Paramètres."
+    },
+    "s6": {
+      "title": "Tout est prêt !",
+      "subtitle": "Il est temps d'enregistrer votre premier entraînement. Vous pouvez modifier tout cela plus tard dans Paramètres."
+    }
   }
 }

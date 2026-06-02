@@ -398,5 +398,53 @@
       "TOTAL_REPS": "Total Reps",
       "ESTIMATED_1RM": "Estimated 1RM"
     }
+  },
+  "onboarding": {
+    "stepLabel": "Step {{current}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "finish": "Finish",
+    "s1": {
+      "title": "Welcome to Fit Log X",
+      "subtitle": "Choose your language to get started.",
+      "language": "Language",
+      "recommended": "English is the recommended choice.",
+      "betaWarning": "Translations are still in development and may contain errors. You can change the language anytime in Settings."
+    },
+    "s2": {
+      "title": "Welcome to Fit Log X",
+      "subtitle": "Let's set things up your way.",
+      "privacy": "All data is saved securely and locally on your device. It is never shared or made publicly available.",
+      "privacyBold": "Your data is 100% yours.",
+      "weightUnit": "Preferred weight unit",
+      "required": "Required so the app functions properly."
+    },
+    "s3": {
+      "title": "Pick your look",
+      "subtitle": "Choose the theme you prefer.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "s4": {
+      "title": "Tell us about you",
+      "subtitle": "Used for BMI and body tracking.",
+      "name": "Name",
+      "namePh": "Your name",
+      "height": "Height (cm)",
+      "weight": "Weight ({{unit}})",
+      "hint": "Entering your weight creates your first body tracking entry."
+    },
+    "s5": {
+      "title": "Auto-Backup",
+      "subtitle": "Keep your data safe automatically.",
+      "enable": "Enable Auto-Backup",
+      "hint": "Automatically saves a backup file to your device when data changes. You can also enable Google Drive backup later from Settings."
+    },
+    "s6": {
+      "title": "You're all set!",
+      "subtitle": "Time to log your first workout. You can change any of these later in Settings."
+    }
   }
 }

@@ -396,5 +396,53 @@
       "TOTAL_REPS": "Ripetizioni totali",
       "ESTIMATED_1RM": "1RM stimato"
     }
+  },
+  "onboarding": {
+    "stepLabel": "Passaggio {{current}} di {{total}}",
+    "back": "Indietro",
+    "next": "Avanti",
+    "skip": "Salta",
+    "finish": "Fine",
+    "s1": {
+      "title": "Benvenuto in Fit Log X",
+      "subtitle": "Scegli la tua lingua per iniziare.",
+      "language": "Lingua",
+      "recommended": "L'inglese è la scelta consigliata.",
+      "betaWarning": "Le traduzioni sono ancora in sviluppo e potrebbero contenere errori. Puoi cambiare lingua in qualsiasi momento nelle Impostazioni."
+    },
+    "s2": {
+      "title": "Benvenuto in Fit Log X",
+      "subtitle": "Configuriamo l'app a modo tuo.",
+      "privacy": "Tutti i dati sono salvati in modo sicuro e localmente sul tuo dispositivo. Non vengono mai condivisi o resi pubblici.",
+      "privacyBold": "I tuoi dati sono al 100% tuoi.",
+      "weightUnit": "Unità di peso preferita",
+      "required": "Richiesto per il corretto funzionamento dell'app."
+    },
+    "s3": {
+      "title": "Scegli il tuo stile",
+      "subtitle": "Scegli il tema che preferisci.",
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "system": "Sistema"
+    },
+    "s4": {
+      "title": "Parlaci di te",
+      "subtitle": "Usato per BMI e monitoraggio corporeo.",
+      "name": "Nome",
+      "namePh": "Il tuo nome",
+      "height": "Altezza (cm)",
+      "weight": "Peso ({{unit}})",
+      "hint": "Inserire il peso crea la tua prima voce di monitoraggio corporeo."
+    },
+    "s5": {
+      "title": "Backup automatico",
+      "subtitle": "Mantieni i tuoi dati al sicuro automaticamente.",
+      "enable": "Abilita backup automatico",
+      "hint": "Salva automaticamente un file di backup sul dispositivo quando i dati cambiano. Puoi anche attivare Google Drive in seguito nelle Impostazioni."
+    },
+    "s6": {
+      "title": "Tutto pronto!",
+      "subtitle": "È ora di registrare il tuo primo allenamento. Puoi modificare tutto in seguito nelle Impostazioni."
+    }
   }
 }
