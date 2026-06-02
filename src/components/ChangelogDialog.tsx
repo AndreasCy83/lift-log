@@ -28,7 +28,7 @@ export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogP
 
         <div className="space-y-4">
           <div>
-            <span className="font-display text-2xl font-bold text-primary">Version 1.5</span>
+            <span className="font-display text-2xl font-bold text-primary">Version 1.15</span>
             <p className="text-xs text-muted-foreground mt-1">Latest additions and fixes</p>
           </div>
 
