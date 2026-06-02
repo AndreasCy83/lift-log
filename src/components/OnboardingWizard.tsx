@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -15,29 +16,20 @@ import { toStorageKg } from '@/lib/units';
 import { format } from 'date-fns';
 import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
 import { setLanguage } from '@/i18n';
-import i18n from '@/i18n';
 
 const TOTAL_STEPS = 6;
 
 export default function OnboardingWizard() {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
 
-  // Step 1: language (preferred English)
   const [language, setLanguageState] = useState<SupportedLang>('en');
-
-  // Step 2: weight unit (required)
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
-
-  // Step 3: theme
   const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('dark');
-
-  // Step 4: profile
   const [name, setName] = useState('');
   const [heightCm, setHeightCm] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
-  const [profileSkipped, setProfileSkipped] = useState(false);
-
-  // Step 5: auto-backup
+  const [, setProfileSkipped] = useState(false);
   const [autoBackup, setAutoBackup] = useState(false);
 
   const applyTheme = (t: 'system' | 'light' | 'dark') => {
@@ -77,7 +69,6 @@ export default function OnboardingWizard() {
       };
       saveProfile(profile);
 
-      // Create initial BodyEntry if user provided weight
       if (!isNaN(weightKg) && weightKg > 0) {
         const now = new Date();
         addBodyEntry({
@@ -124,7 +115,6 @@ export default function OnboardingWizard() {
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        {/* Progress dots */}
         <div className="flex flex-col items-center gap-2 px-6 pt-6">
           <div className="flex items-center gap-1.5">
             {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
@@ -137,7 +127,7 @@ export default function OnboardingWizard() {
             ))}
           </div>
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Step {step} of {TOTAL_STEPS}
+            {t('onboarding.stepLabel', { current: step, total: TOTAL_STEPS })}
           </p>
         </div>
 
@@ -145,13 +135,13 @@ export default function OnboardingWizard() {
           {step === 1 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-xl font-bold">Welcome to Fit Log X</h2>
-                <p className="text-sm text-muted-foreground">Choose your language to get started.</p>
+                <h2 className="font-display text-xl font-bold">{t('onboarding.s1.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('onboarding.s1.subtitle')}</p>
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-medium flex items-center gap-2">
-                  <Languages className="h-4 w-4" /> Language
+                  <Languages className="h-4 w-4" /> {t('onboarding.s1.language')}
                 </label>
                 <Select
                   value={language}
@@ -172,13 +162,13 @@ export default function OnboardingWizard() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-[10px] text-muted-foreground">English is the recommended choice.</p>
+                <p className="text-[10px] text-muted-foreground">{t('onboarding.s1.recommended')}</p>
               </div>
 
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 flex gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <p className="text-[11px] leading-relaxed text-foreground">
-                  Translations are still in development and may contain errors. You can change the language anytime in Settings.
+                  {t('onboarding.s1.betaWarning')}
                 </p>
               </div>
             </div>
@@ -187,20 +177,20 @@ export default function OnboardingWizard() {
           {step === 2 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-xl font-bold">Welcome to Fit Log X</h2>
-                <p className="text-sm text-muted-foreground">Let's set things up your way.</p>
+                <h2 className="font-display text-xl font-bold">{t('onboarding.s2.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('onboarding.s2.subtitle')}</p>
               </div>
 
               <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex gap-3">
                 <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs leading-relaxed text-foreground">
-                  <span className="font-semibold">Your data is 100% yours.</span> All data is saved
-                  securely and locally on your device. It is never shared or made publicly available.
+                  <span className="font-semibold">{t('onboarding.s2.privacyBold')}</span>{' '}
+                  {t('onboarding.s2.privacy')}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium">Preferred weight unit</label>
+                <label className="text-xs font-medium">{t('onboarding.s2.weightUnit')}</label>
                 <div className="flex gap-2">
                   {(['kg', 'lbs'] as const).map((u) => (
                     <button
@@ -216,7 +206,7 @@ export default function OnboardingWizard() {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground">Required so the app functions properly.</p>
+                <p className="text-[10px] text-muted-foreground">{t('onboarding.s2.required')}</p>
               </div>
             </div>
           )}
@@ -224,15 +214,15 @@ export default function OnboardingWizard() {
           {step === 3 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-xl font-bold">Pick your look</h2>
-                <p className="text-sm text-muted-foreground">Choose the theme you prefer.</p>
+                <h2 className="font-display text-xl font-bold">{t('onboarding.s3.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('onboarding.s3.subtitle')}</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {([
-                  { v: 'light', icon: Sun, label: 'Light' },
-                  { v: 'dark', icon: Moon, label: 'Dark' },
-                  { v: 'system', icon: Monitor, label: 'System' },
-                ] as const).map(({ v, icon: Icon, label }) => (
+                  { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light' },
+                  { v: 'dark', icon: Moon, labelKey: 'onboarding.s3.dark' },
+                  { v: 'system', icon: Monitor, labelKey: 'onboarding.s3.system' },
+                ] as const).map(({ v, icon: Icon, labelKey }) => (
                   <button
                     key={v}
                     onClick={() => setTheme(v)}
@@ -243,7 +233,7 @@ export default function OnboardingWizard() {
                     }`}
                   >
                     <Icon className="h-5 w-5" />
-                    {label}
+                    {t(labelKey)}
                   </button>
                 ))}
               </div>
@@ -253,27 +243,25 @@ export default function OnboardingWizard() {
           {step === 4 && (
             <div className="space-y-4">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-xl font-bold">Tell us about you</h2>
-                <p className="text-sm text-muted-foreground">Used for BMI and body tracking.</p>
+                <h2 className="font-display text-xl font-bold">{t('onboarding.s4.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('onboarding.s4.subtitle')}</p>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] uppercase text-muted-foreground">Name</label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className="bg-secondary border-0" />
+                  <label className="text-[10px] uppercase text-muted-foreground">{t('onboarding.s4.name')}</label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('onboarding.s4.namePh')} className="bg-secondary border-0" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] uppercase text-muted-foreground">Height (cm)</label>
+                    <label className="text-[10px] uppercase text-muted-foreground">{t('onboarding.s4.height')}</label>
                     <Input type="number" inputMode="decimal" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="175" className="bg-secondary border-0" />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase text-muted-foreground">Weight ({weightUnit})</label>
+                    <label className="text-[10px] uppercase text-muted-foreground">{t('onboarding.s4.weight', { unit: weightUnit })}</label>
                     <Input type="number" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder={weightUnit === 'kg' ? '70' : '154'} className="bg-secondary border-0" />
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Entering your weight creates your first body tracking entry.
-                </p>
+                <p className="text-[10px] text-muted-foreground">{t('onboarding.s4.hint')}</p>
               </div>
             </div>
           )}
@@ -281,18 +269,18 @@ export default function OnboardingWizard() {
           {step === 5 && (
             <div className="space-y-5">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-xl font-bold">Auto-Backup</h2>
-                <p className="text-sm text-muted-foreground">Keep your data safe automatically.</p>
+                <h2 className="font-display text-xl font-bold">{t('onboarding.s5.title')}</h2>
+                <p className="text-sm text-muted-foreground">{t('onboarding.s5.subtitle')}</p>
               </div>
               <div className="rounded-xl border border-border bg-secondary/40 p-4 flex items-start gap-3">
                 <Cloud className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-medium">Enable Auto-Backup</span>
+                    <span className="text-sm font-medium">{t('onboarding.s5.enable')}</span>
                     <Switch checked={autoBackup} onCheckedChange={setAutoBackup} />
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Automatically saves a backup file to your device when data changes. You can also enable Google Drive backup later from Settings.
+                    {t('onboarding.s5.hint')}
                   </p>
                 </div>
               </div>
@@ -305,35 +293,34 @@ export default function OnboardingWizard() {
                 <Check className="h-8 w-8 text-primary" />
               </div>
               <div className="text-center space-y-2">
-                <h2 className="font-display text-2xl font-bold">You're all set!</h2>
+                <h2 className="font-display text-2xl font-bold">{t('onboarding.s6.title')}</h2>
                 <p className="text-sm text-muted-foreground max-w-xs">
-                  Time to log your first workout. You can change any of these later in Settings.
+                  {t('onboarding.s6.subtitle')}
                 </p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer buttons */}
         <div className="flex items-center gap-2 border-t border-border px-6 py-4">
           {step > 1 && step < TOTAL_STEPS && (
             <Button variant="ghost" size="sm" onClick={handleBack}>
-              Back
+              {t('onboarding.back')}
             </Button>
           )}
           <div className="flex-1" />
           {canSkip && (
             <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
-              Skip
+              {t('onboarding.skip')}
             </Button>
           )}
           {step < TOTAL_STEPS ? (
             <Button onClick={handleNext} className="bg-primary text-primary-foreground">
-              Next
+              {t('onboarding.next')}
             </Button>
           ) : (
             <Button onClick={handleFinish} className="bg-primary text-primary-foreground">
-              Finish
+              {t('onboarding.finish')}
             </Button>
           )}
         </div>
