@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
+
 import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { startSession, formatHMS } from '@/lib/workoutSession';
@@ -14,6 +15,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
+import SupportModal from '@/components/SupportModal';
+
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ export default function HomePage() {
   const [moveDialogOpen, setMoveDialogOpen] = useState(false);
   const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
   const [calendarExpanded, setCalendarExpanded] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
@@ -188,14 +192,23 @@ export default function HomePage() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between">
           <h1 className="font-display text-xl font-bold">Fit Log X</h1>
-          <Button
-            size="sm"
-            onClick={handleStartWorkout}
-            className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" />
-            {t('home.startWorkout')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSupportModalOpen(true)}
+              className="flex items-center justify-center rounded-full bg-secondary p-2 text-muted-foreground hover:bg-secondary/80 hover:text-primary transition-colors"
+              aria-label="Support the creator"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
+            <Button
+              size="sm"
+              onClick={handleStartWorkout}
+              className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" />
+              {t('home.startWorkout')}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -442,6 +455,13 @@ export default function HomePage() {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* Support Modal */}
+      <SupportModal
+        open={supportModalOpen}
+        workoutCount={workouts.length}
+        onClose={() => setSupportModalOpen(false)}
+      />
     </div>
   );
 }
