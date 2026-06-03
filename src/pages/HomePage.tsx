@@ -455,6 +455,13 @@ export default function HomePage() {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* Support Modal */}
+      <SupportModal
+        open={supportModalOpen}
+        workoutCount={workouts.length}
+        onClose={() => setSupportModalOpen(false)}
+      />
     </div>
   );
 }
