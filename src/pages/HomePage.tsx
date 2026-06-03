@@ -192,14 +192,23 @@ export default function HomePage() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center justify-between">
           <h1 className="font-display text-xl font-bold">Fit Log X</h1>
-          <Button
-            size="sm"
-            onClick={handleStartWorkout}
-            className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" />
-            {t('home.startWorkout')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSupportModalOpen(true)}
+              className="flex items-center justify-center rounded-full bg-secondary p-2 text-muted-foreground hover:bg-secondary/80 hover:text-primary transition-colors"
+              aria-label="Support the creator"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
+            <Button
+              size="sm"
+              onClick={handleStartWorkout}
+              className="gap-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" />
+              {t('home.startWorkout')}
+            </Button>
+          </div>
         </div>
       </header>
 
