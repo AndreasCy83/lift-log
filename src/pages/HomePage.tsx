@@ -15,6 +15,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
+import SupportModal from '@/components/SupportModal';
+
 
 export default function HomePage() {
   const navigate = useNavigate();
