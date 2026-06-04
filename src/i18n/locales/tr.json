@@ -473,5 +473,12 @@
       "title": "Hazırsınız!",
       "subtitle": "İlk antrenmanınızı kaydetme zamanı. Tüm bunları daha sonra Ayarlar'dan değiştirebilirsiniz."
     }
+  },
+  "support": {
+    "title": "Harikasın! 💪",
+    "desc": "<0>{{count}}</0> antrenman tamamladın. FitLog X ücretsizdir — antrenmanına yardımcı olduysa küçük bir bahşiş onu yaşatır.",
+    "espresso": "Hızlı Espresso",
+    "shake": "Protein Shake",
+    "later": "Belki sonra"
   }
 }
