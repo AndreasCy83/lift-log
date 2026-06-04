@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
