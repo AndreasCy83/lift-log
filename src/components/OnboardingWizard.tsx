@@ -32,6 +32,11 @@ export default function OnboardingWizard() {
   const [, setProfileSkipped] = useState(false);
   const [autoBackup, setAutoBackup] = useState(false);
 
+  // Force English as default on wizard mount so step 1 displays in English.
+  useEffect(() => {
+    setLanguage('en');
+  }, []);
+
   const applyTheme = (t: 'system' | 'light' | 'dark') => {
     const root = document.documentElement;
     root.classList.remove('dark', 'light');
