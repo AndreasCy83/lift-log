@@ -475,5 +475,12 @@
       "title": "You're all set!",
       "subtitle": "Time to log your first workout. You can change any of these later in Settings."
     }
+  },
+  "support": {
+    "title": "You're crushing it! 💪",
+    "desc": "You've completed <0>{{count}}</0> workouts. FitLog X is free — if it's helped your training, a small tip keeps it alive.",
+    "espresso": "Quick Espresso",
+    "shake": "Protein Shake",
+    "later": "Maybe Later"
   }
 }

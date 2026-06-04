@@ -473,5 +473,12 @@
       "title": "Tutto pronto!",
       "subtitle": "È ora di registrare il tuo primo allenamento. Puoi modificare tutto in seguito nelle Impostazioni."
     }
+  },
+  "support": {
+    "title": "Stai spaccando! 💪",
+    "desc": "Hai completato <0>{{count}}</0> allenamenti. FitLog X è gratis — se ti aiuta ad allenarti, una piccola mancia lo mantiene vivo.",
+    "espresso": "Espresso veloce",
+    "shake": "Shake proteico",
+    "later": "Forse più tardi"
   }
 }
