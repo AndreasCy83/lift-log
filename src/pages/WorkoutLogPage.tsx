@@ -732,48 +732,47 @@ export default function WorkoutLogPage() {
 
           return (
             <SortableExerciseCard key={we.id} id={we.id}>
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left">
+              <div className="mb-2">
+                {/* Row 1: exercise title only — full width */}
+                <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="w-full text-left">
                   <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground shrink-0">{getCatName(we.exerciseId)}</span>
-                    {pr && (
-                      <span className="text-[10px] text-gym-pr">PR: {toDisplayWeight(pr.weight, globalWeightUnit)}{wuLabel} × {pr.reps}</span>
-                    )}
-                  </div>
                 </button>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
-                    className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    title={t('workout.tooltips.exerciseNote')}
-                    data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
-                  >
-                    <StickyNote className="h-[18px] w-[18px]" />
-                  </button>
-                  <button
-                    onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
-                    className={`h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
-                    title={t('workout.tooltips.exerciseGoals')}
-                    data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
-                  >
-                    <Trophy className="h-[18px] w-[18px]" />
-                  </button>
-                  <button
-                    onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
-                    className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                    title={t('workout.tooltips.exerciseStats')}
-                    data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
-                  >
-                    <BarChart3 className="h-[18px] w-[18px]" />
-                  </button>
-                  <button
-                    onClick={() => handleRemoveExercise(we.id)}
-                    className="h-9 w-9 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
-                    title={t('workout.tooltips.removeExercise')}
-                  >
-                    <Trash2 className="h-[18px] w-[18px]" />
-                  </button>
+                {/* Row 2: action buttons left, muscle group right */}
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={t('workout.tooltips.exerciseNote')}
+                      data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
+                    >
+                      <StickyNote className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
+                      onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={t('workout.tooltips.exerciseGoals')}
+                      data-tutorial={isTutorialTarget ? 'exercise-goals' : undefined}
+                    >
+                      <Trophy className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
+                      onClick={() => setStatsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title={t('workout.tooltips.exerciseStats')}
+                      data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
+                    >
+                      <BarChart3 className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
+                      onClick={() => handleRemoveExercise(we.id)}
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
+                      title={t('workout.tooltips.removeExercise')}
+                    >
+                      <Trash2 className="h-[16px] w-[16px]" />
+                    </button>
+                  </div>
+                  <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground shrink-0">{getCatName(we.exerciseId)}</span>
                 </div>
               </div>
               {noteExpanded === we.id && (
