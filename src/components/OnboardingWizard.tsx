@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
@@ -31,6 +31,11 @@ export default function OnboardingWizard() {
   const [weight, setWeight] = useState<string>('');
   const [, setProfileSkipped] = useState(false);
   const [autoBackup, setAutoBackup] = useState(false);
+
+  // Force English as default on wizard mount so step 1 displays in English.
+  useEffect(() => {
+    setLanguage('en');
+  }, []);
 
   const applyTheme = (t: 'system' | 'light' | 'dark') => {
     const root = document.documentElement;
