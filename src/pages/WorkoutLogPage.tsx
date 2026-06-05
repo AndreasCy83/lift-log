@@ -772,7 +772,7 @@ export default function WorkoutLogPage() {
                       <Trash2 className="h-[16px] w-[16px]" />
                     </button>
                   </div>
-                  <span className="text-[10px] rounded-full bg-secondary px-2 py-0.5 text-muted-foreground shrink-0">{getCatName(we.exerciseId)}</span>
+                  <span className="text-[11px] rounded-full bg-secondary px-3 py-1.5 text-muted-foreground shrink-0 inline-flex items-center">{getCatName(we.exerciseId)}</span>
                 </div>
               </div>
               {noteExpanded === we.id && (
