@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, Dumbbell, BarChart3, Settings, Scale } from 'lucide-react';
+import { Calendar, Dumbbell, BarChart3, Scale } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAnyActiveSession } from '@/hooks/useWorkoutSession';
 
@@ -8,7 +8,6 @@ const tabs = [
   { to: '/routines', icon: Dumbbell, key: 'routines' as const },
   { to: '/body', icon: Scale, key: 'body' as const },
   { to: '/stats', icon: BarChart3, key: 'stats' as const },
-  { to: '/settings', icon: Settings, key: 'settings' as const },
 ];
 
 /** Custom event used by WorkoutLogPage to intercept nav while a session is live. */
