@@ -22,7 +22,14 @@ export default function BottomNav() {
   const guarded = onWorkoutPage && (session?.status === 'running' || session?.status === 'paused');
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 1.5rem)',
+        paddingRight: 'calc(env(safe-area-inset-right, 0px) + 1.5rem)',
+      }}
+    >
       <div className="mx-auto flex max-w-lg items-center justify-around py-2 px-4">
         {tabs.map(({ to, icon: Icon, key }) => {
           const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
