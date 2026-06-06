@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import { BarChart3, Dumbbell, Target, Trophy } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { BarChart3, Dumbbell, Target, Trophy, Heart, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getWorkouts } from '@/lib/storage';
+import SupportModal from '@/components/SupportModal';
 import WorkoutsTab from '@/components/stats/WorkoutsTab';
 import BreakdownTab from '@/components/stats/BreakdownTab';
 import ExercisesTab from '@/components/stats/ExercisesTab';
@@ -26,7 +30,11 @@ function PlaceholderTab({ icon: Icon, message }: { icon: React.ElementType; mess
 }
 
 export default function StatsPage() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabId>('workouts');
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const workouts = useMemo(() => getWorkouts(), []);
 
   return (
     <div className="flex min-h-screen flex-col pb-24">
@@ -63,6 +71,12 @@ export default function StatsPage() {
         {activeTab === 'goals' && <GoalsTab />}
         {activeTab === 'records' && <RecordsTab />}
       </div>
+
+      <SupportModal
+        open={supportModalOpen}
+        workoutCount={workouts.length}
+        onClose={() => setSupportModalOpen(false)}
+      />
     </div>
   );
 }
