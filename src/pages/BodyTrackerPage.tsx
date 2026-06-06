@@ -1,8 +1,10 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Plus, LineChart as LineChartIcon, List, Target, Activity } from 'lucide-react';
+import { Plus, LineChart as LineChartIcon, List, Target, Activity, Heart, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getBodyEntries } from '@/lib/bodyTrackerStorage';
 import { getBodyGoals } from '@/lib/bodyTrackerStorage';
-import { getSettings, getProfile } from '@/lib/storage';
+import { getSettings, getProfile, getWorkouts } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { format, subMonths, addMonths, startOfMonth, endOfMonth, differenceInDays, addWeeks } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -15,6 +17,7 @@ import BodyBMITrends from '@/components/body/BodyBMITrends';
 import { measurementLabel, cmToDisplay } from '@/lib/bodyMeasurements';
 import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracker';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+import SupportModal from '@/components/SupportModal';
 
 const BODY_TUTORIAL_MAIN: TutorialStep[] = [
   { selector: '[data-tutorial="body-graphs"]', title: 'Graphs', text: 'View visual trends of your weight, body fat, muscle mass and measurements over time.' },
@@ -35,6 +38,8 @@ const BODY_TUTORIAL_FIELDS: TutorialStep[] = [
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
 export default function BodyTrackerPage() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [refreshKey, setRefreshKey] = useState(0);
   const [measurementDisplayUnit, setMeasurementDisplayUnit] = useState<BodyMeasurementUnit>('cm');
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -42,6 +47,8 @@ export default function BodyTrackerPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editEntry, setEditEntry] = useState<BodyEntry | null>(null);
   const [tutorialPhase, setTutorialPhase] = useState<'none' | 'main' | 'fields'>('none');
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const workouts = useMemo(() => getWorkouts(), []);
 
   const entries = useMemo(() => getBodyEntries(), [refreshKey]);
   const goals = useMemo(() => getBodyGoals(), [refreshKey]);
@@ -223,7 +230,25 @@ export default function BodyTrackerPage() {
     <div className="flex flex-col min-h-screen bg-background" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Header */}
       <div className="px-4 pt-4 pb-2">
-        <h1 className="text-xl font-display font-bold">Body Tracker</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-display font-bold">Body Tracker</h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSupportModalOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              aria-label="Support the creator"
+            >
+              <Heart className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => navigate('/settings')}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              aria-label={t('nav.settings')}
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Month nav */}
@@ -542,6 +567,12 @@ export default function BodyTrackerPage() {
           }}
         />
       )}
+
+      <SupportModal
+        open={supportModalOpen}
+        workoutCount={workouts.length}
+        onClose={() => setSupportModalOpen(false)}
+      />
     </div>
   );
 }
