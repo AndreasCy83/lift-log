@@ -30,7 +30,7 @@ export default function BottomNav() {
         paddingRight: 'calc(env(safe-area-inset-right, 0px) + 1.5rem)',
       }}
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around py-2 px-4">
+      <div className="mx-auto flex max-w-lg items-center justify-between py-2 px-2">
         {tabs.map(({ to, icon: Icon, key }) => {
           const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to);
           return (
