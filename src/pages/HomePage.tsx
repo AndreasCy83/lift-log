@@ -199,20 +199,20 @@ export default function HomePage() {
             <Plus className="h-4 w-4" />
             {t('home.startWorkout')}
           </Button>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setSupportModalOpen(true)}
-              className="flex items-center justify-center rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
               aria-label="Support the creator"
             >
-              <Heart className="h-4 w-4" />
+              <Heart className="h-5 w-5" />
             </button>
             <button
               onClick={() => navigate('/settings')}
-              className="flex items-center justify-center rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
               aria-label={t('nav.settings')}
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-5 w-5" />
             </button>
           </div>
         </div>
