@@ -39,8 +39,24 @@ export default function StatsPage() {
   return (
     <div className="flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg flex items-center justify-between">
           <h1 className="font-display text-xl font-bold">Stats & Analytics</h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSupportModalOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              aria-label="Support the creator"
+            >
+              <Heart className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => navigate('/settings')}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              aria-label={t('nav.settings')}
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </header>
 
