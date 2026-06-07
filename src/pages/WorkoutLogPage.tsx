@@ -709,9 +709,6 @@ export default function WorkoutLogPage() {
         <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle>{t('workout.deleteExerciseDialog.title')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('workout.deleteExerciseDialog.description')}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeleteExerciseTarget(null)}>
