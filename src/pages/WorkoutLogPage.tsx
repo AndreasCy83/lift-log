@@ -704,6 +704,34 @@ export default function WorkoutLogPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Delete exercise confirmation */}
+      <AlertDialog open={!!deleteExerciseTarget} onOpenChange={(o) => { if (!o) setDeleteExerciseTarget(null); }}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('workout.deleteExerciseDialog.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('workout.deleteExerciseDialog.description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteExerciseTarget(null)}>
+              {t('common.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteExerciseTarget) {
+                  handleRemoveExercise(deleteExerciseTarget);
+                  setDeleteExerciseTarget(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {showTimer && (
         <div className="mx-auto w-full max-w-lg px-4 pt-3">
           <RestTimer onClose={() => setShowTimer(false)} />
@@ -771,7 +799,7 @@ export default function WorkoutLogPage() {
                       <BarChart3 className="h-[16px] w-[16px]" />
                     </button>
                     <button
-                      onClick={() => handleRemoveExercise(we.id)}
+                      onClick={() => setDeleteExerciseTarget(we.id)}
                       className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
                       title={t('workout.tooltips.removeExercise')}
                     >
