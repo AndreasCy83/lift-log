@@ -212,6 +212,10 @@
       "description": "This set will be removed and remaining sets will be renumbered. This action cannot be undone.",
       "confirm": "Yes, delete"
     },
+    "deleteExerciseDialog": {
+      "title": "Delete exercise?",
+      "description": "This will remove this exercise from the current workout."
+    },
     "repeatDialog": {
       "title": "Replace current sets?",
       "description": "This will replace the current sets for this exercise with the last routine.",
