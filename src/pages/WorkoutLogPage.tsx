@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play, Youtube } from 'lucide-react';
+import { Browser } from '@capacitor/browser';
 import { format } from 'date-fns';
 import {
   getWorkoutByDate, getExercisesForWorkout, getSetsForWorkoutExercise,
@@ -794,6 +795,21 @@ export default function WorkoutLogPage() {
                       data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                     >
                       <BarChart3 className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const name = getExName(we.exerciseId);
+                        const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(`how to perform ${name}`)}`;
+                        try {
+                          await Browser.open({ url });
+                        } catch {
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      }}
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Search on YouTube"
+                    >
+                      <Youtube className="h-[16px] w-[16px]" />
                     </button>
                     <button
                       onClick={() => setDeleteExerciseTarget(we.id)}
