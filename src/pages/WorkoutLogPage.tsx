@@ -806,10 +806,10 @@ export default function WorkoutLogPage() {
                           window.open(url, '_blank', 'noopener,noreferrer');
                         }
                       }}
-                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors"
                       title="Search on YouTube"
                     >
-                      <Youtube className="h-[16px] w-[16px]" />
+                      <Youtube className="h-[16px] w-[16px] text-red-600 fill-white" strokeWidth={2.25} />
                     </button>
                     <button
                       onClick={() => setDeleteExerciseTarget(we.id)}
