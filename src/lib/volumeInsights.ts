@@ -5,10 +5,12 @@
  * - Uses a rolling 14-day window; weekly = total / 2.
  * - Counts only completed sets (isCompleted === true), excludes warmups.
  * - Ignores RPE/RIR entirely.
- * - setTag multiplier: W=0, D=0.5, F=1.0, N=1.0 (default 1.0 if missing).
- * - Compound lifts contribute partial credit to secondary muscles via
- *   keyword-based exercise→muscle weight mapping. Unknown exercises fall
- *   back to a single credit on their primary category.
+ * - setTag multiplier: W=0 (warmup), D=0.5 (deload), F=1.0 (failure),
+ *   N=1.0 (normal). Missing tag is treated as Normal (1.0).
+ * - Compound lifts contribute partial credit to secondary muscles via a
+ *   keyword-based exercise→muscle weight mapping. The FULL keyword map is
+ *   scanned and the first match wins. If no keyword matches at all, we
+ *   fall back to a single credit on the exercise's primary category.
  */
 import type { SetTag, WorkoutSet, Exercise } from '@/types/fitness';
 import { getExercises, getWorkouts, getWorkoutExercises, getWorkoutSets } from '@/lib/storage';
@@ -37,35 +39,40 @@ export interface VolumeSummary {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Per-set credit multiplier based on the user's set tag.
+ * - W = warmup → 0 (excluded from working volume)
+ * - D = deload → 0.5 (counts as a partial working set)
+ * - F = failure → 1.0
+ * - N = normal → 1.0
+ * - missing/unknown tag → 1.0 (treat as Normal)
+ */
 export function getSetMultiplier(tag: SetTag | undefined): number {
   switch (tag) {
-    case 'W': return 0;       // warmup
-    case 'D': return 0.5;     // dropset (treat like deload)
-    case 'F': return 1.0;     // failure
-    case 'N':
-    default:  return 1.0;     // normal
+    case 'W': return 0;     // warmup
+    case 'D': return 0.5;   // deload
+    case 'F': return 1.0;   // failure
+    case 'N': return 1.0;   // normal
+    default:  return 1.0;   // missing tag → treat as normal
   }
 }
 
 /**
  * Keyword-based contribution weights. Each entry maps a lowercase substring
  * found in the exercise name to a list of {categoryId, weight} credits.
- * The FIRST matching keyword wins. Fallback is { primary category: 1.0 }.
+ *
+ * Matching rules:
+ *   1. Iterate through the ENTIRE map and return the FIRST matching keyword.
+ *   2. Never fall back inside the loop — only after exhausting the map.
+ *   3. Order entries from more specific → more generic so specific compounds
+ *      win over generic substrings (e.g. "close-grip bench" before "bench press").
  */
 const KEYWORD_MAP: Array<{ kw: string; credits: Array<[string, number]> }> = [
-  // Chest pressing
+  // --- Specific compounds first (must precede their generic substrings) ---
+  { kw: 'close-grip bench',    credits: [['cat-triceps', 1.0], ['cat-chest', 0.5]] },
+  { kw: 'incline press',       credits: [['cat-chest', 1.0], ['cat-shoulders', 0.5], ['cat-triceps', 0.4]] },
   { kw: 'bench press',         credits: [['cat-chest', 1.0], ['cat-triceps', 0.5], ['cat-shoulders', 0.3]] },
   { kw: 'chest press',         credits: [['cat-chest', 1.0], ['cat-triceps', 0.4], ['cat-shoulders', 0.3]] },
-  { kw: 'incline press',       credits: [['cat-chest', 1.0], ['cat-shoulders', 0.5], ['cat-triceps', 0.4]] },
-  { kw: 'incline',             credits: [['cat-chest', 1.0], ['cat-shoulders', 0.4], ['cat-triceps', 0.3]] },
-  { kw: 'decline',             credits: [['cat-chest', 1.0], ['cat-triceps', 0.4]] },
-  { kw: 'push-up',             credits: [['cat-chest', 1.0], ['cat-triceps', 0.4], ['cat-shoulders', 0.3]] },
-  { kw: 'pushup',              credits: [['cat-chest', 1.0], ['cat-triceps', 0.4], ['cat-shoulders', 0.3]] },
-  { kw: 'dip',                 credits: [['cat-chest', 1.0], ['cat-triceps', 0.6], ['cat-shoulders', 0.3]] },
-  { kw: 'fly',                 credits: [['cat-chest', 1.0]] },
-  { kw: 'crossover',           credits: [['cat-chest', 1.0]] },
-
-  // Shoulders
   { kw: 'shoulder press',      credits: [['cat-shoulders', 1.0], ['cat-triceps', 0.5]] },
   { kw: 'overhead press',      credits: [['cat-shoulders', 1.0], ['cat-triceps', 0.5]] },
   { kw: 'military press',      credits: [['cat-shoulders', 1.0], ['cat-triceps', 0.5]] },
@@ -75,6 +82,15 @@ const KEYWORD_MAP: Array<{ kw: string; credits: Array<[string, number]> }> = [
   { kw: 'rear delt',           credits: [['cat-shoulders', 0.8], ['cat-back', 0.4]] },
   { kw: 'face pull',           credits: [['cat-shoulders', 0.8], ['cat-back', 0.4]] },
   { kw: 'upright row',         credits: [['cat-shoulders', 1.0], ['cat-back', 0.3]] },
+
+  // Chest
+  { kw: 'incline',             credits: [['cat-chest', 1.0], ['cat-shoulders', 0.4], ['cat-triceps', 0.3]] },
+  { kw: 'decline',             credits: [['cat-chest', 1.0], ['cat-triceps', 0.4]] },
+  { kw: 'push-up',             credits: [['cat-chest', 1.0], ['cat-triceps', 0.4], ['cat-shoulders', 0.3]] },
+  { kw: 'pushup',              credits: [['cat-chest', 1.0], ['cat-triceps', 0.4], ['cat-shoulders', 0.3]] },
+  { kw: 'dip',                 credits: [['cat-chest', 1.0], ['cat-triceps', 0.6], ['cat-shoulders', 0.3]] },
+  { kw: 'fly',                 credits: [['cat-chest', 1.0]] },
+  { kw: 'crossover',           credits: [['cat-chest', 1.0]] },
 
   // Back
   { kw: 'deadlift',            credits: [['cat-back', 1.0], ['cat-legs', 0.6]] },
@@ -88,15 +104,15 @@ const KEYWORD_MAP: Array<{ kw: string; credits: Array<[string, number]> }> = [
   { kw: 'shrug',               credits: [['cat-back', 1.0]] },
 
   // Legs
-  { kw: 'squat',               credits: [['cat-legs', 1.0]] },
-  { kw: 'leg press',           credits: [['cat-legs', 1.0]] },
-  { kw: 'lunge',               credits: [['cat-legs', 1.0]] },
-  { kw: 'split squat',         credits: [['cat-legs', 1.0]] },
-  { kw: 'step-up',             credits: [['cat-legs', 1.0]] },
-  { kw: 'leg extension',       credits: [['cat-legs', 1.0]] },
-  { kw: 'leg curl',            credits: [['cat-legs', 1.0]] },
   { kw: 'romanian',            credits: [['cat-legs', 1.0], ['cat-back', 0.4]] },
   { kw: 'rdl',                 credits: [['cat-legs', 1.0], ['cat-back', 0.4]] },
+  { kw: 'split squat',         credits: [['cat-legs', 1.0]] },
+  { kw: 'squat',               credits: [['cat-legs', 1.0]] },
+  { kw: 'leg press',           credits: [['cat-legs', 1.0]] },
+  { kw: 'leg extension',       credits: [['cat-legs', 1.0]] },
+  { kw: 'leg curl',            credits: [['cat-legs', 1.0]] },
+  { kw: 'lunge',               credits: [['cat-legs', 1.0]] },
+  { kw: 'step-up',             credits: [['cat-legs', 1.0]] },
   { kw: 'hip thrust',          credits: [['cat-legs', 1.0]] },
   { kw: 'glute bridge',        credits: [['cat-legs', 1.0]] },
   { kw: 'calf',                credits: [['cat-legs', 0.8]] },
@@ -111,7 +127,6 @@ const KEYWORD_MAP: Array<{ kw: string; credits: Array<[string, number]> }> = [
   { kw: 'tricep',              credits: [['cat-triceps', 1.0]] },
   { kw: 'skullcrusher',        credits: [['cat-triceps', 1.0]] },
   { kw: 'kickback',            credits: [['cat-triceps', 1.0]] },
-  { kw: 'close-grip bench',    credits: [['cat-triceps', 1.0], ['cat-chest', 0.5]] },
 
   // Core / abs
   { kw: 'crunch',              credits: [['cat-abs', 1.0]] },
@@ -122,13 +137,29 @@ const KEYWORD_MAP: Array<{ kw: string; credits: Array<[string, number]> }> = [
   { kw: 'abs',                 credits: [['cat-abs', 1.0]] },
 ];
 
+/**
+ * Resolve the muscle-credit list for an exercise.
+ *
+ * - Cardio exercises return [] (no hypertrophy volume contribution).
+ * - Scan the full KEYWORD_MAP; the first matching keyword wins.
+ * - If NO keyword matches, fall back to a single 1.0 credit on the
+ *   exercise's own primary category. The fallback is only reached after
+ *   the loop completes — never from inside it.
+ */
 export function getSetMuscleCredits(exercise: Exercise): Array<[string, number]> {
   if (exercise.type === 'CARDIO') return [];
+
   const name = exercise.name.toLowerCase();
+  let matched: Array<[string, number]> | null = null;
   for (const { kw, credits } of KEYWORD_MAP) {
-    if (name.includes(kw)) return credits;
+    if (name.includes(kw)) {
+      matched = credits;
+      break;
+    }
   }
-  // Fallback to primary category
+  if (matched) return matched;
+
+  // No keyword matched anywhere in the map — fall back to primary category.
   return [[exercise.categoryId, 1.0]];
 }
 
@@ -231,7 +262,12 @@ export function computeVolumeSummary(now: Date = new Date()): VolumeSummary {
 
   const totalWeeklySets = weeklyByCategory.reduce((a, c) => a + c.weeklySets, 0);
 
-  // Total body status — average across muscles that have any volume
+  // Total-body status:
+  // Explicitly the AVERAGE weekly sets across muscles that received any
+  // qualifying volume in the 14-day window. We do not sum across muscles
+  // (that would over-state intensity for full-body splits) and we do not
+  // weight by anything beyond muscle membership. If no muscle has volume,
+  // the status is 'none' and the empty state is rendered instead.
   let totalStatus: VolumeStatus = 'none';
   if (weeklyByCategory.length > 0) {
     const avg = totalWeeklySets / weeklyByCategory.length;

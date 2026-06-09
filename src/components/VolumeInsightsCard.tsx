@@ -33,7 +33,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const categories = useMemo(() => getCategories(), []);
   const catName = (id: string) => categories.find(c => c.id === id)?.name ?? id;
 
-  // Empty state
+  // Empty state — single, compact block. No duplicated copy with the header.
   if (!summary.hasAny) {
     return (
       <div className="gym-card mt-4">
@@ -80,7 +80,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </span>
         </div>
         <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground/70">
-          Based on last 14 days
+          Based on the last 14 days
         </p>
       </div>
 
