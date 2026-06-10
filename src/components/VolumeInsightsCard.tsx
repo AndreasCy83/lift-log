@@ -118,7 +118,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   if (!summary.hasAny) {
     return (
       <div className="gym-card mt-4 !p-3 animate-fade-in">
-        <div className="mb-1.5 flex items-center justify-between">
+        <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5 text-primary" />
             <h3 className="font-display text-sm font-semibold">Volume</h3>
@@ -131,9 +131,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <p className="mt-0.5 text-[10px] text-muted-foreground">
           Log a workout to unlock volume insights.
         </p>
-        <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground/70">
-          Based on the last 14 days
-        </p>
       </div>
     );
   }
@@ -144,31 +141,27 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
 
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
-      {/* Header */}
-      <div className="mb-1.5 flex items-center justify-between min-w-0">
+      {/* Header: title + weekly total */}
+      <div className="mb-1 flex items-center justify-between min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="h-3.5 w-3.5 text-primary shrink-0" />
           <h3 className="font-display text-sm font-semibold truncate">Volume</h3>
         </div>
+        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
+          ~{Math.round(summary.totalWeeklySets)} sets/wk
+        </span>
       </div>
 
-      {/* Total Body summary: label + value on row 1, chip on row 2 */}
-      <div className="py-[3px] min-w-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-[11px] font-semibold text-foreground whitespace-nowrap">
-            Total Body
-          </span>
-          <span className="ml-auto shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
-            ~{Math.round(summary.totalWeeklySets)} sets/wk
-          </span>
-        </div>
-        <div className="mt-0.5">
-          <span
-            className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[summary.totalStatus]}`}
-          >
-            {STATUS_LABEL[summary.totalStatus]}
-          </span>
-        </div>
+      {/* Total Body + status chip */}
+      <div className="flex items-center gap-2 py-[2px] min-w-0">
+        <span className="text-[11px] font-semibold text-foreground whitespace-nowrap">
+          Total Body
+        </span>
+        <span
+          className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[summary.totalStatus]}`}
+        >
+          {STATUS_LABEL[summary.totalStatus]}
+        </span>
       </div>
 
       {/* Top muscle row (collapsed always visible) */}
@@ -229,10 +222,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           />
         </button>
       )}
-
-      <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground/70">
-        Based on the last 14 days
-      </p>
     </div>
   );
 }
