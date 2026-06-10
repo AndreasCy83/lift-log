@@ -175,12 +175,12 @@ export function classifyVolume(weeklySets: number): VolumeStatus {
 
 export const STATUS_LABEL: Record<VolumeStatus, string> = {
   none: 'No data',
-  below: 'Low recent volume',
-  maintenance: 'Maintenance range',
-  productive: 'Good volume',
-  progressive: 'Strong volume',
-  high: 'High volume',
-  very_high: 'Very high volume',
+  below: 'Needs More Volume',
+  maintenance: 'Maintenance Volume',
+  productive: 'Growth Ready',
+  progressive: 'Growth Zone',
+  high: 'High Volume',
+  very_high: 'Peak Volume',
 };
 
 /** Tailwind classes for status chip color. */
