@@ -3,8 +3,15 @@
  *
  * Compact Recovery-style card showing estimated weekly hypertrophy volume
  * per muscle group derived from the last 14 days of logged workouts.
- * Subtle motion: bars fill from 0 on first mount and when new rows are
- * revealed via expand. Respects prefers-reduced-motion.
+ *
+ * Row layout (per muscle):
+ *   [ name              ]  [ thin bar ]  [ ~sets/wk ]
+ *   [ status subtitle   ]
+ *
+ * The per-row status is rendered as a compact color-coded subtitle BELOW
+ * the muscle name, not as a pill chip. Subtle motion: bars fill from 0 on
+ * first mount and when new rows are revealed via expand. Respects
+ * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, ChevronDown } from 'lucide-react';
@@ -13,6 +20,7 @@ import {
   STATUS_LABEL,
   STATUS_CHIP_CLASS,
   STATUS_BAR_COLOR,
+  type VolumeStatus,
 } from '@/lib/volumeInsights';
 import { getCategories } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
@@ -23,6 +31,17 @@ interface Props {
 
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
+
+/** Subtitle (under-name) text color per status. Lighter than chip styles. */
+const STATUS_SUBTITLE_CLASS: Record<VolumeStatus, string> = {
+  none:        'text-muted-foreground',
+  below:       'text-emerald-400/90',
+  maintenance: 'text-emerald-400/90',
+  productive:  'text-yellow-400/90',
+  progressive: 'text-orange-400/90',
+  high:        'text-orange-300/90',
+  very_high:   'text-red-400/90',
+};
 
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -40,33 +59,37 @@ interface RowProps {
   categoryId: string;
   name: string;
   weeklySets: number;
-  status: keyof typeof STATUS_LABEL;
-  showChip: boolean;
+  status: VolumeStatus;
   filled: boolean;
   reduced: boolean;
   delayMs: number;
 }
 
-function MuscleRow({ categoryId, name, weeklySets, status, showChip, filled, reduced, delayMs }: RowProps) {
+function MuscleRow({ categoryId, name, weeklySets, status, filled, reduced, delayMs }: RowProps) {
   const pct = Math.min(100, Math.max(4, (weeklySets / BAR_MAX) * 100));
   const width = filled || reduced ? `${pct}%` : '0%';
   return (
-    <div className="flex items-center gap-2 py-[2px] min-w-0">
-      <span
-        className="h-1.5 w-1.5 shrink-0 rounded-full"
-        style={{ backgroundColor: getCategoryColor(categoryId) }}
-      />
-      <span className="shrink-0 text-[11px] font-semibold text-foreground truncate max-w-[64px]">
-        {name}
-      </span>
-      {showChip && (
+    <div className="flex items-center gap-2 py-[3px] min-w-0">
+      {/* Left: name + status subtitle (two-line block) */}
+      <div className="flex min-w-0 flex-1 items-start gap-1.5">
         <span
-          className={`hidden xs:inline-flex shrink-0 rounded-full px-1 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-70 ${STATUS_CHIP_CLASS[status]}`}
-        >
-          {STATUS_LABEL[status]}
-        </span>
-      )}
-      <div className="flex-1 min-w-[24px] h-[3px] overflow-hidden rounded-full bg-background/70 ml-0.5">
+          className="mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full"
+          style={{ backgroundColor: getCategoryColor(categoryId) }}
+        />
+        <div className="min-w-0 flex-1 leading-tight">
+          <div className="text-[11px] font-semibold text-foreground truncate">
+            {name}
+          </div>
+          <div
+            className={`text-[9.5px] font-medium tracking-wide ${STATUS_SUBTITLE_CLASS[status]}`}
+          >
+            {STATUS_LABEL[status]}
+          </div>
+        </div>
+      </div>
+
+      {/* Middle: thin progress bar */}
+      <div className="h-[3px] w-[34%] min-w-[40px] max-w-[120px] overflow-hidden rounded-full bg-background/70">
         <div
           className={`h-full rounded-full ${STATUS_BAR_COLOR[status]}`}
           style={{
@@ -77,7 +100,9 @@ function MuscleRow({ categoryId, name, weeklySets, status, showChip, filled, red
           }}
         />
       </div>
-      <span className="shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
+
+      {/* Right: weekly sets value */}
+      <span className="w-[42px] shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
         ~{weeklySets.toFixed(1)}
       </span>
     </div>
@@ -152,7 +177,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         </span>
       </div>
 
-      {/* Total Body + status chip */}
+      {/* Total Body + status chip (summary line stays as chip to differentiate from per-row subtitles) */}
       <div className="flex items-center gap-2 py-[2px] min-w-0">
         <span className="text-[11px] font-semibold text-foreground whitespace-nowrap">
           Total Body
@@ -165,7 +190,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       </div>
 
       {/* Top muscle row (collapsed always visible) */}
-      <div className="mt-1 space-y-1">
+      <div className="mt-1 space-y-0.5">
         {collapsedRows.map((row, i) => (
           <MuscleRow
             key={row.categoryId}
@@ -173,7 +198,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
             name={catName(row.categoryId)}
             weeklySets={row.weeklySets}
             status={row.status}
-            showChip={false}
             filled={mounted}
             reduced={reduced}
             delayMs={i * 50}
@@ -186,14 +210,14 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${hiddenRows.length * 26 + 8}px` : '0px',
+            maxHeight: expanded ? `${hiddenRows.length * 36 + 8}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
               : 'max-height 260ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="space-y-1 pt-1">
+          <div className="space-y-0.5 pt-1">
             {hiddenRows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
@@ -201,7 +225,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
                 name={catName(row.categoryId)}
                 weeklySets={row.weeklySets}
                 status={row.status}
-                showChip={true}
                 filled={revealedExpand}
                 reduced={reduced}
                 delayMs={i * 55}
