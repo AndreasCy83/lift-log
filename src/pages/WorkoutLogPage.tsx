@@ -59,7 +59,7 @@ import FloatingRestTimer from '@/components/FloatingRestTimer';
 import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
-import { isMeaningfulPendingSet, getMissingRequiredFields } from '@/lib/setCompletion';
+import { isMeaningfulPendingSet, getMissingRequiredFields, canCompleteSet } from '@/lib/setCompletion';
 
 import type { Workout, WorkoutSet, WorkoutExercise, SetTag, SetType } from '@/types/fitness';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
