@@ -195,7 +195,18 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
     const decayed = contribs.reduce((sum, c) => sum + c.raw * recencyDecay(c.ageHours), 0);
     const wMod = weeklyModifier(weeklyCount[m]);
     const adjusted = decayed * wMod;
-    const remainingHours = estimateRetrainHours(adjusted, contribs, wMod);
+    const rawRemaining = estimateRetrainHours(adjusted, contribs, wMod);
+    // Hard upper-bound recovery caps per muscle group (hours). Only clamps
+    // the upper bound; shorter estimates pass through unchanged.
+    const MAX_RECOVERY_HOURS: Record<MuscleGroup, number> = {
+      Chest: 48,
+      Back: 73,
+      Legs: 72,
+      Shoulders: 48,
+      Arms: 48, // biceps/triceps both 48h
+      Core: 24, // abs/core
+    };
+    const remainingHours = Math.min(rawRemaining, MAX_RECOVERY_HOURS[m]);
     // "Original" total recovery window = remaining + time elapsed since most-recent contribution.
     // This makes the bar shrink as real time passes after the workout.
     const minAge = contribs.length ? Math.min(...contribs.map(c => c.ageHours)) : 0;
