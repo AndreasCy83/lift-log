@@ -528,6 +528,32 @@ export default function WorkoutLogPage() {
     performFinishWorkout();
   };
 
+  /** Toggle all meaningful pending sets to completed (when their required fields are present), then finish. */
+  const handleCompleteAllPending = () => {
+    let toggled = 0;
+    let skipped = 0;
+    for (const we of workoutExercises) {
+      const ex = allExercises.find(e => e.id === we.exerciseId);
+      const sets = getSetsForWorkoutExercise(we.id);
+      for (const s of sets) {
+        if (!isMeaningfulPendingSet(s, ex?.setType)) continue;
+        if (canCompleteSet(s, ex?.setType)) {
+          updateWorkoutSet({ ...s, isCompleted: true });
+          toggled++;
+        } else {
+          skipped++;
+        }
+      }
+    }
+    forceUpdate(n => n + 1);
+    checkGoalCompletions();
+    setIncompleteWarnOpen(false);
+    if (skipped > 0) {
+      toast.message(t('workout.toasts.someSetsSkipped', { defaultValue: '{{count}} set(s) skipped — missing required fields.', count: skipped }));
+    }
+    performFinishWorkout();
+  };
+
   /** Intercept any in-app navigation away from this page while the timer is live. */
   const requestLeave = (target: string) => {
     if (session.isRunning || session.isPaused) {
