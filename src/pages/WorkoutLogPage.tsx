@@ -718,7 +718,7 @@ export default function WorkoutLogPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIncompleteWarnOpen(false)}>
+            <AlertDialogCancel onClick={handleCompleteAllPending}>
               {t('workout.incompleteDialog.complete')}
             </AlertDialogCancel>
             <AlertDialogAction
