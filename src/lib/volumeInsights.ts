@@ -301,7 +301,7 @@ export function computeVolumeSummary(now: Date = new Date()): VolumeSummary {
       return {
         categoryId: catId,
         weeklySets: weekly,
-        status: classifyVolume(weekly),
+        status: classifyVolumeForCategory(catId, weekly),
       };
     })
     .filter(v => v.weeklySets > 0)
