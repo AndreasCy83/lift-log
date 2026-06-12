@@ -163,6 +163,10 @@ export function getSetMuscleCredits(exercise: Exercise): Array<[string, number]>
   return [[exercise.categoryId, 1.0]];
 }
 
+/**
+ * Generic / fallback classification used when no muscle-specific profile
+ * exists for a category, and for the total-body summary.
+ */
 export function classifyVolume(weeklySets: number): VolumeStatus {
   if (weeklySets <= 0) return 'none';
   if (weeklySets < 4) return 'below';
@@ -170,6 +174,49 @@ export function classifyVolume(weeklySets: number): VolumeStatus {
   if (weeklySets < 12) return 'productive';
   if (weeklySets <= 20) return 'progressive';
   if (weeklySets <= 24) return 'high';
+  return 'very_high';
+}
+
+/**
+ * Muscle-specific weekly-set thresholds. Each tuple defines the EXCLUSIVE
+ * upper bound for that status (i.e. x < bound). The final `very_high` band
+ * catches anything above the last `high` bound.
+ *
+ *   [belowMax, maintenanceMax, productiveMax, progressiveMax, highMax]
+ *
+ * Mapping (validated against the supplied examples):
+ *   Chest:     <6 / <10 / <14 / <21 / <23 / ≥23
+ *   Back:      <6 / <10 / <14 / <23 / <26 / ≥26
+ *   Legs:      <6 / <10 / <14 / <21 / <25 / ≥25
+ *   Shoulders: <6 / <10 / <14 / <21 / <25 / ≥25
+ *   Biceps:    <4 / <8  / <14 / <21 / <26 / ≥26
+ *   Triceps:   <4 / <7  / <10 / <15 / <19 / ≥19
+ *   Abs/Core:  <4 / <8  / <12 / <17 / <21 / ≥21
+ */
+const MUSCLE_THRESHOLDS: Record<string, [number, number, number, number, number]> = {
+  'cat-chest':     [6, 10, 14, 21, 23],
+  'cat-back':      [6, 10, 14, 23, 26],
+  'cat-legs':      [6, 10, 14, 21, 25],
+  'cat-shoulders': [6, 10, 14, 21, 25],
+  'cat-biceps':    [4, 8,  14, 21, 26],
+  'cat-triceps':   [4, 7,  10, 15, 19],
+  'cat-abs':       [4, 8,  12, 17, 21],
+  'cat-core':      [4, 8,  12, 17, 21],
+};
+
+export function classifyVolumeForCategory(
+  categoryId: string,
+  weeklySets: number,
+): VolumeStatus {
+  if (weeklySets <= 0) return 'none';
+  const t = MUSCLE_THRESHOLDS[categoryId];
+  if (!t) return classifyVolume(weeklySets);
+  const [b, m, p, pr, h] = t;
+  if (weeklySets < b)  return 'below';
+  if (weeklySets < m)  return 'maintenance';
+  if (weeklySets < p)  return 'productive';
+  if (weeklySets < pr) return 'progressive';
+  if (weeklySets < h)  return 'high';
   return 'very_high';
 }
 
@@ -254,7 +301,7 @@ export function computeVolumeSummary(now: Date = new Date()): VolumeSummary {
       return {
         categoryId: catId,
         weeklySets: weekly,
-        status: classifyVolume(weekly),
+        status: classifyVolumeForCategory(catId, weekly),
       };
     })
     .filter(v => v.weeklySets > 0)
