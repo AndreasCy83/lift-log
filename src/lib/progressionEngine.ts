@@ -1,0 +1,207 @@
+/**
+ * Progression engine — deterministic, offline next-session recommendations
+ * for a single exercise based on its recent exposures.
+ *
+ * Pure functions only. No storage / no React. The orchestrator in
+ * coachRecommendations.ts gathers exposures and feeds them in here.
+ */
+import type { Exercise, WorkoutSet } from '@/types/fitness';
+import { THRESHOLDS } from './coachThresholds';
+
+export interface ExposureSummary {
+  /** Sorted ascending: oldest set first. */
+  dateISO: string;
+  workingSets: number;
+  avgReps: number;
+  topWeightKg: number | null;
+  avgRPE: number | null;
+}
+
+export type ProgressionType =
+  | 'progression'
+  | 'hold'
+  | 'set_reduce'
+  | 'set_increase'
+  | 'deload_adjustment';
+
+export interface ProgressionRecommendation {
+  exerciseId: string;
+  exerciseName: string;
+  recommendationType: ProgressionType;
+  currentSets: number;
+  nextSets: number;
+  currentRepInfo: string;
+  nextRepInfo: string;
+  currentWeightKg: number | null;
+  nextWeightKg: number | null;
+  confidence: 'low' | 'medium' | 'high';
+  reasons: string[];
+  guardrailBlocked: boolean;
+  createdAt: string;
+}
+
+/** Build an exposure summary from a single workout's working sets for one exercise. */
+export function summarizeExposure(
+  dateISO: string,
+  sets: WorkoutSet[],
+): ExposureSummary | null {
+  const working = sets.filter(
+    (s) => s.isCompleted === true && !s.isWarmup && s.setTag !== 'W',
+  );
+  if (working.length === 0) return null;
+
+  const repsList = working.map((s) => s.reps ?? 0).filter((r) => r > 0);
+  const avgReps =
+    repsList.length > 0
+      ? repsList.reduce((a, b) => a + b, 0) / repsList.length
+      : 0;
+
+  const weights = working
+    .map((s) => s.weightKg ?? 0)
+    .filter((w) => w > 0);
+  const topWeightKg = weights.length > 0 ? Math.max(...weights) : null;
+
+  const rpes = working
+    .map((s) => s.rpe)
+    .filter((r): r is number => typeof r === 'number');
+  const avgRPE =
+    rpes.length > 0 ? rpes.reduce((a, b) => a + b, 0) / rpes.length : null;
+
+  return {
+    dateISO,
+    workingSets: working.length,
+    avgReps,
+    topWeightKg,
+    avgRPE,
+  };
+}
+
+/** Round to the nearest meaningful load increment for a given current weight. */
+function roundIncrement(currentKg: number): number {
+  // Smaller increments for lighter loads, larger for heavier compound work.
+  if (currentKg < 20) return 1.25;
+  if (currentKg < 60) return 2.5;
+  return 2.5;
+}
+
+function fmtRepRange(min: number | null, max: number | null, fallback: number): string {
+  if (min && max && min !== max) return `${min}–${max}`;
+  if (max) return `${max}`;
+  if (min) return `${min}`;
+  return `${Math.round(fallback)}`;
+}
+
+/**
+ * Core progression rule. Returns null when there is not enough history to
+ * say anything meaningful.
+ *
+ * `exposures` is expected sorted descending (most recent first).
+ */
+export function recommendProgression(
+  exercise: Exercise,
+  exposures: ExposureSummary[],
+): ProgressionRecommendation | null {
+  if (exposures.length === 0) return null;
+  const last = exposures[0];
+  const prior = exposures[1] ?? null;
+
+  // Cardio / non-weight set types: skip V1
+  if (exercise.type === 'CARDIO') return null;
+  if (exercise.setType !== 'WEIGHT_REPS' && exercise.setType !== 'WEIGHT_ONLY') {
+    return null;
+  }
+
+  const repsMin = exercise.defaultRepsMin;
+  const repsMax = exercise.defaultRepsMax;
+  const targetTop = repsMax ?? Math.max(8, Math.round(last.avgReps + 1));
+
+  const reasons: string[] = [];
+  let type: ProgressionType = 'hold';
+  let nextSets = last.workingSets;
+  let nextWeightKg = last.topWeightKg;
+  let nextRepsLabel = fmtRepRange(repsMin, repsMax, last.avgReps);
+  let confidence: 'low' | 'medium' | 'high' = 'low';
+
+  const rpe = last.avgRPE;
+  const rpeRising =
+    rpe != null && prior?.avgRPE != null && rpe - prior.avgRPE >= THRESHOLDS.rpeRiseDelta;
+  const regressed =
+    !!prior && last.avgReps + 0.5 < prior.avgReps;
+  const fatigued = (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) || rpeRising || regressed;
+
+  if (fatigued) {
+    type = 'hold';
+    if (regressed) reasons.push('Reps regressed vs last session');
+    if (rpeRising) reasons.push('Effort rising at similar load');
+    if (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) reasons.push('High RPE last session');
+    confidence = 'medium';
+  } else if (
+    last.topWeightKg != null &&
+    last.avgReps >= targetTop &&
+    exposures.length >= THRESHOLDS.minExposuresForLoadIncrease
+  ) {
+    // Load progression
+    const inc = roundIncrement(last.topWeightKg);
+    nextWeightKg = Math.round((last.topWeightKg + inc) * 100) / 100;
+    nextRepsLabel = fmtRepRange(repsMin, repsMax, last.avgReps);
+    type = 'progression';
+    reasons.push(`Hit top of rep range (${Math.round(last.avgReps)}× ≥ ${targetTop})`);
+    confidence = exposures.length >= 3 ? 'high' : 'medium';
+  } else if (last.avgReps < targetTop) {
+    // Rep progression — same load, push reps
+    type = 'progression';
+    nextWeightKg = last.topWeightKg;
+    nextRepsLabel = `${Math.min(targetTop, Math.round(last.avgReps + 1))}${
+      repsMax ? ` / target ${targetTop}` : ''
+    }`;
+    reasons.push('Add a rep at the same load next session');
+    confidence = 'medium';
+  } else {
+    type = 'hold';
+    reasons.push('Maintain current prescription');
+    confidence = 'low';
+  }
+
+  return {
+    exerciseId: exercise.id,
+    exerciseName: exercise.name,
+    recommendationType: type,
+    currentSets: last.workingSets,
+    nextSets,
+    currentRepInfo: `${Math.round(last.avgReps)}`,
+    nextRepInfo: nextRepsLabel,
+    currentWeightKg: last.topWeightKg,
+    nextWeightKg,
+    confidence,
+    reasons,
+    guardrailBlocked: false,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/** Apply weekly volume trend & guardrail to a progression rec in-place. */
+export function applyVolumeTrend(
+  rec: ProgressionRecommendation,
+  trendPct: number,
+  guardrailHigh: boolean,
+): void {
+  if (trendPct >= THRESHOLDS.volumeTrendPct) {
+    // Weekly volume climbing — reduce sets next session
+    if (rec.nextSets > 1) {
+      rec.nextSets = rec.currentSets - 1;
+      rec.recommendationType =
+        rec.recommendationType === 'progression' ? 'progression' : 'set_reduce';
+      rec.reasons.push(`Weekly volume up >${Math.round(THRESHOLDS.volumeTrendPct * 100)}%`);
+    }
+  } else if (trendPct <= -THRESHOLDS.volumeTrendPct) {
+    if (guardrailHigh) {
+      rec.guardrailBlocked = true;
+      rec.reasons.push('Set increase blocked — muscle already heavily loaded');
+    } else {
+      rec.nextSets = rec.currentSets + 1;
+      rec.recommendationType =
+        rec.recommendationType === 'progression' ? 'progression' : 'set_increase';
+      rec.reasons.push(`Weekly volume down >${Math.round(THRESHOLDS.volumeTrendPct * 100)}%`);
+    }
+  }
+}

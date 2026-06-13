@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Calendar } from '@/components/ui/calendar';
 import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 import VolumeInsightsCard from '@/components/VolumeInsightsCard';
+import CoachRecommendationsCard from '@/components/CoachRecommendationsCard';
 import SupportModal from '@/components/SupportModal';
 
 
@@ -304,6 +305,9 @@ export default function HomePage() {
 
         {/* Recovery / Fatigue */}
         <RecoveryFatigueCard refreshKey={refreshKey} />
+
+        {/* Coach recommendations (offline rules engine) */}
+        <CoachRecommendationsCard refreshKey={refreshKey} />
 
         {/* Selected day summary */}
         <div className="gym-card mt-4">

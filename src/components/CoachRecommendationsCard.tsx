@@ -1,0 +1,296 @@
+/**
+ * Coach Recommendations Card (Home page).
+ *
+ * Compact, collapsible insight card. Surfaces next-session adjustments and
+ * deload suggestions from the offline coach engine. Visibility rules:
+ *  - no items + no deload  → render nothing
+ *  - deload present         → amber/warning emphasis, deload summary first
+ *  - otherwise              → neutral/green-accent progression summary
+ */
+import { useEffect, useMemo, useState } from 'react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles } from 'lucide-react';
+import {
+  computeCoachRecommendations,
+  type ProgressionRecommendation,
+  type DeloadRecommendation,
+} from '@/lib/coachRecommendations';
+import { getSettings } from '@/lib/storage';
+import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
+
+interface Props {
+  refreshKey?: number;
+}
+
+const TYPE_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
+  progression: 'Progression ready',
+  hold: 'Hold load',
+  set_reduce: 'Reduce sets',
+  set_increase: 'Add a set',
+  deload_adjustment: 'Deload adjustment',
+};
+
+function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
+  if (kg == null) return '—';
+  const v = toDisplayWeight(kg, unit);
+  return v == null ? '—' : `${v}${weightUnitLabel(unit)}`;
+}
+
+function ExerciseRow({
+  rec,
+  unit,
+}: {
+  rec: ProgressionRecommendation;
+  unit: 'kg' | 'lbs';
+}) {
+  const changed = (a: string | number | null, b: string | number | null) =>
+    String(a) !== String(b);
+  const setsChanged = rec.nextSets !== rec.currentSets;
+  const repsChanged = changed(rec.currentRepInfo, rec.nextRepInfo);
+  const weightChanged =
+    rec.nextWeightKg != null &&
+    rec.currentWeightKg != null &&
+    Math.abs(rec.nextWeightKg - rec.currentWeightKg) > 0.001;
+
+  return (
+    <div className="rounded-md border border-border/60 bg-background/40 p-2">
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[12px] font-semibold text-foreground">
+            {rec.exerciseName}
+          </div>
+          <div className="text-[10px] font-medium uppercase tracking-wide text-primary/80">
+            {TYPE_LABEL[rec.recommendationType]}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-1.5 grid grid-cols-3 gap-1.5 text-[10px]">
+        <div className="rounded bg-secondary/40 px-1.5 py-1">
+          <div className="text-muted-foreground">Sets</div>
+          <div className="tabular-nums">
+            <span className={setsChanged ? 'text-muted-foreground' : 'text-foreground'}>
+              {rec.currentSets}
+            </span>
+            <span className="mx-1 text-muted-foreground">→</span>
+            <span
+              className={
+                setsChanged ? 'font-semibold text-emerald-400' : 'text-foreground'
+              }
+            >
+              {rec.nextSets}
+            </span>
+          </div>
+        </div>
+        <div className="rounded bg-secondary/40 px-1.5 py-1">
+          <div className="text-muted-foreground">Reps</div>
+          <div className="tabular-nums">
+            <span className={repsChanged ? 'text-muted-foreground' : 'text-foreground'}>
+              {rec.currentRepInfo}
+            </span>
+            <span className="mx-1 text-muted-foreground">→</span>
+            <span
+              className={
+                repsChanged ? 'font-semibold text-emerald-400' : 'text-foreground'
+              }
+            >
+              {rec.nextRepInfo}
+            </span>
+          </div>
+        </div>
+        <div className="rounded bg-secondary/40 px-1.5 py-1">
+          <div className="text-muted-foreground">Load</div>
+          <div className="tabular-nums">
+            <span className={weightChanged ? 'text-muted-foreground' : 'text-foreground'}>
+              {fmtWeight(rec.currentWeightKg, unit)}
+            </span>
+            <span className="mx-1 text-muted-foreground">→</span>
+            <span
+              className={
+                weightChanged ? 'font-semibold text-emerald-400' : 'text-foreground'
+              }
+            >
+              {fmtWeight(rec.nextWeightKg, unit)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {rec.reasons.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {rec.reasons.map((r, i) => (
+            <span
+              key={i}
+              className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium ${
+                rec.guardrailBlocked
+                  ? 'bg-amber-500/15 text-amber-300'
+                  : 'bg-primary/10 text-primary/90'
+              }`}
+            >
+              {r}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeloadBlock({ deload }: { deload: DeloadRecommendation }) {
+  return (
+    <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-2">
+      <div className="flex items-center gap-1.5">
+        <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+        <div className="text-[12px] font-semibold text-amber-200">
+          Deload week recommended
+        </div>
+      </div>
+      <p className="mt-1 text-[10.5px] text-foreground/80">{deload.explanation}</p>
+      <div className="mt-1.5 grid grid-cols-2 gap-1.5 text-[10px]">
+        <div className="rounded bg-amber-500/10 px-1.5 py-1">
+          <div className="text-amber-200/70">Volume cut</div>
+          <div className="font-semibold text-amber-100">
+            ~{deload.suggestedVolumeReductionPercent}%
+          </div>
+        </div>
+        <div className="rounded bg-amber-500/10 px-1.5 py-1">
+          <div className="text-amber-200/70">Target RPE</div>
+          <div className="font-semibold text-amber-100">
+            {deload.suggestedRPETarget}
+          </div>
+        </div>
+      </div>
+      {deload.triggers.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {deload.triggers.map((t, i) => (
+            <span
+              key={i}
+              className="rounded-full bg-amber-500/15 px-1.5 py-[1px] text-[9px] font-medium text-amber-200"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+      {deload.affectedKeyLifts.length > 0 && (
+        <p className="mt-1.5 text-[10px] text-muted-foreground">
+          Affected lifts: {deload.affectedKeyLifts.join(', ')}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export default function CoachRecommendationsCard({ refreshKey }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const snap = useMemo(() => computeCoachRecommendations(), [refreshKey]);
+  const unit = getSettings().weightUnit;
+
+  // Reset expansion when data changes meaningfully
+  useEffect(() => {
+    setExpanded(false);
+  }, [refreshKey]);
+
+  const hasDeload = !!snap.deload;
+  const itemCount = snap.items.length;
+
+  if (!hasDeload && itemCount === 0) return null;
+
+  const isWarning = hasDeload;
+  const titleIcon = isWarning ? (
+    <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+  ) : (
+    <Brain className="h-3.5 w-3.5 text-primary shrink-0" />
+  );
+
+  let summaryLine: string;
+  let badgeText: string;
+  let badgeClass: string;
+  if (hasDeload) {
+    summaryLine = 'Fatigue elevated — deload week recommended';
+    badgeText = 'Deload suggested';
+    badgeClass = 'bg-amber-500/20 text-amber-200';
+  } else if (itemCount === 1) {
+    const it = snap.items[0];
+    summaryLine = `${it.exerciseName} • ${TYPE_LABEL[it.recommendationType].toLowerCase()}`;
+    badgeText = 'Next session';
+    badgeClass = 'bg-primary/15 text-primary';
+  } else {
+    summaryLine = 'Tuned suggestions ready for your next session';
+    badgeText = `${itemCount} adjustments`;
+    badgeClass = 'bg-primary/15 text-primary';
+  }
+
+  return (
+    <div
+      className={`gym-card mt-4 !p-3 animate-fade-in ${
+        isWarning ? 'border border-amber-500/30' : ''
+      }`}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0">
+          {titleIcon}
+          <h3 className="font-display text-sm font-semibold truncate">Coach</h3>
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${badgeClass}`}
+        >
+          {badgeText}
+        </span>
+      </div>
+
+      {/* Compact summary line */}
+      <div className="mt-1 flex items-center gap-1.5 min-w-0">
+        <Sparkles
+          className={`h-3 w-3 shrink-0 ${
+            isWarning ? 'text-amber-400/80' : 'text-primary/70'
+          }`}
+        />
+        <p className="truncate text-[11.5px] text-foreground/90">{summaryLine}</p>
+      </div>
+
+      {/* Expanded body */}
+      <div
+        className="overflow-hidden"
+        style={{
+          maxHeight: expanded ? '2000px' : '0px',
+          opacity: expanded ? 1 : 0,
+          transition: 'max-height 320ms ease-out, opacity 260ms ease-out',
+        }}
+      >
+        <div className="space-y-2 pt-2">
+          {hasDeload && snap.deload && <DeloadBlock deload={snap.deload} />}
+
+          {itemCount > 0 && (
+            <div className="space-y-1.5">
+              {hasDeload && (
+                <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Next session adjustments
+                </div>
+              )}
+              {snap.items.map((rec) => (
+                <ExerciseRow key={rec.exerciseId} rec={rec} unit={unit} />
+              ))}
+            </div>
+          )}
+
+          <p className="pt-0.5 text-[9.5px] text-muted-foreground">
+            Suggestions only. Nothing is auto-applied to your workouts.
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setExpanded((e) => !e)}
+        className="mt-1 flex w-full items-center justify-center gap-1 py-0 text-[10px] font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
+      >
+        {expanded ? 'Show less' : 'Show details'}
+        <ChevronDown
+          className={`h-3 w-3 transition-transform duration-300 ${
+            expanded ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
