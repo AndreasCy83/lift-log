@@ -277,7 +277,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   Next session adjustments
                 </div>
               )}
-              {snap.items.map((rec) => (
+              {visibleItems.map((rec) => (
                 <ExerciseRow key={rec.exerciseId} rec={rec} unit={unit} />
               ))}
             </div>
