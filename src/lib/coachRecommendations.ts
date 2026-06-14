@@ -297,10 +297,106 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
 
   const trimmed = reconciled.slice(0, THRESHOLDS.maxRecommendations);
 
+  // --- V2: enrich items (mainAction, topReasons, confidence touch-ups) ---
+  const ACTION_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
+    load_progression: 'Add load',
+    rep_progression: 'Add a rep',
+    hold: 'Hold load',
+    set_reduce: 'Reduce sets',
+    set_increase: 'Add a set',
+    deload_adjustment: 'Deload adjustment',
+  };
+  for (const it of trimmed) {
+    it.mainAction = ACTION_LABEL[it.recommendationType];
+    it.topReasons = it.reasons.slice(0, 3);
+    // Confidence touch-ups: bump set_reduce to medium if driven by volume trend.
+    if (
+      it.recommendationType === 'set_reduce' &&
+      it.confidence === 'low' &&
+      it.reasons.some((r) => /Weekly volume up/i.test(r))
+    ) {
+      it.confidence = 'medium';
+    }
+    // Cap to low if a guardrail blocked the original intent.
+    if (it.guardrailBlocked && it.confidence === 'high') it.confidence = 'medium';
+  }
+
+  // --- V2: derive top-level state ---
+  let state: CoachState;
+  if (deload) {
+    state = 'recover';
+  } else if (trimmed.length === 0) {
+    state = 'train';
+  } else {
+    const forward = trimmed.filter(
+      (it) =>
+        (it.recommendationType === 'load_progression' ||
+          it.recommendationType === 'rep_progression' ||
+          it.recommendationType === 'set_increase') &&
+        !it.guardrailBlocked,
+    );
+    const cautious = trimmed.filter(
+      (it) =>
+        it.recommendationType === 'hold' ||
+        it.recommendationType === 'set_reduce' ||
+        it.guardrailBlocked,
+    );
+    if (forward.length >= cautious.length && forward.length > 0) {
+      state = 'train';
+    } else {
+      state = 'adapt';
+    }
+  }
+
+  // --- V2: derive trend summary ---
+  const totalThis = Array.from(thisWeek.byCategory.values()).reduce((a, b) => a + b, 0);
+  const totalLast = Array.from(lastWeek.byCategory.values()).reduce((a, b) => a + b, 0);
+  const totalTrend =
+    totalLast > 0 ? (totalThis - totalLast) / totalLast : totalThis > 0 ? 1 : 0;
+  const regressionSignals = trimmed.filter((it) =>
+    it.reasons.some((r) => /regressed|rising|High RPE/i.test(r)),
+  ).length;
+  const forwardCount = trimmed.filter(
+    (it) =>
+      it.recommendationType === 'load_progression' ||
+      it.recommendationType === 'rep_progression',
+  ).length;
+
+  let trendSummary: string;
+  if (deload) {
+    trendSummary = 'Fatigue building';
+  } else if (regressionSignals >= 2) {
+    trendSummary = 'Signals mixed';
+  } else if (totalTrend >= 0.2) {
+    trendSummary = 'Volume climbing';
+  } else if (forwardCount >= 2) {
+    trendSummary = 'Performance trending up';
+  } else if (trimmed.length === 0 || trimmed.every((it) => it.recommendationType === 'hold')) {
+    trendSummary = 'Stable but not ready to progress';
+  } else {
+    trendSummary = 'Steady progress';
+  }
+
+  // --- V2: derive summary line ---
+  let summaryLine: string;
+  if (deload) {
+    summaryLine = 'Fatigue elevated — deload week recommended';
+  } else if (trimmed.length === 1) {
+    const it = trimmed[0];
+    summaryLine = `${it.exerciseName} • ${(it.mainAction ?? '').toLowerCase()}`;
+  } else if (trimmed.length > 1) {
+    summaryLine = 'Tuned suggestions ready for your next session';
+  } else {
+    summaryLine = 'No changes recommended — keep training as planned';
+  }
+
   const snap: CoachSnapshot = {
     generatedAt: now.toISOString(),
     items: trimmed,
     deload,
+    state,
+    trendSummary,
+    summaryLine,
   };
 
   // Cache locally (best-effort; failures are silent and never block UI).
