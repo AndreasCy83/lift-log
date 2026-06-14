@@ -69,7 +69,7 @@ export function recommendDeload(
     const rpeRise = k.thisWeekAvgRPE - k.lastWeekAvgRPE;
     return rpeRise >= THRESHOLDS.deload.keyLiftRpeRise && k.performanceDelta <= 0;
   });
-  if (fatiguedLifts.length >= 2) {
+  if (fatiguedLifts.length >= THRESHOLDS.deload.fatiguedKeyLiftsForTrigger) {
     triggers.push(`Rising effort on ${fatiguedLifts.length} key lifts`);
     fatiguedLifts.slice(0, 4).forEach((k) => affected.push(k.exerciseName));
   }

@@ -4,6 +4,14 @@
  *
  * Pure functions only. No storage / no React. The orchestrator in
  * coachRecommendations.ts gathers exposures and feeds them in here.
+ *
+ * V1 semantics:
+ *   - `load_progression`  → add load at the same rep target
+ *   - `rep_progression`   → keep load, add a rep (lower stakes than load+)
+ *   - `hold`              → maintain prescription (signal unclear or fatigued)
+ *   - `set_reduce`        → drop a set (volume trend up, or guardrail)
+ *   - `set_increase`      → add a set (volume trend down, guardrail allows)
+ *   - `deload_adjustment` → reserved for orchestrator/deload-aware adjustments
  */
 import type { Exercise, WorkoutSet } from '@/types/fitness';
 import { THRESHOLDS } from './coachThresholds';
@@ -18,7 +26,8 @@ export interface ExposureSummary {
 }
 
 export type ProgressionType =
-  | 'progression'
+  | 'load_progression'
+  | 'rep_progression'
   | 'hold'
   | 'set_reduce'
   | 'set_increase'
@@ -56,9 +65,7 @@ export function summarizeExposure(
       ? repsList.reduce((a, b) => a + b, 0) / repsList.length
       : 0;
 
-  const weights = working
-    .map((s) => s.weightKg ?? 0)
-    .filter((w) => w > 0);
+  const weights = working.map((s) => s.weightKg ?? 0).filter((w) => w > 0);
   const topWeightKg = weights.length > 0 ? Math.max(...weights) : null;
 
   const rpes = working
@@ -76,11 +83,8 @@ export function summarizeExposure(
   };
 }
 
-/** Round to the nearest meaningful load increment for a given current weight. */
 function roundIncrement(currentKg: number): number {
-  // Smaller increments for lighter loads, larger for heavier compound work.
   if (currentKg < 20) return 1.25;
-  if (currentKg < 60) return 2.5;
   return 2.5;
 }
 
@@ -102,10 +106,14 @@ export function recommendProgression(
   exposures: ExposureSummary[],
 ): ProgressionRecommendation | null {
   if (exposures.length === 0) return null;
+
+  // Sparse history → stay silent. Avoids loud "progression ready" calls
+  // built off a single workout.
+  if (exposures.length < THRESHOLDS.minExposuresForAnyProgression) return null;
+
   const last = exposures[0];
   const prior = exposures[1] ?? null;
 
-  // Cardio / non-weight set types: skip V1
   if (exercise.type === 'CARDIO') return null;
   if (exercise.setType !== 'WEIGHT_REPS' && exercise.setType !== 'WEIGHT_ONLY') {
     return null;
@@ -117,7 +125,7 @@ export function recommendProgression(
 
   const reasons: string[] = [];
   let type: ProgressionType = 'hold';
-  let nextSets = last.workingSets;
+  const nextSets = last.workingSets;
   let nextWeightKg = last.topWeightKg;
   let nextRepsLabel = fmtRepRange(repsMin, repsMax, last.avgReps);
   let confidence: 'low' | 'medium' | 'high' = 'low';
@@ -125,9 +133,9 @@ export function recommendProgression(
   const rpe = last.avgRPE;
   const rpeRising =
     rpe != null && prior?.avgRPE != null && rpe - prior.avgRPE >= THRESHOLDS.rpeRiseDelta;
-  const regressed =
-    !!prior && last.avgReps + 0.5 < prior.avgReps;
-  const fatigued = (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) || rpeRising || regressed;
+  const regressed = !!prior && last.avgReps + 0.5 < prior.avgReps;
+  const fatigued =
+    (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) || rpeRising || regressed;
 
   if (fatigued) {
     type = 'hold';
@@ -140,22 +148,23 @@ export function recommendProgression(
     last.avgReps >= targetTop &&
     exposures.length >= THRESHOLDS.minExposuresForLoadIncrease
   ) {
-    // Load progression
+    // Load progression — strongest signal, needs enough history
     const inc = roundIncrement(last.topWeightKg);
     nextWeightKg = Math.round((last.topWeightKg + inc) * 100) / 100;
     nextRepsLabel = fmtRepRange(repsMin, repsMax, last.avgReps);
-    type = 'progression';
+    type = 'load_progression';
     reasons.push(`Hit top of rep range (${Math.round(last.avgReps)}× ≥ ${targetTop})`);
-    confidence = exposures.length >= 3 ? 'high' : 'medium';
-  } else if (last.avgReps < targetTop) {
-    // Rep progression — same load, push reps
-    type = 'progression';
+    confidence = exposures.length >= 4 ? 'high' : 'medium';
+  } else if (last.avgReps < targetTop && prior && last.avgReps >= prior.avgReps - 0.5) {
+    // Rep progression — same load, push reps. Lower-stakes nudge.
+    // Require at least a stable/improving rep trend vs prior session.
+    type = 'rep_progression';
     nextWeightKg = last.topWeightKg;
     nextRepsLabel = `${Math.min(targetTop, Math.round(last.avgReps + 1))}${
       repsMax ? ` / target ${targetTop}` : ''
     }`;
     reasons.push('Add a rep at the same load next session');
-    confidence = 'medium';
+    confidence = 'low';
   } else {
     type = 'hold';
     reasons.push('Maintain current prescription');
@@ -179,7 +188,13 @@ export function recommendProgression(
   };
 }
 
-/** Apply weekly volume trend & guardrail to a progression rec in-place. */
+/**
+ * Apply weekly volume trend & guardrail to a progression rec in-place.
+ *
+ * IMPORTANT: when this materially changes set count, also rewrite the
+ * recommendationType so downstream ranking/UI shows the real intent
+ * (e.g. don't keep calling it "load_progression" when we just cut a set).
+ */
 export function applyVolumeTrend(
   rec: ProgressionRecommendation,
   trendPct: number,
@@ -189,9 +204,14 @@ export function applyVolumeTrend(
     // Weekly volume climbing — reduce sets next session
     if (rec.nextSets > 1) {
       rec.nextSets = rec.currentSets - 1;
-      rec.recommendationType =
-        rec.recommendationType === 'progression' ? 'progression' : 'set_reduce';
-      rec.reasons.push(`Weekly volume up >${Math.round(THRESHOLDS.volumeTrendPct * 100)}%`);
+      // Set reduction supersedes any forward-progression label so the user
+      // doesn't see "progression ready" while we're actually backing off.
+      rec.recommendationType = 'set_reduce';
+      // Cancel a load bump — we're cutting volume, not adding stress.
+      rec.nextWeightKg = rec.currentWeightKg;
+      rec.reasons.push(
+        `Weekly volume up >${Math.round(THRESHOLDS.volumeTrendPct * 100)}% — drop a set`,
+      );
     }
   } else if (trendPct <= -THRESHOLDS.volumeTrendPct) {
     if (guardrailHigh) {
@@ -199,9 +219,17 @@ export function applyVolumeTrend(
       rec.reasons.push('Set increase blocked — muscle already heavily loaded');
     } else {
       rec.nextSets = rec.currentSets + 1;
-      rec.recommendationType =
-        rec.recommendationType === 'progression' ? 'progression' : 'set_increase';
-      rec.reasons.push(`Weekly volume down >${Math.round(THRESHOLDS.volumeTrendPct * 100)}%`);
+      // Only relabel if we weren't already doing a load bump. A real
+      // load_progression is a stronger signal and should stay primary.
+      if (
+        rec.recommendationType !== 'load_progression' &&
+        rec.recommendationType !== 'rep_progression'
+      ) {
+        rec.recommendationType = 'set_increase';
+      }
+      rec.reasons.push(
+        `Weekly volume down >${Math.round(THRESHOLDS.volumeTrendPct * 100)}% — add a set`,
+      );
     }
   }
 }

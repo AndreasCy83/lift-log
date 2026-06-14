@@ -22,7 +22,8 @@ interface Props {
 }
 
 const TYPE_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
-  progression: 'Progression ready',
+  load_progression: 'Add load',
+  rep_progression: 'Add a rep',
   hold: 'Hold load',
   set_reduce: 'Reduce sets',
   set_increase: 'Add a set',

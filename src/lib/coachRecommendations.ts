@@ -216,22 +216,22 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     );
   });
 
-  // Rank: progression > set_increase > set_reduce > hold; tie-break by confidence
+  // Rank: load_progression > rep_progression > set_increase > set_reduce
+  //       > deload_adjustment > hold; tie-break by confidence
   const rank: Record<string, number> = {
-    progression: 4,
-    set_increase: 3,
-    set_reduce: 2,
-    deload_adjustment: 1,
-    hold: 0,
+    load_progression: 6,
+    rep_progression: 5,
+    set_increase: 4,
+    set_reduce: 3,
+    deload_adjustment: 2,
+    hold: 1,
   };
   const confRank = { high: 3, medium: 2, low: 1 } as const;
   meaningful.sort((a, b) => {
-    const r = rank[b.recommendationType] - rank[a.recommendationType];
+    const r = (rank[b.recommendationType] ?? 0) - (rank[a.recommendationType] ?? 0);
     if (r !== 0) return r;
     return confRank[b.confidence] - confRank[a.confidence];
   });
-
-  const trimmed = meaningful.slice(0, THRESHOLDS.maxRecommendations);
 
   // --- Build deload snapshot ---
   const fatigue = computeMuscleFatigue(now);
@@ -271,6 +271,23 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     [snapshot(thisWeek), snapshot(lastWeek), snapshot(twoWeeksAgo)],
     keyLifts,
   );
+
+  // --- Final reconciliation ---
+  // Deload is a high-priority override. When active, we MUST NOT surface
+  // ordinary forward-progression items (load+, rep+, set_increase) in the
+  // same snapshot — that would contradict the deload guidance. We keep only
+  // deload-safe items: set_reduce, hold (with real reasons), or items the
+  // engine explicitly marks as deload_adjustment.
+  const DELOAD_SAFE = new Set<ProgressionRecommendation['recommendationType']>([
+    'set_reduce',
+    'hold',
+    'deload_adjustment',
+  ]);
+  const reconciled = deload
+    ? meaningful.filter((it) => DELOAD_SAFE.has(it.recommendationType))
+    : meaningful;
+
+  const trimmed = reconciled.slice(0, THRESHOLDS.maxRecommendations);
 
   const snap: CoachSnapshot = {
     generatedAt: now.toISOString(),
