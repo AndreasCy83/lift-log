@@ -36,10 +36,18 @@ import { THRESHOLDS } from './coachThresholds';
 
 export type { ProgressionRecommendation, DeloadRecommendation };
 
+export type CoachState = 'train' | 'adapt' | 'recover';
+
 export interface CoachSnapshot {
   generatedAt: string;
   items: ProgressionRecommendation[];
   deload: DeloadRecommendation | null;
+  /** V2: top-level interpreted training state derived from final snapshot. */
+  state: CoachState;
+  /** V2: short user-facing trend summary string. */
+  trendSummary: string;
+  /** V2: one-line summary the card can render as-is. */
+  summaryLine: string;
 }
 
 const STORAGE_KEY = 'gym-coach-recs-v1';
