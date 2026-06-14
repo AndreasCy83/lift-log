@@ -47,6 +47,10 @@ export interface ProgressionRecommendation {
   reasons: string[];
   guardrailBlocked: boolean;
   createdAt: string;
+  /** V2: short user-facing action label (set by orchestrator). */
+  mainAction?: string;
+  /** V2: 1–3 concise reasons surfaced in the UI (set by orchestrator). */
+  topReasons?: string[];
 }
 
 /** Build an exposure summary from a single workout's working sets for one exercise. */
