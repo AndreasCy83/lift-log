@@ -219,7 +219,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     badgeText = 'Deload suggested';
     badgeClass = 'bg-amber-500/20 text-amber-200';
   } else if (itemCount === 1) {
-    const it = snap.items[0];
+    const it = visibleItems[0];
     summaryLine = `${it.exerciseName} • ${TYPE_LABEL[it.recommendationType].toLowerCase()}`;
     badgeText = 'Next session';
     badgeClass = 'bg-primary/15 text-primary';
