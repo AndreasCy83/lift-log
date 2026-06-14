@@ -192,7 +192,15 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   }, [refreshKey]);
 
   const hasDeload = !!snap.deload;
-  const itemCount = snap.items.length;
+  const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
+    'set_reduce',
+    'hold',
+    'deload_adjustment',
+  ]);
+  const visibleItems = hasDeload
+    ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
+    : snap.items;
+  const itemCount = visibleItems.length;
 
   if (!hasDeload && itemCount === 0) return null;
 
