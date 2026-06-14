@@ -8,11 +8,12 @@
  *  - otherwise              → neutral/green-accent progression summary
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles } from 'lucide-react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
   type DeloadRecommendation,
+  type CoachState,
 } from '@/lib/coachRecommendations';
 import { getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
@@ -116,22 +117,31 @@ function ExerciseRow({
         </div>
       </div>
 
-      {rec.reasons.length > 0 && (
-        <div className="mt-1.5 flex flex-wrap gap-1">
-          {rec.reasons.map((r, i) => (
-            <span
-              key={i}
-              className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium ${
-                rec.guardrailBlocked
-                  ? 'bg-amber-500/15 text-amber-300'
-                  : 'bg-primary/10 text-primary/90'
-              }`}
-            >
-              {r}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="mt-1.5 flex flex-wrap items-center gap-1">
+        <span
+          className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wide ${
+            rec.confidence === 'high'
+              ? 'bg-emerald-500/15 text-emerald-300'
+              : rec.confidence === 'medium'
+                ? 'bg-primary/15 text-primary/90'
+                : 'bg-muted/40 text-muted-foreground'
+          }`}
+        >
+          {rec.confidence} confidence
+        </span>
+        {(rec.topReasons ?? rec.reasons).slice(0, 3).map((r, i) => (
+          <span
+            key={i}
+            className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium ${
+              rec.guardrailBlocked
+                ? 'bg-amber-500/15 text-amber-300'
+                : 'bg-primary/10 text-primary/90'
+            }`}
+          >
+            {r}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -211,23 +221,31 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     <Brain className="h-3.5 w-3.5 text-primary shrink-0" />
   );
 
-  let summaryLine: string;
-  let badgeText: string;
-  let badgeClass: string;
-  if (hasDeload) {
-    summaryLine = 'Fatigue elevated — deload week recommended';
-    badgeText = 'Deload suggested';
-    badgeClass = 'bg-amber-500/20 text-amber-200';
-  } else if (itemCount === 1) {
-    const it = visibleItems[0];
-    summaryLine = `${it.exerciseName} • ${TYPE_LABEL[it.recommendationType].toLowerCase()}`;
-    badgeText = 'Next session';
-    badgeClass = 'bg-primary/15 text-primary';
-  } else {
-    summaryLine = 'Tuned suggestions ready for your next session';
-    badgeText = `${itemCount} adjustments`;
-    badgeClass = 'bg-primary/15 text-primary';
-  }
+  // V2: top-level coach state badge derived in orchestrator.
+  const STATE_LABEL: Record<CoachState, string> = {
+    train: 'Train',
+    adapt: 'Adapt',
+    recover: 'Recover',
+  };
+  const STATE_CLASS: Record<CoachState, string> = {
+    train: 'bg-emerald-500/15 text-emerald-300',
+    adapt: 'bg-primary/15 text-primary',
+    recover: 'bg-amber-500/20 text-amber-200',
+  };
+  const stateBadgeText = STATE_LABEL[snap.state];
+  const stateBadgeClass = STATE_CLASS[snap.state];
+
+  // Prefer the snapshot-provided summary line; fall back for safety.
+  const summaryLine =
+    snap.summaryLine ||
+    (hasDeload
+      ? 'Fatigue elevated — deload week recommended'
+      : itemCount === 1
+        ? `${visibleItems[0].exerciseName} • ${TYPE_LABEL[
+            visibleItems[0].recommendationType
+          ].toLowerCase()}`
+        : 'Tuned suggestions ready for your next session');
+  const trendSummary = snap.trendSummary;
 
   return (
     <div
@@ -242,9 +260,9 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
           <h3 className="font-display text-sm font-semibold truncate">Coach</h3>
         </div>
         <span
-          className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${badgeClass}`}
+          className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${stateBadgeClass}`}
         >
-          {badgeText}
+          {stateBadgeText}
         </span>
       </div>
 
@@ -257,6 +275,18 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
         />
         <p className="truncate text-[11.5px] text-foreground/90">{summaryLine}</p>
       </div>
+
+      {/* V2: trend hint */}
+      {trendSummary && (
+        <div className="mt-0.5 flex items-center gap-1 min-w-0">
+          <TrendingUp
+            className={`h-2.5 w-2.5 shrink-0 ${
+              isWarning ? 'text-amber-400/70' : 'text-muted-foreground'
+            }`}
+          />
+          <p className="truncate text-[10px] text-muted-foreground">{trendSummary}</p>
+        </div>
+      )}
 
       {/* Expanded body */}
       <div
