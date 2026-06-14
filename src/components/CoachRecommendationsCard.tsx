@@ -260,9 +260,9 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
           <h3 className="font-display text-sm font-semibold truncate">Coach</h3>
         </div>
         <span
-          className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${badgeClass}`}
+          className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${stateBadgeClass}`}
         >
-          {badgeText}
+          {stateBadgeText}
         </span>
       </div>
 
@@ -275,6 +275,18 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
         />
         <p className="truncate text-[11.5px] text-foreground/90">{summaryLine}</p>
       </div>
+
+      {/* V2: trend hint */}
+      {trendSummary && (
+        <div className="mt-0.5 flex items-center gap-1 min-w-0">
+          <TrendingUp
+            className={`h-2.5 w-2.5 shrink-0 ${
+              isWarning ? 'text-amber-400/70' : 'text-muted-foreground'
+            }`}
+          />
+          <p className="truncate text-[10px] text-muted-foreground">{trendSummary}</p>
+        </div>
+      )}
 
       {/* Expanded body */}
       <div
