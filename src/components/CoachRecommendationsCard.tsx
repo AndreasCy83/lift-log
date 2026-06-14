@@ -192,7 +192,15 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   }, [refreshKey]);
 
   const hasDeload = !!snap.deload;
-  const itemCount = snap.items.length;
+  const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
+    'set_reduce',
+    'hold',
+    'deload_adjustment',
+  ]);
+  const visibleItems = hasDeload
+    ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
+    : snap.items;
+  const itemCount = visibleItems.length;
 
   if (!hasDeload && itemCount === 0) return null;
 
@@ -211,7 +219,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     badgeText = 'Deload suggested';
     badgeClass = 'bg-amber-500/20 text-amber-200';
   } else if (itemCount === 1) {
-    const it = snap.items[0];
+    const it = visibleItems[0];
     summaryLine = `${it.exerciseName} • ${TYPE_LABEL[it.recommendationType].toLowerCase()}`;
     badgeText = 'Next session';
     badgeClass = 'bg-primary/15 text-primary';
@@ -269,7 +277,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   Next session adjustments
                 </div>
               )}
-              {snap.items.map((rec) => (
+              {visibleItems.map((rec) => (
                 <ExerciseRow key={rec.exerciseId} rec={rec} unit={unit} />
               ))}
             </div>
