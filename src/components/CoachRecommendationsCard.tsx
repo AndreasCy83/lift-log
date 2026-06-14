@@ -117,22 +117,31 @@ function ExerciseRow({
         </div>
       </div>
 
-      {rec.reasons.length > 0 && (
-        <div className="mt-1.5 flex flex-wrap gap-1">
-          {rec.reasons.map((r, i) => (
-            <span
-              key={i}
-              className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium ${
-                rec.guardrailBlocked
-                  ? 'bg-amber-500/15 text-amber-300'
-                  : 'bg-primary/10 text-primary/90'
-              }`}
-            >
-              {r}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="mt-1.5 flex flex-wrap items-center gap-1">
+        <span
+          className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wide ${
+            rec.confidence === 'high'
+              ? 'bg-emerald-500/15 text-emerald-300'
+              : rec.confidence === 'medium'
+                ? 'bg-primary/15 text-primary/90'
+                : 'bg-muted/40 text-muted-foreground'
+          }`}
+        >
+          {rec.confidence} confidence
+        </span>
+        {(rec.topReasons ?? rec.reasons).slice(0, 3).map((r, i) => (
+          <span
+            key={i}
+            className={`rounded-full px-1.5 py-[1px] text-[9px] font-medium ${
+              rec.guardrailBlocked
+                ? 'bg-amber-500/15 text-amber-300'
+                : 'bg-primary/10 text-primary/90'
+            }`}
+          >
+            {r}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
