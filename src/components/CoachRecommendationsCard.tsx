@@ -221,23 +221,31 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     <Brain className="h-3.5 w-3.5 text-primary shrink-0" />
   );
 
-  let summaryLine: string;
-  let badgeText: string;
-  let badgeClass: string;
-  if (hasDeload) {
-    summaryLine = 'Fatigue elevated — deload week recommended';
-    badgeText = 'Deload suggested';
-    badgeClass = 'bg-amber-500/20 text-amber-200';
-  } else if (itemCount === 1) {
-    const it = visibleItems[0];
-    summaryLine = `${it.exerciseName} • ${TYPE_LABEL[it.recommendationType].toLowerCase()}`;
-    badgeText = 'Next session';
-    badgeClass = 'bg-primary/15 text-primary';
-  } else {
-    summaryLine = 'Tuned suggestions ready for your next session';
-    badgeText = `${itemCount} adjustments`;
-    badgeClass = 'bg-primary/15 text-primary';
-  }
+  // V2: top-level coach state badge derived in orchestrator.
+  const STATE_LABEL: Record<CoachState, string> = {
+    train: 'Train',
+    adapt: 'Adapt',
+    recover: 'Recover',
+  };
+  const STATE_CLASS: Record<CoachState, string> = {
+    train: 'bg-emerald-500/15 text-emerald-300',
+    adapt: 'bg-primary/15 text-primary',
+    recover: 'bg-amber-500/20 text-amber-200',
+  };
+  const stateBadgeText = STATE_LABEL[snap.state];
+  const stateBadgeClass = STATE_CLASS[snap.state];
+
+  // Prefer the snapshot-provided summary line; fall back for safety.
+  const summaryLine =
+    snap.summaryLine ||
+    (hasDeload
+      ? 'Fatigue elevated — deload week recommended'
+      : itemCount === 1
+        ? `${visibleItems[0].exerciseName} • ${TYPE_LABEL[
+            visibleItems[0].recommendationType
+          ].toLowerCase()}`
+        : 'Tuned suggestions ready for your next session');
+  const trendSummary = snap.trendSummary;
 
   return (
     <div
