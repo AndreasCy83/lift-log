@@ -212,7 +212,14 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     : snap.items;
   const itemCount = visibleItems.length;
 
-  if (!hasDeload && itemCount === 0) return null;
+  // V3: also render the card for behavior-only states (comeback / inactive),
+  // so the user gets calm, supportive guidance even with no item-level signal.
+  const hasBehaviorMessage =
+    snap.comebackMode ||
+    snap.adherenceStatus === 'returning' ||
+    snap.adherenceStatus === 'inactive';
+
+  if (!hasDeload && itemCount === 0 && !hasBehaviorMessage) return null;
 
   const isWarning = hasDeload;
   const titleIcon = isWarning ? (
@@ -299,6 +306,23 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
       >
         <div className="space-y-2 pt-2">
           {hasDeload && snap.deload && <DeloadBlock deload={snap.deload} />}
+
+          {/* V3: weekly behavior context — calm, supportive, one line. */}
+          {snap.weeklyBehaviorSummary && (
+            <div className="rounded-md border border-border/50 bg-background/30 px-2 py-1.5">
+              <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                This week
+              </div>
+              <p className="text-[11px] text-foreground/85">
+                {snap.weeklyBehaviorSummary}
+              </p>
+              {snap.comebackMode && (
+                <p className="mt-0.5 text-[10px] text-muted-foreground">
+                  Ease back in — no need to chase prior numbers today.
+                </p>
+              )}
+            </div>
+          )}
 
           {itemCount > 0 && (
             <div className="space-y-1.5">
