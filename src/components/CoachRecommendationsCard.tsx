@@ -212,7 +212,14 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     : snap.items;
   const itemCount = visibleItems.length;
 
-  if (!hasDeload && itemCount === 0) return null;
+  // V3: also render the card for behavior-only states (comeback / inactive),
+  // so the user gets calm, supportive guidance even with no item-level signal.
+  const hasBehaviorMessage =
+    snap.comebackMode ||
+    snap.adherenceStatus === 'returning' ||
+    snap.adherenceStatus === 'inactive';
+
+  if (!hasDeload && itemCount === 0 && !hasBehaviorMessage) return null;
 
   const isWarning = hasDeload;
   const titleIcon = isWarning ? (
