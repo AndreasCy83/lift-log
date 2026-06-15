@@ -223,6 +223,7 @@ function DeloadBlock({ deload }: { deload: DeloadRecommendation }) {
 
 export default function CoachRecommendationsCard({ refreshKey }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const [applyTick, setApplyTick] = useState(0);
   const snap = useMemo(() => computeCoachRecommendations(), [refreshKey]);
   const unit = getSettings().weightUnit;
 
@@ -230,6 +231,40 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   useEffect(() => {
     setExpanded(false);
   }, [refreshKey]);
+
+  // applyTick is read so React recomputes appliedMap on apply.
+  const appliedMap = useMemo(() => {
+    const map: Record<string, boolean> = {};
+    for (const it of snap.items) {
+      map[recommendationKey(it)] = isRecommendationApplied(it);
+    }
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snap, applyTick]);
+
+  const handleApply = useCallback((rec: ProgressionRecommendation) => {
+    const outcome = applyCoachRecommendation(rec);
+    if (outcome.kind === 'needs_confirm') {
+      const ok = typeof window !== 'undefined'
+        ? window.confirm(
+            `Replace your planned values for ${outcome.exerciseName} with Coach's recommendation?`,
+          )
+        : true;
+      if (!ok) return;
+      const forced = applyCoachRecommendation(rec, { force: true });
+      if (forced.kind === 'applied') {
+        toast({ description: `Applied to next ${forced.exerciseName} session` });
+      }
+    } else if (outcome.kind === 'applied') {
+      toast({ description: `Applied to next ${outcome.exerciseName} session` });
+    } else if (outcome.kind === 'pending') {
+      toast({
+        description: `Saved for the next time you do ${outcome.exerciseName}`,
+      });
+    }
+    setApplyTick((n) => n + 1);
+  }, []);
+
 
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
