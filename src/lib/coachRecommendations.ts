@@ -326,7 +326,8 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
   if (deload) {
     state = 'recover';
   } else if (trimmed.length === 0) {
-    state = 'train';
+    // No actionable signal yet → neutral 'adapt', not an encouragement to push.
+    state = 'adapt';
   } else {
     const forward = trimmed.filter(
       (it) =>
