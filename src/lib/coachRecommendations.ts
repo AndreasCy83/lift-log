@@ -389,10 +389,17 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     trendSummary = 'Steady progress';
   }
 
-  // --- V2: derive summary line ---
+  // --- V3: adherence / behavior layer ---
+  const adherence = computeAdherence(now, workouts, wes, sets);
+
+  // --- V2: derive summary line (V3-aware) ---
   let summaryLine: string;
   if (deload) {
     summaryLine = 'Fatigue elevated — deload week recommended';
+  } else if (adherence.comebackMode) {
+    summaryLine = 'Welcome back — ease in and rebuild momentum';
+  } else if (adherence.adherenceStatus === 'inactive') {
+    summaryLine = 'Ready when you are — start light to ease back in';
   } else if (trimmed.length === 1) {
     const it = trimmed[0];
     summaryLine = `${it.exerciseName} • ${(it.mainAction ?? '').toLowerCase()}`;
@@ -402,6 +409,28 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     summaryLine = 'No changes recommended — keep training as planned';
   }
 
+  // V3: behavior-aware reinterpretation of top-level state.
+  // Returning users or inconsistent weeks should never be told to "Train" hard.
+  if (
+    state === 'train' &&
+    (adherence.adherenceStatus === 'returning' ||
+      adherence.adherenceStatus === 'inactive' ||
+      adherence.adherenceStatus === 'slipping')
+  ) {
+    state = 'adapt';
+  }
+
+  // V3: behavior context can replace the trend hint when more informative.
+  if (!deload) {
+    if (adherence.comebackMode) {
+      trendSummary = 'Back after a short gap';
+    } else if (adherence.adherenceStatus === 'inactive') {
+      trendSummary = 'Rebuilding from a pause';
+    } else if (adherence.adherenceStatus === 'slipping') {
+      trendSummary = 'Consistency slipped this week';
+    }
+  }
+
   const snap: CoachSnapshot = {
     generatedAt: now.toISOString(),
     items: trimmed,
@@ -409,6 +438,10 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     state,
     trendSummary,
     summaryLine,
+    adherenceStatus: adherence.adherenceStatus,
+    consistencyState: adherence.consistencyState,
+    weeklyBehaviorSummary: adherence.weeklyBehaviorSummary,
+    comebackMode: adherence.comebackMode,
   };
 
   // Cache locally (best-effort; failures are silent and never block UI).
