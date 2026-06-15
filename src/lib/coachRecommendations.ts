@@ -33,8 +33,14 @@ import {
   type KeyLiftRPE,
 } from './fatigueEngine';
 import { THRESHOLDS } from './coachThresholds';
+import {
+  computeAdherence,
+  type AdherenceStatus,
+  type ConsistencyState,
+} from './adherenceEngine';
 
 export type { ProgressionRecommendation, DeloadRecommendation };
+export type { AdherenceStatus, ConsistencyState };
 
 export type CoachState = 'train' | 'adapt' | 'recover';
 
@@ -48,6 +54,11 @@ export interface CoachSnapshot {
   trendSummary: string;
   /** V2: one-line summary the card can render as-is. */
   summaryLine: string;
+  /** V3: adherence / behavior layer. */
+  adherenceStatus: AdherenceStatus;
+  consistencyState: ConsistencyState;
+  weeklyBehaviorSummary: string;
+  comebackMode: boolean;
 }
 
 const STORAGE_KEY = 'gym-coach-recs-v1';
