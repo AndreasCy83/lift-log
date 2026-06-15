@@ -7,8 +7,8 @@
  *  - deload present         → amber/warning emphasis, deload summary first
  *  - otherwise              → neutral/green-accent progression summary
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
@@ -17,6 +17,12 @@ import {
 } from '@/lib/coachRecommendations';
 import { getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
+import {
+  applyCoachRecommendation,
+  isRecommendationApplied,
+  recommendationKey,
+} from '@/lib/coachApply';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   refreshKey?: number;
@@ -40,9 +46,13 @@ function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
 function ExerciseRow({
   rec,
   unit,
+  applied,
+  onApply,
 }: {
   rec: ProgressionRecommendation;
   unit: 'kg' | 'lbs';
+  applied: boolean;
+  onApply: (rec: ProgressionRecommendation) => void;
 }) {
   const changed = (a: string | number | null, b: string | number | null) =>
     String(a) !== String(b);
@@ -60,11 +70,31 @@ function ExerciseRow({
           <div className="truncate text-[12px] font-semibold text-foreground">
             {rec.exerciseName}
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-wide text-primary/80">
-            {TYPE_LABEL[rec.recommendationType]}
+          <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
+              {TYPE_LABEL[rec.recommendationType]}
+            </span>
+            {applied ? (
+              <span
+                className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 py-[1px] text-[9px] font-medium text-emerald-300"
+                aria-label="Applied to next session"
+              >
+                <Check className="h-2.5 w-2.5" />
+                Applied
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onApply(rec); }}
+                className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
+              >
+                Apply
+              </button>
+            )}
           </div>
         </div>
       </div>
+
 
       <div className="mt-1.5 grid grid-cols-3 gap-1.5 text-[10px]">
         <div className="rounded bg-secondary/40 px-1.5 py-1">
@@ -193,6 +223,7 @@ function DeloadBlock({ deload }: { deload: DeloadRecommendation }) {
 
 export default function CoachRecommendationsCard({ refreshKey }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const [applyTick, setApplyTick] = useState(0);
   const snap = useMemo(() => computeCoachRecommendations(), [refreshKey]);
   const unit = getSettings().weightUnit;
 
@@ -200,6 +231,40 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   useEffect(() => {
     setExpanded(false);
   }, [refreshKey]);
+
+  // applyTick is read so React recomputes appliedMap on apply.
+  const appliedMap = useMemo(() => {
+    const map: Record<string, boolean> = {};
+    for (const it of snap.items) {
+      map[recommendationKey(it)] = isRecommendationApplied(it);
+    }
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snap, applyTick]);
+
+  const handleApply = useCallback((rec: ProgressionRecommendation) => {
+    const outcome = applyCoachRecommendation(rec);
+    if (outcome.kind === 'needs_confirm') {
+      const ok = typeof window !== 'undefined'
+        ? window.confirm(
+            `Replace your planned values for ${outcome.exerciseName} with Coach's recommendation?`,
+          )
+        : true;
+      if (!ok) return;
+      const forced = applyCoachRecommendation(rec, { force: true });
+      if (forced.kind === 'applied') {
+        toast({ description: `Applied to next ${forced.exerciseName} session` });
+      }
+    } else if (outcome.kind === 'applied') {
+      toast({ description: `Applied to next ${outcome.exerciseName} session` });
+    } else if (outcome.kind === 'pending') {
+      toast({
+        description: `Saved for the next time you do ${outcome.exerciseName}`,
+      });
+    }
+    setApplyTick((n) => n + 1);
+  }, []);
+
 
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
@@ -332,7 +397,14 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                 </div>
               )}
               {visibleItems.map((rec) => (
-                <ExerciseRow key={rec.exerciseId} rec={rec} unit={unit} />
+                <ExerciseRow
+                  key={rec.exerciseId}
+                  rec={rec}
+                  unit={unit}
+                  applied={!!appliedMap[recommendationKey(rec)]}
+                  onApply={handleApply}
+                />
+
               ))}
             </div>
           )}
