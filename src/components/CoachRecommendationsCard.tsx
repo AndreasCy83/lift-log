@@ -7,8 +7,8 @@
  *  - deload present         → amber/warning emphasis, deload summary first
  *  - otherwise              → neutral/green-accent progression summary
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
@@ -17,6 +17,12 @@ import {
 } from '@/lib/coachRecommendations';
 import { getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
+import {
+  applyCoachRecommendation,
+  isRecommendationApplied,
+  recommendationKey,
+} from '@/lib/coachApply';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   refreshKey?: number;
