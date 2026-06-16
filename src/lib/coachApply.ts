@@ -225,8 +225,9 @@ function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
     appliedAt: new Date().toISOString(),
   };
 }
+export { buildPrescription };
 
-function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
+export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
   const existing = getSetsForWorkoutExercise(workoutExerciseId);
   // Preserve completed and warmup sets; only manage normal incomplete sets.
   const keepers = existing.filter(
