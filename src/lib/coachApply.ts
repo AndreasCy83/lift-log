@@ -34,6 +34,7 @@ import {
 
 const APPLIED_KEY = 'gym-coach-applied-recs-v1';
 const PENDING_KEY = 'gym-coach-pending-overrides-v1';
+const WE_APPLIED_KEY = 'gym-coach-we-applied-v1';
 
 export interface CoachPrescription {
   exerciseId: string;
