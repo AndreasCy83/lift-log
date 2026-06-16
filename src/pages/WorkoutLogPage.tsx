@@ -75,6 +75,7 @@ import {
   isWECoachApplied,
   clearCoachAppliedToWE,
   getCoachAppliedToWE,
+  markCoachAppliedToWE,
 } from '@/lib/coachApply';
 import { Sparkles } from 'lucide-react';
 
