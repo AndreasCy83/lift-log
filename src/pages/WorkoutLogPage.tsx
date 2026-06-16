@@ -818,7 +818,25 @@ export default function WorkoutLogPage() {
               <div className="mb-2">
                 {/* Row 1: exercise title only — full width */}
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="w-full text-left">
-                  <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
+                    {isWECoachApplied(we.id) && (
+                      <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium px-1.5 py-0.5">
+                        <Sparkles className="h-2.5 w-2.5" />
+                        Coach
+                      </span>
+                    )}
+                  </div>
+                  {isWECoachApplied(we.id) && (() => {
+                    const p = getCoachAppliedToWE(we.id);
+                    if (!p) return null;
+                    return (
+                      <div className="text-[10px] text-muted-foreground mt-0.5 truncate">
+                        Coach: {p.sets} × {p.repInfo}
+                        {p.weightKg != null ? ` @ ${p.weightKg} kg` : ''}
+                      </div>
+                    );
+                  })()}
                 </button>
                 {/* Row 2: action buttons left, muscle group right */}
                 <div className="flex items-center justify-between gap-2 mt-1">
@@ -846,6 +864,13 @@ export default function WorkoutLogPage() {
                       data-tutorial={isTutorialTarget ? 'exercise-stats' : undefined}
                     >
                       <BarChart3 className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
+                      onClick={() => setCoachDialogTarget({ weId: we.id, exerciseId: we.exerciseId, exerciseName: getExName(we.exerciseId) })}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${isWECoachApplied(we.id) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title="Coach recommendation"
+                    >
+                      <Sparkles className="h-[16px] w-[16px]" />
                     </button>
                     <button
                       onClick={async () => {
