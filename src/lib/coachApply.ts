@@ -306,6 +306,7 @@ export function applyCoachRecommendation(
   }
 
   writePrescriptionToWE(target.workoutExerciseId, p);
+  markWEApplied(target.workoutExerciseId, rec.exerciseId, p);
   // If we just landed on a real session, drop any stale pending override.
   clearPendingCoachOverride(rec.exerciseId);
   markApplied(rec);
