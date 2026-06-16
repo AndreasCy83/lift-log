@@ -67,6 +67,16 @@ import { formatHMS } from '@/lib/workoutSession';
 import LeaveWorkoutDialog, { type LeaveAction } from '@/components/LeaveWorkoutDialog';
 import { REQUEST_LEAVE_WORKOUT_EVENT } from '@/components/BottomNav';
 import WorkoutCelebrationModal from '@/components/workout/WorkoutCelebrationModal';
+import CoachExerciseDialog from '@/components/CoachExerciseDialog';
+import {
+  getPendingCoachOverride,
+  clearPendingCoachOverride,
+  writePrescriptionToWE,
+  isWECoachApplied,
+  clearCoachAppliedToWE,
+  getCoachAppliedToWE,
+} from '@/lib/coachApply';
+import { Sparkles } from 'lucide-react';
 
 // Tutorial steps are built inside the component to read from i18n.
 
