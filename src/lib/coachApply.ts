@@ -139,6 +139,7 @@ function markWEApplied(workoutExerciseId: string, exerciseId: string, p: CoachPr
   m[workoutExerciseId] = { exerciseId, prescription: p };
   writeWEApplied(m);
 }
+export { markWEApplied as markCoachAppliedToWE };
 
 /* ----------------------------- rep parsing ------------------------------- */
 
