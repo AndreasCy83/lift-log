@@ -1293,7 +1293,9 @@ export default function WorkoutLogPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('workout.repeatDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('workout.repeatDialog.description')}
+              {repeatTarget && isWECoachApplied(repeatTarget.weId)
+                ? 'Coach values are currently active for this exercise. Repeat Last will replace them with your previous session. Continue?'
+                : t('workout.repeatDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
