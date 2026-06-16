@@ -32,18 +32,18 @@ function findRec(exerciseId: string): ProgressionRecommendation | null {
   return snap.items.find((r) => r.exerciseId === exerciseId) ?? null;
 }
 
-function fmtWeight(kg: number | null, unit: 'kg' | 'lb'): string {
+function fmtWeight(kg: number | null, unit: WeightUnitSetting): string {
   if (kg == null) return '—';
-  const v = toDisplayWeight(kg, unit);
+  const v = toDisplayWeight(kg, unit) ?? 0;
   return `${v.toFixed(1)} ${weightUnitLabel(unit)}`;
 }
 
-function deltaLabel(curr: number | null, next: number | null, unit: 'kg' | 'lb') {
+function deltaLabel(curr: number | null, next: number | null, unit: WeightUnitSetting) {
   if (curr == null || next == null) return null;
   const d = next - curr;
   if (Math.abs(d) < 0.05) return null;
   const sign = d > 0 ? '+' : '−';
-  const abs = Math.abs(toDisplayWeight(Math.abs(d), unit));
+  const abs = toDisplayWeight(Math.abs(d), unit) ?? 0;
   return `${sign}${abs.toFixed(1)} ${weightUnitLabel(unit)}`;
 }
 
