@@ -293,17 +293,8 @@ export default function WorkoutLogPage() {
 
       const pending = getPendingCoachOverride(exerciseId);
       if (pending) {
-        // Seed an empty set first so writePrescriptionToWE has something to edit
-        // (it preserves completed/warmup sets, but here there are none).
         writePrescriptionToWE(we.id, pending);
-        // Mark this WE as Coach-applied and clear the pending override.
-        // We re-use the internal marker by going through coachApply via the
-        // exposed helpers; the prescription is already written above.
-        try {
-          const map = JSON.parse(localStorage.getItem('gym-coach-we-applied-v1') ?? '{}');
-          map[we.id] = { exerciseId, prescription: pending };
-          localStorage.setItem('gym-coach-we-applied-v1', JSON.stringify(map));
-        } catch { /* ignore */ }
+        markCoachAppliedToWE(we.id, exerciseId, pending);
         clearPendingCoachOverride(exerciseId);
         return;
       }
