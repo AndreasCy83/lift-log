@@ -322,6 +322,7 @@ export default function WorkoutLogPage() {
       RestTimerNative.stopTimer().catch(() => {});
     }
     clearAllTimersForExercise(weId);
+    clearCoachAppliedToWE(weId);
     removeWorkoutExercise(weId);
     refresh();
   };
