@@ -107,6 +107,39 @@ export function clearPendingCoachOverride(exerciseId: string) {
   if (m[exerciseId]) { delete m[exerciseId]; writePending(m); }
 }
 
+/* --------------------- per-WorkoutExercise applied state --------------------- */
+
+interface WEAppliedEntry {
+  exerciseId: string;
+  prescription: CoachPrescription;
+}
+function readWEApplied(): Record<string, WEAppliedEntry> {
+  try {
+    const raw = localStorage.getItem(WE_APPLIED_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, WEAppliedEntry>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeWEApplied(map: Record<string, WEAppliedEntry>) {
+  try { localStorage.setItem(WE_APPLIED_KEY, JSON.stringify(map)); } catch { /* ignore */ }
+}
+export function getCoachAppliedToWE(workoutExerciseId: string): CoachPrescription | null {
+  return readWEApplied()[workoutExerciseId]?.prescription ?? null;
+}
+export function isWECoachApplied(workoutExerciseId: string): boolean {
+  return !!readWEApplied()[workoutExerciseId];
+}
+export function clearCoachAppliedToWE(workoutExerciseId: string) {
+  const m = readWEApplied();
+  if (m[workoutExerciseId]) { delete m[workoutExerciseId]; writeWEApplied(m); }
+}
+function markWEApplied(workoutExerciseId: string, exerciseId: string, p: CoachPrescription) {
+  const m = readWEApplied();
+  m[workoutExerciseId] = { exerciseId, prescription: p };
+  writeWEApplied(m);
+}
+
 /* ----------------------------- rep parsing ------------------------------- */
 
 /** "8–12" / "8-12" / "12" / "12 / target 12" → { min, max } */
