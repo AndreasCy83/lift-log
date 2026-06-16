@@ -34,6 +34,7 @@ import {
 
 const APPLIED_KEY = 'gym-coach-applied-recs-v1';
 const PENDING_KEY = 'gym-coach-pending-overrides-v1';
+const WE_APPLIED_KEY = 'gym-coach-we-applied-v1';
 
 export interface CoachPrescription {
   exerciseId: string;
@@ -105,6 +106,40 @@ export function clearPendingCoachOverride(exerciseId: string) {
   const m = readPending();
   if (m[exerciseId]) { delete m[exerciseId]; writePending(m); }
 }
+
+/* --------------------- per-WorkoutExercise applied state --------------------- */
+
+interface WEAppliedEntry {
+  exerciseId: string;
+  prescription: CoachPrescription;
+}
+function readWEApplied(): Record<string, WEAppliedEntry> {
+  try {
+    const raw = localStorage.getItem(WE_APPLIED_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, WEAppliedEntry>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeWEApplied(map: Record<string, WEAppliedEntry>) {
+  try { localStorage.setItem(WE_APPLIED_KEY, JSON.stringify(map)); } catch { /* ignore */ }
+}
+export function getCoachAppliedToWE(workoutExerciseId: string): CoachPrescription | null {
+  return readWEApplied()[workoutExerciseId]?.prescription ?? null;
+}
+export function isWECoachApplied(workoutExerciseId: string): boolean {
+  return !!readWEApplied()[workoutExerciseId];
+}
+export function clearCoachAppliedToWE(workoutExerciseId: string) {
+  const m = readWEApplied();
+  if (m[workoutExerciseId]) { delete m[workoutExerciseId]; writeWEApplied(m); }
+}
+function markWEApplied(workoutExerciseId: string, exerciseId: string, p: CoachPrescription) {
+  const m = readWEApplied();
+  m[workoutExerciseId] = { exerciseId, prescription: p };
+  writeWEApplied(m);
+}
+export { markWEApplied as markCoachAppliedToWE };
 
 /* ----------------------------- rep parsing ------------------------------- */
 
@@ -191,8 +226,9 @@ function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
     appliedAt: new Date().toISOString(),
   };
 }
+export { buildPrescription };
 
-function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
+export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
   const existing = getSetsForWorkoutExercise(workoutExerciseId);
   // Preserve completed and warmup sets; only manage normal incomplete sets.
   const keepers = existing.filter(
@@ -271,6 +307,7 @@ export function applyCoachRecommendation(
   }
 
   writePrescriptionToWE(target.workoutExerciseId, p);
+  markWEApplied(target.workoutExerciseId, rec.exerciseId, p);
   // If we just landed on a real session, drop any stale pending override.
   clearPendingCoachOverride(rec.exerciseId);
   markApplied(rec);
