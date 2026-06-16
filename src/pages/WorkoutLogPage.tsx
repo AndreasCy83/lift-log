@@ -157,6 +157,7 @@ export default function WorkoutLogPage() {
 
   // Repeat-last-routine confirmation state
   const [repeatTarget, setRepeatTarget] = useState<{ weId: string; exerciseId: string } | null>(null);
+  const [coachDialogTarget, setCoachDialogTarget] = useState<{ weId: string; exerciseId: string; exerciseName: string } | null>(null);
   const [deleteSetTarget, setDeleteSetTarget] = useState<string | null>(null);
   const [deleteExerciseTarget, setDeleteExerciseTarget] = useState<string | null>(null);
 
