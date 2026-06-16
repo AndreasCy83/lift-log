@@ -403,12 +403,15 @@ export default function WorkoutLogPage() {
       restSeconds: s.restSeconds ?? null,
     }));
     saveWorkoutSets([...all, ...newSets]);
+    // Repeat Last replaces Coach-applied values, so clear the marker.
+    clearCoachAppliedToWE(weId);
     forceUpdate(n => n + 1);
     toast(t('workout.toasts.previousRoutineLoaded'));
   };
 
   const handleRepeatLastRoutine = (weId: string, exerciseId: string) => {
-    if (hasEnteredSetData(weId)) {
+    // Always confirm if values are present — including Coach-applied prescriptions.
+    if (hasEnteredSetData(weId) || isWECoachApplied(weId)) {
       setRepeatTarget({ weId, exerciseId });
     } else {
       performRepeatLastRoutine(weId, exerciseId);
