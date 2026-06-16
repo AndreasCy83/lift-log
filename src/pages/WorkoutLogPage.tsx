@@ -280,6 +280,7 @@ export default function WorkoutLogPage() {
   const handleAddExercises = (exerciseIds: string[]) => {
     // Manual add path: only auto-fill the first set from previous entry when this workout
     // is manual. Routine-created workouts must NOT receive manual autofill on top.
+    // Coach-applied prescriptions (pending overrides) ALWAYS win over autofill.
     const isRoutineWorkout = workout.source === 'routine';
     exerciseIds.forEach((exerciseId, i) => {
       const restDefault = getExerciseRestDefault(exerciseId);
@@ -288,6 +289,24 @@ export default function WorkoutLogPage() {
         defaultRestSeconds: restDefault,
       };
       addWorkoutExercise(we);
+
+      const pending = getPendingCoachOverride(exerciseId);
+      if (pending) {
+        // Seed an empty set first so writePrescriptionToWE has something to edit
+        // (it preserves completed/warmup sets, but here there are none).
+        writePrescriptionToWE(we.id, pending);
+        // Mark this WE as Coach-applied and clear the pending override.
+        // We re-use the internal marker by going through coachApply via the
+        // exposed helpers; the prescription is already written above.
+        try {
+          const map = JSON.parse(localStorage.getItem('gym-coach-we-applied-v1') ?? '{}');
+          map[we.id] = { exerciseId, prescription: pending };
+          localStorage.setItem('gym-coach-we-applied-v1', JSON.stringify(map));
+        } catch { /* ignore */ }
+        clearPendingCoachOverride(exerciseId);
+        return;
+      }
+
       const prefill = isRoutineWorkout ? { weightKg: null, reps: null } : getLastSessionFirstSet(exerciseId);
       addWorkoutSet({
         id: generateId(), workoutExerciseId: we.id, setIndex: 0,
