@@ -398,7 +398,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
               )}
               {visibleItems.map((rec) => (
                 <ExerciseRow
-                  key={rec.exerciseId}
+                  key={recommendationKey(rec)}
                   rec={rec}
                   unit={unit}
                   applied={!!appliedMap[recommendationKey(rec)]}
