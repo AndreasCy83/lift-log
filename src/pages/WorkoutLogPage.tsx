@@ -1276,6 +1276,18 @@ export default function WorkoutLogPage() {
         />
       )}
 
+      {coachDialogTarget && (
+        <CoachExerciseDialog
+          open={!!coachDialogTarget}
+          onClose={() => setCoachDialogTarget(null)}
+          exerciseId={coachDialogTarget.exerciseId}
+          exerciseName={coachDialogTarget.exerciseName}
+          workoutExerciseId={coachDialogTarget.weId}
+          weightUnit={globalWeightUnit}
+          onApplied={() => forceUpdate(n => n + 1)}
+        />
+      )}
+
       <AlertDialog open={!!repeatTarget} onOpenChange={(open) => !open && setRepeatTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
