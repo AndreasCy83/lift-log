@@ -15,7 +15,7 @@ import {
 import type { ProgressionRecommendation } from '@/lib/progressionEngine';
 import { toast } from 'sonner';
 import { Check, Sparkles } from 'lucide-react';
-import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
+import { toDisplayWeight, weightUnitLabel, type WeightUnitSetting } from '@/lib/units';
 
 interface Props {
   open: boolean;
@@ -23,7 +23,7 @@ interface Props {
   exerciseId: string;
   exerciseName: string;
   workoutExerciseId: string;
-  weightUnit: 'kg' | 'lb';
+  weightUnit: WeightUnitSetting;
   onApplied?: () => void;
 }
 
