@@ -8,7 +8,7 @@
  *  - otherwise              → neutral/green-accent progression summary
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check } from 'lucide-react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check, Info } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
@@ -25,6 +25,7 @@ import {
   deferRecommendation,
 } from '@/lib/coachApply';
 import { toast } from '@/hooks/use-toast';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 interface Props {
   refreshKey?: number;
@@ -98,7 +99,7 @@ function ExerciseRow({
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
-                  className="shrink-0 rounded-full border border-border/50 bg-transparent px-2 py-[1px] text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 active:scale-[0.97] transition"
+                  className="shrink-0 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-[1px] text-[10px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 active:scale-[0.97] transition"
                   aria-label="Review this recommendation later"
                 >
                   Review later
@@ -353,6 +354,20 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
         <div className="flex items-center gap-1.5 min-w-0">
           {titleIcon}
           <h3 className="font-display text-sm font-semibold truncate">Coach</h3>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="ml-0.5 inline-flex items-center justify-center rounded-full p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="What is Coach?"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" side="bottom" className="max-w-[260px] text-xs text-muted-foreground leading-relaxed">
+              Coach reviews your recent training and suggests small adjustments for your next session, such as load, reps, sets, or exercise focus. Suggestions are based on your recent performance, consistency, and training trends — you stay in control and choose what to apply.
+            </PopoverContent>
+          </Popover>
         </div>
         <span
           className={`shrink-0 rounded-full px-1.5 py-[1px] text-[9px] font-medium uppercase tracking-wider ${stateBadgeClass}`}
