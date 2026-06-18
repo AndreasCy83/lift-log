@@ -6,6 +6,8 @@ import {
   isRecommendationApplied,
   isWECoachApplied,
   getCoachAppliedToWE,
+  isRecommendationDeferred,
+  deferRecommendation,
   type CoachPrescription,
 } from '@/lib/coachApply';
 import {
