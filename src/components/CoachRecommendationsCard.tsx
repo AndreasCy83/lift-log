@@ -21,6 +21,8 @@ import {
   applyCoachRecommendation,
   isRecommendationApplied,
   recommendationKey,
+  isRecommendationDeferred,
+  deferRecommendation,
 } from '@/lib/coachApply';
 import { toast } from '@/hooks/use-toast';
 
