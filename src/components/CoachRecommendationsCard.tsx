@@ -426,6 +426,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   unit={unit}
                   applied={!!appliedMap[recommendationKey(rec)]}
                   onApply={handleApply}
+                  onDefer={handleDefer}
                 />
 
               ))}
