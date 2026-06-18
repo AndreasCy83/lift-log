@@ -52,17 +52,24 @@ function deltaLabel(curr: number | null, next: number | null, unit: WeightUnitSe
 export default function CoachExerciseDialog({
   open, onClose, exerciseId, exerciseName, workoutExerciseId, weightUnit, onApplied,
 }: Props) {
-  const rec = useMemo(() => (open ? findRec(exerciseId) : null), [open, exerciseId]);
+  // Read fresh rec each open; also re-read after defer/apply so the dialog
+  // immediately reflects shared state (e.g. hides rec if deferred).
+  const [tick, setTick] = useState(0);
+  const rec = useMemo(
+    () => (open ? findRec(exerciseId) : null),
+    [open, exerciseId, tick],
+  );
   const weApplied = useMemo(
     () => (open ? isWECoachApplied(workoutExerciseId) : false),
-    [open, workoutExerciseId],
+    [open, workoutExerciseId, tick],
   );
   const activePrescription: CoachPrescription | null = useMemo(
     () => (open ? getCoachAppliedToWE(workoutExerciseId) : null),
-    [open, workoutExerciseId],
+    [open, workoutExerciseId, tick],
   );
 
   const recApplied = rec ? isRecommendationApplied(rec) : false;
+  const recDeferred = rec ? isRecommendationDeferred(rec) : false;
 
   const handleApply = () => {
     if (!rec) return;
@@ -81,6 +88,15 @@ export default function CoachExerciseDialog({
       }
     }
     onApplied?.();
+    onClose();
+  };
+
+  const handleDefer = () => {
+    if (!rec) return;
+    deferRecommendation(rec);
+    toast(`Saved to review later — back in ~12 days`);
+    onApplied?.();
+    setTick((n) => n + 1);
     onClose();
   };
 
