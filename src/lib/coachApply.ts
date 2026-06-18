@@ -35,6 +35,11 @@ import {
 const APPLIED_KEY = 'gym-coach-applied-recs-v1';
 const PENDING_KEY = 'gym-coach-pending-overrides-v1';
 const WE_APPLIED_KEY = 'gym-coach-we-applied-v1';
+const DEFERRED_KEY = 'gym-coach-deferred-recs-v1';
+
+/** Fixed "Review Later" window. Single source of truth, no user picker. */
+export const COACH_DEFER_DAYS = 12;
+const COACH_DEFER_MS = COACH_DEFER_DAYS * 24 * 60 * 60 * 1000;
 
 export interface CoachPrescription {
   exerciseId: string;
