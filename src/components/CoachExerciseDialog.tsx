@@ -122,6 +122,12 @@ export default function CoachExerciseDialog({
           </div>
         )}
 
+        {recDeferred && (
+          <div className="rounded-md bg-muted/40 border border-border/60 px-3 py-2 text-xs text-muted-foreground">
+            Saved to review later — Coach will resurface this in ~12 days if still relevant.
+          </div>
+        )}
+
         {!rec && (
           <div className="text-sm text-muted-foreground py-2">
             No active recommendation for this exercise right now.
@@ -169,8 +175,15 @@ export default function CoachExerciseDialog({
             )}
 
             <div className="flex items-center gap-2 pt-1">
-              <Button variant="ghost" size="sm" className="flex-1" onClick={onClose}>
-                Close
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-1 text-muted-foreground"
+                onClick={handleDefer}
+                disabled={recApplied || recDeferred}
+                aria-label="Review this recommendation later"
+              >
+                Review later
               </Button>
               <Button
                 size="sm"
