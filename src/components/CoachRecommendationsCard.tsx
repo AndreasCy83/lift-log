@@ -279,6 +279,12 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setApplyTick((n) => n + 1);
   }, []);
 
+  const handleDefer = useCallback((rec: ProgressionRecommendation) => {
+    deferRecommendation(rec);
+    toast({ description: `Saved to review later — back in ~12 days` });
+    setApplyTick((n) => n + 1);
+  }, []);
+
 
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
@@ -286,9 +292,12 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     'hold',
     'deload_adjustment',
   ]);
-  const visibleItems = hasDeload
+  const baseItems = hasDeload
     ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
     : snap.items;
+  // Hide actively-deferred items across all surfaces. Expired deferrals
+  // are auto-purged inside isRecommendationDeferred().
+  const visibleItems = baseItems.filter((it) => !isRecommendationDeferred(it));
   const itemCount = visibleItems.length;
 
   // V3: also render the card for behavior-only states (comeback / inactive),
