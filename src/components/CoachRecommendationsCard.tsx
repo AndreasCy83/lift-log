@@ -21,6 +21,8 @@ import {
   applyCoachRecommendation,
   isRecommendationApplied,
   recommendationKey,
+  isRecommendationDeferred,
+  deferRecommendation,
 } from '@/lib/coachApply';
 import { toast } from '@/hooks/use-toast';
 
@@ -48,11 +50,13 @@ function ExerciseRow({
   unit,
   applied,
   onApply,
+  onDefer,
 }: {
   rec: ProgressionRecommendation;
   unit: 'kg' | 'lbs';
   applied: boolean;
   onApply: (rec: ProgressionRecommendation) => void;
+  onDefer: (rec: ProgressionRecommendation) => void;
 }) {
   const changed = (a: string | number | null, b: string | number | null) =>
     String(a) !== String(b);
@@ -70,7 +74,7 @@ function ExerciseRow({
           <div className="truncate text-[12px] font-semibold text-foreground">
             {rec.exerciseName}
           </div>
-          <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+          <div className="mt-0.5 flex items-center gap-1.5 min-w-0 flex-wrap">
             <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
               {TYPE_LABEL[rec.recommendationType]}
             </span>
@@ -83,13 +87,23 @@ function ExerciseRow({
                 Applied
               </span>
             ) : (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onApply(rec); }}
-                className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
-              >
-                Apply
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onApply(rec); }}
+                  className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
+                >
+                  Apply
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
+                  className="shrink-0 rounded-full border border-border/50 bg-transparent px-2 py-[1px] text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 active:scale-[0.97] transition"
+                  aria-label="Review this recommendation later"
+                >
+                  Review later
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -265,6 +279,12 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setApplyTick((n) => n + 1);
   }, []);
 
+  const handleDefer = useCallback((rec: ProgressionRecommendation) => {
+    deferRecommendation(rec);
+    toast({ description: `Saved to review later — back in ~12 days` });
+    setApplyTick((n) => n + 1);
+  }, []);
+
 
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
@@ -272,9 +292,12 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     'hold',
     'deload_adjustment',
   ]);
-  const visibleItems = hasDeload
+  const baseItems = hasDeload
     ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
     : snap.items;
+  // Hide actively-deferred items across all surfaces. Expired deferrals
+  // are auto-purged inside isRecommendationDeferred().
+  const visibleItems = baseItems.filter((it) => !isRecommendationDeferred(it));
   const itemCount = visibleItems.length;
 
   // V3: also render the card for behavior-only states (comeback / inactive),
@@ -403,6 +426,7 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   unit={unit}
                   applied={!!appliedMap[recommendationKey(rec)]}
                   onApply={handleApply}
+                  onDefer={handleDefer}
                 />
 
               ))}

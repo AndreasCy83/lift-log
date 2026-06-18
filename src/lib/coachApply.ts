@@ -35,6 +35,11 @@ import {
 const APPLIED_KEY = 'gym-coach-applied-recs-v1';
 const PENDING_KEY = 'gym-coach-pending-overrides-v1';
 const WE_APPLIED_KEY = 'gym-coach-we-applied-v1';
+const DEFERRED_KEY = 'gym-coach-deferred-recs-v1';
+
+/** Fixed "Review Later" window. Single source of truth, no user picker. */
+export const COACH_DEFER_DAYS = 12;
+const COACH_DEFER_MS = COACH_DEFER_DAYS * 24 * 60 * 60 * 1000;
 
 export interface CoachPrescription {
   exerciseId: string;
@@ -84,6 +89,65 @@ function markApplied(rec: ProgressionRecommendation) {
   const m = readApplied();
   m[recommendationKey(rec)] = new Date().toISOString();
   writeApplied(m);
+}
+
+/* --------------------------- deferred state ----------------------------- */
+/** Shared "Review Later" state keyed by recommendation signature.
+ *  Tied to recommendationKey() so meaningful payload changes invalidate
+ *  the deferral automatically. */
+
+interface DeferredEntry {
+  /** ISO timestamp when defer was set. */
+  at: string;
+  /** ISO timestamp when defer expires. */
+  until: string;
+}
+
+function readDeferred(): Record<string, DeferredEntry> {
+  try {
+    const raw = localStorage.getItem(DEFERRED_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, DeferredEntry>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeDeferred(map: Record<string, DeferredEntry>) {
+  try { localStorage.setItem(DEFERRED_KEY, JSON.stringify(map)); } catch { /* ignore */ }
+}
+
+/** True if rec is currently within its defer window. Expired entries are
+ *  garbage-collected on read. */
+export function isRecommendationDeferred(rec: ProgressionRecommendation): boolean {
+  const key = recommendationKey(rec);
+  const map = readDeferred();
+  const entry = map[key];
+  if (!entry) return false;
+  const now = Date.now();
+  if (new Date(entry.until).getTime() <= now) {
+    delete map[key];
+    writeDeferred(map);
+    return false;
+  }
+  return true;
+}
+
+/** Mark a recommendation as "Review Later" for COACH_DEFER_DAYS. */
+export function deferRecommendation(rec: ProgressionRecommendation): DeferredEntry {
+  const now = Date.now();
+  const entry: DeferredEntry = {
+    at: new Date(now).toISOString(),
+    until: new Date(now + COACH_DEFER_MS).toISOString(),
+  };
+  const map = readDeferred();
+  map[recommendationKey(rec)] = entry;
+  writeDeferred(map);
+  return entry;
+}
+
+export function clearDeferredRecommendation(rec: ProgressionRecommendation) {
+  const map = readDeferred();
+  const key = recommendationKey(rec);
+  if (map[key]) { delete map[key]; writeDeferred(map); }
 }
 
 /* --------------------------- pending overrides --------------------------- */

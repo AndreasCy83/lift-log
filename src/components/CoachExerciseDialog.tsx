@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -6,6 +6,8 @@ import {
   isRecommendationApplied,
   isWECoachApplied,
   getCoachAppliedToWE,
+  isRecommendationDeferred,
+  deferRecommendation,
   type CoachPrescription,
 } from '@/lib/coachApply';
 import {
@@ -50,17 +52,24 @@ function deltaLabel(curr: number | null, next: number | null, unit: WeightUnitSe
 export default function CoachExerciseDialog({
   open, onClose, exerciseId, exerciseName, workoutExerciseId, weightUnit, onApplied,
 }: Props) {
-  const rec = useMemo(() => (open ? findRec(exerciseId) : null), [open, exerciseId]);
+  // Read fresh rec each open; also re-read after defer/apply so the dialog
+  // immediately reflects shared state (e.g. hides rec if deferred).
+  const [tick, setTick] = useState(0);
+  const rec = useMemo(
+    () => (open ? findRec(exerciseId) : null),
+    [open, exerciseId, tick],
+  );
   const weApplied = useMemo(
     () => (open ? isWECoachApplied(workoutExerciseId) : false),
-    [open, workoutExerciseId],
+    [open, workoutExerciseId, tick],
   );
   const activePrescription: CoachPrescription | null = useMemo(
     () => (open ? getCoachAppliedToWE(workoutExerciseId) : null),
-    [open, workoutExerciseId],
+    [open, workoutExerciseId, tick],
   );
 
   const recApplied = rec ? isRecommendationApplied(rec) : false;
+  const recDeferred = rec ? isRecommendationDeferred(rec) : false;
 
   const handleApply = () => {
     if (!rec) return;
@@ -79,6 +88,15 @@ export default function CoachExerciseDialog({
       }
     }
     onApplied?.();
+    onClose();
+  };
+
+  const handleDefer = () => {
+    if (!rec) return;
+    deferRecommendation(rec);
+    toast(`Saved to review later — back in ~12 days`);
+    onApplied?.();
+    setTick((n) => n + 1);
     onClose();
   };
 
@@ -101,6 +119,12 @@ export default function CoachExerciseDialog({
                 {activePrescription.sets} × {activePrescription.repInfo} @ {fmtWeight(activePrescription.weightKg, weightUnit)}
               </div>
             </div>
+          </div>
+        )}
+
+        {recDeferred && (
+          <div className="rounded-md bg-muted/40 border border-border/60 px-3 py-2 text-xs text-muted-foreground">
+            Saved to review later — Coach will resurface this in ~12 days if still relevant.
           </div>
         )}
 
@@ -151,8 +175,15 @@ export default function CoachExerciseDialog({
             )}
 
             <div className="flex items-center gap-2 pt-1">
-              <Button variant="ghost" size="sm" className="flex-1" onClick={onClose}>
-                Close
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-1 text-muted-foreground"
+                onClick={handleDefer}
+                disabled={recApplied || recDeferred}
+                aria-label="Review this recommendation later"
+              >
+                Review later
               </Button>
               <Button
                 size="sm"
