@@ -178,7 +178,7 @@ export default function CoachExerciseDialog({
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex-1 text-muted-foreground"
+                className="flex-1 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 border border-sky-500/30"
                 onClick={handleDefer}
                 disabled={recApplied || recDeferred}
                 aria-label="Review this recommendation later"
