@@ -202,6 +202,8 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
 
   // --- Build progression items, then apply trend + guardrails ---
   const items: ProgressionRecommendation[] = [];
+  /** Track each item's primary muscle category so we can cap set-increases per group. */
+  const primaryCatByExId = new Map<string, string>();
   for (const [exId, exposures] of exposuresByEx) {
     const ex = exMap.get(exId);
     if (!ex) continue;
@@ -211,6 +213,7 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     const credits = getSetMuscleCredits(ex);
     const primaryCat = credits[0]?.[0] ?? ex.categoryId;
     const primaryWeight = credits[0]?.[1] ?? 1;
+    primaryCatByExId.set(exId, primaryCat);
 
     const thisCat = thisWeek.byCategory.get(primaryCat) ?? 0;
     const lastCat = lastWeek.byCategory.get(primaryCat) ?? 0;
