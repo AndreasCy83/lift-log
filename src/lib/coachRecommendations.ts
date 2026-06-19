@@ -293,6 +293,13 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     ];
   }
 
+  // Re-sort after demotion so hold-demoted rows don't squat in higher slots.
+  meaningful.sort((a, b) => {
+    const r = (rank[b.recommendationType] ?? 0) - (rank[a.recommendationType] ?? 0);
+    if (r !== 0) return r;
+    return confRank[b.confidence] - confRank[a.confidence];
+  });
+
   // --- Build deload snapshot ---
   const fatigue = computeMuscleFatigue(now);
 
