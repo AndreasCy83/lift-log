@@ -202,6 +202,8 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
 
   // --- Build progression items, then apply trend + guardrails ---
   const items: ProgressionRecommendation[] = [];
+  /** Track each item's primary muscle category so we can cap set-increases per group. */
+  const primaryCatByExId = new Map<string, string>();
   for (const [exId, exposures] of exposuresByEx) {
     const ex = exMap.get(exId);
     if (!ex) continue;
@@ -211,6 +213,7 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     const credits = getSetMuscleCredits(ex);
     const primaryCat = credits[0]?.[0] ?? ex.categoryId;
     const primaryWeight = credits[0]?.[1] ?? 1;
+    primaryCatByExId.set(exId, primaryCat);
 
     const thisCat = thisWeek.byCategory.get(primaryCat) ?? 0;
     const lastCat = lastWeek.byCategory.get(primaryCat) ?? 0;
@@ -236,7 +239,9 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
   });
 
   // Rank: load_progression > rep_progression > set_increase > set_reduce
-  //       > deload_adjustment > hold; tie-break by confidence
+  //       > deload_adjustment > hold; tie-break by confidence.
+  // Set increases are intentionally ranked BELOW load and rep progression so
+  // Coach prefers intensity/rep changes before expanding workout duration.
   const rank: Record<string, number> = {
     load_progression: 6,
     rep_progression: 5,
@@ -246,6 +251,49 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     hold: 1,
   };
   const confRank = { high: 3, medium: 2, low: 1 } as const;
+  meaningful.sort((a, b) => {
+    const r = (rank[b.recommendationType] ?? 0) - (rank[a.recommendationType] ?? 0);
+    if (r !== 0) return r;
+    return confRank[b.confidence] - confRank[a.confidence];
+  });
+
+  // --- Guardrail: cap set-increase recommendations ---
+  // Adding sets balloons workout duration, so keep set_increase rare:
+  //   - at most 1 set_increase per primary muscle group, and
+  //   - at most 2 set_increase recommendations across the whole snapshot.
+  // Demoted items become 'hold' (load/weight reset to current) and keep a
+  // short reason so the UI still explains why no extra set was prescribed.
+  const MAX_SET_INCREASE_TOTAL = 2;
+  const seenSetIncreaseCats = new Set<string>();
+  let setIncreaseCount = 0;
+  // Strongest candidates come first thanks to the sort above (confidence
+  // tie-break), so the first match per group wins.
+  const sortedSetIncreases = meaningful
+    .filter((it) => it.recommendationType === 'set_increase')
+    .sort((a, b) => confRank[b.confidence] - confRank[a.confidence]);
+  const keptSetIncreaseIds = new Set<string>();
+  for (const it of sortedSetIncreases) {
+    if (setIncreaseCount >= MAX_SET_INCREASE_TOTAL) break;
+    const cat = primaryCatByExId.get(it.exerciseId) ?? '';
+    if (seenSetIncreaseCats.has(cat)) continue;
+    seenSetIncreaseCats.add(cat);
+    keptSetIncreaseIds.add(it.exerciseId);
+    setIncreaseCount += 1;
+  }
+  for (const it of meaningful) {
+    if (it.recommendationType !== 'set_increase') continue;
+    if (keptSetIncreaseIds.has(it.exerciseId)) continue;
+    // Demote: keep current sets, drop the "add a set" framing.
+    it.recommendationType = 'hold';
+    it.nextSets = it.currentSets;
+    it.nextWeightKg = it.currentWeightKg;
+    it.confidence = 'low';
+    it.reasons = [
+      'Holding sets — prefer load or rep progression before adding volume',
+    ];
+  }
+
+  // Re-sort after demotion so hold-demoted rows don't squat in higher slots.
   meaningful.sort((a, b) => {
     const r = (rank[b.recommendationType] ?? 0) - (rank[a.recommendationType] ?? 0);
     if (r !== 0) return r;

@@ -15,6 +15,7 @@
  */
 import type { Exercise, WorkoutSet } from '@/types/fitness';
 import { THRESHOLDS } from './coachThresholds';
+import { getHypertrophyRepRange } from './coachRepTargets';
 
 export interface ExposureSummary {
   /** Sorted ascending: oldest set first. */
@@ -123,8 +124,10 @@ export function recommendProgression(
     return null;
   }
 
-  const repsMin = exercise.defaultRepsMin;
-  const repsMax = exercise.defaultRepsMax;
+  // Exercise-specific hypertrophy rep target — no universal 8–12 default.
+  const effectiveRange = getHypertrophyRepRange(exercise);
+  const repsMin: number | null = effectiveRange.min;
+  const repsMax: number | null = effectiveRange.max;
   const targetTop = repsMax ?? Math.max(8, Math.round(last.avgReps + 1));
 
   const reasons: string[] = [];
