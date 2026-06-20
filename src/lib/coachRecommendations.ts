@@ -257,33 +257,14 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     return confRank[b.confidence] - confRank[a.confidence];
   });
 
-  // --- Guardrail: cap set-increase recommendations ---
-  // Adding sets balloons workout duration, so keep set_increase rare:
-  //   - at most 1 set_increase per primary muscle group, and
-  //   - at most 2 set_increase recommendations across the whole snapshot.
-  // Demoted items become 'hold' (load/weight reset to current) and keep a
-  // short reason so the UI still explains why no extra set was prescribed.
-  const MAX_SET_INCREASE_TOTAL = 2;
-  const seenSetIncreaseCats = new Set<string>();
-  let setIncreaseCount = 0;
-  // Strongest candidates come first thanks to the sort above (confidence
-  // tie-break), so the first match per group wins.
-  const sortedSetIncreases = meaningful
-    .filter((it) => it.recommendationType === 'set_increase')
-    .sort((a, b) => confRank[b.confidence] - confRank[a.confidence]);
-  const keptSetIncreaseIds = new Set<string>();
-  for (const it of sortedSetIncreases) {
-    if (setIncreaseCount >= MAX_SET_INCREASE_TOTAL) break;
-    const cat = primaryCatByExId.get(it.exerciseId) ?? '';
-    if (seenSetIncreaseCats.has(cat)) continue;
-    seenSetIncreaseCats.add(cat);
-    keptSetIncreaseIds.add(it.exerciseId);
-    setIncreaseCount += 1;
-  }
+  // --- Guardrail: never surface automatic set-increase recommendations ---
+  // Routines are typically time-boxed; Coach must not expand workout length by
+  // adding sets automatically. Any residual `set_increase` item (defensive — the
+  // progression engine no longer emits them) is demoted to `hold` so the
+  // prescribed set count stays intact. A future explicit "Allow Coach to modify
+  // workout volume" setting could re-enable this behavior.
   for (const it of meaningful) {
     if (it.recommendationType !== 'set_increase') continue;
-    if (keptSetIncreaseIds.has(it.exerciseId)) continue;
-    // Demote: keep current sets, drop the "add a set" framing.
     it.recommendationType = 'hold';
     it.nextSets = it.currentSets;
     it.nextWeightKg = it.currentWeightKg;

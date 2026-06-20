@@ -221,22 +221,13 @@ export function applyVolumeTrend(
       );
     }
   } else if (trendPct <= -THRESHOLDS.volumeTrendPct) {
-    if (guardrailHigh) {
-      rec.guardrailBlocked = true;
-      rec.reasons.push('Set increase blocked — muscle already heavily loaded');
-    } else {
-      rec.nextSets = rec.currentSets + 1;
-      // Only relabel if we weren't already doing a load bump. A real
-      // load_progression is a stronger signal and should stay primary.
-      if (
-        rec.recommendationType !== 'load_progression' &&
-        rec.recommendationType !== 'rep_progression'
-      ) {
-        rec.recommendationType = 'set_increase';
-      }
-      rec.reasons.push(
-        `Weekly volume down >${Math.round(THRESHOLDS.volumeTrendPct * 100)}% — add a set`,
-      );
+    // Coach intentionally does NOT auto-increase sets. Routines are usually
+    // time-boxed; expanding volume mid-program would derail the user's plan.
+    // We only surface a non-actionable note so the trend is still visible.
+    // (A future "Allow Coach to modify workout volume" setting could re-enable
+    // automatic set additions here.)
+    if (!guardrailHigh) {
+      rec.reasons.push('Weekly volume trending down — consider adding a set yourself');
     }
   }
 }
