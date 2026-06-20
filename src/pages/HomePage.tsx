@@ -291,13 +291,45 @@ export default function HomePage() {
             })}
           </div>
 
-          <button
-            onClick={() => setCalendarExpanded(e => !e)}
-            className="mt-2 flex w-full items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
-          >
-            {calendarExpanded ? t('home.showThreeWeeks') : t('home.showFullMonth')}
-            <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
-          </button>
+          <div className="mt-2 grid grid-cols-[64px_1fr_64px] items-center">
+            <div />
+            <button
+              onClick={() => setCalendarExpanded(e => !e)}
+              className="flex items-center justify-center gap-1 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70 hover:text-foreground transition-colors"
+            >
+              {calendarExpanded ? t('home.showThreeWeeks') : t('home.showFullMonth')}
+              <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${calendarExpanded ? 'rotate-180' : ''}`} />
+            </button>
+            <div className="flex items-center justify-end gap-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    disabled={!selectedWorkout}
+                    aria-label={t('home.actions.copyWorkout')}
+                    className="rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => { setPickerDate(undefined); setCopyDialogOpen(true); }}>
+                    {t('home.actions.copyWorkout')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
+                    {t('home.actions.moveWorkout')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={!selectedWorkout}
+                aria-label={t('home.delete.title')}
+                className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Volume insights */}
