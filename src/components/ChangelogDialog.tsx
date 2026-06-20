@@ -8,11 +8,10 @@ interface ChangelogDialogProps {
 }
 
 const CHANGES = [
-  'Added New Routines/Programs',
-  '8 Languages (beta)',
-  'Added Measurements in Body Function',
-  'Optimized Flow',
-  'Improved Rest Timer',
+  'Over 750 exercises',
+  'Coach AI to review and suggest change',
+  'Recovery Section per Muscle Group',
+  'Volume Tracking',
 ];
 
 export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogProps) {
@@ -28,7 +27,7 @@ export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogP
 
         <div className="space-y-4">
           <div>
-            <span className="font-display text-2xl font-bold text-primary">Version 1.15</span>
+            <span className="font-display text-2xl font-bold text-primary">Version 1.24</span>
             <p className="text-xs text-muted-foreground mt-1">Latest additions and fixes</p>
           </div>
 
