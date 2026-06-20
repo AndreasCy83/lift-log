@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Routine, Program } from '@/types/fitness';
+import { RoutineIcon } from '@/components/RoutineIcon';
 
 type Tab = 'programs' | 'routines';
 
@@ -158,13 +159,11 @@ export default function RoutinesPage() {
                 const count = getRoutinesForProgram(p.id).length;
                 return (
                   <div key={p.id} className="gym-card">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-3">
+                      <RoutineIcon name={p.name} description={p.description} />
                       <button onClick={() => navigate(`/program/${p.id}`)} className="flex-1 text-left min-w-0">
-                        <div className="flex items-center gap-2">
-                          <Layers className="h-4 w-4 text-primary shrink-0" />
-                          <h3 className="font-display font-semibold truncate">{p.name}</h3>
-                        </div>
-                        {p.description && <p className="text-xs text-muted-foreground mt-1 truncate">{p.description}</p>}
+                        <h3 className="font-display font-semibold truncate">{p.name}</h3>
+                        {p.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{p.description}</p>}
                         <p className="text-xs text-muted-foreground mt-1">{t('programs.workoutDays', { count })}</p>
                       </button>
                       <div className="flex items-center gap-1 shrink-0">
@@ -216,13 +215,14 @@ export default function RoutinesPage() {
                 const routineExercises = getExercisesForRoutine(r.id);
                 return (
                   <div key={r.id} className="gym-card">
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <RoutineIcon name={r.name} description={r.description} />
                       <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 text-left min-w-0">
                         <h3 className="font-display font-semibold truncate">{r.name}</h3>
                         {r.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{r.description}</p>}
                         <p className="text-xs text-muted-foreground mt-1">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 shrink-0">
                         <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="text-primary">
                           <Play className="h-4 w-4" />
                         </Button>
