@@ -159,15 +159,15 @@ export default function RoutinesPage() {
                 return (
                   <div key={p.id} className="gym-card">
                     <div className="flex items-start justify-between gap-2">
-                      <button onClick={() => navigate(`/program/${p.id}`)} className="flex-1 text-left min-w-0">
-                        <div className="flex items-center gap-2">
-                          <Layers className="h-4 w-4 text-primary shrink-0" />
-                          <h3 className="font-display font-semibold truncate">{p.name}</h3>
+                      <button onClick={() => navigate(`/program/${p.id}`)} className="flex-1 min-w-0 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <Layers className="h-4 w-4 shrink-0 text-primary/80" />
+                          <h3 className="font-display flex-1 min-w-0 font-semibold truncate">{p.name}</h3>
                         </div>
-                        {p.description && <p className="text-xs text-muted-foreground mt-1 truncate">{p.description}</p>}
-                        <p className="text-xs text-muted-foreground mt-1">{t('programs.workoutDays', { count })}</p>
+                        {p.description && <p className="mt-0.5 truncate text-xs text-muted-foreground/70">{p.description}</p>}
+                        <p className="mt-1 text-xs text-muted-foreground/70">{t('programs.workoutDays', { count })}</p>
                       </button>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex shrink-0 items-center gap-0.5">
                         <button
                           type="button"
                           aria-label={p.isFavorite ? t('programs.unfavorite') : t('programs.favorite')}
@@ -178,18 +178,18 @@ export default function RoutinesPage() {
                             try { (navigator as any).vibrate?.(15); } catch {}
                             refresh();
                           }}
-                          className="p-2 text-muted-foreground active:scale-90 transition-transform"
+                          className="inline-flex h-8 w-8 items-center justify-center text-muted-foreground active:scale-90 transition-transform"
                         >
                           <Star
                             className={`h-4 w-4 transition-colors ${p.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
                           />
                         </button>
-                        <button onClick={() => navigate(`/program/${p.id}`)} className="p-2 text-muted-foreground">
+                        <button onClick={() => navigate(`/program/${p.id}`)} className="inline-flex h-8 w-8 items-center justify-center text-muted-foreground">
                           <ChevronRight className="h-4 w-4" />
                         </button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => handleDeleteProgram(p.id)} className="text-destructive">
