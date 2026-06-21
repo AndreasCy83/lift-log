@@ -216,19 +216,19 @@ export default function RoutinesPage() {
                 const routineExercises = getExercisesForRoutine(r.id);
                 return (
                   <div key={r.id} className="gym-card">
-                    <div className="flex items-start justify-between">
-                      <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 text-left min-w-0">
-                        <h3 className="font-display font-semibold truncate">{r.name}</h3>
-                        {r.description && <p className="text-xs text-muted-foreground mt-0.5 truncate">{r.description}</p>}
-                        <p className="text-xs text-muted-foreground mt-1">{t('routines.exercises', { count: routineExercises.length })}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 min-w-0 text-left">
+                        <h3 className="font-display min-w-0 font-semibold truncate">{r.name}</h3>
+                        {r.description && <p className="mt-0.5 truncate text-xs text-muted-foreground/70">{r.description}</p>}
+                        <p className="mt-1 text-xs text-muted-foreground/70">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
-                      <div className="flex items-center gap-1">
-                        <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="text-primary">
+                      <div className="flex shrink-0 items-center gap-0.5">
+                        <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="h-8 w-8 p-0 text-primary">
                           <Play className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="ghost"><MoreVertical className="h-4 w-4" /></Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
