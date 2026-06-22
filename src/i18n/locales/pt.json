@@ -315,6 +315,7 @@
     "themeSystem": "Sistema",
     "themeLight": "Claro",
     "themeDark": "Escuro",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "Manter tela ligada",
     "keepScreenOnHint": "Durante os treinos",
     "autoRest": "Iniciar auto cronômetro de descanso",
@@ -452,7 +453,8 @@
       "subtitle": "Escolha o tema que preferir.",
       "light": "Claro",
       "dark": "Escuro",
-      "system": "Sistema"
+      "system": "Sistema",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "Conte sobre você",

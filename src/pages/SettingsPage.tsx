@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages, Candy, Zap } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages, Candy, Zap, Contrast } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -112,16 +112,17 @@ export default function SettingsPage() {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap } as const;
+  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast } as const;
   const themeLabels: Record<keyof typeof themeIcons, string> = {
     system: 'settings.themeSystem',
     light: 'settings.themeLight',
     dark: 'settings.themeDark',
     'cotton-candy': 'settings.themeCottonCandy',
     'neo-blue': 'settings.themeNeoBlue',
+    monochrome: 'settings.themeMonochrome',
   };
   const themeFallback: Record<keyof typeof themeIcons, string> = {
-    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue',
+    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome',
   };
 
   if (showExerciseLibrary) {
@@ -262,7 +263,7 @@ export default function SettingsPage() {
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">{t('settings.theme')}</h3>
           <div className="grid grid-cols-3 gap-2">
-            {(['system', 'light', 'dark', 'cotton-candy', 'neo-blue'] as const).map(th => {
+            {(['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome'] as const).map(th => {
               const Icon = themeIcons[th];
               const label = t(themeLabels[th], { defaultValue: themeFallback[th] });
               return (

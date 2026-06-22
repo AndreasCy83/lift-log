@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap } from 'lucide-react';
+import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap, Contrast } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -221,11 +221,12 @@ export default function OnboardingWizard() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {([
-                  { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light', fallback: 'Light' },
+                { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light', fallback: 'Light' },
                   { v: 'dark', icon: Moon, labelKey: 'onboarding.s3.dark', fallback: 'Dark' },
                   { v: 'system', icon: Monitor, labelKey: 'onboarding.s3.system', fallback: 'System' },
                   { v: 'cotton-candy', icon: Candy, labelKey: 'onboarding.s3.cottonCandy', fallback: 'Cotton Candy' },
                   { v: 'neo-blue', icon: Zap, labelKey: 'onboarding.s3.neoBlue', fallback: 'Neo Blue' },
+                  { v: 'monochrome', icon: Contrast, labelKey: 'onboarding.s3.monochrome', fallback: 'Monochrome' },
                 ] as const).map(({ v, icon: Icon, labelKey, fallback }) => (
                   <button
                     key={v}

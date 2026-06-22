@@ -321,6 +321,7 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "Keep Screen On",
     "keepScreenOnHint": "During workouts",
     "autoRest": "Auto-start rest timer when set completed",
@@ -458,7 +459,8 @@
       "subtitle": "Choose the theme you prefer.",
       "light": "Light",
       "dark": "Dark",
-      "system": "System"
+      "system": "System",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "Tell us about you",

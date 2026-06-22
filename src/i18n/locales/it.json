@@ -315,6 +315,7 @@
     "themeSystem": "Sistema",
     "themeLight": "Chiaro",
     "themeDark": "Scuro",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "Tieni schermo acceso",
     "keepScreenOnHint": "Durante gli allenamenti",
     "autoRest": "Avvio auto del timer di recupero",
@@ -452,7 +453,8 @@
       "subtitle": "Scegli il tema che preferisci.",
       "light": "Chiaro",
       "dark": "Scuro",
-      "system": "Sistema"
+      "system": "Sistema",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "Parlaci di te",

@@ -315,6 +315,7 @@
     "themeSystem": "النظام",
     "themeLight": "فاتح",
     "themeDark": "داكن",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "إبقاء الشاشة مضاءة",
     "keepScreenOnHint": "أثناء التمارين",
     "autoRest": "بدء مؤقت الراحة تلقائياً",
@@ -452,7 +453,8 @@
       "subtitle": "اختر السمة التي تفضلها.",
       "light": "فاتح",
       "dark": "داكن",
-      "system": "النظام"
+      "system": "النظام",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "أخبرنا عن نفسك",

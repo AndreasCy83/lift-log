@@ -315,6 +315,7 @@
     "themeSystem": "Sistem",
     "themeLight": "Açık",
     "themeDark": "Koyu",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "Ekranı açık tut",
     "keepScreenOnHint": "Antrenman sırasında",
     "autoRest": "Set bittiğinde otomatik dinlenme",
@@ -452,7 +453,8 @@
       "subtitle": "Tercih ettiğiniz temayı seçin.",
       "light": "Açık",
       "dark": "Koyu",
-      "system": "Sistem"
+      "system": "Sistem",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "Kendinizden bahsedin",

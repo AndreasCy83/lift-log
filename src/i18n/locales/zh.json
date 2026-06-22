@@ -315,6 +315,7 @@
     "themeSystem": "系统",
     "themeLight": "浅色",
     "themeDark": "深色",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "保持屏幕常亮",
     "keepScreenOnHint": "训练期间",
     "autoRest": "完成组后自动开始休息计时",
@@ -452,7 +453,8 @@
       "subtitle": "选择您喜欢的主题。",
       "light": "浅色",
       "dark": "深色",
-      "system": "系统"
+      "system": "系统",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "介绍一下您自己",

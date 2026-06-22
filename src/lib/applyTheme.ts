@@ -1,6 +1,6 @@
 import type { ThemeMode } from './storage';
 
-const THEME_CLASSES = ['dark', 'theme-cotton-candy', 'theme-neo-blue'];
+const THEME_CLASSES = ['dark', 'theme-cotton-candy', 'theme-neo-blue', 'theme-monochrome'];
 
 export function applyTheme(theme: ThemeMode) {
   const root = document.documentElement;
@@ -13,6 +13,8 @@ export function applyTheme(theme: ThemeMode) {
     root.classList.add('theme-cotton-candy');
   } else if (theme === 'neo-blue') {
     root.classList.add('dark', 'theme-neo-blue');
+  } else if (theme === 'monochrome') {
+    root.classList.add('dark', 'theme-monochrome');
   } else {
     // system
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
