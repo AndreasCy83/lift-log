@@ -261,18 +261,19 @@ export default function SettingsPage() {
         {/* Theme */}
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">{t('settings.theme')}</h3>
-          <div className="flex gap-2">
-            {(['system', 'light', 'dark'] as const).map(th => {
+          <div className="grid grid-cols-3 gap-2">
+            {(['system', 'light', 'dark', 'cotton-candy', 'neo-blue'] as const).map(th => {
               const Icon = themeIcons[th];
-              const themeLabelKey = th === 'system' ? 'settings.themeSystem' : th === 'light' ? 'settings.themeLight' : 'settings.themeDark';
+              const label = t(themeLabels[th], { defaultValue: themeFallback[th] });
               return (
                 <button
                   key={th}
                   onClick={() => setSettings({ ...settings, theme: th })}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors
+                  className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2.5 text-[11px] font-medium transition-colors
                     ${settings.theme === th ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                 >
-                  <Icon className="h-4 w-4" /> {t(themeLabelKey)}
+                  <Icon className="h-4 w-4" />
+                  <span className="leading-tight text-center">{label}</span>
                 </button>
               );
             })}
