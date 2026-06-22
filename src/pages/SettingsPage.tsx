@@ -112,7 +112,17 @@ export default function SettingsPage() {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon };
+  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap } as const;
+  const themeLabels: Record<keyof typeof themeIcons, string> = {
+    system: 'settings.themeSystem',
+    light: 'settings.themeLight',
+    dark: 'settings.themeDark',
+    'cotton-candy': 'settings.themeCottonCandy',
+    'neo-blue': 'settings.themeNeoBlue',
+  };
+  const themeFallback: Record<keyof typeof themeIcons, string> = {
+    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue',
+  };
 
   if (showExerciseLibrary) {
     return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
