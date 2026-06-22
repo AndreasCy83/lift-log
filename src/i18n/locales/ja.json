@@ -315,6 +315,7 @@
     "themeSystem": "システム",
     "themeLight": "ライト",
     "themeDark": "ダーク",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "画面を常にオン",
     "keepScreenOnHint": "ワークアウト中",
     "autoRest": "セット完了時に自動で休憩タイマー",
@@ -452,7 +453,8 @@
       "subtitle": "お好みのテーマを選んでください。",
       "light": "ライト",
       "dark": "ダーク",
-      "system": "システム"
+      "system": "システム",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "あなたについて教えてください",

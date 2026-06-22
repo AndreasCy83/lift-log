@@ -315,6 +315,7 @@
     "themeSystem": "सिस्टम",
     "themeLight": "लाइट",
     "themeDark": "डार्क",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "स्क्रीन चालू रखें",
     "keepScreenOnHint": "वर्कआउट के दौरान",
     "autoRest": "सेट पूरा होने पर ऑटो विश्राम टाइमर",
@@ -452,7 +453,8 @@
       "subtitle": "अपना पसंदीदा थीम चुनें।",
       "light": "लाइट",
       "dark": "डार्क",
-      "system": "सिस्टम"
+      "system": "सिस्टम",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "अपने बारे में बताएं",
