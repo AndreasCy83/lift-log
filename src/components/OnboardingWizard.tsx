@@ -16,6 +16,8 @@ import { toStorageKg } from '@/lib/units';
 import { format } from 'date-fns';
 import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
 import { setLanguage } from '@/i18n';
+import { applyTheme as applyThemeMode } from '@/lib/applyTheme';
+import type { ThemeMode } from '@/lib/storage';
 
 const TOTAL_STEPS = 6;
 
