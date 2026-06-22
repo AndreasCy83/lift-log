@@ -315,6 +315,7 @@
     "themeSystem": "Système",
     "themeLight": "Clair",
     "themeDark": "Sombre",
+    "themeMonochrome": "Monochrome",
     "keepScreenOn": "Garder l'écran allumé",
     "keepScreenOnHint": "Pendant les séances",
     "autoRest": "Démarrer auto le minuteur de repos",
@@ -452,7 +453,8 @@
       "subtitle": "Choisissez le thème que vous préférez.",
       "light": "Clair",
       "dark": "Sombre",
-      "system": "Système"
+      "system": "Système",
+      "monochrome": "Monochrome"
     },
     "s4": {
       "title": "Parlez-nous de vous",
