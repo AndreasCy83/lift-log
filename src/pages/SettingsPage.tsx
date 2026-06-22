@@ -22,6 +22,7 @@ import type { UserProfile } from '@/types/fitness';
 import { type WeightUnitSetting, toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
 import { setLanguage } from '@/i18n';
+import { applyTheme } from '@/lib/applyTheme';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
