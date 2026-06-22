@@ -39,13 +39,8 @@ export default function OnboardingWizard() {
     setLanguage('en');
   }, []);
 
-  const applyTheme = (t: 'system' | 'light' | 'dark') => {
-    const root = document.documentElement;
-    root.classList.remove('dark', 'light');
-    if (t === 'dark') root.classList.add('dark');
-    else if (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      root.classList.add('dark');
-    }
+  const applyTheme = (t: ThemeMode) => {
+    applyThemeMode(t);
   };
 
   const persistStep = (current: number, skipped = false) => {
