@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages, Candy, Zap } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
