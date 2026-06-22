@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, Weight, MessageSquare, Sparkles, Languages, Candy, Zap } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -22,6 +22,7 @@ import type { UserProfile } from '@/types/fitness';
 import { type WeightUnitSetting, toDisplayWeight, toStorageKg, weightUnitLabel } from '@/lib/units';
 import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
 import { setLanguage } from '@/i18n';
+import { applyTheme } from '@/lib/applyTheme';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -42,14 +43,7 @@ export default function SettingsPage() {
   );
 
   useEffect(() => {
-    // Apply theme
-    const root = document.documentElement;
-    root.classList.remove('dark', 'light');
-    if (settings.theme === 'dark') root.classList.add('dark');
-    else if (settings.theme === 'light') root.classList.remove('dark');
-    else {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
-    }
+    applyTheme(settings.theme);
     saveSettings(settings);
   }, [settings]);
 
@@ -118,7 +112,17 @@ export default function SettingsPage() {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon };
+  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap } as const;
+  const themeLabels: Record<keyof typeof themeIcons, string> = {
+    system: 'settings.themeSystem',
+    light: 'settings.themeLight',
+    dark: 'settings.themeDark',
+    'cotton-candy': 'settings.themeCottonCandy',
+    'neo-blue': 'settings.themeNeoBlue',
+  };
+  const themeFallback: Record<keyof typeof themeIcons, string> = {
+    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue',
+  };
 
   if (showExerciseLibrary) {
     return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
@@ -257,18 +261,19 @@ export default function SettingsPage() {
         {/* Theme */}
         <div className="gym-card">
           <h3 className="font-display text-sm font-semibold mb-3">{t('settings.theme')}</h3>
-          <div className="flex gap-2">
-            {(['system', 'light', 'dark'] as const).map(th => {
+          <div className="grid grid-cols-3 gap-2">
+            {(['system', 'light', 'dark', 'cotton-candy', 'neo-blue'] as const).map(th => {
               const Icon = themeIcons[th];
-              const themeLabelKey = th === 'system' ? 'settings.themeSystem' : th === 'light' ? 'settings.themeLight' : 'settings.themeDark';
+              const label = t(themeLabels[th], { defaultValue: themeFallback[th] });
               return (
                 <button
                   key={th}
                   onClick={() => setSettings({ ...settings, theme: th })}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition-colors
+                  className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2.5 text-[11px] font-medium transition-colors
                     ${settings.theme === th ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                 >
-                  <Icon className="h-4 w-4" /> {t(themeLabelKey)}
+                  <Icon className="h-4 w-4" />
+                  <span className="leading-tight text-center">{label}</span>
                 </button>
               );
             })}

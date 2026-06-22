@@ -15,6 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises, seedBuiltInPrograms } from "@/lib/storage";
+import { applyTheme } from "@/lib/applyTheme";
 import { checkPendingBackup } from "@/lib/autoBackup";
 import { initBilling } from "@/lib/billing";
 import { preloadAudioCues } from "@/lib/ttsVoice";
@@ -35,12 +36,7 @@ function ThemeInit() {
     seedBuiltInPrograms();
 
     const settings = getSettings();
-    const root = document.documentElement;
-    root.classList.remove('dark', 'light');
-    if (settings.theme === 'dark') root.classList.add('dark');
-    else if (settings.theme === 'system') {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
-    }
+    applyTheme(settings.theme);
     checkPendingBackup();
     preloadAudioCues();
     initBilling();

@@ -1128,8 +1128,9 @@ export function getWeightHistory(): WeightEntry[] { return get<WeightEntry[]>(ST
 export function addWeightEntry(entry: WeightEntry) { const all = getWeightHistory(); all.push(entry); set(STORAGE_KEYS.weightHistory, all); }
 
 // Settings
+export type ThemeMode = 'system' | 'light' | 'dark' | 'cotton-candy' | 'neo-blue';
 export interface AppSettings {
-  theme: 'system' | 'light' | 'dark';
+  theme: ThemeMode;
   units: 'metric' | 'imperial';
   weightUnit: WeightUnitSetting;
   defaultRestSeconds: number;
