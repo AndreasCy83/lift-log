@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
+import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
