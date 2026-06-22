@@ -221,21 +221,23 @@ export default function OnboardingWizard() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {([
-                  { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light' },
-                  { v: 'dark', icon: Moon, labelKey: 'onboarding.s3.dark' },
-                  { v: 'system', icon: Monitor, labelKey: 'onboarding.s3.system' },
-                ] as const).map(({ v, icon: Icon, labelKey }) => (
+                  { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light', fallback: 'Light' },
+                  { v: 'dark', icon: Moon, labelKey: 'onboarding.s3.dark', fallback: 'Dark' },
+                  { v: 'system', icon: Monitor, labelKey: 'onboarding.s3.system', fallback: 'System' },
+                  { v: 'cotton-candy', icon: Candy, labelKey: 'onboarding.s3.cottonCandy', fallback: 'Cotton Candy' },
+                  { v: 'neo-blue', icon: Zap, labelKey: 'onboarding.s3.neoBlue', fallback: 'Neo Blue' },
+                ] as const).map(({ v, icon: Icon, labelKey, fallback }) => (
                   <button
                     key={v}
                     onClick={() => setTheme(v)}
-                    className={`flex flex-col items-center gap-2 rounded-lg py-4 text-xs font-medium transition-colors ${
+                    className={`flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium transition-colors ${
                       theme === v
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary text-secondary-foreground'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
-                    {t(labelKey)}
+                    <span className="leading-tight text-center">{t(labelKey, { defaultValue: fallback })}</span>
                   </button>
                 ))}
               </div>
