@@ -35,12 +35,7 @@ function ThemeInit() {
     seedBuiltInPrograms();
 
     const settings = getSettings();
-    const root = document.documentElement;
-    root.classList.remove('dark', 'light');
-    if (settings.theme === 'dark') root.classList.add('dark');
-    else if (settings.theme === 'system') {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
-    }
+    applyTheme(settings.theme);
     checkPendingBackup();
     preloadAudioCues();
     initBilling();
