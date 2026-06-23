@@ -418,12 +418,16 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   key={recommendationKey(rec)}
                   rec={rec}
                   unit={unit}
-                  applied={!!appliedMap[recommendationKey(rec)]}
                   onApply={handleApply}
                   onDefer={handleDefer}
                 />
-
               ))}
+            </div>
+          )}
+
+          {itemCount === 0 && (
+            <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 px-2 py-1.5 text-[11px] text-emerald-300">
+              All caught up — no pending adjustments.
             </div>
           )}
 
