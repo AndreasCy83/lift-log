@@ -49,13 +49,11 @@ function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
 function ExerciseRow({
   rec,
   unit,
-  applied,
   onApply,
   onDefer,
 }: {
   rec: ProgressionRecommendation;
   unit: 'kg' | 'lbs';
-  applied: boolean;
   onApply: (rec: ProgressionRecommendation) => void;
   onDefer: (rec: ProgressionRecommendation) => void;
 }) {
@@ -79,33 +77,21 @@ function ExerciseRow({
             <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
               {TYPE_LABEL[rec.recommendationType]}
             </span>
-            {applied ? (
-              <span
-                className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 py-[1px] text-[9px] font-medium text-emerald-300"
-                aria-label="Applied to next session"
-              >
-                <Check className="h-2.5 w-2.5" />
-                Applied
-              </span>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onApply(rec); }}
-                  className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
-                  className="shrink-0 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-[1px] text-[10px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 active:scale-[0.97] transition"
-                  aria-label="Review this recommendation later"
-                >
-                  Review later
-                </button>
-              </>
-            )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onApply(rec); }}
+              className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
+            >
+              Apply
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
+              className="shrink-0 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-[1px] text-[10px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 active:scale-[0.97] transition"
+              aria-label="Review this recommendation later"
+            >
+              Review later
+            </button>
           </div>
         </div>
       </div>
