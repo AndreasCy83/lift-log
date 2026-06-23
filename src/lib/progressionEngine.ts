@@ -48,7 +48,11 @@ export interface ProgressionRecommendation {
   reasons: string[];
   guardrailBlocked: boolean;
   createdAt: string;
-  /** V2: short user-facing action label (set by orchestrator). */
+  /**
+   * V2: short user-facing action label. May be pre-set by the progression
+   * engine for nuanced cases (e.g. "Rebuild reps", "Hold steady"); otherwise
+   * the orchestrator fills it from a default map.
+   */
   mainAction?: string;
   /** V2: 1–3 concise reasons surfaced in the UI (set by orchestrator). */
   topReasons?: string[];
