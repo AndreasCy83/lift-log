@@ -8,7 +8,7 @@
  *  - otherwise              → neutral/green-accent progression summary
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check, Info } from 'lucide-react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Info } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
