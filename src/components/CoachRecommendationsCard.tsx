@@ -34,10 +34,10 @@ interface Props {
 const TYPE_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
   load_progression: 'Increase load',
   rep_progression: 'Increase reps',
-  hold: 'Hold load',
+  hold: 'Hold steady',
   set_reduce: 'Reduce sets',
   set_increase: 'Increase sets',
-  deload_adjustment: 'Deload adjustment',
+  deload_adjustment: 'Keep load steady',
 };
 
 function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
