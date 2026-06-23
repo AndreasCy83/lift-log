@@ -8,7 +8,7 @@
  *  - otherwise              → neutral/green-accent progression summary
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Check, Info } from 'lucide-react';
+import { Brain, ChevronDown, AlertTriangle, Sparkles, TrendingUp, Info } from 'lucide-react';
 import {
   computeCoachRecommendations,
   type ProgressionRecommendation,
@@ -32,11 +32,11 @@ interface Props {
 }
 
 const TYPE_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
-  load_progression: 'Add load',
-  rep_progression: 'Add a rep',
+  load_progression: 'Increase load',
+  rep_progression: 'Increase reps',
   hold: 'Hold load',
   set_reduce: 'Reduce sets',
-  set_increase: 'Add a set',
+  set_increase: 'Increase sets',
   deload_adjustment: 'Deload adjustment',
 };
 
@@ -49,13 +49,11 @@ function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
 function ExerciseRow({
   rec,
   unit,
-  applied,
   onApply,
   onDefer,
 }: {
   rec: ProgressionRecommendation;
   unit: 'kg' | 'lbs';
-  applied: boolean;
   onApply: (rec: ProgressionRecommendation) => void;
   onDefer: (rec: ProgressionRecommendation) => void;
 }) {
@@ -79,33 +77,21 @@ function ExerciseRow({
             <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
               {TYPE_LABEL[rec.recommendationType]}
             </span>
-            {applied ? (
-              <span
-                className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 py-[1px] text-[9px] font-medium text-emerald-300"
-                aria-label="Applied to next session"
-              >
-                <Check className="h-2.5 w-2.5" />
-                Applied
-              </span>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onApply(rec); }}
-                  className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
-                  className="shrink-0 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-[1px] text-[10px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 active:scale-[0.97] transition"
-                  aria-label="Review this recommendation later"
-                >
-                  Review later
-                </button>
-              </>
-            )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onApply(rec); }}
+              className="shrink-0 rounded-full border border-primary/40 bg-primary/10 px-2 py-[1px] text-[10px] font-medium text-primary hover:bg-primary/20 active:scale-[0.97] transition"
+            >
+              Apply
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onDefer(rec); }}
+              className="shrink-0 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-[1px] text-[10px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 active:scale-[0.97] transition"
+              aria-label="Review this recommendation later"
+            >
+              Review later
+            </button>
           </div>
         </div>
       </div>
@@ -247,16 +233,8 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setExpanded(false);
   }, [refreshKey]);
 
-  // applyTick is read so React recomputes appliedMap on apply.
-  const appliedMap = useMemo(() => {
-    const map: Record<string, boolean> = {};
-    for (const it of snap.items) {
-      map[recommendationKey(it)] = isRecommendationApplied(it);
-    }
-    return map;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap, applyTick]);
-
+  // applyTick forces a re-render after apply/defer so the card drops applied
+  // items from the active list immediately.
   const handleApply = useCallback((rec: ProgressionRecommendation) => {
     const outcome = applyCoachRecommendation(rec);
     if (outcome.kind === 'needs_confirm') {
@@ -286,7 +264,6 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setApplyTick((n) => n + 1);
   }, []);
 
-
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
     'set_reduce',
@@ -296,9 +273,11 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   const baseItems = hasDeload
     ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
     : snap.items;
-  // Hide actively-deferred items across all surfaces. Expired deferrals
-  // are auto-purged inside isRecommendationDeferred().
-  const visibleItems = baseItems.filter((it) => !isRecommendationDeferred(it));
+  // Hide already-applied and actively-deferred items from the Home queue.
+  // Expired deferrals are auto-purged inside isRecommendationDeferred().
+  const visibleItems = baseItems.filter(
+    (it) => !isRecommendationApplied(it) && !isRecommendationDeferred(it),
+  );
   const itemCount = visibleItems.length;
 
   // V3: also render the card for behavior-only states (comeback / inactive),
@@ -439,12 +418,16 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
                   key={recommendationKey(rec)}
                   rec={rec}
                   unit={unit}
-                  applied={!!appliedMap[recommendationKey(rec)]}
                   onApply={handleApply}
                   onDefer={handleDefer}
                 />
-
               ))}
+            </div>
+          )}
+
+          {itemCount === 0 && (
+            <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 px-2 py-1.5 text-[11px] text-emerald-300">
+              All caught up — no pending adjustments.
             </div>
           )}
 
