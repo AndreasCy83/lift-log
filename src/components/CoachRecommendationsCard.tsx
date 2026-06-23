@@ -316,9 +316,9 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     (hasDeload
       ? 'Fatigue elevated — deload week recommended'
       : itemCount === 1
-        ? `${visibleItems[0].exerciseName} • ${TYPE_LABEL[
-            visibleItems[0].recommendationType
-          ].toLowerCase()}`
+        ? `${visibleItems[0].exerciseName} • ${(
+            visibleItems[0].mainAction ?? TYPE_LABEL[visibleItems[0].recommendationType]
+          ).toLowerCase()}`
         : 'Tuned suggestions ready for your next session');
   const trendSummary = snap.trendSummary;
 
