@@ -48,7 +48,11 @@ export interface ProgressionRecommendation {
   reasons: string[];
   guardrailBlocked: boolean;
   createdAt: string;
-  /** V2: short user-facing action label (set by orchestrator). */
+  /**
+   * V2: short user-facing action label. May be pre-set by the progression
+   * engine for nuanced cases (e.g. "Rebuild reps", "Hold steady"); otherwise
+   * the orchestrator fills it from a default map.
+   */
   mainAction?: string;
   /** V2: 1–3 concise reasons surfaced in the UI (set by orchestrator). */
   topReasons?: string[];
@@ -136,6 +140,7 @@ export function recommendProgression(
   let nextWeightKg = last.topWeightKg;
   let nextRepsLabel = fmtRepRange(repsMin, repsMax, last.avgReps);
   let confidence: 'low' | 'medium' | 'high' = 'low';
+  let mainAction: string | undefined;
 
   const rpe = last.avgRPE;
   const rpeRising =
@@ -145,10 +150,24 @@ export function recommendProgression(
     (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) || rpeRising || regressed;
 
   if (fatigued) {
-    type = 'hold';
-    if (regressed) reasons.push('Reps regressed vs last session');
-    if (rpeRising) reasons.push('Effort rising at similar load');
-    if (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) reasons.push('High RPE last session');
+    // Same load but reps regressed or effort spiked → stabilization, not
+    // forward progression. Surface as a dedicated "deload adjustment" so the
+    // UI can label it as recovery/rebuild rather than a neutral "hold".
+    type = 'deload_adjustment';
+    nextWeightKg = last.topWeightKg;
+    // Keep the prescription steady — don't tighten the rep target while the
+    // user is already under stress.
+    nextRepsLabel = `${Math.round(last.avgReps)}`;
+    if (regressed) {
+      reasons.push('Reps regressed vs last session — rebuild before progressing');
+      mainAction = 'Rebuild reps';
+    } else if (rpeRising) {
+      reasons.push('Effort rising at the same load — hold steady this session');
+      mainAction = 'Hold steady';
+    } else {
+      reasons.push('High RPE last session — keep load steady and recover');
+      mainAction = 'Keep load steady';
+    }
     confidence = 'medium';
   } else if (
     last.topWeightKg != null &&
@@ -163,18 +182,35 @@ export function recommendProgression(
     reasons.push(`Hit top of rep range (${Math.round(last.avgReps)}× ≥ ${targetTop})`);
     confidence = exposures.length >= 4 ? 'high' : 'medium';
   } else if (last.avgReps < targetTop && prior && last.avgReps >= prior.avgReps - 0.5) {
-    // Rep progression — same load, push reps. Lower-stakes nudge.
-    // Require at least a stable/improving rep trend vs prior session.
+    // Rep progression — same load, push reps by ONE.
+    // Hypertrophy training near failure cannot tolerate large rep jumps, so
+    // we always default to +1 rep at the same load. A +2 jump is only allowed
+    // when there is clear, strong improvement headroom (low RPE AND a real
+    // improvement vs prior session AND room before the top of the range).
     type = 'rep_progression';
     nextWeightKg = last.topWeightKg;
-    nextRepsLabel = `${Math.min(targetTop, Math.round(last.avgReps + 1))}${
-      repsMax ? ` / target ${targetTop}` : ''
-    }`;
-    reasons.push('Add a rep at the same load next session');
-    confidence = 'low';
+    const baseReps = Math.round(last.avgReps);
+    const improvedVsPrior = last.avgReps >= prior.avgReps + 1;
+    const lowEffort = rpe != null && rpe <= 7;
+    const headroom = targetTop - baseReps;
+    const allowDoubleJump =
+      exposures.length >= 4 &&
+      improvedVsPrior &&
+      lowEffort &&
+      headroom >= 3;
+    const repBump = allowDoubleJump ? 2 : 1;
+    const nextReps = Math.min(targetTop, baseReps + repBump);
+    nextRepsLabel = `${nextReps}`;
+    reasons.push(
+      repBump === 2
+        ? 'Add 2 reps at the same load — clear headroom and low effort'
+        : 'Add 1 rep at the same load next session',
+    );
+    confidence = allowDoubleJump ? 'medium' : 'low';
   } else {
     type = 'hold';
     reasons.push('Maintain current prescription');
+    mainAction = 'Hold steady';
     confidence = 'low';
   }
 
@@ -192,6 +228,7 @@ export function recommendProgression(
     reasons,
     guardrailBlocked: false,
     createdAt: new Date().toISOString(),
+    mainAction,
   };
 }
 

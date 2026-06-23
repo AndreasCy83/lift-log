@@ -34,10 +34,10 @@ interface Props {
 const TYPE_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
   load_progression: 'Increase load',
   rep_progression: 'Increase reps',
-  hold: 'Hold load',
+  hold: 'Hold steady',
   set_reduce: 'Reduce sets',
   set_increase: 'Increase sets',
-  deload_adjustment: 'Deload adjustment',
+  deload_adjustment: 'Keep load steady',
 };
 
 function fmtWeight(kg: number | null, unit: 'kg' | 'lbs'): string {
@@ -75,7 +75,7 @@ function ExerciseRow({
           </div>
           <div className="mt-0.5 flex items-center gap-1.5 min-w-0 flex-wrap">
             <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
-              {TYPE_LABEL[rec.recommendationType]}
+              {rec.mainAction ?? TYPE_LABEL[rec.recommendationType]}
             </span>
             <button
               type="button"
@@ -316,9 +316,9 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     (hasDeload
       ? 'Fatigue elevated — deload week recommended'
       : itemCount === 1
-        ? `${visibleItems[0].exerciseName} • ${TYPE_LABEL[
-            visibleItems[0].recommendationType
-          ].toLowerCase()}`
+        ? `${visibleItems[0].exerciseName} • ${(
+            visibleItems[0].mainAction ?? TYPE_LABEL[visibleItems[0].recommendationType]
+          ).toLowerCase()}`
         : 'Tuned suggestions ready for your next session');
   const trendSummary = snap.trendSummary;
 
