@@ -75,7 +75,7 @@ function ExerciseRow({
           </div>
           <div className="mt-0.5 flex items-center gap-1.5 min-w-0 flex-wrap">
             <span className="text-[10px] font-medium uppercase tracking-wide text-primary/80 truncate">
-              {TYPE_LABEL[rec.recommendationType]}
+              {rec.mainAction ?? TYPE_LABEL[rec.recommendationType]}
             </span>
             <button
               type="button"
