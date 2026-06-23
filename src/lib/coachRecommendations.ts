@@ -341,13 +341,15 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
   const ACTION_LABEL: Record<ProgressionRecommendation['recommendationType'], string> = {
     load_progression: 'Increase load',
     rep_progression: 'Increase reps',
-    hold: 'Hold load',
+    hold: 'Hold steady',
     set_reduce: 'Reduce sets',
     set_increase: 'Increase sets',
-    deload_adjustment: 'Deload adjustment',
+    deload_adjustment: 'Keep load steady',
   };
   for (const it of trimmed) {
-    it.mainAction = ACTION_LABEL[it.recommendationType];
+    // Respect any nuanced label already set by the progression engine
+    // (e.g. "Rebuild reps" for a regression-driven recovery rec).
+    if (!it.mainAction) it.mainAction = ACTION_LABEL[it.recommendationType];
     it.topReasons = it.reasons.slice(0, 3);
     // Confidence touch-ups: bump set_reduce to medium if driven by volume trend.
     if (
