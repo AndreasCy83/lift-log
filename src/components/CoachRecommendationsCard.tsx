@@ -233,16 +233,8 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setExpanded(false);
   }, [refreshKey]);
 
-  // applyTick is read so React recomputes appliedMap on apply.
-  const appliedMap = useMemo(() => {
-    const map: Record<string, boolean> = {};
-    for (const it of snap.items) {
-      map[recommendationKey(it)] = isRecommendationApplied(it);
-    }
-    return map;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap, applyTick]);
-
+  // applyTick forces a re-render after apply/defer so the card drops applied
+  // items from the active list immediately.
   const handleApply = useCallback((rec: ProgressionRecommendation) => {
     const outcome = applyCoachRecommendation(rec);
     if (outcome.kind === 'needs_confirm') {
@@ -272,7 +264,6 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
     setApplyTick((n) => n + 1);
   }, []);
 
-
   const hasDeload = !!snap.deload;
   const DELOAD_SAFE: Set<ProgressionRecommendation['recommendationType']> = new Set([
     'set_reduce',
@@ -282,9 +273,11 @@ export default function CoachRecommendationsCard({ refreshKey }: Props) {
   const baseItems = hasDeload
     ? snap.items.filter((it) => DELOAD_SAFE.has(it.recommendationType))
     : snap.items;
-  // Hide actively-deferred items across all surfaces. Expired deferrals
-  // are auto-purged inside isRecommendationDeferred().
-  const visibleItems = baseItems.filter((it) => !isRecommendationDeferred(it));
+  // Hide already-applied and actively-deferred items from the Home queue.
+  // Expired deferrals are auto-purged inside isRecommendationDeferred().
+  const visibleItems = baseItems.filter(
+    (it) => !isRecommendationApplied(it) && !isRecommendationDeferred(it),
+  );
   const itemCount = visibleItems.length;
 
   // V3: also render the card for behavior-only states (comeback / inactive),
