@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart, Settings } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
 
-import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings, addRoutine, addRoutineExercise } from '@/lib/storage';
+import type { Routine } from '@/types/fitness';
+import { Input } from '@/components/ui/input';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { startSession, formatHMS } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
