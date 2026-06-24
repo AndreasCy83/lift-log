@@ -368,6 +368,9 @@ export default function HomePage() {
                   <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
                     {t('home.actions.moveWorkout')}
                   </DropdownMenuItem>
+                  <DropdownMenuItem disabled={!selectedWorkout} onClick={handleOpenCreateRoutine}>
+                    {t('home.actions.createRoutine', { defaultValue: 'Create Routine from Workout' })}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <button
