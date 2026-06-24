@@ -189,6 +189,52 @@ export default function HomePage() {
     setPickerDate(undefined);
   }, [selectedWorkout, pickerDate]);
 
+  const defaultRoutineNameForSelected = useCallback(() => {
+    return t('home.createRoutine.defaultName', {
+      date: format(selectedDate, 'MMM d, yyyy'),
+      defaultValue: `Routine from ${format(selectedDate, 'MMM d, yyyy')}`,
+    });
+  }, [selectedDate, t]);
+
+  const handleOpenCreateRoutine = useCallback(() => {
+    setNewRoutineName(defaultRoutineNameForSelected());
+    setCreateRoutineOpen(true);
+  }, [defaultRoutineNameForSelected]);
+
+  const handleCreateRoutineFromWorkout = useCallback(() => {
+    if (!selectedWorkout) return;
+    const name = newRoutineName.trim() || defaultRoutineNameForSelected();
+    const routine: Routine = {
+      id: generateId(),
+      name,
+      description: '',
+      isActive: false,
+      programId: null,
+    };
+    addRoutine(routine);
+    const wExercises = getExercisesForWorkout(selectedWorkout.id);
+    wExercises.forEach((we, idx) => {
+      const workingSets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      addRoutineExercise({
+        id: generateId(),
+        routineId: routine.id,
+        exerciseId: we.exerciseId,
+        position: idx,
+        // Always pull the latest previous-session data at runtime; approved Coach
+        // recommendations override this in the routine runner / coach apply flow.
+        populationMode: 'copy_previous',
+        sets: Math.max(1, workingSets.length || 3),
+        repsMin: null,
+        repsMax: null,
+        restSeconds: null,
+        supersetGroup: null,
+      });
+    });
+    setCreateRoutineOpen(false);
+    setNewRoutineName('');
+    navigate(`/routine/${routine.id}`);
+  }, [selectedWorkout, newRoutineName, defaultRoutineNameForSelected, navigate]);
+
   return (
     <div
       className="flex min-h-screen flex-col"
