@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart, Settings } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, startOfWeek, endOfWeek, subWeeks, isSameMonth } from 'date-fns';
 
-import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings } from '@/lib/storage';
+import { getWorkouts, getExercisesForWorkout, getExercises, getCategories, generateId, addWorkout, getSetsForWorkoutExercise, deleteWorkout, copyWorkoutToDate, moveWorkoutToDate, getSettings, addRoutine, addRoutineExercise } from '@/lib/storage';
+import type { Routine } from '@/types/fitness';
+import { Input } from '@/components/ui/input';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { startSession, formatHMS } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
@@ -40,6 +42,8 @@ export default function HomePage() {
   const [pickerDate, setPickerDate] = useState<Date | undefined>(undefined);
   const [calendarExpanded, setCalendarExpanded] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [createRoutineOpen, setCreateRoutineOpen] = useState(false);
+  const [newRoutineName, setNewRoutineName] = useState('');
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
@@ -185,6 +189,52 @@ export default function HomePage() {
     setPickerDate(undefined);
   }, [selectedWorkout, pickerDate]);
 
+  const defaultRoutineNameForSelected = useCallback(() => {
+    return t('home.createRoutine.defaultName', {
+      date: format(selectedDate, 'MMM d, yyyy'),
+      defaultValue: `Routine from ${format(selectedDate, 'MMM d, yyyy')}`,
+    });
+  }, [selectedDate, t]);
+
+  const handleOpenCreateRoutine = useCallback(() => {
+    setNewRoutineName(defaultRoutineNameForSelected());
+    setCreateRoutineOpen(true);
+  }, [defaultRoutineNameForSelected]);
+
+  const handleCreateRoutineFromWorkout = useCallback(() => {
+    if (!selectedWorkout) return;
+    const name = newRoutineName.trim() || defaultRoutineNameForSelected();
+    const routine: Routine = {
+      id: generateId(),
+      name,
+      description: '',
+      isActive: false,
+      programId: null,
+    };
+    addRoutine(routine);
+    const wExercises = getExercisesForWorkout(selectedWorkout.id);
+    wExercises.forEach((we, idx) => {
+      const workingSets = getSetsForWorkoutExercise(we.id).filter(s => !s.isWarmup);
+      addRoutineExercise({
+        id: generateId(),
+        routineId: routine.id,
+        exerciseId: we.exerciseId,
+        position: idx,
+        // Always pull the latest previous-session data at runtime; approved Coach
+        // recommendations override this in the routine runner / coach apply flow.
+        populationMode: 'copy_previous',
+        sets: Math.max(1, workingSets.length || 3),
+        repsMin: null,
+        repsMax: null,
+        restSeconds: null,
+        supersetGroup: null,
+      });
+    });
+    setCreateRoutineOpen(false);
+    setNewRoutineName('');
+    navigate(`/routine/${routine.id}`);
+  }, [selectedWorkout, newRoutineName, defaultRoutineNameForSelected, navigate]);
+
   return (
     <div
       className="flex min-h-screen flex-col"
@@ -318,6 +368,9 @@ export default function HomePage() {
                   <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
                     {t('home.actions.moveWorkout')}
                   </DropdownMenuItem>
+                  <DropdownMenuItem disabled={!selectedWorkout} onClick={handleOpenCreateRoutine}>
+                    {t('home.actions.createRoutine', { defaultValue: 'Create Routine from Workout' })}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <button
@@ -361,6 +414,9 @@ export default function HomePage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => { setPickerDate(undefined); setMoveDialogOpen(true); }}>
                       {t('home.actions.moveWorkout')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenCreateRoutine}>
+                      {t('home.actions.createRoutine', { defaultValue: 'Create Routine from Workout' })}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -501,6 +557,36 @@ export default function HomePage() {
           </Button>
         </DialogContent>
       </Dialog>
+
+      {/* Create Routine from Workout Dialog */}
+      <Dialog open={createRoutineOpen} onOpenChange={setCreateRoutineOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {t('home.createRoutine.title', { defaultValue: 'Create Routine from Workout' })}
+            </DialogTitle>
+            <DialogDescription>
+              {t('home.createRoutine.description', {
+                defaultValue: 'Save this workout as a reusable routine. When you run it later, each exercise will pre-fill from your latest previous sets (approved Coach recommendations take precedence).',
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            value={newRoutineName}
+            onChange={(e) => setNewRoutineName(e.target.value)}
+            placeholder={t('home.createRoutine.namePlaceholder', { defaultValue: 'Routine name' })}
+            autoFocus
+          />
+          <Button
+            disabled={!selectedWorkout || !newRoutineName.trim()}
+            onClick={handleCreateRoutineFromWorkout}
+            className="w-full"
+          >
+            {t('home.createRoutine.cta', { defaultValue: 'Create routine' })}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Support Modal */}
       <SupportModal

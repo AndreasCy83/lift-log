@@ -68,7 +68,15 @@
     },
     "actions": {
       "copyWorkout": "Copy Workout",
-      "moveWorkout": "Move this Workout"
+      "moveWorkout": "Move this Workout",
+      "createRoutine": "Create Routine from Workout"
+    },
+    "createRoutine": {
+      "title": "Create Routine from Workout",
+      "description": "Save this workout as a reusable routine. When you run it later, each exercise will pre-fill from your latest previous sets (approved Coach recommendations take precedence).",
+      "namePlaceholder": "Routine name",
+      "defaultName": "Routine from {{date}}",
+      "cta": "Create routine"
     },
     "delete": {
       "title": "Delete Workout",
