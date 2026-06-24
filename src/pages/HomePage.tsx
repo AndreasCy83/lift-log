@@ -558,6 +558,36 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
+      {/* Create Routine from Workout Dialog */}
+      <Dialog open={createRoutineOpen} onOpenChange={setCreateRoutineOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {t('home.createRoutine.title', { defaultValue: 'Create Routine from Workout' })}
+            </DialogTitle>
+            <DialogDescription>
+              {t('home.createRoutine.description', {
+                defaultValue: 'Save this workout as a reusable routine. When you run it later, each exercise will pre-fill from your latest previous sets (approved Coach recommendations take precedence).',
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            value={newRoutineName}
+            onChange={(e) => setNewRoutineName(e.target.value)}
+            placeholder={t('home.createRoutine.namePlaceholder', { defaultValue: 'Routine name' })}
+            autoFocus
+          />
+          <Button
+            disabled={!selectedWorkout || !newRoutineName.trim()}
+            onClick={handleCreateRoutineFromWorkout}
+            className="w-full"
+          >
+            {t('home.createRoutine.cta', { defaultValue: 'Create routine' })}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+
       {/* Support Modal */}
       <SupportModal
         open={supportModalOpen}
