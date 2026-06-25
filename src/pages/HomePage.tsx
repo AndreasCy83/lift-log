@@ -629,6 +629,18 @@ export default function HomePage() {
         workoutCount={workouts.length}
         onClose={() => setSupportModalOpen(false)}
       />
+
+      {/* First-time Home tutorial */}
+      {showHomeTutorial && (
+        <ExerciseTutorialOverlay
+          steps={homeTutorialSteps}
+          onFinish={() => {
+            localStorage.setItem('hasSeenHomeTutorial', 'true');
+            setShowHomeTutorial(false);
+          }}
+        />
+      )}
+
     </div>
   );
 }
