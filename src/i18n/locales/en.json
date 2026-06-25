@@ -108,8 +108,19 @@
       "bandModerate": "MOD",
       "bandHigh": "HIGH",
       "bandVeryHigh": "V HIGH"
+    },
+    "tutorial": {
+      "calendarTitle": "Calendar",
+      "calendarText": "Tap a day to see that workout. The small colored dots under each date show which muscle groups you trained. Use the three-dot menu to copy, move or save the day as a routine, and the trash icon to delete it.",
+      "volumeTitle": "Volume",
+      "volumeText": "A quick view of your weekly training volume per muscle group — labelled as Under Target, Maintenance Volume, Productive Volume, Hypertrophy Zone, High Volume – Hypertrophy Zone or Overreach Zone.",
+      "recoveryTitle": "Recovery",
+      "recoveryText": "Estimated recovery and fatigue per muscle group, based on your recent sessions. Use it to decide what's fresh to train today and what still needs rest.",
+      "coachTitle": "Coach",
+      "coachText": "Offline training suggestions for your next session — small load, rep or deload tweaks. Tap Apply to write the recommendation straight into your next workout."
     }
   },
+
   "routines": {
     "title": "Routines",
     "tabs": {
