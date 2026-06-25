@@ -46,6 +46,31 @@ export default function HomePage() {
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [createRoutineOpen, setCreateRoutineOpen] = useState(false);
   const [newRoutineName, setNewRoutineName] = useState('');
+  const [showHomeTutorial, setShowHomeTutorial] = useState(false);
+
+  // First-time Home tutorial trigger (replays if reset from Settings)
+  useEffect(() => {
+    const check = () => {
+      if (localStorage.getItem('hasSeenHomeTutorial') !== 'true') {
+        setShowHomeTutorial(true);
+      }
+    };
+    const t = setTimeout(check, 450);
+    const onReset = () => check();
+    window.addEventListener('fitlog:wizard-reset', onReset);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('fitlog:wizard-reset', onReset);
+    };
+  }, []);
+
+  const homeTutorialSteps: TutorialStep[] = useMemo(() => ([
+    { selector: '[data-tutorial="home-calendar"]', title: t('home.tutorial.calendarTitle'), text: t('home.tutorial.calendarText') },
+    { selector: '[data-tutorial="home-volume"]',   title: t('home.tutorial.volumeTitle'),   text: t('home.tutorial.volumeText') },
+    { selector: '[data-tutorial="home-recovery"]', title: t('home.tutorial.recoveryTitle'), text: t('home.tutorial.recoveryText') },
+    { selector: '[data-tutorial="home-coach"]',    title: t('home.tutorial.coachTitle'),    text: t('home.tutorial.coachText') },
+  ]), [t]);
+
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
