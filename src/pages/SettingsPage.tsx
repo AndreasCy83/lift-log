@@ -359,12 +359,15 @@ export default function SettingsPage() {
             onClick={() => {
               localStorage.removeItem('hasSeenExerciseTutorial');
               localStorage.removeItem('hasSeenBodyTutorial');
-              toast({ title: 'Tutorials reset', description: 'Open an exercise or the Body tab to replay the tutorials.' });
+              localStorage.removeItem('hasCompletedFirstLaunch');
+              window.dispatchEvent(new Event('fitlog:wizard-reset'));
+              toast({ title: 'Tutorials reset', description: 'The welcome wizard and in-app tutorials will replay.' });
             }}
           >
             {t('settings.resetTutorials')}
           </Button>
         </div>
+
 
         {/* Danger Zone */}
         <div className="gym-card space-y-2">
