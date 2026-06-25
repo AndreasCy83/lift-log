@@ -324,7 +324,8 @@ export default function HomePage() {
         </div>
 
         {/* Calendar */}
-        <div className="gym-card mb-4">
+        <div className="gym-card mb-4" data-tutorial="home-calendar">
+
           <div className="mb-2 grid grid-cols-7 gap-1">
             {WEEKDAYS.map(d => (
               <div key={d} className="text-center text-[10px] font-medium uppercase text-muted-foreground">{d}</div>
