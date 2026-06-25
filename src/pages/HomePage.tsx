@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart, Settings } from 'lucide-react';
@@ -20,6 +20,8 @@ import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 import VolumeInsightsCard from '@/components/VolumeInsightsCard';
 import CoachRecommendationsCard from '@/components/CoachRecommendationsCard';
 import SupportModal from '@/components/SupportModal';
+import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+
 
 
 export default function HomePage() {
