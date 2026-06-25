@@ -359,6 +359,8 @@ export default function SettingsPage() {
             onClick={() => {
               localStorage.removeItem('hasSeenExerciseTutorial');
               localStorage.removeItem('hasSeenBodyTutorial');
+              localStorage.removeItem('hasSeenHomeTutorial');
+
               localStorage.removeItem('hasCompletedFirstLaunch');
               window.dispatchEvent(new Event('fitlog:wizard-reset'));
               toast({ title: 'Tutorials reset', description: 'The welcome wizard and in-app tutorials will replay.' });
