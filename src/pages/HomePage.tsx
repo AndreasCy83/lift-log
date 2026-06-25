@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart, Settings } from 'lucide-react';
@@ -20,6 +20,8 @@ import RecoveryFatigueCard from '@/components/RecoveryFatigueCard';
 import VolumeInsightsCard from '@/components/VolumeInsightsCard';
 import CoachRecommendationsCard from '@/components/CoachRecommendationsCard';
 import SupportModal from '@/components/SupportModal';
+import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
+
 
 
 export default function HomePage() {
@@ -44,6 +46,31 @@ export default function HomePage() {
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [createRoutineOpen, setCreateRoutineOpen] = useState(false);
   const [newRoutineName, setNewRoutineName] = useState('');
+  const [showHomeTutorial, setShowHomeTutorial] = useState(false);
+
+  // First-time Home tutorial trigger (replays if reset from Settings)
+  useEffect(() => {
+    const check = () => {
+      if (localStorage.getItem('hasSeenHomeTutorial') !== 'true') {
+        setShowHomeTutorial(true);
+      }
+    };
+    const t = setTimeout(check, 450);
+    const onReset = () => check();
+    window.addEventListener('fitlog:wizard-reset', onReset);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('fitlog:wizard-reset', onReset);
+    };
+  }, []);
+
+  const homeTutorialSteps: TutorialStep[] = useMemo(() => ([
+    { selector: '[data-tutorial="home-calendar"]', title: t('home.tutorial.calendarTitle'), text: t('home.tutorial.calendarText') },
+    { selector: '[data-tutorial="home-volume"]',   title: t('home.tutorial.volumeTitle'),   text: t('home.tutorial.volumeText') },
+    { selector: '[data-tutorial="home-recovery"]', title: t('home.tutorial.recoveryTitle'), text: t('home.tutorial.recoveryText') },
+    { selector: '[data-tutorial="home-coach"]',    title: t('home.tutorial.coachTitle'),    text: t('home.tutorial.coachText') },
+  ]), [t]);
+
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
   const allExercises = useMemo(() => getExercises(), []);
@@ -297,7 +324,8 @@ export default function HomePage() {
         </div>
 
         {/* Calendar */}
-        <div className="gym-card mb-4">
+        <div className="gym-card mb-4" data-tutorial="home-calendar">
+
           <div className="mb-2 grid grid-cols-7 gap-1">
             {WEEKDAYS.map(d => (
               <div key={d} className="text-center text-[10px] font-medium uppercase text-muted-foreground">{d}</div>
@@ -386,13 +414,20 @@ export default function HomePage() {
         </div>
 
         {/* Volume insights */}
-        <VolumeInsightsCard refreshKey={refreshKey} />
+        <div data-tutorial="home-volume">
+          <VolumeInsightsCard refreshKey={refreshKey} />
+        </div>
 
         {/* Recovery / Fatigue */}
-        <RecoveryFatigueCard refreshKey={refreshKey} />
+        <div data-tutorial="home-recovery">
+          <RecoveryFatigueCard refreshKey={refreshKey} />
+        </div>
 
         {/* Coach recommendations (offline rules engine) */}
-        <CoachRecommendationsCard refreshKey={refreshKey} />
+        <div data-tutorial="home-coach">
+          <CoachRecommendationsCard refreshKey={refreshKey} />
+        </div>
+
 
         {/* Selected day summary */}
         <div className="gym-card mt-4">
@@ -594,6 +629,18 @@ export default function HomePage() {
         workoutCount={workouts.length}
         onClose={() => setSupportModalOpen(false)}
       />
+
+      {/* First-time Home tutorial */}
+      {showHomeTutorial && (
+        <ExerciseTutorialOverlay
+          steps={homeTutorialSteps}
+          onFinish={() => {
+            localStorage.setItem('hasSeenHomeTutorial', 'true');
+            setShowHomeTutorial(false);
+          }}
+        />
+      )}
+
     </div>
   );
 }
