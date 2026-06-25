@@ -98,6 +98,16 @@
       "bandModerate": "MED",
       "bandHigh": "ALTO",
       "bandVeryHigh": "MOLTO"
+    },
+    "tutorial": {
+      "calendarTitle": "Calendario",
+      "calendarText": "Tocca un giorno per vedere quell'allenamento. I piccoli punti colorati sotto ogni data mostrano i gruppi muscolari allenati. Usa il menu a tre punti per copiare, spostare o salvare il giorno come routine, e l'icona cestino per eliminarlo.",
+      "volumeTitle": "Volume",
+      "volumeText": "Vista rapida del tuo volume settimanale per gruppo muscolare — etichettato come Sotto l'obiettivo, Volume di Mantenimento, Volume Produttivo, Zona di Ipertrofia, Volume Alto – Zona di Ipertrofia o Zona di Sovraccarico.",
+      "recoveryTitle": "Recupero",
+      "recoveryText": "Recupero e affaticamento stimati per gruppo muscolare, in base alle sessioni recenti. Usalo per decidere cosa è pronto da allenare oggi e cosa ha ancora bisogno di riposo.",
+      "coachTitle": "Coach",
+      "coachText": "Suggerimenti di allenamento offline per la prossima sessione — piccole modifiche di carico, ripetizioni o scarico. Tocca Applica per scrivere la raccomandazione direttamente nel tuo prossimo allenamento."
     }
   },
   "routines": {

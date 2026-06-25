@@ -98,6 +98,16 @@
       "bandModerate": "ORT",
       "bandHigh": "YÜK",
       "bandVeryHigh": "ÇK YÜK"
+    },
+    "tutorial": {
+      "calendarTitle": "Takvim",
+      "calendarText": "Bir güne dokunarak o antrenmanı görüntüleyin. Her tarihin altındaki küçük renkli noktalar çalıştığınız kas gruplarını gösterir. Üç nokta menüsünü kullanarak günü kopyalayabilir, taşıyabilir veya rutin olarak kaydedebilir, çöp simgesiyle silebilirsiniz.",
+      "volumeTitle": "Hacim",
+      "volumeText": "Kas grubuna göre haftalık antrenman hacminizin hızlı görünümü — Hedefin Altında, Koruma Hacmi, Verimli Hacim, Hipertrofi Bölgesi, Yüksek Hacim – Hipertrofi Bölgesi veya Aşırı Yüklenme Bölgesi olarak etiketlenir.",
+      "recoveryTitle": "Toparlanma",
+      "recoveryText": "Son seanslarınıza dayalı, kas grubu başına tahmini toparlanma ve yorgunluk. Bugün hangi kasın taze, hangisinin hâlâ dinlenmeye ihtiyacı olduğunu belirlemenize yardımcı olur.",
+      "coachTitle": "Koç",
+      "coachText": "Bir sonraki seansınız için çevrimdışı antrenman önerileri — küçük yük, tekrar veya yük azaltma ayarlamaları. Uygula'ya dokunarak öneriyi doğrudan bir sonraki antrenmanınıza yazın."
     }
   },
   "routines": {

@@ -98,6 +98,16 @@
       "bandModerate": "中",
       "bandHigh": "高",
       "bandVeryHigh": "極高"
+    },
+    "tutorial": {
+      "calendarTitle": "カレンダー",
+      "calendarText": "日付をタップしてそのワークアウトを確認します。各日付の下の小さな色付きドットは、トレーニングした筋群を示します。三点メニューで日のコピー・移動・ルーティン保存、ゴミ箱アイコンで削除できます。",
+      "volumeTitle": "ボリューム",
+      "volumeText": "筋群ごとの週間トレーニング量を素早く確認 — Under Target / Maintenance Volume / Productive Volume / Hypertrophy Zone / High Volume – Hypertrophy Zone / Overreach Zone としてラベル付け。",
+      "recoveryTitle": "リカバリー",
+      "recoveryText": "直近のセッションに基づく、筋群ごとの推定回復と疲労。今日トレーニングできる部位とまだ休ませるべき部位の判断に役立ちます。",
+      "coachTitle": "コーチ",
+      "coachText": "次回セッション向けのオフライントレーニング提案 — 重量・レップ・ディロードの小さな調整。Apply をタップすると次回ワークアウトに直接書き込みます。"
     }
   },
   "routines": {

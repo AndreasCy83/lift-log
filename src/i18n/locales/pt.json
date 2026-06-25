@@ -98,6 +98,16 @@
       "bandModerate": "MED",
       "bandHigh": "ALTO",
       "bandVeryHigh": "MUITO"
+    },
+    "tutorial": {
+      "calendarTitle": "Calendário",
+      "calendarText": "Toque em um dia para ver esse treino. Os pequenos pontos coloridos abaixo de cada data mostram quais grupos musculares você treinou. Use o menu de três pontos para copiar, mover ou salvar o dia como rotina, e o ícone da lixeira para excluí-lo.",
+      "volumeTitle": "Volume",
+      "volumeText": "Visão rápida do seu volume semanal de treino por grupo muscular — rotulado como Abaixo da Meta, Volume de Manutenção, Volume Produtivo, Zona de Hipertrofia, Alto Volume – Zona de Hipertrofia ou Zona de Sobrecarga.",
+      "recoveryTitle": "Recuperação",
+      "recoveryText": "Recuperação e fadiga estimadas por grupo muscular, com base em suas sessões recentes. Use para decidir o que está pronto para treinar hoje e o que ainda precisa descansar.",
+      "coachTitle": "Coach",
+      "coachText": "Sugestões de treino offline para sua próxima sessão — pequenos ajustes de carga, repetições ou descarga. Toque em Aplicar para gravar a recomendação direto no seu próximo treino."
     }
   },
   "routines": {
