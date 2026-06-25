@@ -86,6 +86,24 @@ const App = () => {
     return !lastShown || (Date.now() - parseInt(lastShown)) > FORTY_FIVE_MINUTES;
   });
 
+  const [showWizard, setShowWizard] = useState(
+    () => localStorage.getItem('hasCompletedFirstLaunch') !== 'true'
+  );
+
+  useEffect(() => {
+    const recheck = () => {
+      setShowWizard(localStorage.getItem('hasCompletedFirstLaunch') !== 'true');
+    };
+    window.addEventListener('fitlog:wizard-complete', recheck);
+    window.addEventListener('fitlog:wizard-reset', recheck);
+    window.addEventListener('storage', recheck);
+    return () => {
+      window.removeEventListener('fitlog:wizard-complete', recheck);
+      window.removeEventListener('fitlog:wizard-reset', recheck);
+      window.removeEventListener('storage', recheck);
+    };
+  }, []);
+
   const handleFinish = () => {
     localStorage.setItem('splashLastShown', Date.now().toString());
     setShowSplash(false);
@@ -103,11 +121,7 @@ const App = () => {
           <AndroidBackHandler />
           <RateAppDialog />
           <Routes>
-            <Route path="/" element={
-              localStorage.getItem('hasCompletedFirstLaunch') === 'true'
-                ? <HomePage />
-                : <OnboardingWizard />
-            } />
+            <Route path="/" element={<HomePage />} />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/program/:id" element={<ProgramDetailPage />} />
@@ -117,6 +131,7 @@ const App = () => {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {showWizard && <OnboardingWizard />}
           <GlobalRestTimer />
           <BottomNav />
         </HashRouter>

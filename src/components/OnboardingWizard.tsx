@@ -105,7 +105,7 @@ export default function OnboardingWizard() {
 
   const handleFinish = () => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
-    window.location.assign('/');
+    window.dispatchEvent(new Event('fitlog:wizard-complete'));
   };
 
   const canSkip = step === 3 || step === 4 || step === 5;
