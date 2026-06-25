@@ -414,13 +414,20 @@ export default function HomePage() {
         </div>
 
         {/* Volume insights */}
-        <VolumeInsightsCard refreshKey={refreshKey} />
+        <div data-tutorial="home-volume">
+          <VolumeInsightsCard refreshKey={refreshKey} />
+        </div>
 
         {/* Recovery / Fatigue */}
-        <RecoveryFatigueCard refreshKey={refreshKey} />
+        <div data-tutorial="home-recovery">
+          <RecoveryFatigueCard refreshKey={refreshKey} />
+        </div>
 
         {/* Coach recommendations (offline rules engine) */}
-        <CoachRecommendationsCard refreshKey={refreshKey} />
+        <div data-tutorial="home-coach">
+          <CoachRecommendationsCard refreshKey={refreshKey} />
+        </div>
+
 
         {/* Selected day summary */}
         <div className="gym-card mt-4">
