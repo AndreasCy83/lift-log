@@ -108,8 +108,27 @@ export default function ExercisesTab() {
   const tExName = useExerciseName();
   const exercises = useMemo(() => {
     const all = getExercises();
-    const withHistory = all.filter(e => getExerciseHistory(e.id).length > 0);
-    return withHistory.sort((a, b) => a.name.localeCompare(b.name));
+    // Include any exercise that has at least one logged set with meaningful
+    // data (weight/reps/distance/duration), regardless of the isCompleted
+    // toggle. The previous filter relied on getExerciseHistory which excludes
+    // sets where isCompleted !== true, hiding many valid entries.
+    const wes = getWorkoutExercises();
+    const sets = getWorkoutSets();
+    const exerciseIdByWeId = new Map(wes.map(we => [we.id, we.exerciseId]));
+    const idsWithData = new Set<string>();
+    for (const s of sets) {
+      const hasData =
+        (typeof s.weightKg === 'number' && s.weightKg > 0) ||
+        (typeof s.reps === 'number' && s.reps > 0) ||
+        (typeof s.distanceKm === 'number' && s.distanceKm > 0) ||
+        (typeof s.durationMinutes === 'number' && s.durationMinutes > 0);
+      if (!hasData) continue;
+      const exId = exerciseIdByWeId.get(s.workoutExerciseId);
+      if (exId) idsWithData.add(exId);
+    }
+    return all
+      .filter(e => idsWithData.has(e.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
   const [selectedExId, setSelectedExId] = useState<string>(exercises[0]?.id ?? '');
