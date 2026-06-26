@@ -4,6 +4,7 @@ import { Dumbbell, MoreVertical, Star, History } from 'lucide-react';
 import { format, subMonths, isAfter } from 'date-fns';
 import {
   getExercises, getExerciseHistory, getCategories, saveExercises, getSettings,
+  getWorkoutExercises, getWorkoutSets,
 } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
