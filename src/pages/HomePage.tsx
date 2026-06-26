@@ -48,18 +48,26 @@ export default function HomePage() {
   const [newRoutineName, setNewRoutineName] = useState('');
   const [showHomeTutorial, setShowHomeTutorial] = useState(false);
 
-  // First-time Home tutorial trigger (replays if reset from Settings)
+  // First-time Home tutorial trigger.
+  // IMPORTANT: must not start until the welcome wizard has been completed —
+  // otherwise its z-[100] overlay covers the Radix Dialog (z-50) and the
+  // wizard appears to be missing on a true fresh install.
   useEffect(() => {
     const check = () => {
-      if (localStorage.getItem('hasSeenHomeTutorial') !== 'true') {
+      const wizardDone = localStorage.getItem('hasCompletedFirstLaunch') === 'true';
+      const tutorialUnseen = localStorage.getItem('hasSeenHomeTutorial') !== 'true';
+      if (wizardDone && tutorialUnseen) {
         setShowHomeTutorial(true);
       }
     };
     const t = setTimeout(check, 450);
+    const onWizardComplete = () => setTimeout(check, 300);
     const onReset = () => check();
+    window.addEventListener('fitlog:wizard-complete', onWizardComplete);
     window.addEventListener('fitlog:wizard-reset', onReset);
     return () => {
       clearTimeout(t);
+      window.removeEventListener('fitlog:wizard-complete', onWizardComplete);
       window.removeEventListener('fitlog:wizard-reset', onReset);
     };
   }, []);
