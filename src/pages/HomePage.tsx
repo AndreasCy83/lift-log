@@ -648,6 +648,7 @@ export default function HomePage() {
         <ExerciseTutorialOverlay
           steps={homeTutorialSteps}
           onFinish={() => {
+            localStorage.setItem('homeTutorialVersionSeen', '2');
             localStorage.setItem('hasSeenHomeTutorial', 'true');
             setShowHomeTutorial(false);
           }}
