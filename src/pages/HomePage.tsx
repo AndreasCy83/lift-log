@@ -48,15 +48,20 @@ export default function HomePage() {
   const [newRoutineName, setNewRoutineName] = useState('');
   const [showHomeTutorial, setShowHomeTutorial] = useState(false);
 
-  // First-time Home tutorial trigger.
-  // IMPORTANT: must not start until the welcome wizard has been completed —
-  // otherwise its z-[100] overlay covers the Radix Dialog (z-50) and the
-  // wizard appears to be missing on a true fresh install.
+  // Versioned Home tutorial. Bump CURRENT_HOME_TUTORIAL_VERSION to replay
+  // the tutorial once for all users after a meaningful Home update.
+  // Sequencing: must wait for the welcome wizard to finish — otherwise the
+  // tutorial's z-[100] overlay covers the Radix Dialog (z-50).
   useEffect(() => {
+    const CURRENT_HOME_TUTORIAL_VERSION = 2;
     const check = () => {
       const wizardDone = localStorage.getItem('hasCompletedFirstLaunch') === 'true';
-      const tutorialUnseen = localStorage.getItem('hasSeenHomeTutorial') !== 'true';
-      if (wizardDone && tutorialUnseen) {
+      if (!wizardDone) return;
+      // Migrate legacy boolean flag → version 1 seen.
+      const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
+      const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
+      const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
+      if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) {
         setShowHomeTutorial(true);
       }
     };
@@ -643,6 +648,7 @@ export default function HomePage() {
         <ExerciseTutorialOverlay
           steps={homeTutorialSteps}
           onFinish={() => {
+            localStorage.setItem('homeTutorialVersionSeen', '2');
             localStorage.setItem('hasSeenHomeTutorial', 'true');
             setShowHomeTutorial(false);
           }}

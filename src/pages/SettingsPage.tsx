@@ -360,6 +360,7 @@ export default function SettingsPage() {
               localStorage.removeItem('hasSeenExerciseTutorial');
               localStorage.removeItem('hasSeenBodyTutorial');
               localStorage.removeItem('hasSeenHomeTutorial');
+              localStorage.removeItem('homeTutorialVersionSeen');
 
               localStorage.removeItem('hasCompletedFirstLaunch');
               window.dispatchEvent(new Event('fitlog:wizard-reset'));
