@@ -79,6 +79,9 @@ function AndroidBackHandler() {
   return null;
 }
 
+const isFirstLaunch = () =>
+  localStorage.getItem('hasCompletedFirstLaunch') !== 'true';
+
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
     const lastShown = localStorage.getItem('splashLastShown');
@@ -86,26 +89,27 @@ const App = () => {
     return !lastShown || (Date.now() - parseInt(lastShown)) > FORTY_FIVE_MINUTES;
   });
 
-  const [showWizard, setShowWizard] = useState(
-    () => localStorage.getItem('hasCompletedFirstLaunch') !== 'true'
-  );
+  const [showWizard, setShowWizard] = useState(isFirstLaunch);
 
   useEffect(() => {
-    const recheck = () => {
-      setShowWizard(localStorage.getItem('hasCompletedFirstLaunch') !== 'true');
-    };
+    // Re-check on explicit app events only. We intentionally do NOT listen
+    // for 'storage' here — same-origin iframes (Lovable preview) and unrelated
+    // localStorage writes from migrations were able to flip showWizard
+    // mid-onboarding on some platforms (Android WebView in particular).
+    const recheck = () => setShowWizard(isFirstLaunch());
     window.addEventListener('fitlog:wizard-complete', recheck);
     window.addEventListener('fitlog:wizard-reset', recheck);
-    window.addEventListener('storage', recheck);
     return () => {
       window.removeEventListener('fitlog:wizard-complete', recheck);
       window.removeEventListener('fitlog:wizard-reset', recheck);
-      window.removeEventListener('storage', recheck);
     };
   }, []);
 
   const handleFinish = () => {
     localStorage.setItem('splashLastShown', Date.now().toString());
+    // Re-evaluate first-launch AFTER any startup migrations have had a chance
+    // to run during splash. This guarantees a fresh install shows the wizard.
+    setShowWizard(isFirstLaunch());
     setShowSplash(false);
   };
 
@@ -117,6 +121,10 @@ const App = () => {
         <ThemeInit />
         <Toaster />
         <Sonner />
+        {/* Wizard rendered ABOVE the router so its portal mounts before any
+            route-level effects (e.g. HomePage tutorial timers) start running.
+            This restores the previously working Android welcome flow. */}
+        {showWizard && <OnboardingWizard />}
         <HashRouter>
           <AndroidBackHandler />
           <RateAppDialog />
@@ -131,7 +139,6 @@ const App = () => {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          {showWizard && <OnboardingWizard />}
           <GlobalRestTimer />
           <BottomNav />
         </HashRouter>

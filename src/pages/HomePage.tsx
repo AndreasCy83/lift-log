@@ -57,6 +57,12 @@ export default function HomePage() {
     const check = () => {
       const wizardDone = localStorage.getItem('hasCompletedFirstLaunch') === 'true';
       if (!wizardDone) return;
+      // Hard guard: never overlay the welcome wizard. If a Radix Dialog is
+      // currently open anywhere (the wizard is one), defer the tutorial.
+      if (document.querySelector('[role="dialog"][data-state="open"]')) {
+        setTimeout(check, 500);
+        return;
+      }
       // Migrate legacy boolean flag → version 1 seen.
       const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
       const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
@@ -65,9 +71,13 @@ export default function HomePage() {
         setShowHomeTutorial(true);
       }
     };
-    const t = setTimeout(check, 450);
-    const onWizardComplete = () => setTimeout(check, 300);
-    const onReset = () => check();
+    // Wait longer than the wizard's Radix open animation before the first check.
+    const t = setTimeout(check, 600);
+    const onWizardComplete = () => setTimeout(check, 400);
+    const onReset = () => {
+      setShowHomeTutorial(false);
+      setTimeout(check, 400);
+    };
     window.addEventListener('fitlog:wizard-complete', onWizardComplete);
     window.addEventListener('fitlog:wizard-reset', onReset);
     return () => {
