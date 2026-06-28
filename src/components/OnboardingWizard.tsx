@@ -109,9 +109,10 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
   const handleBack = () => setStep((s) => Math.max(1, s - 1));
 
   const handleFinish = () => {
-    localStorage.setItem('hasCompletedFirstLaunch', 'true');
-    window.dispatchEvent(new Event('fitlog:wizard-complete'));
+    // App owns persistence; we just notify it.
+    onFinish();
   };
+
 
   const canSkip = step === 3 || step === 4 || step === 5;
 
