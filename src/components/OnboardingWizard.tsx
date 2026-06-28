@@ -21,9 +21,14 @@ import type { ThemeMode } from '@/lib/storage';
 
 const TOTAL_STEPS = 6;
 
-export default function OnboardingWizard() {
+interface OnboardingWizardProps {
+  onFinish: () => void;
+}
+
+export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
+
 
   const [language, setLanguageState] = useState<SupportedLang>('en');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
