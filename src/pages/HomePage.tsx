@@ -24,7 +24,16 @@ import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/Exercis
 
 
 
-export default function HomePage() {
+interface HomePageProps {
+  /** App-level flag — true only when the welcome wizard is done and the
+   *  Home tutorial has not been seen at the current version. */
+  allowHomeTutorial?: boolean;
+  /** Called when the user finishes/dismisses the Home tutorial. App owns
+   *  persistence; HomePage just notifies. */
+  onHomeTutorialFinish?: () => void;
+}
+
+export default function HomePage({ allowHomeTutorial = false, onHomeTutorialFinish }: HomePageProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const WEEKDAYS = [
@@ -46,46 +55,6 @@ export default function HomePage() {
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [createRoutineOpen, setCreateRoutineOpen] = useState(false);
   const [newRoutineName, setNewRoutineName] = useState('');
-  const [showHomeTutorial, setShowHomeTutorial] = useState(false);
-
-  // Versioned Home tutorial. Bump CURRENT_HOME_TUTORIAL_VERSION to replay
-  // the tutorial once for all users after a meaningful Home update.
-  // Sequencing: must wait for the welcome wizard to finish — otherwise the
-  // tutorial's z-[100] overlay covers the Radix Dialog (z-50).
-  useEffect(() => {
-    const CURRENT_HOME_TUTORIAL_VERSION = 2;
-    const check = () => {
-      const wizardDone = localStorage.getItem('hasCompletedFirstLaunch') === 'true';
-      if (!wizardDone) return;
-      // Hard guard: never overlay the welcome wizard. If a Radix Dialog is
-      // currently open anywhere (the wizard is one), defer the tutorial.
-      if (document.querySelector('[role="dialog"][data-state="open"]')) {
-        setTimeout(check, 500);
-        return;
-      }
-      // Migrate legacy boolean flag → version 1 seen.
-      const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
-      const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
-      const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
-      if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) {
-        setShowHomeTutorial(true);
-      }
-    };
-    // Wait longer than the wizard's Radix open animation before the first check.
-    const t = setTimeout(check, 600);
-    const onWizardComplete = () => setTimeout(check, 400);
-    const onReset = () => {
-      setShowHomeTutorial(false);
-      setTimeout(check, 400);
-    };
-    window.addEventListener('fitlog:wizard-complete', onWizardComplete);
-    window.addEventListener('fitlog:wizard-reset', onReset);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener('fitlog:wizard-complete', onWizardComplete);
-      window.removeEventListener('fitlog:wizard-reset', onReset);
-    };
-  }, []);
 
   const homeTutorialSteps: TutorialStep[] = useMemo(() => ([
     { selector: '[data-tutorial="home-calendar"]', title: t('home.tutorial.calendarTitle'), text: t('home.tutorial.calendarText') },
@@ -93,6 +62,7 @@ export default function HomePage() {
     { selector: '[data-tutorial="home-recovery"]', title: t('home.tutorial.recoveryTitle'), text: t('home.tutorial.recoveryText') },
     { selector: '[data-tutorial="home-coach"]',    title: t('home.tutorial.coachTitle'),    text: t('home.tutorial.coachText') },
   ]), [t]);
+
 
 
   const workouts = useMemo(() => getWorkouts(), [refreshKey]);
