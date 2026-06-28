@@ -24,7 +24,11 @@ import { LANGUAGES, type SupportedLang } from '@/i18n/languages';
 import { setLanguage } from '@/i18n';
 import { applyTheme } from '@/lib/applyTheme';
 
-export default function SettingsPage() {
+interface SettingsPageProps {
+  onResetTutorials?: () => void;
+}
+
+export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -357,13 +361,7 @@ export default function SettingsPage() {
             size="sm"
             className="w-full"
             onClick={() => {
-              localStorage.removeItem('hasSeenExerciseTutorial');
-              localStorage.removeItem('hasSeenBodyTutorial');
-              localStorage.removeItem('hasSeenHomeTutorial');
-              localStorage.removeItem('homeTutorialVersionSeen');
-
-              localStorage.removeItem('hasCompletedFirstLaunch');
-              window.dispatchEvent(new Event('fitlog:wizard-reset'));
+              onResetTutorials?.();
               toast({ title: 'Tutorials reset', description: 'The welcome wizard and in-app tutorials will replay.' });
             }}
           >
