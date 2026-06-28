@@ -21,9 +21,14 @@ import type { ThemeMode } from '@/lib/storage';
 
 const TOTAL_STEPS = 6;
 
-export default function OnboardingWizard() {
+interface OnboardingWizardProps {
+  onFinish: () => void;
+}
+
+export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
+
 
   const [language, setLanguageState] = useState<SupportedLang>('en');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
@@ -104,9 +109,10 @@ export default function OnboardingWizard() {
   const handleBack = () => setStep((s) => Math.max(1, s - 1));
 
   const handleFinish = () => {
-    localStorage.setItem('hasCompletedFirstLaunch', 'true');
-    window.dispatchEvent(new Event('fitlog:wizard-complete'));
+    // App owns persistence; we just notify it.
+    onFinish();
   };
+
 
   const canSkip = step === 3 || step === 4 || step === 5;
 

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Route, Routes, useNavigate, useLocation, Navigate } from "react-router-dom";
+import { HashRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +13,7 @@ import StatsPage from "./pages/StatsPage";
 import BodyTrackerPage from "./pages/BodyTrackerPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises, seedBuiltInPrograms } from "@/lib/storage";
 import { applyTheme } from "@/lib/applyTheme";
 import { checkPendingBackup } from "@/lib/autoBackup";
@@ -28,6 +28,20 @@ import GlobalRestTimer from "@/components/GlobalRestTimer";
 
 const queryClient = new QueryClient();
 
+// Bump to replay the Home tutorial once for all users after a meaningful Home update.
+export const CURRENT_HOME_TUTORIAL_VERSION = 2;
+
+export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
+
+function computeStage(): OnboardingStage {
+  if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') return 'welcome';
+  const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
+  const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
+  const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
+  if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) return 'homeTutorial';
+  return 'done';
+}
+
 function ThemeInit() {
   useEffect(() => {
     cleanupUuidCategories();
@@ -40,7 +54,6 @@ function ThemeInit() {
     checkPendingBackup();
     preloadAudioCues();
     initBilling();
-    // Safeguard: drop any abandoned live workout session that exceeded the safe threshold.
     expireIfStale();
 
     const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
@@ -79,9 +92,6 @@ function AndroidBackHandler() {
   return null;
 }
 
-const isFirstLaunch = () =>
-  localStorage.getItem('hasCompletedFirstLaunch') !== 'true';
-
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
     const lastShown = localStorage.getItem('splashLastShown');
@@ -89,31 +99,42 @@ const App = () => {
     return !lastShown || (Date.now() - parseInt(lastShown)) > FORTY_FIVE_MINUTES;
   });
 
-  const [showWizard, setShowWizard] = useState(isFirstLaunch);
+  // Single source of truth for the onboarding flow. HomePage no longer
+  // decides this from storage/timers/DOM; it only reacts to the prop below.
+  const [stage, setStage] = useState<OnboardingStage>(() => computeStage());
 
+  // Settings → "Reset tutorials" clears storage flags and dispatches this event.
+  // We re-evaluate stage and skip splash so the wizard appears immediately.
   useEffect(() => {
-    // Re-check on explicit app events only. We intentionally do NOT listen
-    // for 'storage' here — same-origin iframes (Lovable preview) and unrelated
-    // localStorage writes from migrations were able to flip showWizard
-    // mid-onboarding on some platforms (Android WebView in particular).
-    const recheck = () => setShowWizard(isFirstLaunch());
-    window.addEventListener('fitlog:wizard-complete', recheck);
-    window.addEventListener('fitlog:wizard-reset', recheck);
-    return () => {
-      window.removeEventListener('fitlog:wizard-complete', recheck);
-      window.removeEventListener('fitlog:wizard-reset', recheck);
+    const onReset = () => {
+      setShowSplash(false);
+      setStage(computeStage());
     };
+    window.addEventListener('fitlog:wizard-reset', onReset);
+    return () => window.removeEventListener('fitlog:wizard-reset', onReset);
   }, []);
 
-  const handleFinish = () => {
+  const handleSplashFinish = useCallback(() => {
     localStorage.setItem('splashLastShown', Date.now().toString());
-    // Re-evaluate first-launch AFTER any startup migrations have had a chance
-    // to run during splash. This guarantees a fresh install shows the wizard.
-    setShowWizard(isFirstLaunch());
+    // Re-evaluate after startup migrations had a chance to run during splash.
+    setStage(computeStage());
     setShowSplash(false);
-  };
+  }, []);
 
-  if (showSplash) return <SplashScreen onFinish={handleFinish} />;
+  const handleWizardFinish = useCallback(() => {
+    localStorage.setItem('hasCompletedFirstLaunch', 'true');
+    setStage(computeStage());
+  }, []);
+
+  const handleHomeTutorialFinish = useCallback(() => {
+    localStorage.setItem('homeTutorialVersionSeen', String(CURRENT_HOME_TUTORIAL_VERSION));
+    localStorage.setItem('hasSeenHomeTutorial', 'true');
+    setStage('done');
+  }, []);
+
+  if (showSplash) return <SplashScreen onFinish={handleSplashFinish} />;
+
+  const allowHomeTutorial = stage === 'homeTutorial';
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -121,15 +142,23 @@ const App = () => {
         <ThemeInit />
         <Toaster />
         <Sonner />
-        {/* Wizard rendered ABOVE the router so its portal mounts before any
-            route-level effects (e.g. HomePage tutorial timers) start running.
-            This restores the previously working Android welcome flow. */}
-        {showWizard && <OnboardingWizard />}
+        {/* Welcome wizard rendered above the router so its portal mounts before
+            any route-level effects run. HomePage's tutorial is gated by the
+            explicit `allowHomeTutorial` prop — no DOM/timer races. */}
+        {stage === 'welcome' && <OnboardingWizard onFinish={handleWizardFinish} />}
         <HashRouter>
           <AndroidBackHandler />
           <RateAppDialog />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  allowHomeTutorial={allowHomeTutorial}
+                  onHomeTutorialFinish={handleHomeTutorialFinish}
+                />
+              }
+            />
             <Route path="/routines" element={<RoutinesPage />} />
             <Route path="/routine/:id" element={<RoutineDetailPage />} />
             <Route path="/program/:id" element={<ProgramDetailPage />} />
