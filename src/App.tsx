@@ -33,13 +33,21 @@ export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
-function computeStage(): OnboardingStage {
+export function computeStage(): OnboardingStage {
   if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') return 'welcome';
   const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
   const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
   const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
   if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) return 'homeTutorial';
   return 'done';
+}
+
+function resetTutorialStorage() {
+  localStorage.removeItem('hasSeenExerciseTutorial');
+  localStorage.removeItem('hasSeenBodyTutorial');
+  localStorage.removeItem('hasSeenHomeTutorial');
+  localStorage.removeItem('homeTutorialVersionSeen');
+  localStorage.removeItem('hasCompletedFirstLaunch');
 }
 
 function ThemeInit() {
@@ -92,6 +100,52 @@ function AndroidBackHandler() {
   return null;
 }
 
+interface AppRoutesProps {
+  stage: OnboardingStage;
+  allowHomeTutorial: boolean;
+  onHomeTutorialFinish: () => void;
+  onResetTutorials: () => void;
+}
+
+function AppRoutes({ stage, allowHomeTutorial, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if ((stage === 'welcome' || stage === 'homeTutorial') && location.pathname !== '/') {
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, navigate, stage]);
+
+  return (
+    <>
+      <AndroidBackHandler />
+      {stage === 'done' && <RateAppDialog />}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              allowHomeTutorial={allowHomeTutorial}
+              onHomeTutorialFinish={onHomeTutorialFinish}
+            />
+          }
+        />
+        <Route path="/routines" element={<RoutinesPage />} />
+        <Route path="/routine/:id" element={<RoutineDetailPage />} />
+        <Route path="/program/:id" element={<ProgramDetailPage />} />
+        <Route path="/workout/:date" element={<WorkoutLogPage />} />
+        <Route path="/body" element={<BodyTrackerPage />} />
+        <Route path="/stats" element={<StatsPage />} />
+        <Route path="/settings" element={<SettingsPage onResetTutorials={onResetTutorials} />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <GlobalRestTimer />
+      <BottomNav />
+    </>
+  );
+}
+
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
     const lastShown = localStorage.getItem('splashLastShown');
@@ -102,17 +156,6 @@ const App = () => {
   // Single source of truth for the onboarding flow. HomePage no longer
   // decides this from storage/timers/DOM; it only reacts to the prop below.
   const [stage, setStage] = useState<OnboardingStage>(() => computeStage());
-
-  // Settings → "Reset tutorials" clears storage flags and dispatches this event.
-  // We re-evaluate stage and skip splash so the wizard appears immediately.
-  useEffect(() => {
-    const onReset = () => {
-      setShowSplash(false);
-      setStage(computeStage());
-    };
-    window.addEventListener('fitlog:wizard-reset', onReset);
-    return () => window.removeEventListener('fitlog:wizard-reset', onReset);
-  }, []);
 
   const handleSplashFinish = useCallback(() => {
     localStorage.setItem('splashLastShown', Date.now().toString());
@@ -132,6 +175,12 @@ const App = () => {
     setStage('done');
   }, []);
 
+  const handleResetTutorials = useCallback(() => {
+    resetTutorialStorage();
+    setShowSplash(false);
+    setStage('welcome');
+  }, []);
+
   if (showSplash) return <SplashScreen onFinish={handleSplashFinish} />;
 
   const allowHomeTutorial = stage === 'homeTutorial';
@@ -147,29 +196,12 @@ const App = () => {
             explicit `allowHomeTutorial` prop — no DOM/timer races. */}
         {stage === 'welcome' && <OnboardingWizard onFinish={handleWizardFinish} />}
         <HashRouter>
-          <AndroidBackHandler />
-          <RateAppDialog />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  allowHomeTutorial={allowHomeTutorial}
-                  onHomeTutorialFinish={handleHomeTutorialFinish}
-                />
-              }
-            />
-            <Route path="/routines" element={<RoutinesPage />} />
-            <Route path="/routine/:id" element={<RoutineDetailPage />} />
-            <Route path="/program/:id" element={<ProgramDetailPage />} />
-            <Route path="/workout/:date" element={<WorkoutLogPage />} />
-            <Route path="/body" element={<BodyTrackerPage />} />
-            <Route path="/stats" element={<StatsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <GlobalRestTimer />
-          <BottomNav />
+          <AppRoutes
+            stage={stage}
+            allowHomeTutorial={allowHomeTutorial}
+            onHomeTutorialFinish={handleHomeTutorialFinish}
+            onResetTutorials={handleResetTutorials}
+          />
         </HashRouter>
       </TooltipProvider>
     </QueryClientProvider>
