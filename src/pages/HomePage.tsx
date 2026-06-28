@@ -623,17 +623,14 @@ export default function HomePage({ allowHomeTutorial = false, onHomeTutorialFini
         onClose={() => setSupportModalOpen(false)}
       />
 
-      {/* First-time Home tutorial */}
-      {showHomeTutorial && (
+      {/* First-time Home tutorial — gated entirely by App-level state. */}
+      {allowHomeTutorial && (
         <ExerciseTutorialOverlay
           steps={homeTutorialSteps}
-          onFinish={() => {
-            localStorage.setItem('homeTutorialVersionSeen', '2');
-            localStorage.setItem('hasSeenHomeTutorial', 'true');
-            setShowHomeTutorial(false);
-          }}
+          onFinish={() => onHomeTutorialFinish?.()}
         />
       )}
+
 
     </div>
   );
