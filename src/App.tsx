@@ -34,11 +34,25 @@ export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
-  if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') return 'welcome';
+  console.log('[FitLog] computeStage() — storage snapshot:', {
+    hasCompletedFirstLaunch: localStorage.getItem('hasCompletedFirstLaunch'),
+    hasSeenHomeTutorial: localStorage.getItem('hasSeenHomeTutorial'),
+    homeTutorialVersionSeen: localStorage.getItem('homeTutorialVersionSeen'),
+    splashLastShown: localStorage.getItem('splashLastShown'),
+    CURRENT_HOME_TUTORIAL_VERSION,
+  });
+  if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') {
+    console.log('[FitLog] computeStage() → welcome');
+    return 'welcome';
+  }
   const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
   const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
   const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
-  if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) return 'homeTutorial';
+  if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) {
+    console.log('[FitLog] computeStage() → homeTutorial');
+    return 'homeTutorial';
+  }
+  console.log('[FitLog] computeStage() → done');
   return 'done';
 }
 
