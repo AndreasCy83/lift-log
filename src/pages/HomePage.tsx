@@ -34,6 +34,14 @@ interface HomePageProps {
 }
 
 export default function HomePage({ allowHomeTutorial = false, onHomeTutorialFinish }: HomePageProps) {
+  useEffect(() => {
+    console.log('[FitLog] HomePage — allowHomeTutorial:', allowHomeTutorial);
+    const keys = ['home-calendar', 'home-volume', 'home-recovery', 'home-coach'];
+    keys.forEach((key) => {
+      const el = document.querySelector(`[data-tutorial="${key}"]`);
+      console.log(`[FitLog] HomePage — selector [data-tutorial="${key}"]`, el ? 'FOUND' : 'NOT FOUND');
+    });
+  }, [allowHomeTutorial]);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const WEEKDAYS = [

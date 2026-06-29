@@ -34,11 +34,25 @@ export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
-  if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') return 'welcome';
+  console.log('[FitLog] computeStage() — storage snapshot:', {
+    hasCompletedFirstLaunch: localStorage.getItem('hasCompletedFirstLaunch'),
+    hasSeenHomeTutorial: localStorage.getItem('hasSeenHomeTutorial'),
+    homeTutorialVersionSeen: localStorage.getItem('homeTutorialVersionSeen'),
+    splashLastShown: localStorage.getItem('splashLastShown'),
+    CURRENT_HOME_TUTORIAL_VERSION,
+  });
+  if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') {
+    console.log('[FitLog] computeStage() → welcome');
+    return 'welcome';
+  }
   const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
   const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
   const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
-  if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) return 'homeTutorial';
+  if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) {
+    console.log('[FitLog] computeStage() → homeTutorial');
+    return 'homeTutorial';
+  }
+  console.log('[FitLog] computeStage() → done');
   return 'done';
 }
 
@@ -160,18 +174,30 @@ const App = () => {
   const handleSplashFinish = useCallback(() => {
     localStorage.setItem('splashLastShown', Date.now().toString());
     // Re-evaluate after startup migrations had a chance to run during splash.
-    setStage(computeStage());
+    const recomputed = computeStage();
+    console.log('[FitLog] handleSplashFinish — splash finished, recomputed stage:', recomputed);
+    setStage(recomputed);
     setShowSplash(false);
   }, []);
 
   const handleWizardFinish = useCallback(() => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
-    setStage(computeStage());
+    const recomputed = computeStage();
+    console.log('[FitLog] handleWizardFinish — wizard finish triggered');
+    console.log('[FitLog] handleWizardFinish — hasCompletedFirstLaunch after write:', localStorage.getItem('hasCompletedFirstLaunch'));
+    console.log('[FitLog] handleWizardFinish — recomputed stage:', recomputed);
+    setStage(recomputed);
   }, []);
 
   const handleHomeTutorialFinish = useCallback(() => {
     localStorage.setItem('homeTutorialVersionSeen', String(CURRENT_HOME_TUTORIAL_VERSION));
     localStorage.setItem('hasSeenHomeTutorial', 'true');
+    console.log('[FitLog] handleHomeTutorialFinish — tutorial finish triggered');
+    console.log('[FitLog] handleHomeTutorialFinish — keys after write:', {
+      homeTutorialVersionSeen: localStorage.getItem('homeTutorialVersionSeen'),
+      hasSeenHomeTutorial: localStorage.getItem('hasSeenHomeTutorial'),
+    });
+    console.log('[FitLog] handleHomeTutorialFinish — resulting stage: done');
     setStage('done');
   }, []);
 
@@ -181,9 +207,12 @@ const App = () => {
     setStage('welcome');
   }, []);
 
+  console.log('[FitLog] App render —', { stage, showSplash });
+
   if (showSplash) return <SplashScreen onFinish={handleSplashFinish} />;
 
   const allowHomeTutorial = stage === 'homeTutorial';
+  console.log('[FitLog] App derived flags —', { allowHomeTutorial });
 
   return (
     <QueryClientProvider client={queryClient}>
