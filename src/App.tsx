@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,25 +34,15 @@ export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
-  console.log('[FitLog] computeStage() — storage snapshot:', {
-    hasCompletedFirstLaunch: localStorage.getItem('hasCompletedFirstLaunch'),
-    hasSeenHomeTutorial: localStorage.getItem('hasSeenHomeTutorial'),
-    homeTutorialVersionSeen: localStorage.getItem('homeTutorialVersionSeen'),
-    splashLastShown: localStorage.getItem('splashLastShown'),
-    CURRENT_HOME_TUTORIAL_VERSION,
-  });
   if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') {
-    console.log('[FitLog] computeStage() → welcome');
     return 'welcome';
   }
   const legacy = localStorage.getItem('hasSeenHomeTutorial') === 'true';
   const rawSeen = localStorage.getItem('homeTutorialVersionSeen');
   const seen = rawSeen != null ? parseInt(rawSeen, 10) : (legacy ? 1 : 0);
   if (!Number.isFinite(seen) || seen < CURRENT_HOME_TUTORIAL_VERSION) {
-    console.log('[FitLog] computeStage() → homeTutorial');
     return 'homeTutorial';
   }
-  console.log('[FitLog] computeStage() → done');
   return 'done';
 }
 
@@ -117,19 +107,13 @@ function AndroidBackHandler() {
 interface AppRoutesProps {
   stage: OnboardingStage;
   allowHomeTutorial: boolean;
+  onWizardFinish: () => void;
   onHomeTutorialFinish: () => void;
   onResetTutorials: () => void;
 }
 
-function AppRoutes({ stage, allowHomeTutorial, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if ((stage === 'welcome' || stage === 'homeTutorial') && location.pathname !== '/') {
-      navigate('/', { replace: true });
-    }
-  }, [location.pathname, navigate, stage]);
+function AppRoutes({ stage, allowHomeTutorial, onWizardFinish, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
+  const onboardingActive = stage === 'welcome' || stage === 'homeTutorial';
 
   return (
     <>
@@ -145,15 +129,22 @@ function AppRoutes({ stage, allowHomeTutorial, onHomeTutorialFinish, onResetTuto
             />
           }
         />
-        <Route path="/routines" element={<RoutinesPage />} />
-        <Route path="/routine/:id" element={<RoutineDetailPage />} />
-        <Route path="/program/:id" element={<ProgramDetailPage />} />
-        <Route path="/workout/:date" element={<WorkoutLogPage />} />
-        <Route path="/body" element={<BodyTrackerPage />} />
-        <Route path="/stats" element={<StatsPage />} />
-        <Route path="/settings" element={<SettingsPage onResetTutorials={onResetTutorials} />} />
-        <Route path="*" element={<NotFound />} />
+        {onboardingActive ? (
+          <Route path="*" element={<Navigate to="/" replace />} />
+        ) : (
+          <>
+            <Route path="/routines" element={<RoutinesPage />} />
+            <Route path="/routine/:id" element={<RoutineDetailPage />} />
+            <Route path="/program/:id" element={<ProgramDetailPage />} />
+            <Route path="/workout/:date" element={<WorkoutLogPage />} />
+            <Route path="/body" element={<BodyTrackerPage />} />
+            <Route path="/stats" element={<StatsPage />} />
+            <Route path="/settings" element={<SettingsPage onResetTutorials={onResetTutorials} />} />
+            <Route path="*" element={<NotFound />} />
+          </>
+        )}
       </Routes>
+      {stage === 'welcome' && <OnboardingWizard onFinish={onWizardFinish} />}
       <GlobalRestTimer />
       <BottomNav />
     </>
@@ -175,7 +166,6 @@ const App = () => {
     localStorage.setItem('splashLastShown', Date.now().toString());
     // Re-evaluate after startup migrations had a chance to run during splash.
     const recomputed = computeStage();
-    console.log('[FitLog] handleSplashFinish — splash finished, recomputed stage:', recomputed);
     setStage(recomputed);
     setShowSplash(false);
   }, []);
@@ -183,21 +173,12 @@ const App = () => {
   const handleWizardFinish = useCallback(() => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
     const recomputed = computeStage();
-    console.log('[FitLog] handleWizardFinish — wizard finish triggered');
-    console.log('[FitLog] handleWizardFinish — hasCompletedFirstLaunch after write:', localStorage.getItem('hasCompletedFirstLaunch'));
-    console.log('[FitLog] handleWizardFinish — recomputed stage:', recomputed);
     setStage(recomputed);
   }, []);
 
   const handleHomeTutorialFinish = useCallback(() => {
     localStorage.setItem('homeTutorialVersionSeen', String(CURRENT_HOME_TUTORIAL_VERSION));
     localStorage.setItem('hasSeenHomeTutorial', 'true');
-    console.log('[FitLog] handleHomeTutorialFinish — tutorial finish triggered');
-    console.log('[FitLog] handleHomeTutorialFinish — keys after write:', {
-      homeTutorialVersionSeen: localStorage.getItem('homeTutorialVersionSeen'),
-      hasSeenHomeTutorial: localStorage.getItem('hasSeenHomeTutorial'),
-    });
-    console.log('[FitLog] handleHomeTutorialFinish — resulting stage: done');
     setStage('done');
   }, []);
 
@@ -207,12 +188,9 @@ const App = () => {
     setStage('welcome');
   }, []);
 
-  console.log('[FitLog] App render —', { stage, showSplash });
-
   if (showSplash) return <SplashScreen onFinish={handleSplashFinish} />;
 
   const allowHomeTutorial = stage === 'homeTutorial';
-  console.log('[FitLog] App derived flags —', { allowHomeTutorial });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -220,14 +198,11 @@ const App = () => {
         <ThemeInit />
         <Toaster />
         <Sonner />
-        {/* Welcome wizard rendered above the router so its portal mounts before
-            any route-level effects run. HomePage's tutorial is gated by the
-            explicit `allowHomeTutorial` prop — no DOM/timer races. */}
-        {stage === 'welcome' && <OnboardingWizard onFinish={handleWizardFinish} />}
         <HashRouter>
           <AppRoutes
             stage={stage}
             allowHomeTutorial={allowHomeTutorial}
+            onWizardFinish={handleWizardFinish}
             onHomeTutorialFinish={handleHomeTutorialFinish}
             onResetTutorials={handleResetTutorials}
           />

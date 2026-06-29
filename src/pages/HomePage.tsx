@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, MoreVertical, Trash2, Heart, Settings } from 'lucide-react';
@@ -34,14 +34,6 @@ interface HomePageProps {
 }
 
 export default function HomePage({ allowHomeTutorial = false, onHomeTutorialFinish }: HomePageProps) {
-  useEffect(() => {
-    console.log('[FitLog] HomePage — allowHomeTutorial:', allowHomeTutorial);
-    const keys = ['home-calendar', 'home-volume', 'home-recovery', 'home-coach'];
-    keys.forEach((key) => {
-      const el = document.querySelector(`[data-tutorial="${key}"]`);
-      console.log(`[FitLog] HomePage — selector [data-tutorial="${key}"]`, el ? 'FOUND' : 'NOT FOUND');
-    });
-  }, [allowHomeTutorial]);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const WEEKDAYS = [
