@@ -106,13 +106,14 @@ function AndroidBackHandler() {
 
 interface AppRoutesProps {
   stage: OnboardingStage;
+  showSplash: boolean;
   allowHomeTutorial: boolean;
   onWizardFinish: () => void;
   onHomeTutorialFinish: () => void;
   onResetTutorials: () => void;
 }
 
-function AppRoutes({ stage, allowHomeTutorial, onWizardFinish, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
+function AppRoutes({ stage, showSplash, allowHomeTutorial, onWizardFinish, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
   const onboardingActive = stage === 'welcome' || stage === 'homeTutorial';
 
   return (
@@ -144,7 +145,7 @@ function AppRoutes({ stage, allowHomeTutorial, onWizardFinish, onHomeTutorialFin
           </>
         )}
       </Routes>
-      {stage === 'welcome' && <OnboardingWizard onFinish={onWizardFinish} />}
+      {stage === 'welcome' && !showSplash && <OnboardingWizard onFinish={onWizardFinish} />}
       <GlobalRestTimer />
       <BottomNav />
     </>
@@ -199,6 +200,7 @@ const App = () => {
         <HashRouter>
           <AppRoutes
             stage={stage}
+            showSplash={showSplash}
             allowHomeTutorial={allowHomeTutorial}
             onWizardFinish={handleWizardFinish}
             onHomeTutorialFinish={handleHomeTutorialFinish}
