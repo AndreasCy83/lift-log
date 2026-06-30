@@ -113,7 +113,7 @@ interface AppRoutesProps {
   onResetTutorials: () => void;
 }
 
-function AppRoutes({ stage, allowHomeTutorial, onWizardFinish, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
+function AppRoutes({ stage, showSplash, allowHomeTutorial, onWizardFinish, onHomeTutorialFinish, onResetTutorials }: AppRoutesProps) {
   const onboardingActive = stage === 'welcome' || stage === 'homeTutorial';
 
   return (
