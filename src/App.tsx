@@ -188,8 +188,6 @@ const App = () => {
     setStage('welcome');
   }, []);
 
-  if (showSplash) return <SplashScreen onFinish={handleSplashFinish} />;
-
   const allowHomeTutorial = stage === 'homeTutorial';
 
   return (
@@ -207,6 +205,7 @@ const App = () => {
             onResetTutorials={handleResetTutorials}
           />
         </HashRouter>
+        {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
       </TooltipProvider>
     </QueryClientProvider>
   );
