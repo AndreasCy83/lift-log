@@ -106,6 +106,7 @@ function AndroidBackHandler() {
 
 interface AppRoutesProps {
   stage: OnboardingStage;
+  showSplash: boolean;
   allowHomeTutorial: boolean;
   onWizardFinish: () => void;
   onHomeTutorialFinish: () => void;
