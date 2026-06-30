@@ -145,7 +145,7 @@ function AppRoutes({ stage, showSplash, allowHomeTutorial, onWizardFinish, onHom
           </>
         )}
       </Routes>
-      {stage === 'welcome' && <OnboardingWizard onFinish={onWizardFinish} />}
+      {stage === 'welcome' && !showSplash && <OnboardingWizard onFinish={onWizardFinish} />}
       <GlobalRestTimer />
       <BottomNav />
     </>
@@ -200,6 +200,7 @@ const App = () => {
         <HashRouter>
           <AppRoutes
             stage={stage}
+            showSplash={showSplash}
             allowHomeTutorial={allowHomeTutorial}
             onWizardFinish={handleWizardFinish}
             onHomeTutorialFinish={handleHomeTutorialFinish}
