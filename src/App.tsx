@@ -59,6 +59,7 @@ function resetTutorialStorage() {
   localStorage.removeItem('hasSeenHomeTutorial');
   localStorage.removeItem('homeTutorialVersionSeen');
   localStorage.removeItem('hasCompletedFirstLaunch');
+  localStorage.removeItem(INSTALL_ID_KEY);
 }
 
 function ThemeInit() {
@@ -180,6 +181,7 @@ const App = () => {
 
   const handleWizardFinish = useCallback(() => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
+    localStorage.setItem(INSTALL_ID_KEY, '1');
     const recomputed = computeStage();
     setStage(recomputed);
   }, []);
