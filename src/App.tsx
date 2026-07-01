@@ -31,6 +31,8 @@ const queryClient = new QueryClient();
 // Bump to replay the Home tutorial once for all users after a meaningful Home update.
 export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 
+export const INSTALL_ID_KEY = 'fitlog_install_id_v1';
+
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
