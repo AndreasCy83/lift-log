@@ -217,30 +217,6 @@ const App = () => {
           />
         </HashRouter>
         {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 999999,
-          background: '#000',
-          color: '#0f0',
-          fontFamily: 'monospace',
-          fontSize: '12px',
-          padding: '10px',
-          borderBottom: '3px solid red',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-all',
-        }}>
-          {`DEBUG
-stage=${stage}
-showSplash=${showSplash}
-hasCompletedFirstLaunch=${localStorage.getItem('hasCompletedFirstLaunch')}
-hasSeenHomeTutorial=${localStorage.getItem('hasSeenHomeTutorial')}
-homeTutorialVersionSeen=${localStorage.getItem('homeTutorialVersionSeen')}
-splashLastShown=${localStorage.getItem('splashLastShown')}
-CURRENT_HOME_TUTORIAL_VERSION=${CURRENT_HOME_TUTORIAL_VERSION}`}
-        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
