@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import App, { CURRENT_HOME_TUTORIAL_VERSION, computeStage } from './App';
+import App, { CURRENT_HOME_TUTORIAL_VERSION, INSTALL_ID_KEY, computeStage } from './App';
 
 vi.mock('@capacitor/app', () => ({
   App: {
@@ -109,6 +109,7 @@ describe('app onboarding sequencing', () => {
   it('existing users skip welcome and see the new Home tutorial once', async () => {
     skipSplashWindow();
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
+    localStorage.setItem(INSTALL_ID_KEY, '1');
 
     render(<App />);
 
@@ -124,6 +125,7 @@ describe('app onboarding sequencing', () => {
     skipSplashWindow();
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
     localStorage.setItem('homeTutorialVersionSeen', String(CURRENT_HOME_TUTORIAL_VERSION));
+    localStorage.setItem(INSTALL_ID_KEY, '1');
     window.location.hash = '#/settings';
 
     render(<App />);
