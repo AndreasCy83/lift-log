@@ -31,9 +31,16 @@ const queryClient = new QueryClient();
 // Bump to replay the Home tutorial once for all users after a meaningful Home update.
 export const CURRENT_HOME_TUTORIAL_VERSION = 2;
 
+export const INSTALL_ID_KEY = 'fitlog_install_id_v1';
+
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
+  // If no install ID exists, this is a fresh install or the user cleared storage.
+  // Force onboarding from the beginning regardless of any other stale keys.
+  if (!localStorage.getItem(INSTALL_ID_KEY)) {
+    return 'welcome';
+  }
   if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') {
     return 'welcome';
   }
@@ -52,6 +59,7 @@ function resetTutorialStorage() {
   localStorage.removeItem('hasSeenHomeTutorial');
   localStorage.removeItem('homeTutorialVersionSeen');
   localStorage.removeItem('hasCompletedFirstLaunch');
+  localStorage.removeItem(INSTALL_ID_KEY);
 }
 
 function ThemeInit() {
@@ -173,6 +181,7 @@ const App = () => {
 
   const handleWizardFinish = useCallback(() => {
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
+    localStorage.setItem(INSTALL_ID_KEY, '1');
     const recomputed = computeStage();
     setStage(recomputed);
   }, []);
