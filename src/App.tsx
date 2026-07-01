@@ -180,6 +180,15 @@ const App = () => {
   }, []);
 
   const handleWizardFinish = useCallback(() => {
+    // First time we establish the install-id onboarding flow, clear any
+    // legacy Home tutorial keys that a prior app version may have set.
+    // Without this, computeStage() would jump straight to 'done' and the
+    // Home tutorial would never appear after the welcome wizard.
+    const isFirstInstallIdEstablishment = !localStorage.getItem(INSTALL_ID_KEY);
+    if (isFirstInstallIdEstablishment) {
+      localStorage.removeItem('homeTutorialVersionSeen');
+      localStorage.removeItem('hasSeenHomeTutorial');
+    }
     localStorage.setItem('hasCompletedFirstLaunch', 'true');
     localStorage.setItem(INSTALL_ID_KEY, '1');
     const recomputed = computeStage();
