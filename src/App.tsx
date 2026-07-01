@@ -36,6 +36,11 @@ export const INSTALL_ID_KEY = 'fitlog_install_id_v1';
 export type OnboardingStage = 'welcome' | 'homeTutorial' | 'done';
 
 export function computeStage(): OnboardingStage {
+  // If no install ID exists, this is a fresh install or the user cleared storage.
+  // Force onboarding from the beginning regardless of any other stale keys.
+  if (!localStorage.getItem(INSTALL_ID_KEY)) {
+    return 'welcome';
+  }
   if (localStorage.getItem('hasCompletedFirstLaunch') !== 'true') {
     return 'welcome';
   }
