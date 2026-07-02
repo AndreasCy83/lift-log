@@ -244,27 +244,18 @@ export function applyVolumeTrend(
   trendPct: number,
   guardrailHigh: boolean,
 ): void {
+  // Coach intentionally does NOT auto-change prescribed set count in standard
+  // mode. Routines are typically time-boxed and users expect a fixed session
+  // structure — shrinking or expanding sets under the hood would derail the
+  // plan. Weekly volume trend is kept only as a contextual note surfaced in
+  // the reasons list; it must never alter `nextSets` or the recommendation
+  // type. (A future "Allow Coach to modify workout volume" setting could
+  // re-enable automatic set additions/reductions here.)
   if (trendPct >= THRESHOLDS.volumeTrendPct) {
-    // Weekly volume climbing — reduce sets next session
-    if (rec.nextSets > 1) {
-      rec.nextSets = rec.currentSets - 1;
-      // Set reduction supersedes any forward-progression label so the user
-      // doesn't see "progression ready" while we're actually backing off.
-      rec.recommendationType = 'set_reduce';
-      // Cancel a load bump — we're cutting volume, not adding stress.
-      rec.nextWeightKg = rec.currentWeightKg;
-      rec.reasons.push(
-        `Weekly volume up >${Math.round(THRESHOLDS.volumeTrendPct * 100)}% — drop a set`,
-      );
-    }
-  } else if (trendPct <= -THRESHOLDS.volumeTrendPct) {
-    // Coach intentionally does NOT auto-increase sets. Routines are usually
-    // time-boxed; expanding volume mid-program would derail the user's plan.
-    // We only surface a non-actionable note so the trend is still visible.
-    // (A future "Allow Coach to modify workout volume" setting could re-enable
-    // automatic set additions here.)
-    if (!guardrailHigh) {
-      rec.reasons.push('Weekly volume trending down — consider adding a set yourself');
-    }
+    rec.reasons.push(
+      `Weekly volume up >${Math.round(THRESHOLDS.volumeTrendPct * 100)}% — consider trimming a set yourself`,
+    );
+  } else if (trendPct <= -THRESHOLDS.volumeTrendPct && !guardrailHigh) {
+    rec.reasons.push('Weekly volume trending down — consider adding a set yourself');
   }
 }
