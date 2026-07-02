@@ -257,20 +257,26 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     return confRank[b.confidence] - confRank[a.confidence];
   });
 
-  // --- Guardrail: never surface automatic set-increase recommendations ---
-  // Routines are typically time-boxed; Coach must not expand workout length by
-  // adding sets automatically. Any residual `set_increase` item (defensive — the
-  // progression engine no longer emits them) is demoted to `hold` so the
-  // prescribed set count stays intact. A future explicit "Allow Coach to modify
-  // workout volume" setting could re-enable this behavior.
+  // --- Guardrail: never surface automatic set-count changes ---
+  // Routines are typically time-boxed; Coach must not expand or shrink workout
+  // length by changing prescribed set count automatically. Any residual
+  // `set_increase` or `set_reduce` item (defensive — the progression engine no
+  // longer emits them in standard mode) is demoted to `hold` so the prescribed
+  // set count stays intact. A future explicit "Allow Coach to modify workout
+  // volume" setting could re-enable this behavior.
   for (const it of meaningful) {
-    if (it.recommendationType !== 'set_increase') continue;
+    if (it.recommendationType !== 'set_increase' && it.recommendationType !== 'set_reduce') {
+      continue;
+    }
+    const wasReduce = it.recommendationType === 'set_reduce';
     it.recommendationType = 'hold';
     it.nextSets = it.currentSets;
     it.nextWeightKg = it.currentWeightKg;
     it.confidence = 'low';
     it.reasons = [
-      'Holding sets — prefer load or rep progression before adding volume',
+      wasReduce
+        ? 'Holding sets — weekly volume noted, but keeping your programmed set count'
+        : 'Holding sets — prefer load or rep progression before adding volume',
     ];
   }
 
