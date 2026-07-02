@@ -145,7 +145,37 @@ export function recommendProgression(
   const rpe = last.avgRPE;
   const rpeRising =
     rpe != null && prior?.avgRPE != null && rpe - prior.avgRPE >= THRESHOLDS.rpeRiseDelta;
-  const regressed = !!prior && last.avgReps + 0.5 < prior.avgReps;
+
+  // Load-aware regression check.
+  //
+  // A pure rep drop vs. the prior exposure is NOT enough to declare a
+  // regression. If the user moved to a heavier load, a modest rep drop is
+  // the expected biomechanical tradeoff (weighted pull-ups 5→10 kg, cable
+  // fly 24→26 kg, etc.) — not deterioration.
+  //
+  // We compare estimated 1RM (Epley: w * (1 + r/30)) between exposures.
+  // If load increased and the estimated 1RM held within a small tolerance,
+  // we treat the session as neutral / expected progression and do NOT
+  // route it into "Rebuild reps". True regression requires either estimated
+  // 1RM meaningfully dropping, or a rep drop at equal-or-lower load.
+  const est1RM = (w: number | null, r: number): number | null =>
+    w != null && w > 0 && r > 0 ? w * (1 + r / 30) : null;
+  const rawRepDrop = !!prior && last.avgReps + 0.5 < prior.avgReps;
+  let regressed = rawRepDrop;
+  if (rawRepDrop && prior) {
+    const lastE1 = est1RM(last.topWeightKg, last.avgReps);
+    const priorE1 = est1RM(prior.topWeightKg, prior.avgReps);
+    const lastW = last.topWeightKg ?? 0;
+    const priorW = prior.topWeightKg ?? 0;
+    const loadIncreased = lastW > 0 && priorW > 0 && lastW > priorW;
+    if (loadIncreased && lastE1 != null && priorE1 != null) {
+      // 2% tolerance on estimated 1RM absorbs normal set-to-set noise.
+      if (lastE1 >= priorE1 * 0.98) {
+        regressed = false;
+      }
+    }
+  }
+
   const fatigued =
     (rpe != null && rpe >= THRESHOLDS.rpeFatigueHard) || rpeRising || regressed;
 
