@@ -4,6 +4,7 @@ import {
   addWorkout, addWorkoutExercise, addWorkoutSet, getWorkoutByDate, deleteWorkout,
   getExercisesForWorkout,
 } from '@/lib/storage';
+import { applyPendingOverrideOnCreate } from '@/lib/coachApply';
 import type { Routine, RoutineExercise, WorkoutSet, Exercise, SetTag } from '@/types/fitness';
 
 function blankSet(weId: string, setIndex: number, restSeconds: number | null): WorkoutSet {
@@ -170,6 +171,15 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     }
   });
 
+  // Coach apply is authoritative: after sets are populated from routine
+  // template / previous session, override load+reps on every non-warmup set
+  // with any pending Coach prescription for that exercise. This must run
+  // AFTER set creation so it wins over predefined values and copied-forward
+  // previous values without altering set count or warmups.
+  getExercisesForWorkout(workoutId).forEach((we) => {
+    applyPendingOverrideOnCreate(we.id, we.exerciseId);
+  });
+
   return dateStr;
 }
 
@@ -188,6 +198,8 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
     }
   });
 
+  const createdWeIds: Array<{ weId: string; exerciseId: string }> = [];
+
   entries.forEach((re, idx) => {
     const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
     const weId = generateId();
@@ -201,6 +213,7 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
       notes: '',
       defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
     });
+    createdWeIds.push({ weId, exerciseId: re.exerciseId });
 
     if (mode === 'blank') return;
 
@@ -227,6 +240,11 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
         addWorkoutSet(predefinedSet(weId, i, re, setType));
       }
     }
+  });
+
+  // Coach apply is authoritative on newly appended exercises too.
+  createdWeIds.forEach(({ weId, exerciseId }) => {
+    applyPendingOverrideOnCreate(weId, exerciseId);
   });
 
   return entries.length;

@@ -341,6 +341,40 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
   }
 }
 
+/**
+ * Override every non-warmup, incomplete working set on a freshly-populated
+ * WorkoutExercise with a pending Coach prescription. Does NOT add, remove,
+ * or reorder sets — set count is authoritatively driven by the routine
+ * template / previous session. Coach only overrides load and reps.
+ *
+ * This is what makes an applied Coach recommendation win over both routine
+ * template defaults AND copied-forward previous values when a routine is run.
+ * The pending override is intentionally NOT cleared here so that repeated
+ * routine runs (e.g. re-running today's routine) keep applying it until Coach
+ * itself recomputes and overwrites it.
+ */
+export function applyPendingOverrideOnCreate(
+  workoutExerciseId: string,
+  exerciseId: string,
+): boolean {
+  const pending = getPendingCoachOverride(exerciseId);
+  if (!pending) return false;
+  const targetReps = pending.repsMax ?? pending.repsMin ?? null;
+  const sets = getSetsForWorkoutExercise(workoutExerciseId);
+  let touched = false;
+  for (const s of sets) {
+    if (s.isCompleted || s.isWarmup || s.setTag === 'W') continue;
+    updateWorkoutSet({
+      ...s,
+      weightKg: pending.weightKg,
+      reps: targetReps,
+    });
+    touched = true;
+  }
+  if (touched) markWEApplied(workoutExerciseId, exerciseId, pending);
+  return touched;
+}
+
 /** Apply a Coach recommendation. Pass `force=true` to overwrite user edits
  *  after a confirm step. */
 export function applyCoachRecommendation(
@@ -352,10 +386,13 @@ export function applyCoachRecommendation(
   const target = findNextPlannedWorkoutExercise(rec.exerciseId);
   const p = buildPrescription(rec);
 
+  // Always persist a pending override so subsequent routine runs (which
+  // rebuild today's workout from scratch) still surface the Coach change.
+  const pendingMap = readPending();
+  pendingMap[rec.exerciseId] = p;
+  writePending(pendingMap);
+
   if (!target) {
-    const m = readPending();
-    m[rec.exerciseId] = p;
-    writePending(m);
     markApplied(rec);
     return { kind: 'pending', exerciseName: exName };
   }
@@ -372,8 +409,6 @@ export function applyCoachRecommendation(
 
   writePrescriptionToWE(target.workoutExerciseId, p);
   markWEApplied(target.workoutExerciseId, rec.exerciseId, p);
-  // If we just landed on a real session, drop any stale pending override.
-  clearPendingCoachOverride(rec.exerciseId);
   markApplied(rec);
   return {
     kind: 'applied',
