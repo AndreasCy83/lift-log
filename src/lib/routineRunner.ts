@@ -171,6 +171,15 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     }
   });
 
+  // Coach apply is authoritative: after sets are populated from routine
+  // template / previous session, override load+reps on every non-warmup set
+  // with any pending Coach prescription for that exercise. This must run
+  // AFTER set creation so it wins over predefined values and copied-forward
+  // previous values without altering set count or warmups.
+  getExercisesForWorkout(workoutId).forEach((we) => {
+    applyPendingOverrideOnCreate(we.id, we.exerciseId);
+  });
+
   return dateStr;
 }
 
