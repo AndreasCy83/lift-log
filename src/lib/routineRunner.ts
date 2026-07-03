@@ -4,6 +4,7 @@ import {
   addWorkout, addWorkoutExercise, addWorkoutSet, getWorkoutByDate, deleteWorkout,
   getExercisesForWorkout,
 } from '@/lib/storage';
+import { applyPendingOverrideOnCreate } from '@/lib/coachApply';
 import type { Routine, RoutineExercise, WorkoutSet, Exercise, SetTag } from '@/types/fitness';
 
 function blankSet(weId: string, setIndex: number, restSeconds: number | null): WorkoutSet {
