@@ -198,6 +198,8 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
     }
   });
 
+  const createdWeIds: Array<{ weId: string; exerciseId: string }> = [];
+
   entries.forEach((re, idx) => {
     const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
     const weId = generateId();
@@ -211,6 +213,7 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
       notes: '',
       defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
     });
+    createdWeIds.push({ weId, exerciseId: re.exerciseId });
 
     if (mode === 'blank') return;
 
@@ -237,6 +240,11 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
         addWorkoutSet(predefinedSet(weId, i, re, setType));
       }
     }
+  });
+
+  // Coach apply is authoritative on newly appended exercises too.
+  createdWeIds.forEach(({ weId, exerciseId }) => {
+    applyPendingOverrideOnCreate(weId, exerciseId);
   });
 
   return entries.length;
