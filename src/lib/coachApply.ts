@@ -48,9 +48,17 @@ export interface CoachPrescription {
   repsMax: number | null;
   repInfo: string;
   weightKg: number | null;
+  /**
+   * Baseline rep target this recommendation is relative to (parsed from
+   * rec.currentRepInfo). Used to apply the rep change as a per-set DELTA
+   * so a staggered/descending working-set pattern (e.g. 12/10/8) is
+   * preserved rather than flattened to one identical rep value.
+   */
+  baselineReps: number | null;
   source: 'coach';
   appliedAt: string;
 }
+
 
 export type ApplyOutcome =
   | { kind: 'applied'; workoutId: string; exerciseName: string; whenISO: string }
@@ -279,6 +287,8 @@ export function hasUserEditedPlannedValues(workoutExerciseId: string): boolean {
 
 function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
   const { min, max } = parseRepInfo(rec.nextRepInfo);
+  const cur = parseRepInfo(rec.currentRepInfo);
+  const baselineReps = cur.max ?? cur.min ?? null;
   return {
     exerciseId: rec.exerciseId,
     sets: Math.max(1, rec.nextSets),
@@ -286,11 +296,40 @@ function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
     repsMax: max,
     repInfo: rec.nextRepInfo,
     weightKg: rec.nextWeightKg,
+    baselineReps,
     source: 'coach',
     appliedAt: new Date().toISOString(),
   };
 }
+
 export { buildPrescription };
+
+/**
+ * Compute the new prescribed reps for a single working set, preserving the
+ * existing per-set rep structure. The recommendation is applied as a DELTA
+ * relative to the baseline it was computed against, so a staggered pattern
+ * like 12/10/8 with "+1 rep" becomes 13/11/9 rather than 13/13/13.
+ */
+function computeSetReps(
+  existingReps: number | null | undefined,
+  targetReps: number | null,
+  baselineReps: number | null,
+): number | null {
+  const hasExisting = existingReps != null && existingReps > 0;
+  // Delta mode: both target and baseline known.
+  if (targetReps != null && baselineReps != null) {
+    const delta = targetReps - baselineReps;
+    if (hasExisting) return Math.max(1, (existingReps as number) + delta);
+    // No existing per-set value: fall back to the flat target.
+    return Math.max(1, targetReps);
+  }
+  // Target known but no baseline (nothing to diff against): only seed empty
+  // sets; never overwrite an existing per-set rep value.
+  if (targetReps != null) {
+    return hasExisting ? (existingReps as number) : targetReps;
+  }
+  return hasExisting ? (existingReps as number) : null;
+}
 
 export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
   const existing = getSetsForWorkoutExercise(workoutExerciseId);
@@ -313,7 +352,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
       const updated: WorkoutSet = {
         ...slot,
         weightKg: p.weightKg,
-        reps: targetReps,
+        reps: computeSetReps(slot.reps, targetReps, p.baselineReps),
         isCompleted: false,
       };
       updateWorkoutSet(updated);
@@ -324,7 +363,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
         setIndex: baseIndex + i,
         setTag: 'N',
         weightKg: p.weightKg,
-        reps: targetReps,
+        reps: computeSetReps(null, targetReps, p.baselineReps),
         distanceKm: null,
         durationMinutes: null,
         rpe: null,
@@ -340,6 +379,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
     deleteWorkoutSet(editable[i].id);
   }
 }
+
 
 /**
  * Override every non-warmup, incomplete working set on a freshly-populated
@@ -367,7 +407,8 @@ export function applyPendingOverrideOnCreate(
     updateWorkoutSet({
       ...s,
       weightKg: pending.weightKg,
-      reps: targetReps,
+      reps: computeSetReps(s.reps, targetReps, pending.baselineReps),
+
     });
     touched = true;
   }
