@@ -146,7 +146,7 @@ export function recommendProgression(
   const rpeRising =
     rpe != null && prior?.avgRPE != null && rpe - prior.avgRPE >= THRESHOLDS.rpeRiseDelta;
 
-  // Load-aware regression check.
+  // Load-aware regression check with sparse-history gating.
   //
   // A pure rep drop vs. the prior exposure is NOT enough to declare a
   // regression. If the user moved to a heavier load, a modest rep drop is
@@ -158,11 +158,17 @@ export function recommendProgression(
   // we treat the session as neutral / expected progression and do NOT
   // route it into "Rebuild reps". True regression requires either estimated
   // 1RM meaningfully dropping, or a rep drop at equal-or-lower load.
+  //
+  // Additionally, with fewer than three exposures we gate off regression
+  // conclusions entirely. A single modest drop across only two sessions is
+  // too noisy to justify a recovery prescription; bias to "hold" instead.
   const est1RM = (w: number | null, r: number): number | null =>
     w != null && w > 0 && r > 0 ? w * (1 + r / 30) : null;
   const rawRepDrop = !!prior && last.avgReps + 0.5 < prior.avgReps;
-  let regressed = rawRepDrop;
-  if (rawRepDrop && prior) {
+  const enoughHistoryForRegression =
+    exposures.length >= THRESHOLDS.minExposuresForRegression;
+  let regressed = rawRepDrop && enoughHistoryForRegression;
+  if (rawRepDrop && enoughHistoryForRegression && prior) {
     const lastE1 = est1RM(last.topWeightKg, last.avgReps);
     const priorE1 = est1RM(prior.topWeightKg, prior.avgReps);
     const lastW = last.topWeightKg ?? 0;
