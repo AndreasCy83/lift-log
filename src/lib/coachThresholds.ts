@@ -12,6 +12,8 @@ export const THRESHOLDS = {
   minExposuresForLoadIncrease: 3,
   /** Require at least N exposures before suggesting any progression (load or rep). */
   minExposuresForAnyProgression: 2,
+  /** Require at least N exposures before calling a rep drop a regression. */
+  minExposuresForRegression: 3,
   rpeRiseDelta: 1.0,
   rpeFatigueHard: 9.0,
 
