@@ -407,7 +407,8 @@ export function applyPendingOverrideOnCreate(
     updateWorkoutSet({
       ...s,
       weightKg: pending.weightKg,
-      reps: targetReps,
+      reps: computeSetReps(s.reps, targetReps, pending.baselineReps),
+
     });
     touched = true;
   }
