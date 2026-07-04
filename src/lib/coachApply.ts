@@ -304,6 +304,33 @@ function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
 
 export { buildPrescription };
 
+/**
+ * Compute the new prescribed reps for a single working set, preserving the
+ * existing per-set rep structure. The recommendation is applied as a DELTA
+ * relative to the baseline it was computed against, so a staggered pattern
+ * like 12/10/8 with "+1 rep" becomes 13/11/9 rather than 13/13/13.
+ */
+function computeSetReps(
+  existingReps: number | null | undefined,
+  targetReps: number | null,
+  baselineReps: number | null,
+): number | null {
+  const hasExisting = existingReps != null && existingReps > 0;
+  // Delta mode: both target and baseline known.
+  if (targetReps != null && baselineReps != null) {
+    const delta = targetReps - baselineReps;
+    if (hasExisting) return Math.max(1, (existingReps as number) + delta);
+    // No existing per-set value: fall back to the flat target.
+    return Math.max(1, targetReps);
+  }
+  // Target known but no baseline (nothing to diff against): only seed empty
+  // sets; never overwrite an existing per-set rep value.
+  if (targetReps != null) {
+    return hasExisting ? (existingReps as number) : targetReps;
+  }
+  return hasExisting ? (existingReps as number) : null;
+}
+
 export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
   const existing = getSetsForWorkoutExercise(workoutExerciseId);
   // Preserve completed and warmup sets; only manage normal incomplete sets.
@@ -325,7 +352,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
       const updated: WorkoutSet = {
         ...slot,
         weightKg: p.weightKg,
-        reps: targetReps,
+        reps: computeSetReps(slot.reps, targetReps, p.baselineReps),
         isCompleted: false,
       };
       updateWorkoutSet(updated);
@@ -336,7 +363,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
         setIndex: baseIndex + i,
         setTag: 'N',
         weightKg: p.weightKg,
-        reps: targetReps,
+        reps: computeSetReps(null, targetReps, p.baselineReps),
         distanceKm: null,
         durationMinutes: null,
         rpe: null,
@@ -352,6 +379,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
     deleteWorkoutSet(editable[i].id);
   }
 }
+
 
 /**
  * Override every non-warmup, incomplete working set on a freshly-populated
