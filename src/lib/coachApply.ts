@@ -48,9 +48,17 @@ export interface CoachPrescription {
   repsMax: number | null;
   repInfo: string;
   weightKg: number | null;
+  /**
+   * Baseline rep target this recommendation is relative to (parsed from
+   * rec.currentRepInfo). Used to apply the rep change as a per-set DELTA
+   * so a staggered/descending working-set pattern (e.g. 12/10/8) is
+   * preserved rather than flattened to one identical rep value.
+   */
+  baselineReps: number | null;
   source: 'coach';
   appliedAt: string;
 }
+
 
 export type ApplyOutcome =
   | { kind: 'applied'; workoutId: string; exerciseName: string; whenISO: string }
