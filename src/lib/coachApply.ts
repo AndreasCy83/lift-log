@@ -287,6 +287,8 @@ export function hasUserEditedPlannedValues(workoutExerciseId: string): boolean {
 
 function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
   const { min, max } = parseRepInfo(rec.nextRepInfo);
+  const cur = parseRepInfo(rec.currentRepInfo);
+  const baselineReps = cur.max ?? cur.min ?? null;
   return {
     exerciseId: rec.exerciseId,
     sets: Math.max(1, rec.nextSets),
@@ -294,10 +296,12 @@ function buildPrescription(rec: ProgressionRecommendation): CoachPrescription {
     repsMax: max,
     repInfo: rec.nextRepInfo,
     weightKg: rec.nextWeightKg,
+    baselineReps,
     source: 'coach',
     appliedAt: new Date().toISOString(),
   };
 }
+
 export { buildPrescription };
 
 export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
