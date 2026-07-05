@@ -274,6 +274,14 @@
         "title": "Exercise Stats",
         "text": "Tap here to view your past performance, history, and graphs for this exercise."
       },
+      "coach": {
+        "title": "Coach",
+        "text": "Tap here to get offline training suggestions for the next session and apply them to this exercise."
+      },
+      "youtube": {
+        "title": "YouTube Form Check",
+        "text": "Tap here to search YouTube for how to perform this exercise correctly."
+      },
       "timer": {
         "title": "Global Timer",
         "text": "Tap here to set a default rest timer that applies to all sets for this exercise."
@@ -285,6 +293,14 @@
       "setRest": {
         "title": "Set Timer",
         "text": "Tap to customize the rest time specifically after this individual set."
+      },
+      "toggle": {
+        "title": "Complete Set",
+        "text": "Tap the circle to mark this set as completed when you finish it."
+      },
+      "repeatLast": {
+        "title": "Repeat Last",
+        "text": "Tap here to replace current sets with the same weights and reps from your last session for this exercise."
       }
     },
     "leaveSessionDialog": {
