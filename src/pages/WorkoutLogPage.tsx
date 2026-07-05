@@ -105,8 +105,12 @@ export default function WorkoutLogPage() {
     { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
     { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
     { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
+    { selector: '[data-tutorial="exercise-coach"]', title: t('workout.tutorial.coach.title'), text: t('workout.tutorial.coach.text') },
+    { selector: '[data-tutorial="exercise-youtube"]', title: t('workout.tutorial.youtube.title'), text: t('workout.tutorial.youtube.text') },
     { selector: '[data-tutorial="set-tag"]', title: t('workout.tutorial.setTag.title'), text: t('workout.tutorial.setTag.text') },
     { selector: '[data-tutorial="set-rest"]', title: t('workout.tutorial.setRest.title'), text: t('workout.tutorial.setRest.text') },
+    { selector: '[data-tutorial="set-toggle"]', title: t('workout.tutorial.toggle.title'), text: t('workout.tutorial.toggle.text') },
+    { selector: '[data-tutorial="repeat-last"]', title: t('workout.tutorial.repeatLast.title'), text: t('workout.tutorial.repeatLast.text') },
   ], [t]);
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
