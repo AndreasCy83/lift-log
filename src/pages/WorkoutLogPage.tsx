@@ -928,6 +928,7 @@ export default function WorkoutLogPage() {
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={ex?.weightUnit ?? 'kg'}
                     refreshKey={updateKey}
+                    isTutorialTarget={isTutorialTarget}
                     onRepeatLastRoutine={
                       getPreviousSessionSets(we.exerciseId)
                         ? () => handleRepeatLastRoutine(we.id, we.exerciseId)
