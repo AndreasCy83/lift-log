@@ -17,6 +17,7 @@ interface Props {
   onPrefill: (weightKg: number, reps: number) => void;
   onRepeatLastRoutine?: () => void;
   refreshKey?: number;
+  isTutorialTarget?: boolean;
 }
 
 function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onPrefill }: {
