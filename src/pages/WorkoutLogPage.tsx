@@ -890,6 +890,7 @@ export default function WorkoutLogPage() {
                       }}
                       className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors"
                       title="Search on YouTube"
+                      data-tutorial={isTutorialTarget ? 'exercise-youtube' : undefined}
                     >
                       <Youtube className="h-[16px] w-[16px] text-red-600 fill-white" strokeWidth={2.25} />
                     </button>
