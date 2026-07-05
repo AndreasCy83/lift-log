@@ -105,8 +105,12 @@ export default function WorkoutLogPage() {
     { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
     { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
     { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
+    { selector: '[data-tutorial="exercise-coach"]', title: t('workout.tutorial.coach.title'), text: t('workout.tutorial.coach.text') },
+    { selector: '[data-tutorial="exercise-youtube"]', title: t('workout.tutorial.youtube.title'), text: t('workout.tutorial.youtube.text') },
     { selector: '[data-tutorial="set-tag"]', title: t('workout.tutorial.setTag.title'), text: t('workout.tutorial.setTag.text') },
     { selector: '[data-tutorial="set-rest"]', title: t('workout.tutorial.setRest.title'), text: t('workout.tutorial.setRest.text') },
+    { selector: '[data-tutorial="set-toggle"]', title: t('workout.tutorial.toggle.title'), text: t('workout.tutorial.toggle.text') },
+    { selector: '[data-tutorial="repeat-last"]', title: t('workout.tutorial.repeatLast.title'), text: t('workout.tutorial.repeatLast.text') },
   ], [t]);
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
@@ -870,6 +874,7 @@ export default function WorkoutLogPage() {
                       onClick={() => setCoachDialogTarget({ weId: we.id, exerciseId: we.exerciseId, exerciseName: getExName(we.exerciseId) })}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${isWECoachApplied(we.id) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                       title="Coach recommendation"
+                      data-tutorial={isTutorialTarget ? 'exercise-coach' : undefined}
                     >
                       <Sparkles className="h-[16px] w-[16px]" />
                     </button>
@@ -885,6 +890,7 @@ export default function WorkoutLogPage() {
                       }}
                       className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors"
                       title="Search on YouTube"
+                      data-tutorial={isTutorialTarget ? 'exercise-youtube' : undefined}
                     >
                       <Youtube className="h-[16px] w-[16px] text-red-600 fill-white" strokeWidth={2.25} />
                     </button>
@@ -922,6 +928,7 @@ export default function WorkoutLogPage() {
                     exerciseName={getExName(we.exerciseId)}
                     weightUnit={ex?.weightUnit ?? 'kg'}
                     refreshKey={updateKey}
+                    isTutorialTarget={isTutorialTarget}
                     onRepeatLastRoutine={
                       getPreviousSessionSets(we.exerciseId)
                         ? () => handleRepeatLastRoutine(we.id, we.exerciseId)
@@ -1004,6 +1011,7 @@ export default function WorkoutLogPage() {
                             onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
                             title={s.isCompleted ? t('workout.tooltips.markIncomplete') : t('workout.tooltips.markComplete')}
+                            data-tutorial={isTutorialTarget && idx === 0 ? 'set-toggle' : undefined}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
                               s.isCompleted
                                 ? 'bg-green-500 border-green-500 text-white'

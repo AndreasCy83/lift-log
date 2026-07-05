@@ -17,6 +17,7 @@ interface Props {
   onPrefill: (weightKg: number, reps: number) => void;
   onRepeatLastRoutine?: () => void;
   refreshKey?: number;
+  isTutorialTarget?: boolean;
 }
 
 function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onPrefill }: {
@@ -94,7 +95,7 @@ function HistorySessionCard({ session, bestSet, unitLabel, globalWeightUnit, onP
   );
 }
 
-export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, onRepeatLastRoutine, refreshKey = 0 }: Props) {
+export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUnit, onPrefill, onRepeatLastRoutine, refreshKey = 0, isTutorialTarget = false }: Props) {
   const globalWeightUnit = getSettings().weightUnit;
   const [showHistory, setShowHistory] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
@@ -219,6 +220,7 @@ export default function ExerciseDetailPanel({ exerciseId, exerciseName, weightUn
                 onClick={onRepeatLastRoutine}
                 className="shrink-0 h-6 px-2 text-[10px] uppercase tracking-wider rounded-md"
                 title="Replace current sets with previous session"
+                data-tutorial={isTutorialTarget ? 'repeat-last' : undefined}
               >
                 Repeat Last
               </Button>
