@@ -257,19 +257,35 @@
       },
       "stats": {
         "title": "Statistiche esercizio",
-        "text": "Tocca qui per vedere prestazioni passate, cronologia e grafici."
+        "text": "Tocca qui per visualizzare prestazioni passate, cronologia e grafici di questo esercizio."
+      },
+      "coach": {
+        "title": "Coach",
+        "text": "Tocca qui per ottenere suggerimenti di allenamento offline per la prossima sessione e applicarli a questo esercizio."
+      },
+      "youtube": {
+        "title": "Verifica YouTube",
+        "text": "Tocca qui per cercare su YouTube come eseguire correttamente questo esercizio."
       },
       "timer": {
         "title": "Timer globale",
-        "text": "Tocca qui per impostare un timer di recupero predefinito per tutte le serie."
+        "text": "Tocca qui per impostare un timer di riposo predefinito per tutte le serie di questo esercizio."
       },
       "setTag": {
         "title": "Tipi di serie",
-        "text": "Tocca per alternare Normale (N), Riscaldamento (W), Drop (D) e Cedimento (F)."
+        "text": "Tocca per alternare tra Normale (N), Riscaldamento (W), Dropset (D) e Cedimento (F)."
       },
       "setRest": {
         "title": "Timer serie",
-        "text": "Tocca per personalizzare il recupero dopo questa singola serie."
+        "text": "Tocca per personalizzare il tempo di riposo dopo questa singola serie."
+      },
+      "toggle": {
+        "title": "Completa serie",
+        "text": "Tocca il cerchio per contrassegnare questa serie come completata."
+      },
+      "repeatLast": {
+        "title": "Ripeti ultimo",
+        "text": "Tocca qui per sostituire le serie attuali con gli stessi pesi e ripetizioni della tua ultima sessione per questo esercizio."
       }
     },
     "leaveSessionDialog": {

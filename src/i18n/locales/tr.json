@@ -256,20 +256,36 @@
         "text": "Ağırlık/tekrar hedefleri belirlemek ve takip etmek için dokunun."
       },
       "stats": {
-        "title": "Egzersiz istatistikleri",
-        "text": "Geçmiş performans, geçmiş ve grafikleri görmek için dokunun."
+        "title": "Egzersiz İstatistikleri",
+        "text": "Bu egzersiz için geçmiş performansınızı, geçmişi ve grafikleri görüntülemek için buraya dokunun."
+      },
+      "coach": {
+        "title": "Koç",
+        "text": "Sonraki seans için çevrimdışı antrenman önerileri almak ve bu egzersize uygulamak için buraya dokunun."
+      },
+      "youtube": {
+        "title": "YouTube Form Kontrolü",
+        "text": "Bu egzersizi doğru şekilde nasıl yapacağınızı YouTube'da aramak için buraya dokunun."
       },
       "timer": {
-        "title": "Genel zamanlayıcı",
-        "text": "Tüm setler için varsayılan bir dinlenme zamanlayıcısı belirleyin."
+        "title": "Genel Zamanlayıcı",
+        "text": "Bu egzersizin tüm setleri için geçerli olan varsayılan dinlenme zamanlayıcısını ayarlamak için buraya dokunun."
       },
       "setTag": {
-        "title": "Set türleri",
-        "text": "Normal (N), Isınma (W), Drop (D) ve Tükenme (F) arasında geçiş için dokunun."
+        "title": "Set Türleri",
+        "text": "Normal (N), Isınma (W), Dropset (D) ve Yorgunluk (F) arasında geçiş yapmak için dokunun."
       },
       "setRest": {
-        "title": "Set zamanlayıcısı",
+        "title": "Set Zamanlayıcısı",
         "text": "Bu setten sonraki dinlenme süresini özelleştirmek için dokunun."
+      },
+      "toggle": {
+        "title": "Seti Tamamla",
+        "text": "Bu seti tamamladığınızda tamamlandı olarak işaretlemek için daireye dokunun."
+      },
+      "repeatLast": {
+        "title": "Sonuncuyu Tekrarla",
+        "text": "Bu egzersiz için mevcut setleri son seansınızdaki aynı ağırlık ve tekrarlarla değiştirmek için buraya dokunun."
       }
     },
     "leaveSessionDialog": {
