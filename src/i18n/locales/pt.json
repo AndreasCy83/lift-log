@@ -257,19 +257,35 @@
       },
       "stats": {
         "title": "Estatísticas do exercício",
-        "text": "Toque aqui para ver desempenho passado, histórico e gráficos."
+        "text": "Toque aqui para ver seu desempenho passado, histórico e gráficos deste exercício."
+      },
+      "coach": {
+        "title": "Coach",
+        "text": "Toque aqui para obter sugestões de treino offline para a próxima sessão e aplicá-las a este exercício."
+      },
+      "youtube": {
+        "title": "Verificação no YouTube",
+        "text": "Toque aqui para pesquisar no YouTube como executar este exercício corretamente."
       },
       "timer": {
         "title": "Cronômetro global",
-        "text": "Toque aqui para definir um cronômetro de descanso padrão para todas as séries."
+        "text": "Toque aqui para definir um cronômetro de descanso padrão para todas as séries deste exercício."
       },
       "setTag": {
         "title": "Tipos de série",
-        "text": "Toque para alternar entre Normal (N), Aquecimento (W), Drop (D) e Falha (F)."
+        "text": "Toque para alternar entre Normal (N), Aquecimento (W), Dropset (D) e Falha (F)."
       },
       "setRest": {
         "title": "Cronômetro da série",
-        "text": "Toque para personalizar o descanso após esta série."
+        "text": "Toque para personalizar o descanso após esta série específica."
+      },
+      "toggle": {
+        "title": "Concluir série",
+        "text": "Toque no círculo para marcar esta série como concluída."
+      },
+      "repeatLast": {
+        "title": "Repetir última",
+        "text": "Toque aqui para substituir as séries atuais pelos mesmos pesos e repetições da sua última sessão deste exercício."
       }
     },
     "leaveSessionDialog": {
