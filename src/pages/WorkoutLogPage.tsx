@@ -874,6 +874,7 @@ export default function WorkoutLogPage() {
                       onClick={() => setCoachDialogTarget({ weId: we.id, exerciseId: we.exerciseId, exerciseName: getExName(we.exerciseId) })}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${isWECoachApplied(we.id) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                       title="Coach recommendation"
+                      data-tutorial={isTutorialTarget ? 'exercise-coach' : undefined}
                     >
                       <Sparkles className="h-[16px] w-[16px]" />
                     </button>
