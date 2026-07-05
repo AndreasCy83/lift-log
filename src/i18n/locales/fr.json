@@ -259,6 +259,14 @@
         "title": "Statistiques d'exercice",
         "text": "Touchez ici pour voir vos performances passées, l'historique et les graphiques."
       },
+      "coach": {
+        "title": "Coach",
+        "text": "Touchez ici pour obtenir des suggestions d'entraînement hors ligne pour la prochaine séance et les appliquer à cet exercice."
+      },
+      "youtube": {
+        "title": "Vérification YouTube",
+        "text": "Touchez ici pour rechercher sur YouTube comment effectuer cet exercice correctement."
+      },
       "timer": {
         "title": "Minuteur global",
         "text": "Touchez ici pour définir un minuteur de repos par défaut pour toutes les séries."
@@ -270,6 +278,14 @@
       "setRest": {
         "title": "Minuteur de série",
         "text": "Touchez pour personnaliser le repos après cette série."
+      },
+      "toggle": {
+        "title": "Terminer la série",
+        "text": "Touchez le cercle pour marquer cette série comme terminée."
+      },
+      "repeatLast": {
+        "title": "Répéter dernier",
+        "text": "Touchez ici pour remplacer les séries actuelles par les mêmes poids et répétitions de votre dernière séance."
       }
     },
     "leaveSessionDialog": {
