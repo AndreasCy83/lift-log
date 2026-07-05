@@ -1010,6 +1010,7 @@ export default function WorkoutLogPage() {
                             onClick={() => handleToggleSetComplete(s, exSetType)}
                             aria-pressed={s.isCompleted}
                             title={s.isCompleted ? t('workout.tooltips.markIncomplete') : t('workout.tooltips.markComplete')}
+                            data-tutorial={isTutorialTarget && idx === 0 ? 'set-toggle' : undefined}
                             className={`h-6 w-6 rounded-full flex items-center justify-center border transition-colors ${
                               s.isCompleted
                                 ? 'bg-green-500 border-green-500 text-white'
