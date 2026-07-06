@@ -1128,7 +1128,7 @@ export function getWeightHistory(): WeightEntry[] { return get<WeightEntry[]>(ST
 export function addWeightEntry(entry: WeightEntry) { const all = getWeightHistory(); all.push(entry); set(STORAGE_KEYS.weightHistory, all); }
 
 // Settings
-export type ThemeMode = 'system' | 'light' | 'dark' | 'cotton-candy' | 'neo-blue' | 'monochrome';
+export type ThemeMode = 'system' | 'light' | 'dark' | 'cotton-candy' | 'neo-blue' | 'monochrome' | 'usa-world-cup';
 export interface AppSettings {
   theme: ThemeMode;
   units: 'metric' | 'imperial';
