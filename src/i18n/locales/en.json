@@ -357,6 +357,7 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeMonochrome": "Monochrome",
+    "themeUsaWorldCup": "USA World Cup",
     "keepScreenOn": "Keep Screen On",
     "keepScreenOnHint": "During workouts",
     "autoRest": "Auto-start rest timer when set completed",

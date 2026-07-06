@@ -187,6 +187,44 @@
     --gym-pr: 0 0% 80%;
   }
 
+  /* USA World Cup — dark navy sports theme with USA red accents */
+  .theme-usa-world-cup {
+    --background: 214 82% 8%;
+    --foreground: 0 0% 98%;
+    --card: 214 70% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 214 75% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 348 74% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 55% 17%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 214 50% 16%;
+    --muted-foreground: 214 20% 68%;
+    --accent: 348 74% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 45% 22%;
+    --input: 214 45% 22%;
+    --ring: 348 74% 45%;
+    --sidebar-background: 214 75% 10%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 348 74% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 50% 16%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 214 45% 22%;
+    --sidebar-ring: 348 74% 45%;
+    --gym-surface: 214 65% 14%;
+    --gym-surface-hover: 214 60% 18%;
+    --gym-success: 145 65% 45%;
+    --gym-warning: 38 92% 55%;
+    --gym-pr: 348 80% 55%;
+  }
+
+
+
 
 @layer base {
   * {

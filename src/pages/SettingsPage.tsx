@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Candy, Zap, Contrast } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Candy, Zap, Contrast, Flag } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -117,7 +117,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast } as const;
+  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast, 'usa-world-cup': Flag } as const;
   const themeLabels: Record<keyof typeof themeIcons, string> = {
     system: 'settings.themeSystem',
     light: 'settings.themeLight',
@@ -125,9 +125,10 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     'cotton-candy': 'settings.themeCottonCandy',
     'neo-blue': 'settings.themeNeoBlue',
     monochrome: 'settings.themeMonochrome',
+    'usa-world-cup': 'settings.themeUsaWorldCup',
   };
   const themeFallback: Record<keyof typeof themeIcons, string> = {
-    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome',
+    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome', 'usa-world-cup': 'USA World Cup',
   };
 
   if (showExerciseLibrary) {
@@ -267,7 +268,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
         {/* Theme */}
         <div className="gym-card !p-0 overflow-hidden">
           {(() => {
-            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome'] as const;
+            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome', 'usa-world-cup'] as const;
             const themeDots: Record<typeof themeOrder[number], string> = {
               system: 'linear-gradient(135deg, hsl(220 15% 95%) 50%, hsl(220 25% 10%) 50%)',
               light: 'hsl(0 0% 100%)',
@@ -275,6 +276,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
               'cotton-candy': 'linear-gradient(135deg, hsl(320 80% 62%), hsl(260 80% 72%))',
               'neo-blue': 'linear-gradient(135deg, hsl(210 100% 56%), hsl(195 100% 55%))',
               monochrome: 'linear-gradient(135deg, hsl(0 0% 92%), hsl(0 0% 30%))',
+              'usa-world-cup': 'linear-gradient(135deg, hsl(214 82% 20%) 50%, hsl(348 74% 45%) 50%)',
             };
             const current = settings.theme as typeof themeOrder[number];
             const CurrentIcon = themeIcons[current];
