@@ -268,7 +268,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
         {/* Theme */}
         <div className="gym-card !p-0 overflow-hidden">
           {(() => {
-            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome'] as const;
+            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome', 'usa-world-cup'] as const;
             const themeDots: Record<typeof themeOrder[number], string> = {
               system: 'linear-gradient(135deg, hsl(220 15% 95%) 50%, hsl(220 25% 10%) 50%)',
               light: 'hsl(0 0% 100%)',
@@ -276,6 +276,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
               'cotton-candy': 'linear-gradient(135deg, hsl(320 80% 62%), hsl(260 80% 72%))',
               'neo-blue': 'linear-gradient(135deg, hsl(210 100% 56%), hsl(195 100% 55%))',
               monochrome: 'linear-gradient(135deg, hsl(0 0% 92%), hsl(0 0% 30%))',
+              'usa-world-cup': 'linear-gradient(135deg, hsl(214 82% 20%) 50%, hsl(348 74% 45%) 50%)',
             };
             const current = settings.theme as typeof themeOrder[number];
             const CurrentIcon = themeIcons[current];
