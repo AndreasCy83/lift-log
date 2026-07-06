@@ -257,7 +257,7 @@ export default function HomePage({ allowHomeTutorial = false, onHomeTutorialFini
 
   return (
     <div
-      className="flex min-h-screen flex-col"
+      className="flex min-h-[100dvh] flex-col"
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)' }}
     >
       {/* Header */}
