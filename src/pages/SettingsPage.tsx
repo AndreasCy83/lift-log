@@ -39,6 +39,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
   const [confirmAction, setConfirmAction] = useState<'delete' | 'reset' | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
+  const [themeExpanded, setThemeExpanded] = useState(false);
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
       id: generateId(), name: '', heightCm: 175, currentWeightKg: 70,
