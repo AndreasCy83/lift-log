@@ -265,26 +265,63 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
         </div>
 
         {/* Theme */}
-        <div className="gym-card">
-          <h3 className="font-display text-sm font-semibold mb-3">{t('settings.theme')}</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {(['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome'] as const).map(th => {
-              const Icon = themeIcons[th];
-              const label = t(themeLabels[th], { defaultValue: themeFallback[th] });
-              return (
+        <div className="gym-card !p-0 overflow-hidden">
+          {(() => {
+            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome'] as const;
+            const themeDots: Record<typeof themeOrder[number], string> = {
+              system: 'linear-gradient(135deg, hsl(220 15% 95%) 50%, hsl(220 25% 10%) 50%)',
+              light: 'hsl(0 0% 100%)',
+              dark: 'hsl(145 80% 45%)',
+              'cotton-candy': 'linear-gradient(135deg, hsl(320 80% 62%), hsl(260 80% 72%))',
+              'neo-blue': 'linear-gradient(135deg, hsl(210 100% 56%), hsl(195 100% 55%))',
+              monochrome: 'linear-gradient(135deg, hsl(0 0% 92%), hsl(0 0% 30%))',
+            };
+            const current = settings.theme as typeof themeOrder[number];
+            const CurrentIcon = themeIcons[current];
+            return (
+              <>
                 <button
-                  key={th}
-                  onClick={() => setSettings({ ...settings, theme: th })}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2.5 text-[11px] font-medium transition-colors
-                    ${settings.theme === th ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+                  onClick={() => setThemeExpanded(v => !v)}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                  aria-expanded={themeExpanded}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span className="leading-tight text-center">{label}</span>
+                  <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: themeDots[current] }} />
+                  <h3 className="font-display text-sm font-semibold flex-1">{t('settings.theme')}</h3>
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <CurrentIcon className="h-3.5 w-3.5" />
+                    {t(themeLabels[current], { defaultValue: themeFallback[current] })}
+                  </span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${themeExpanded ? 'rotate-180' : ''}`} />
                 </button>
-              );
-            })}
-          </div>
+                <div
+                  className={`grid transition-all duration-200 ease-out ${themeExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="border-t border-border/60 py-1">
+                      {themeOrder.map(th => {
+                        const Icon = themeIcons[th];
+                        const active = settings.theme === th;
+                        return (
+                          <button
+                            key={th}
+                            onClick={() => { setSettings({ ...settings, theme: th }); setThemeExpanded(false); }}
+                            className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-secondary/60 ${active ? 'bg-secondary/40' : ''}`}
+                          >
+                            <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: themeDots[th] }} />
+                            <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <span className="flex-1 text-sm">{t(themeLabels[th], { defaultValue: themeFallback[th] })}</span>
+                            {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
+
 
         {/* Keep screen on */}
         <div className="gym-card flex items-center justify-between">
