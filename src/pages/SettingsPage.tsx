@@ -117,7 +117,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast } as const;
+  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast, 'usa-world-cup': Flag } as const;
   const themeLabels: Record<keyof typeof themeIcons, string> = {
     system: 'settings.themeSystem',
     light: 'settings.themeLight',
@@ -125,9 +125,10 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     'cotton-candy': 'settings.themeCottonCandy',
     'neo-blue': 'settings.themeNeoBlue',
     monochrome: 'settings.themeMonochrome',
+    'usa-world-cup': 'settings.themeUsaWorldCup',
   };
   const themeFallback: Record<keyof typeof themeIcons, string> = {
-    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome',
+    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome', 'usa-world-cup': 'USA World Cup',
   };
 
   if (showExerciseLibrary) {
