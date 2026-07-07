@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Candy, Zap, Contrast, Flag } from 'lucide-react';
+import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { THEMES, THEME_BY_ID } from '@/lib/themes';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -117,19 +118,8 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast, 'usa-world-cup': Flag } as const;
-  const themeLabels: Record<keyof typeof themeIcons, string> = {
-    system: 'settings.themeSystem',
-    light: 'settings.themeLight',
-    dark: 'settings.themeDark',
-    'cotton-candy': 'settings.themeCottonCandy',
-    'neo-blue': 'settings.themeNeoBlue',
-    monochrome: 'settings.themeMonochrome',
-    'usa-world-cup': 'settings.themeUsaWorldCup',
-  };
-  const themeFallback: Record<keyof typeof themeIcons, string> = {
-    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome', 'usa-world-cup': 'USA World Cup',
-  };
+  // Theme metadata now comes from the shared THEMES config (src/lib/themes.ts).
+
 
   if (showExerciseLibrary) {
     return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
