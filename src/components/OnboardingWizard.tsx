@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap, Contrast, Flag } from 'lucide-react';
+import { Shield, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
+import { THEMES } from '@/lib/themes';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -226,20 +227,12 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
                 <p className="text-sm text-muted-foreground">{t('onboarding.s3.subtitle')}</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {([
-                { v: 'light', icon: Sun, labelKey: 'onboarding.s3.light', fallback: 'Light' },
-                  { v: 'dark', icon: Moon, labelKey: 'onboarding.s3.dark', fallback: 'Dark' },
-                  { v: 'system', icon: Monitor, labelKey: 'onboarding.s3.system', fallback: 'System' },
-                  { v: 'cotton-candy', icon: Candy, labelKey: 'onboarding.s3.cottonCandy', fallback: 'Cotton Candy' },
-                  { v: 'neo-blue', icon: Zap, labelKey: 'onboarding.s3.neoBlue', fallback: 'Neo Blue' },
-                  { v: 'monochrome', icon: Contrast, labelKey: 'onboarding.s3.monochrome', fallback: 'Monochrome' },
-                  { v: 'usa-world-cup', icon: Flag, labelKey: 'onboarding.s3.usaWorldCup', fallback: 'USA World Cup' },
-                ] as const).map(({ v, icon: Icon, labelKey, fallback }) => (
+                {THEMES.map(({ id, icon: Icon, labelKey, fallback }) => (
                   <button
-                    key={v}
-                    onClick={() => { setTheme(v); applyTheme(v); }}
+                    key={id}
+                    onClick={() => { setTheme(id); applyTheme(id); }}
                     className={`flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium transition-colors ${
-                      theme === v
+                      theme === id
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary text-secondary-foreground'
                     }`}
