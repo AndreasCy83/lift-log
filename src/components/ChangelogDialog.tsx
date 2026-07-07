@@ -12,6 +12,8 @@ const CHANGES = [
   'Coach AI to review and suggest change',
   'Recovery Section per Muscle Group',
   'Volume Tracking',
+  'New themes added including USA World Cup Theme',
+  'Convert Your Workouts Into Routines',
 ];
 
 export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogProps) {
@@ -27,9 +29,10 @@ export default function ChangelogDialog({ open, onOpenChange }: ChangelogDialogP
 
         <div className="space-y-4">
           <div>
-            <span className="font-display text-2xl font-bold text-primary">Version 1.24</span>
-            <p className="text-xs text-muted-foreground mt-1">Latest additions and fixes</p>
+            <span className="font-display text-2xl font-bold text-primary">Latest additions and fixes</span>
+            <p className="text-xs text-muted-foreground mt-1">The latest features and improvements</p>
           </div>
+
 
           <ul className="space-y-2">
             {CHANGES.map((change, i) => (
