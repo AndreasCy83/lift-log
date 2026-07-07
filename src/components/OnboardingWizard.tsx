@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap, Contrast } from 'lucide-react';
+import { Shield, Sun, Moon, Monitor, Cloud, Check, Languages, AlertTriangle, Candy, Zap, Contrast, Flag } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -233,10 +233,11 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
                   { v: 'cotton-candy', icon: Candy, labelKey: 'onboarding.s3.cottonCandy', fallback: 'Cotton Candy' },
                   { v: 'neo-blue', icon: Zap, labelKey: 'onboarding.s3.neoBlue', fallback: 'Neo Blue' },
                   { v: 'monochrome', icon: Contrast, labelKey: 'onboarding.s3.monochrome', fallback: 'Monochrome' },
+                  { v: 'usa-world-cup', icon: Flag, labelKey: 'onboarding.s3.usaWorldCup', fallback: 'USA World Cup' },
                 ] as const).map(({ v, icon: Icon, labelKey, fallback }) => (
                   <button
                     key={v}
-                    onClick={() => setTheme(v)}
+                    onClick={() => { setTheme(v); applyTheme(v); }}
                     className={`flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium transition-colors ${
                       theme === v
                         ? 'bg-primary text-primary-foreground'
