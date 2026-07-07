@@ -1,26 +1,19 @@
 import type { ThemeMode } from './storage';
-
-const THEME_CLASSES = ['dark', 'theme-cotton-candy', 'theme-neo-blue', 'theme-monochrome', 'theme-usa-world-cup'];
+import { THEME_BY_ID, THEME_CLASSES } from './themes';
 
 export function applyTheme(theme: ThemeMode) {
   const root = document.documentElement;
   root.classList.remove(...THEME_CLASSES);
-  if (theme === 'dark') {
-    root.classList.add('dark');
-  } else if (theme === 'light') {
-    // default light, no class
-  } else if (theme === 'cotton-candy') {
-    root.classList.add('theme-cotton-candy');
-  } else if (theme === 'neo-blue') {
-    root.classList.add('dark', 'theme-neo-blue');
-  } else if (theme === 'monochrome') {
-    root.classList.add('dark', 'theme-monochrome');
-  } else if (theme === 'usa-world-cup') {
-    root.classList.add('dark', 'theme-usa-world-cup');
-  } else {
-    // system
+
+  if (theme === 'system') {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       root.classList.add('dark');
     }
+    return;
   }
+
+  const meta = THEME_BY_ID[theme];
+  if (!meta) return;
+  if (meta.isDark) root.classList.add('dark');
+  if (meta.className) root.classList.add(meta.className);
 }

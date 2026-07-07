@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sun, Moon, Monitor, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Candy, Zap, Contrast, Flag } from 'lucide-react';
+import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { THEMES, THEME_BY_ID } from '@/lib/themes';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -117,19 +118,8 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
     input.click();
   };
 
-  const themeIcons = { system: Monitor, light: Sun, dark: Moon, 'cotton-candy': Candy, 'neo-blue': Zap, monochrome: Contrast, 'usa-world-cup': Flag } as const;
-  const themeLabels: Record<keyof typeof themeIcons, string> = {
-    system: 'settings.themeSystem',
-    light: 'settings.themeLight',
-    dark: 'settings.themeDark',
-    'cotton-candy': 'settings.themeCottonCandy',
-    'neo-blue': 'settings.themeNeoBlue',
-    monochrome: 'settings.themeMonochrome',
-    'usa-world-cup': 'settings.themeUsaWorldCup',
-  };
-  const themeFallback: Record<keyof typeof themeIcons, string> = {
-    system: 'System', light: 'Light', dark: 'Dark', 'cotton-candy': 'Cotton Candy', 'neo-blue': 'Neo Blue', monochrome: 'Monochrome', 'usa-world-cup': 'USA World Cup',
-  };
+  // Theme metadata now comes from the shared THEMES config (src/lib/themes.ts).
+
 
   if (showExerciseLibrary) {
     return <ExerciseLibrary onClose={() => setShowExerciseLibrary(false)} />;
@@ -268,18 +258,8 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
         {/* Theme */}
         <div className="gym-card !p-0 overflow-hidden">
           {(() => {
-            const themeOrder = ['system', 'light', 'dark', 'cotton-candy', 'neo-blue', 'monochrome', 'usa-world-cup'] as const;
-            const themeDots: Record<typeof themeOrder[number], string> = {
-              system: 'linear-gradient(135deg, hsl(220 15% 95%) 50%, hsl(220 25% 10%) 50%)',
-              light: 'hsl(0 0% 100%)',
-              dark: 'hsl(145 80% 45%)',
-              'cotton-candy': 'linear-gradient(135deg, hsl(320 80% 62%), hsl(260 80% 72%))',
-              'neo-blue': 'linear-gradient(135deg, hsl(210 100% 56%), hsl(195 100% 55%))',
-              monochrome: 'linear-gradient(135deg, hsl(0 0% 92%), hsl(0 0% 30%))',
-              'usa-world-cup': 'linear-gradient(135deg, hsl(214 82% 20%) 50%, hsl(348 74% 45%) 50%)',
-            };
-            const current = settings.theme as typeof themeOrder[number];
-            const CurrentIcon = themeIcons[current];
+            const current = THEME_BY_ID[settings.theme] ?? THEME_BY_ID.dark;
+            const CurrentIcon = current.icon;
             return (
               <>
                 <button
@@ -287,11 +267,11 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
                   className="flex w-full items-center gap-3 px-4 py-3 text-left"
                   aria-expanded={themeExpanded}
                 >
-                  <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: themeDots[current] }} />
+                  <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: current.dot }} />
                   <h3 className="font-display text-sm font-semibold flex-1">{t('settings.theme')}</h3>
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <CurrentIcon className="h-3.5 w-3.5" />
-                    {t(themeLabels[current], { defaultValue: themeFallback[current] })}
+                    {t(current.labelKey, { defaultValue: current.fallback })}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${themeExpanded ? 'rotate-180' : ''}`} />
                 </button>
@@ -300,18 +280,18 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
                 >
                   <div className="overflow-hidden">
                     <div className="border-t border-border/60 py-1">
-                      {themeOrder.map(th => {
-                        const Icon = themeIcons[th];
-                        const active = settings.theme === th;
+                      {THEMES.map(meta => {
+                        const Icon = meta.icon;
+                        const active = settings.theme === meta.id;
                         return (
                           <button
-                            key={th}
-                            onClick={() => { setSettings({ ...settings, theme: th }); setThemeExpanded(false); }}
+                            key={meta.id}
+                            onClick={() => { setSettings({ ...settings, theme: meta.id }); setThemeExpanded(false); }}
                             className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-secondary/60 ${active ? 'bg-secondary/40' : ''}`}
                           >
-                            <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: themeDots[th] }} />
+                            <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: meta.dot }} />
                             <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                            <span className="flex-1 text-sm">{t(themeLabels[th], { defaultValue: themeFallback[th] })}</span>
+                            <span className="flex-1 text-sm">{t(meta.labelKey, { defaultValue: meta.fallback })}</span>
                             {active && <Check className="h-4 w-4 text-primary shrink-0" />}
                           </button>
                         );
