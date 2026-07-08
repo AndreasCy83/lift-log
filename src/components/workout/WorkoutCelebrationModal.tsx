@@ -334,7 +334,7 @@ const musclesCard: CardDef = {
 
 const highlightsCard: CardDef = {
   key: 'highlights',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     type Block = { kind: 'pr' | 'volume' | 'heaviest'; node: JSX.Element };
     const blocks: Block[] = [];
 
