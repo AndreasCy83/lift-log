@@ -721,13 +721,16 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
       <div className="flex-1 min-h-0 flex flex-col justify-center">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {cards.map((c, i) => (
-              <div key={c.key} className="min-w-0 shrink-0 grow-0 basis-full px-5">
-                <div ref={(el) => { cardRefs.current[i] = el; }}>
-                  {c.render(data, unitLabel, dw)}
+            {cards.map((c, i) => {
+              const visual = c.build(data, unitLabel, dw);
+              return (
+                <div key={c.key} className="min-w-0 shrink-0 grow-0 basis-full px-5">
+                  <div ref={(el) => { cardRefs.current[i] = el; }}>
+                    <CardShell accent={visual.accent}>{visual.content}</CardShell>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
