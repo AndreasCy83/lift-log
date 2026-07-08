@@ -500,6 +500,7 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'center', duration: 22 });
   const [activeIndex, setActiveIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const storyExportRef = useRef<HTMLDivElement | null>(null);
   const confettiFired = useRef(false);
   const [sharing, setSharing] = useState(false);
 
