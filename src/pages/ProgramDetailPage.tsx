@@ -5,9 +5,10 @@ import { ArrowLeft, Plus, Play, MoreVertical, Trash2, Pencil, CalendarPlus, Copy
 import {
   getPrograms, updateProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines,
   getRoutines, saveRoutines, addRoutine, deleteRoutine, getExercisesForRoutine, generateId,
-  addRoutineExercise,
+  addRoutineExercise, getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
+import { startSession } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
