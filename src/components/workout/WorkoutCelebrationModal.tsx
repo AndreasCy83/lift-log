@@ -411,10 +411,11 @@ const highlightsCard: CardDef = {
 
 const lifetimeCard: CardDef = {
   key: 'lifetime',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     const hours = Math.floor(d.lifetimeDurationSec / 3600);
-    return (
-      <CardShell accent="hsl(145 80% 45% / 0.22)">
+    return {
+      accent: 'hsl(145 80% 45% / 0.22)',
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">All-Time</div>
           <h2 className="mt-1 text-2xl font-bold text-white">My FitLog Stats</h2>
@@ -440,8 +441,8 @@ const lifetimeCard: CardDef = {
             )}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
