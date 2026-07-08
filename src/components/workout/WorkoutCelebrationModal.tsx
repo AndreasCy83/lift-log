@@ -97,6 +97,50 @@ function CardShell({
   );
 }
 
+/**
+ * Export-only shell used for Instagram Story canvas.
+ * Fixed pixel size (no vh/max-h constraints) so html-to-image renders deterministically.
+ */
+function ExportCardShell({
+  children,
+  accent,
+  width,
+  height,
+}: {
+  children: React.ReactNode;
+  accent?: string;
+  width: number;
+  height: number;
+}) {
+  return (
+    <div
+      className="relative rounded-[48px] overflow-hidden border border-white/10 shadow-2xl"
+      style={{
+        width,
+        height,
+        background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
+      }}
+    >
+      <div className="absolute inset-0 flex flex-col" style={{ padding: 56, paddingBottom: 200 }}>
+        {children}
+      </div>
+      <div className="absolute left-0 right-0 flex items-center justify-center gap-4" style={{ bottom: 56 }}>
+        <img
+          src={appIcon}
+          alt=""
+          className="rounded-2xl object-cover shadow-lg ring-1 ring-white/15"
+          style={{ width: 88, height: 88 }}
+          crossOrigin="anonymous"
+        />
+        <span className="font-extrabold text-white/90 tracking-wide" style={{ fontSize: 42 }}>
+          FitLog X Tracker
+        </span>
+      </div>
+    </div>
+  );
+}
+
+
 // --- Card definitions -----------------------------------------------------
 
 const overviewCard: CardDef = {
