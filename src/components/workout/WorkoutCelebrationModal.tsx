@@ -753,8 +753,29 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
 
   if (!open || !data) return null;
 
+  const activeVisual = cards[activeIndex]
+    ? cards[activeIndex].build(data, unitLabel, dw)
+    : null;
+
   return (
     <div className="fixed inset-0 z-[80] bg-background flex flex-col" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      {/* Hidden Instagram Story export canvas (1080x1920). Rendered off-screen
+          so html-to-image can capture a deterministic story-safe poster
+          independent of the current viewport size. */}
+      {activeVisual && (
+        <div
+          aria-hidden
+          style={{
+            position: 'fixed',
+            left: -100000,
+            top: 0,
+            pointerEvents: 'none',
+            opacity: 0,
+          }}
+        >
+          <InstagramStoryExport visual={activeVisual} innerRef={storyExportRef} />
+        </div>
+      )}
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         <button
