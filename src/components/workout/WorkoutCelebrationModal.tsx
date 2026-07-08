@@ -26,11 +26,17 @@ interface Props {
 
 type CardKey = 'overview' | 'milestone' | 'muscles' | 'highlights' | 'lifetime';
 
+interface CardVisual {
+  accent?: string;
+  content: JSX.Element;
+}
+
 interface CardDef {
   key: CardKey;
-  /** Render the visual content of the card. */
-  render: (d: WorkoutCelebrationData, unitLabel: string, displayWeight: (kg: number) => number) => JSX.Element;
+  /** Build the visual content + accent for a card (no shell). */
+  build: (d: WorkoutCelebrationData, unitLabel: string, displayWeight: (kg: number) => number) => CardVisual;
 }
+
 
 // --- Helpers --------------------------------------------------------------
 
