@@ -589,6 +589,31 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     }
   }, [activeIndex]);
 
+  // Capture the hidden 1080x1920 Instagram Story canvas.
+  const captureStoryCanvas = useCallback(async (): Promise<string | null> => {
+    const node = storyExportRef.current;
+    if (!node) return null;
+    try {
+      // Ensure webfonts are ready so text renders identically every time.
+      if (typeof document !== 'undefined' && (document as any).fonts?.ready) {
+        try { await (document as any).fonts.ready; } catch { /* ignore */ }
+      }
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 1,
+        width: 1080,
+        height: 1920,
+        canvasWidth: 1080,
+        canvasHeight: 1920,
+        backgroundColor: '#05070b',
+      });
+      return dataUrl;
+    } catch (e) {
+      console.error('Failed to capture story canvas', e);
+      return null;
+    }
+  }, []);
+
   const dataUrlToBase64 = (url: string) => url.split(',')[1] ?? '';
 
   const writeTempImage = useCallback(async (dataUrl: string): Promise<string | null> => {
