@@ -392,8 +392,9 @@ const highlightsCard: CardDef = {
     // Max 2 highlights to prevent cropping. Priority: PRs > top volume > heaviest set.
     const visible = blocks.slice(0, 2);
 
-    return (
-      <CardShell accent="hsl(280 80% 55% / 0.22)">
+    return {
+      accent: 'hsl(280 80% 55% / 0.22)',
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
           <h2 className="mt-1 text-2xl font-bold text-white">
@@ -403,8 +404,8 @@ const highlightsCard: CardDef = {
             {visible.map((b, i) => <div key={i}>{b.node}</div>)}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
