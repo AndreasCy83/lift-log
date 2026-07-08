@@ -26,11 +26,17 @@ interface Props {
 
 type CardKey = 'overview' | 'milestone' | 'muscles' | 'highlights' | 'lifetime';
 
+interface CardVisual {
+  accent?: string;
+  content: JSX.Element;
+}
+
 interface CardDef {
   key: CardKey;
-  /** Render the visual content of the card. */
-  render: (d: WorkoutCelebrationData, unitLabel: string, displayWeight: (kg: number) => number) => JSX.Element;
+  /** Build the visual content + accent for a card (no shell). */
+  build: (d: WorkoutCelebrationData, unitLabel: string, displayWeight: (kg: number) => number) => CardVisual;
 }
+
 
 // --- Helpers --------------------------------------------------------------
 
@@ -62,17 +68,25 @@ function CardShell({
   children,
   innerRef,
   accent,
+  className,
+  style,
 }: {
   children: React.ReactNode;
   innerRef?: React.Ref<HTMLDivElement>;
   accent?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
       ref={innerRef}
-      className="relative w-full aspect-[9/14] max-h-[72vh] mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+      className={cn(
+        'relative w-full aspect-[9/14] max-h-[72vh] mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl',
+        className
+      )}
       style={{
         background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
+        ...style,
       }}
     >
       <div className="absolute inset-0 p-6 pb-28 flex flex-col">
@@ -91,11 +105,77 @@ function CardShell({
   );
 }
 
+
+/**
+ * Instagram Story export canvas — fixed 1080x1920 with safe padding.
+ * Renders the existing CardShell scaled up inside a story-safe poster.
+ */
+function InstagramStoryExport({
+  visual,
+  innerRef,
+}: {
+  visual: CardVisual;
+  innerRef: React.Ref<HTMLDivElement>;
+}) {
+  // Story-safe layout (px in the exported canvas)
+  const CANVAS_W = 1080;
+  const CANVAS_H = 1920;
+  const PAD_X = 80;
+  const PAD_TOP = 240;
+  const PAD_BOTTOM = 300;
+  const CARD_W = CANVAS_W - PAD_X * 2; // 920
+  const CARD_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1380
+  // Card design is aspect 9/14 at ~380px wide in-app. Match that and scale.
+  const DESIGN_W = 380;
+  const DESIGN_H = Math.round(DESIGN_W * 14 / 9); // 591
+  const scale = Math.min(CARD_W / DESIGN_W, CARD_H / DESIGN_H);
+  const scaledW = DESIGN_W * scale;
+  const scaledH = DESIGN_H * scale;
+  const offsetX = PAD_X + (CARD_W - scaledW) / 2;
+  const offsetY = PAD_TOP + (CARD_H - scaledH) / 2;
+
+  return (
+    <div
+      ref={innerRef}
+      style={{
+        width: CANVAS_W,
+        height: CANVAS_H,
+        position: 'relative',
+        background:
+          'radial-gradient(140% 90% at 50% -10%, hsl(220 30% 12%) 0%, hsl(220 30% 5%) 55%, hsl(220 35% 2%) 100%)',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          left: offsetX,
+          top: offsetY,
+          width: DESIGN_W,
+          height: DESIGN_H,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+      >
+        <CardShell
+          accent={visual.accent}
+          className="!max-h-none !aspect-auto"
+          style={{ width: DESIGN_W, height: DESIGN_H }}
+        >
+          {visual.content}
+        </CardShell>
+      </div>
+    </div>
+  );
+}
+
+
+
 // --- Card definitions -----------------------------------------------------
 
 const overviewCard: CardDef = {
   key: 'overview',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     const title = d.routineName || 'Workout Complete';
     const dateStr = (() => {
       try {
@@ -103,8 +183,8 @@ const overviewCard: CardDef = {
         return format(new Date(y, m - 1, day), 'EEE, MMM d');
       } catch { return d.workout.date; }
     })();
-    return (
-      <CardShell>
+    return {
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">{dateStr}</div>
           <h2 className="mt-1 text-2xl font-bold text-white leading-tight line-clamp-2 break-words">
@@ -139,19 +219,20 @@ const overviewCard: CardDef = {
             </div>
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
 const milestoneCard: CardDef = {
   key: 'milestone',
-  render: (d) => {
+  build: (d) => {
     const lines: string[] = [];
     if (d.workoutsThisWeek > 0) lines.push(`${d.workoutsThisWeek} workout${d.workoutsThisWeek === 1 ? '' : 's'} this week`);
     if (d.workoutsThisMonth > 0) lines.push(`${d.workoutsThisMonth} this month`);
-    return (
-      <CardShell accent="hsl(38 92% 55% / 0.22)">
+    return {
+      accent: 'hsl(38 92% 55% / 0.22)',
+      content: (
         <div className="flex flex-col h-full items-center justify-center text-center">
           <div className="relative">
             <div className="absolute inset-0 rounded-full blur-3xl bg-orange-500/30" />
@@ -176,8 +257,8 @@ const milestoneCard: CardDef = {
             ))}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
@@ -264,8 +345,9 @@ function MuscleDonut({ muscles }: { muscles: MuscleFocus[] }) {
 
 const musclesCard: CardDef = {
   key: 'muscles',
-  render: (d) => (
-    <CardShell accent="hsl(217 91% 60% / 0.2)">
+  build: (d) => ({
+    accent: 'hsl(217 91% 60% / 0.2)',
+    content: (
       <div className="flex flex-col h-full">
         <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Muscle Focus</div>
         <h2 className="mt-1 text-2xl font-bold text-white">Today's Targets</h2>
@@ -276,13 +358,13 @@ const musclesCard: CardDef = {
           Distribution by training volume
         </div>
       </div>
-    </CardShell>
-  ),
+    ),
+  }),
 };
 
 const highlightsCard: CardDef = {
   key: 'highlights',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     type Block = { kind: 'pr' | 'volume' | 'heaviest'; node: JSX.Element };
     const blocks: Block[] = [];
 
@@ -340,8 +422,9 @@ const highlightsCard: CardDef = {
     // Max 2 highlights to prevent cropping. Priority: PRs > top volume > heaviest set.
     const visible = blocks.slice(0, 2);
 
-    return (
-      <CardShell accent="hsl(280 80% 55% / 0.22)">
+    return {
+      accent: 'hsl(280 80% 55% / 0.22)',
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Session Highlights</div>
           <h2 className="mt-1 text-2xl font-bold text-white">
@@ -351,17 +434,18 @@ const highlightsCard: CardDef = {
             {visible.map((b, i) => <div key={i}>{b.node}</div>)}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
 const lifetimeCard: CardDef = {
   key: 'lifetime',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     const hours = Math.floor(d.lifetimeDurationSec / 3600);
-    return (
-      <CardShell accent="hsl(145 80% 45% / 0.22)">
+    return {
+      accent: 'hsl(145 80% 45% / 0.22)',
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">All-Time</div>
           <h2 className="mt-1 text-2xl font-bold text-white">My FitLog Stats</h2>
@@ -387,8 +471,8 @@ const lifetimeCard: CardDef = {
             )}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
@@ -416,6 +500,7 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'center', duration: 22 });
   const [activeIndex, setActiveIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const storyExportRef = useRef<HTMLDivElement | null>(null);
   const confettiFired = useRef(false);
   const [sharing, setSharing] = useState(false);
 
@@ -504,6 +589,31 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     }
   }, [activeIndex]);
 
+  // Capture the hidden 1080x1920 Instagram Story canvas.
+  const captureStoryCanvas = useCallback(async (): Promise<string | null> => {
+    const node = storyExportRef.current;
+    if (!node) return null;
+    try {
+      // Ensure webfonts are ready so text renders identically every time.
+      if (typeof document !== 'undefined' && (document as any).fonts?.ready) {
+        try { await (document as any).fonts.ready; } catch { /* ignore */ }
+      }
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 1,
+        width: 1080,
+        height: 1920,
+        canvasWidth: 1080,
+        canvasHeight: 1920,
+        backgroundColor: '#05070b',
+      });
+      return dataUrl;
+    } catch (e) {
+      console.error('Failed to capture story canvas', e);
+      return null;
+    }
+  }, []);
+
   const dataUrlToBase64 = (url: string) => url.split(',')[1] ?? '';
 
   const writeTempImage = useCallback(async (dataUrl: string): Promise<string | null> => {
@@ -574,15 +684,13 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     if (sharing) return;
     setSharing(true);
     try {
-      const dataUrl = await captureCurrentCard();
+      const dataUrl = await captureStoryCanvas();
       if (!dataUrl) { toast.error('Could not capture card'); return; }
 
       if (Capacitor.isNativePlatform()) {
         const fileUri = await writeTempImage(dataUrl);
         if (!fileUri) { toast.error('Could not prepare image'); return; }
         try {
-          // Try targeted Instagram share via the system sheet (Capacitor Share has no app-target).
-          // Most Android share sheets surface Instagram Stories when image/png is shared.
           await Share.share({
             title: 'Share to Instagram Stories',
             url: fileUri,
@@ -594,13 +702,13 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
           }
         }
       } else {
-        downloadDataUrl(dataUrl, 'fitlog-instagram.png');
-        toast.success('Saved — open Instagram to post');
+        downloadDataUrl(dataUrl, 'fitlog-instagram-story.png');
+        toast.success('Story image saved — open Instagram to post');
       }
     } finally {
       setSharing(false);
     }
-  }, [captureCurrentCard, sharing, writeTempImage]);
+  }, [captureStoryCanvas, sharing, writeTempImage]);
 
   const handleDownload = useCallback(async () => {
     if (sharing) return;
@@ -645,8 +753,29 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
 
   if (!open || !data) return null;
 
+  const activeVisual = cards[activeIndex]
+    ? cards[activeIndex].build(data, unitLabel, dw)
+    : null;
+
   return (
     <div className="fixed inset-0 z-[80] bg-background flex flex-col" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      {/* Hidden Instagram Story export canvas (1080x1920). Rendered off-screen
+          so html-to-image can capture a deterministic story-safe poster
+          independent of the current viewport size. */}
+      {activeVisual && (
+        <div
+          aria-hidden
+          style={{
+            position: 'fixed',
+            left: -100000,
+            top: 0,
+            pointerEvents: 'none',
+            opacity: 0,
+          }}
+        >
+          <InstagramStoryExport visual={activeVisual} innerRef={storyExportRef} />
+        </div>
+      )}
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         <button
@@ -667,13 +796,16 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
       <div className="flex-1 min-h-0 flex flex-col justify-center">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {cards.map((c, i) => (
-              <div key={c.key} className="min-w-0 shrink-0 grow-0 basis-full px-5">
-                <div ref={(el) => { cardRefs.current[i] = el; }}>
-                  {c.render(data, unitLabel, dw)}
+            {cards.map((c, i) => {
+              const visual = c.build(data, unitLabel, dw);
+              return (
+                <div key={c.key} className="min-w-0 shrink-0 grow-0 basis-full px-5">
+                  <div ref={(el) => { cardRefs.current[i] = el; }}>
+                    <CardShell accent={visual.accent}>{visual.content}</CardShell>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
