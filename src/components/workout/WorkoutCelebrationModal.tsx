@@ -68,17 +68,25 @@ function CardShell({
   children,
   innerRef,
   accent,
+  className,
+  style,
 }: {
   children: React.ReactNode;
   innerRef?: React.Ref<HTMLDivElement>;
   accent?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
       ref={innerRef}
-      className="relative w-full aspect-[9/14] max-h-[72vh] mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+      className={cn(
+        'relative w-full aspect-[9/14] max-h-[72vh] mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl',
+        className
+      )}
       style={{
         background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
+        ...style,
       }}
     >
       <div className="absolute inset-0 p-6 pb-28 flex flex-col">
@@ -96,6 +104,7 @@ function CardShell({
     </div>
   );
 }
+
 
 /**
  * Export-only shell used for Instagram Story canvas.
