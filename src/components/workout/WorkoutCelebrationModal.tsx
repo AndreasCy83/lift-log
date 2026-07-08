@@ -153,8 +153,8 @@ const overviewCard: CardDef = {
         return format(new Date(y, m - 1, day), 'EEE, MMM d');
       } catch { return d.workout.date; }
     })();
-    return (
-      <CardShell>
+    return {
+      content: (
         <div className="flex flex-col h-full">
           <div className="text-xs font-medium text-white/50 uppercase tracking-wider">{dateStr}</div>
           <h2 className="mt-1 text-2xl font-bold text-white leading-tight line-clamp-2 break-words">
@@ -189,8 +189,8 @@ const overviewCard: CardDef = {
             </div>
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
