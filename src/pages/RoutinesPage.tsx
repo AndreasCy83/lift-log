@@ -5,8 +5,10 @@ import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRi
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
   getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
+  getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
+import { startSession } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -95,6 +97,8 @@ export default function RoutinesPage() {
   const handleLogRoutine = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
     setLogToDateRoutine(null);
+    const w = getWorkoutByDate(dateStr);
+    if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
   };
 

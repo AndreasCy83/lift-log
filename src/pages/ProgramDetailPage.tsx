@@ -5,9 +5,10 @@ import { ArrowLeft, Plus, Play, MoreVertical, Trash2, Pencil, CalendarPlus, Copy
 import {
   getPrograms, updateProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines,
   getRoutines, saveRoutines, addRoutine, deleteRoutine, getExercisesForRoutine, generateId,
-  addRoutineExercise,
+  addRoutineExercise, getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
+import { startSession } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -103,8 +104,11 @@ export default function ProgramDetailPage() {
 
   const handleStart = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
+    const w = getWorkoutByDate(dateStr);
+    if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
   };
+
 
   return (
     <div className="flex min-h-screen flex-col pb-24">
