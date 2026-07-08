@@ -103,9 +103,13 @@ export default function ProgramDetailPage() {
   };
 
   const handleStart = (r: Routine, date: Date = new Date()) => {
+  const handleStart = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
+    const w = getWorkoutByDate(dateStr);
+    if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
   };
+
 
   return (
     <div className="flex min-h-screen flex-col pb-24">
