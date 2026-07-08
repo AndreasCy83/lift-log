@@ -145,7 +145,7 @@ function ExportCardShell({
 
 const overviewCard: CardDef = {
   key: 'overview',
-  render: (d, unit, dw) => {
+  build: (d, unit, dw) => {
     const title = d.routineName || 'Workout Complete';
     const dateStr = (() => {
       try {
