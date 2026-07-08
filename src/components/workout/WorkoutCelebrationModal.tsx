@@ -107,47 +107,68 @@ function CardShell({
 
 
 /**
- * Export-only shell used for Instagram Story canvas.
- * Fixed pixel size (no vh/max-h constraints) so html-to-image renders deterministically.
+ * Instagram Story export canvas — fixed 1080x1920 with safe padding.
+ * Renders the existing CardShell scaled up inside a story-safe poster.
  */
-function ExportCardShell({
-  children,
-  accent,
-  width,
-  height,
+function InstagramStoryExport({
+  visual,
+  innerRef,
 }: {
-  children: React.ReactNode;
-  accent?: string;
-  width: number;
-  height: number;
+  visual: CardVisual;
+  innerRef: React.Ref<HTMLDivElement>;
 }) {
+  // Story-safe layout (px in the exported canvas)
+  const CANVAS_W = 1080;
+  const CANVAS_H = 1920;
+  const PAD_X = 80;
+  const PAD_TOP = 240;
+  const PAD_BOTTOM = 300;
+  const CARD_W = CANVAS_W - PAD_X * 2; // 920
+  const CARD_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1380
+  // Card design is aspect 9/14 at ~380px wide in-app. Match that and scale.
+  const DESIGN_W = 380;
+  const DESIGN_H = Math.round(DESIGN_W * 14 / 9); // 591
+  const scale = Math.min(CARD_W / DESIGN_W, CARD_H / DESIGN_H);
+  const scaledW = DESIGN_W * scale;
+  const scaledH = DESIGN_H * scale;
+  const offsetX = PAD_X + (CARD_W - scaledW) / 2;
+  const offsetY = PAD_TOP + (CARD_H - scaledH) / 2;
+
   return (
     <div
-      className="relative rounded-[48px] overflow-hidden border border-white/10 shadow-2xl"
+      ref={innerRef}
       style={{
-        width,
-        height,
-        background: `radial-gradient(120% 80% at 50% 0%, ${accent ?? 'hsl(145 80% 45% / 0.18)'} 0%, hsl(220 25% 8%) 55%, hsl(220 30% 4%) 100%)`,
+        width: CANVAS_W,
+        height: CANVAS_H,
+        position: 'relative',
+        background:
+          'radial-gradient(140% 90% at 50% -10%, hsl(220 30% 12%) 0%, hsl(220 30% 5%) 55%, hsl(220 35% 2%) 100%)',
+        overflow: 'hidden',
       }}
     >
-      <div className="absolute inset-0 flex flex-col" style={{ padding: 56, paddingBottom: 200 }}>
-        {children}
-      </div>
-      <div className="absolute left-0 right-0 flex items-center justify-center gap-4" style={{ bottom: 56 }}>
-        <img
-          src={appIcon}
-          alt=""
-          className="rounded-2xl object-cover shadow-lg ring-1 ring-white/15"
-          style={{ width: 88, height: 88 }}
-          crossOrigin="anonymous"
-        />
-        <span className="font-extrabold text-white/90 tracking-wide" style={{ fontSize: 42 }}>
-          FitLog X Tracker
-        </span>
+      <div
+        style={{
+          position: 'absolute',
+          left: offsetX,
+          top: offsetY,
+          width: DESIGN_W,
+          height: DESIGN_H,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+      >
+        <CardShell
+          accent={visual.accent}
+          className="!max-h-none !aspect-auto"
+          style={{ width: DESIGN_W, height: DESIGN_H }}
+        >
+          {visual.content}
+        </CardShell>
       </div>
     </div>
   );
 }
+
 
 
 // --- Card definitions -----------------------------------------------------
