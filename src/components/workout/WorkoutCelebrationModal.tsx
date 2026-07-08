@@ -196,12 +196,13 @@ const overviewCard: CardDef = {
 
 const milestoneCard: CardDef = {
   key: 'milestone',
-  render: (d) => {
+  build: (d) => {
     const lines: string[] = [];
     if (d.workoutsThisWeek > 0) lines.push(`${d.workoutsThisWeek} workout${d.workoutsThisWeek === 1 ? '' : 's'} this week`);
     if (d.workoutsThisMonth > 0) lines.push(`${d.workoutsThisMonth} this month`);
-    return (
-      <CardShell accent="hsl(38 92% 55% / 0.22)">
+    return {
+      accent: 'hsl(38 92% 55% / 0.22)',
+      content: (
         <div className="flex flex-col h-full items-center justify-center text-center">
           <div className="relative">
             <div className="absolute inset-0 rounded-full blur-3xl bg-orange-500/30" />
@@ -226,8 +227,8 @@ const milestoneCard: CardDef = {
             ))}
           </div>
         </div>
-      </CardShell>
-    );
+      ),
+    };
   },
 };
 
