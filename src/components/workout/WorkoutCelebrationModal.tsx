@@ -684,15 +684,13 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
     if (sharing) return;
     setSharing(true);
     try {
-      const dataUrl = await captureCurrentCard();
+      const dataUrl = await captureStoryCanvas();
       if (!dataUrl) { toast.error('Could not capture card'); return; }
 
       if (Capacitor.isNativePlatform()) {
         const fileUri = await writeTempImage(dataUrl);
         if (!fileUri) { toast.error('Could not prepare image'); return; }
         try {
-          // Try targeted Instagram share via the system sheet (Capacitor Share has no app-target).
-          // Most Android share sheets surface Instagram Stories when image/png is shared.
           await Share.share({
             title: 'Share to Instagram Stories',
             url: fileUri,
@@ -704,13 +702,13 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
           }
         }
       } else {
-        downloadDataUrl(dataUrl, 'fitlog-instagram.png');
-        toast.success('Saved — open Instagram to post');
+        downloadDataUrl(dataUrl, 'fitlog-instagram-story.png');
+        toast.success('Story image saved — open Instagram to post');
       }
     } finally {
       setSharing(false);
     }
-  }, [captureCurrentCard, sharing, writeTempImage]);
+  }, [captureStoryCanvas, sharing, writeTempImage]);
 
   const handleDownload = useCallback(async () => {
     if (sharing) return;
