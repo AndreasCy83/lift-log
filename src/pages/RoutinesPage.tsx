@@ -97,6 +97,8 @@ export default function RoutinesPage() {
   const handleLogRoutine = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
     setLogToDateRoutine(null);
+    const w = getWorkoutByDate(dateStr);
+    if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
   };
 
