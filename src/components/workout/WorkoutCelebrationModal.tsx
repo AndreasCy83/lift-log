@@ -315,8 +315,9 @@ function MuscleDonut({ muscles }: { muscles: MuscleFocus[] }) {
 
 const musclesCard: CardDef = {
   key: 'muscles',
-  render: (d) => (
-    <CardShell accent="hsl(217 91% 60% / 0.2)">
+  build: (d) => ({
+    accent: 'hsl(217 91% 60% / 0.2)',
+    content: (
       <div className="flex flex-col h-full">
         <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Muscle Focus</div>
         <h2 className="mt-1 text-2xl font-bold text-white">Today's Targets</h2>
@@ -327,8 +328,8 @@ const musclesCard: CardDef = {
           Distribution by training volume
         </div>
       </div>
-    </CardShell>
-  ),
+    ),
+  }),
 };
 
 const highlightsCard: CardDef = {
