@@ -342,10 +342,35 @@ function computeSetReps(
   }
   // Target known but no baseline (nothing to diff against): only seed empty
   // sets; never overwrite an existing per-set rep value.
-  if (targetReps != null) {
-    return hasExisting ? (existingReps as number) : targetReps;
+function computeSetReps(
+  existingReps: number | null | undefined,
+  targetReps: number | null,
+  baselineReps: number | null,
+  previousReps?: number | null,
+): number | null {
+  const hasExisting = existingReps != null && existingReps > 0;
+  // Prefer the planned value if the user already has one; otherwise fall
+  // back to the most recent completed session's per-set reps so a staggered
+  // pattern (e.g. 19/14) is preserved instead of collapsing to a flat target.
+  const anchor: number | null = hasExisting
+    ? (existingReps as number)
+    : previousReps != null && previousReps > 0
+      ? previousReps
+      : null;
+
+  // Delta mode: apply the (target - baseline) change to whatever anchor we have.
+  if (targetReps != null && baselineReps != null) {
+    const delta = targetReps - baselineReps;
+    if (anchor != null) return Math.max(1, anchor + delta);
+    return Math.max(1, targetReps);
   }
-  return hasExisting ? (existingReps as number) : null;
+  // Target known but no baseline: only seed empty sets; never overwrite an
+  // existing per-set rep value.
+  if (targetReps != null) {
+    if (hasExisting) return existingReps as number;
+    return anchor ?? targetReps;
+  }
+  return anchor;
 }
 
 export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescription) {
@@ -360,16 +385,18 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
 
   const targetReps = p.repsMax ?? p.repsMin ?? null;
   const desired = p.sets;
+  const prev = getPreviousWorkingSetReps(p.exerciseId);
 
   // Update or add up to `desired` editable sets.
   const baseIndex = keepers.length;
   for (let i = 0; i < desired; i += 1) {
     const slot = editable[i];
+    const prevAtIdx = prev[i] ?? prev[prev.length - 1] ?? null;
     if (slot) {
       const updated: WorkoutSet = {
         ...slot,
         weightKg: p.weightKg,
-        reps: computeSetReps(slot.reps, targetReps, p.baselineReps),
+        reps: computeSetReps(slot.reps, targetReps, p.baselineReps, prevAtIdx),
         isCompleted: false,
       };
       updateWorkoutSet(updated);
@@ -380,7 +407,7 @@ export function writePrescriptionToWE(workoutExerciseId: string, p: CoachPrescri
         setIndex: baseIndex + i,
         setTag: 'N',
         weightKg: p.weightKg,
-        reps: computeSetReps(null, targetReps, p.baselineReps),
+        reps: computeSetReps(null, targetReps, p.baselineReps, prevAtIdx),
         distanceKm: null,
         durationMinutes: null,
         rpe: null,
@@ -417,17 +444,22 @@ export function applyPendingOverrideOnCreate(
   const pending = getPendingCoachOverride(exerciseId);
   if (!pending) return false;
   const targetReps = pending.repsMax ?? pending.repsMin ?? null;
-  const sets = getSetsForWorkoutExercise(workoutExerciseId);
+  const sets = getSetsForWorkoutExercise(workoutExerciseId)
+    .slice()
+    .sort((a, b) => a.setIndex - b.setIndex);
+  const prev = getPreviousWorkingSetReps(exerciseId);
   let touched = false;
+  let editableIdx = 0;
   for (const s of sets) {
     if (s.isCompleted || s.isWarmup || s.setTag === 'W') continue;
+    const prevAtIdx = prev[editableIdx] ?? prev[prev.length - 1] ?? null;
     updateWorkoutSet({
       ...s,
       weightKg: pending.weightKg,
-      reps: computeSetReps(s.reps, targetReps, pending.baselineReps),
-
+      reps: computeSetReps(s.reps, targetReps, pending.baselineReps, prevAtIdx),
     });
     touched = true;
+    editableIdx += 1;
   }
   if (touched) markWEApplied(workoutExerciseId, exerciseId, pending);
   return touched;
