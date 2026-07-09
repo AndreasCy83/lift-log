@@ -117,22 +117,25 @@ function InstagramStoryExport({
   visual: CardVisual;
   innerRef: React.Ref<HTMLDivElement>;
 }) {
-  // Story-safe layout (px in the exported canvas)
+  // Story-safe layout (px in the exported canvas). Keep the card as a framed
+  // poster inside Instagram's blocked top/bottom UI zones, not full-height.
   const CANVAS_W = 1080;
   const CANVAS_H = 1920;
-  const PAD_X = 80;
-  const PAD_TOP = 240;
-  const PAD_BOTTOM = 300;
-  const CARD_W = CANVAS_W - PAD_X * 2; // 920
-  const CARD_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1380
+  const PAD_X = 88;
+  const PAD_TOP = 280;
+  const PAD_BOTTOM = 320;
+  const USABLE_W = CANVAS_W - PAD_X * 2; // 904
+  const USABLE_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1320
+  const CARD_MAX_H = Math.round(CANVAS_H * 0.72); // 1382, capped by safe area
+  const CARD_MAX_W = USABLE_W;
   // Card design is aspect 9/14 at ~380px wide in-app. Match that and scale.
   const DESIGN_W = 380;
   const DESIGN_H = Math.round(DESIGN_W * 14 / 9); // 591
-  const scale = Math.min(CARD_W / DESIGN_W, CARD_H / DESIGN_H);
+  const scale = Math.min(CARD_MAX_W / DESIGN_W, CARD_MAX_H / DESIGN_H, USABLE_H / DESIGN_H);
   const scaledW = DESIGN_W * scale;
   const scaledH = DESIGN_H * scale;
-  const offsetX = PAD_X + (CARD_W - scaledW) / 2;
-  const offsetY = PAD_TOP + (CARD_H - scaledH) / 2;
+  const offsetX = PAD_X + (USABLE_W - scaledW) / 2;
+  const offsetY = PAD_TOP + (USABLE_H - scaledH) / 2;
 
   return (
     <div
