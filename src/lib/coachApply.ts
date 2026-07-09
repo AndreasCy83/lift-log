@@ -30,7 +30,24 @@ import {
   addWorkoutSet,
   deleteWorkoutSet,
   getExercises,
+  getLatestSetsForExercise,
 } from './storage';
+
+/**
+ * Return the ordered per-set reps of the most recent completed working
+ * sets for an exercise. Used as a fallback rep baseline when the planned
+ * workout has no existing per-set rep values (blank template) so we can
+ * still preserve the user's actual pattern (e.g. 19/14) instead of
+ * flattening to a single target value.
+ */
+function getPreviousWorkingSetReps(exerciseId: string): number[] {
+  const sets = getLatestSetsForExercise(exerciseId)
+    .filter((s) => s.isCompleted && !s.isWarmup && s.setTag !== 'W')
+    .sort((a, b) => a.setIndex - b.setIndex);
+  return sets
+    .map((s) => (typeof s.reps === 'number' && s.reps > 0 ? s.reps : null))
+    .filter((r): r is number => r != null);
+}
 
 const APPLIED_KEY = 'gym-coach-applied-recs-v1';
 const PENDING_KEY = 'gym-coach-pending-overrides-v1';
