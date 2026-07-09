@@ -107,48 +107,62 @@ function CardShell({
 
 
 /**
- * Instagram Story export canvas — fixed 1080x1920 with safe padding.
- * Renders the existing CardShell scaled up inside a story-safe poster.
+ * Instagram Story export canvas — fixed 1080x1920 with the workout card
+ * rendered as a smaller child inside a full Story background.
  */
 function InstagramStoryExport({
   visual,
-  innerRef,
+  storyRef,
 }: {
   visual: CardVisual;
-  innerRef: React.Ref<HTMLDivElement>;
+  storyRef: React.Ref<HTMLDivElement>;
 }) {
-  // Story-safe layout (px in the exported canvas). Keep the card as a framed
-  // poster inside Instagram's blocked top/bottom UI zones, not full-height.
+  // Story-safe layout in exported pixels. The captured root is the full Story
+  // canvas; the rounded FitLog X card is only an inner poster layer.
   const CANVAS_W = 1080;
   const CANVAS_H = 1920;
-  const PAD_X = 88;
-  const PAD_TOP = 280;
-  const PAD_BOTTOM = 320;
-  const USABLE_W = CANVAS_W - PAD_X * 2; // 904
-  const USABLE_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1320
-  const CARD_MAX_H = Math.round(CANVAS_H * 0.72); // 1382, capped by safe area
-  const CARD_MAX_W = USABLE_W;
-  // Card design is aspect 9/14 at ~380px wide in-app. Match that and scale.
+  const SAFE_TOP = 280;
+  const SAFE_BOTTOM = 360;
+  const SAFE_X = 96;
+  const SAFE_W = CANVAS_W - SAFE_X * 2;
+  const SAFE_H = CANVAS_H - SAFE_TOP - SAFE_BOTTOM;
+
+  // 62.5% of Story height: intentionally undersized for Instagram overlays.
+  const CARD_H = 1200;
+  const CARD_W = Math.round(CARD_H * 9 / 14);
+
+  // Card design is aspect 9/14 at ~380px wide in-app. Scale the whole shell
+  // so typography, footer, rounded corners, and spacing remain unchanged.
   const DESIGN_W = 380;
   const DESIGN_H = Math.round(DESIGN_W * 14 / 9); // 591
-  const scale = Math.min(CARD_MAX_W / DESIGN_W, CARD_MAX_H / DESIGN_H, USABLE_H / DESIGN_H);
+  const scale = Math.min(CARD_W / DESIGN_W, CARD_H / DESIGN_H, SAFE_W / DESIGN_W, SAFE_H / DESIGN_H);
   const scaledW = DESIGN_W * scale;
   const scaledH = DESIGN_H * scale;
-  const offsetX = PAD_X + (USABLE_W - scaledW) / 2;
-  const offsetY = PAD_TOP + (USABLE_H - scaledH) / 2;
+  const offsetX = SAFE_X + (SAFE_W - scaledW) / 2;
+  const offsetY = SAFE_TOP + (SAFE_H - scaledH) / 2;
 
   return (
     <div
-      ref={innerRef}
+      ref={storyRef}
+      data-instagram-story-export-root="true"
       style={{
         width: CANVAS_W,
         height: CANVAS_H,
         position: 'relative',
         background:
-          'radial-gradient(140% 90% at 50% -10%, hsl(220 30% 12%) 0%, hsl(220 30% 5%) 55%, hsl(220 35% 2%) 100%)',
+          'radial-gradient(900px 520px at 50% 34%, hsl(145 80% 45% / 0.16) 0%, transparent 62%), radial-gradient(1200px 860px at 50% -12%, hsl(220 36% 16%) 0%, hsl(220 34% 6%) 56%, hsl(220 38% 2%) 100%)',
         overflow: 'hidden',
       }}
     >
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(180deg, hsl(0 0% 100% / 0.035) 0%, transparent 26%, transparent 72%, hsl(0 0% 0% / 0.28) 100%)',
+        }}
+      />
       <div
         style={{
           position: 'absolute',
@@ -773,10 +787,9 @@ export default function WorkoutCelebrationModal({ workoutId, open, onClose }: Pr
             left: -100000,
             top: 0,
             pointerEvents: 'none',
-            opacity: 0,
           }}
         >
-          <InstagramStoryExport visual={activeVisual} innerRef={storyExportRef} />
+          <InstagramStoryExport visual={activeVisual} storyRef={storyExportRef} />
         </div>
       )}
       {/* Top bar */}
