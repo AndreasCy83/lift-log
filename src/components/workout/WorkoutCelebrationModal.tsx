@@ -122,11 +122,11 @@ function InstagramStoryExport({
   const CANVAS_W = 1080;
   const CANVAS_H = 1920;
   const PAD_X = 88;
-  const PAD_TOP = 300;
-  const PAD_BOTTOM = 360;
+  const PAD_TOP = 280;
+  const PAD_BOTTOM = 320;
   const USABLE_W = CANVAS_W - PAD_X * 2; // 904
-  const USABLE_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1260
-  const CARD_MAX_H = Math.round(CANVAS_H * 0.7); // 1344, capped by safe area
+  const USABLE_H = CANVAS_H - PAD_TOP - PAD_BOTTOM; // 1320
+  const CARD_MAX_H = Math.round(CANVAS_H * 0.72); // 1382, capped by safe area
   const CARD_MAX_W = USABLE_W;
   // Card design is aspect 9/14 at ~380px wide in-app. Match that and scale.
   const DESIGN_W = 380;
