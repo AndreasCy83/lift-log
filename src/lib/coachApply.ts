@@ -331,21 +331,6 @@ function computeSetReps(
   existingReps: number | null | undefined,
   targetReps: number | null,
   baselineReps: number | null,
-): number | null {
-  const hasExisting = existingReps != null && existingReps > 0;
-  // Delta mode: both target and baseline known.
-  if (targetReps != null && baselineReps != null) {
-    const delta = targetReps - baselineReps;
-    if (hasExisting) return Math.max(1, (existingReps as number) + delta);
-    // No existing per-set value: fall back to the flat target.
-    return Math.max(1, targetReps);
-  }
-  // Target known but no baseline (nothing to diff against): only seed empty
-  // sets; never overwrite an existing per-set rep value.
-function computeSetReps(
-  existingReps: number | null | undefined,
-  targetReps: number | null,
-  baselineReps: number | null,
   previousReps?: number | null,
 ): number | null {
   const hasExisting = existingReps != null && existingReps > 0;
