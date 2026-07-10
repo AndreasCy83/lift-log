@@ -306,7 +306,33 @@
     "goals": "Objectifs",
     "history": "Historique",
     "trends": "Tendances",
-    "bmi": "IMC"
+    "bmi": "IMC",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "Graphiques",
+        "graphsText": "Consultez les tendances visuelles de votre poids, masse grasse, masse musculaire et mensurations dans le temps.",
+        "historyTitle": "Historique",
+        "historyText": "Parcourez et modifiez chaque entrée corporelle enregistrée.",
+        "addTitle": "Ajouter une entrée",
+        "addText": "Appuyez sur + pour enregistrer une nouvelle entrée — poids, masse grasse, mensurations et plus.",
+        "goalsTitle": "Objectifs",
+        "goalsText": "Définissez des cibles pour le poids, la masse grasse, la masse musculaire et chaque mensuration.",
+        "bmiTitle": "IMC et tendances",
+        "bmiText": "Consultez votre IMC et les tendances à long terme de votre composition corporelle."
+      },
+      "fields": {
+        "weightTitle": "Poids",
+        "weightText": "Tournez la règle pour définir votre poids actuel. Changez les unités dans Réglages.",
+        "fatTitle": "Masse grasse %",
+        "fatText": "Activez pour enregistrer votre pourcentage de masse grasse pour cette entrée.",
+        "muscleTitle": "Masse musculaire %",
+        "muscleText": "Activez pour enregistrer votre pourcentage de masse musculaire.",
+        "measurementsTitle": "Plus de mensurations",
+        "measurementsText": "Développez pour suivre des mensurations comme les épaules, biceps et plus.",
+        "addMeasurementsTitle": "Choisir les mensurations",
+        "addMeasurementsText": "Ajoutez des zones spécifiques — par exemple épaules ou bras (biceps) — et enregistrez-les en cm ou en pouces."
+      }
+    }
   },
   "stats": {
     "title": "Stats",

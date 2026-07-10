@@ -306,7 +306,33 @@
     "goals": "目標",
     "history": "履歴",
     "trends": "トレンド",
-    "bmi": "BMI"
+    "bmi": "BMI",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "グラフ",
+        "graphsText": "体重・体脂肪・筋肉量・各部位の推移をグラフで確認できます。",
+        "historyTitle": "履歴",
+        "historyText": "記録したすべての身体エントリを閲覧・編集できます。",
+        "addTitle": "エントリ追加",
+        "addText": "+ をタップして新しい身体エントリを記録 — 体重、体脂肪、各部位など。",
+        "goalsTitle": "目標",
+        "goalsText": "体重・体脂肪・筋肉量・各部位の目標を設定します。",
+        "bmiTitle": "BMI とトレンド",
+        "bmiText": "BMI と長期的な体組成のトレンドを確認できます。"
+      },
+      "fields": {
+        "weightTitle": "体重",
+        "weightText": "ルーラーを回して現在の体重を設定します。単位は設定で変更できます。",
+        "fatTitle": "体脂肪 %",
+        "fatText": "オンにしてこのエントリの体脂肪率を記録します。",
+        "muscleTitle": "筋肉量 %",
+        "muscleText": "オンにして筋肉量の割合を記録します。",
+        "measurementsTitle": "追加の測定",
+        "measurementsText": "肩や上腕（二頭筋）など、周径囲の測定を追加できます。",
+        "addMeasurementsTitle": "測定部位を選択",
+        "addMeasurementsText": "肩や上腕（二頭筋）など具体的な部位を追加し、cm または in で記録します。"
+      }
+    }
   },
   "stats": {
     "title": "統計",

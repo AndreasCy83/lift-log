@@ -19,21 +19,23 @@ import type { BodyMeasurementKey, BodyMeasurementUnit } from '@/types/bodyTracke
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
 import SupportModal from '@/components/SupportModal';
 
-const BODY_TUTORIAL_MAIN: TutorialStep[] = [
-  { selector: '[data-tutorial="body-graphs"]', title: 'Graphs', text: 'View visual trends of your weight, body fat, muscle mass and measurements over time.' },
-  { selector: '[data-tutorial="body-history"]', title: 'History', text: 'Browse and edit every body entry you have logged.' },
-  { selector: '[data-tutorial="body-add"]', title: 'Add Entry', text: 'Tap the + button to log a new body entry — weight, body fat, measurements and more.' },
-  { selector: '[data-tutorial="body-goals"]', title: 'Goals', text: 'Set targets for weight, body fat, muscle mass and individual measurements.' },
-  { selector: '[data-tutorial="body-bmi"]', title: 'BMI & Trends', text: 'Check your BMI and longer-term trend lines for body composition.' },
-];
+// Tutorial steps are built inside the component so titles/texts pick up the
+// active language from i18n. Selectors remain stable.
+const BODY_TUTORIAL_MAIN_SELECTORS = [
+  { selector: '[data-tutorial="body-graphs"]',  key: 'graphs' },
+  { selector: '[data-tutorial="body-history"]', key: 'history' },
+  { selector: '[data-tutorial="body-add"]',     key: 'add' },
+  { selector: '[data-tutorial="body-goals"]',   key: 'goals' },
+  { selector: '[data-tutorial="body-bmi"]',     key: 'bmi' },
+] as const;
 
-const BODY_TUTORIAL_FIELDS: TutorialStep[] = [
-  { selector: '[data-tutorial="body-weight"]', title: 'Weight', text: 'Spin the ruler to set your current weight. Switch units in Settings.' },
-  { selector: '[data-tutorial="body-fat"]', title: 'Body Fat %', text: 'Toggle on to log your body fat percentage for this entry.' },
-  { selector: '[data-tutorial="body-muscle"]', title: 'Muscle Mass %', text: 'Toggle on to record your muscle mass percentage.' },
-  { selector: '[data-tutorial="body-measurements"]', title: 'More Measurements', text: 'Expand to track circumference measurements like shoulders, biceps and more.' },
-  { selector: '[data-tutorial="body-add-measurements"]', title: 'Pick Measurements', text: 'Add specific spots — for example shoulders or upper arms (biceps) — and log them in cm or in.' },
-];
+const BODY_TUTORIAL_FIELDS_SELECTORS = [
+  { selector: '[data-tutorial="body-weight"]',            key: 'weight' },
+  { selector: '[data-tutorial="body-fat"]',               key: 'fat' },
+  { selector: '[data-tutorial="body-muscle"]',            key: 'muscle' },
+  { selector: '[data-tutorial="body-measurements"]',      key: 'measurements' },
+  { selector: '[data-tutorial="body-add-measurements"]',  key: 'addMeasurements' },
+] as const;
 
 type SubView = 'main' | 'graphs' | 'history' | 'goals' | 'bmi';
 
@@ -58,6 +60,23 @@ export default function BodyTrackerPage() {
   const unitLabel = weightUnitLabel(wu);
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
+
+  const bodyTutorialMain: TutorialStep[] = useMemo(
+    () => BODY_TUTORIAL_MAIN_SELECTORS.map(s => ({
+      selector: s.selector,
+      title: t(`body.tutorial.main.${s.key}Title`),
+      text: t(`body.tutorial.main.${s.key}Text`),
+    })),
+    [t],
+  );
+  const bodyTutorialFields: TutorialStep[] = useMemo(
+    () => BODY_TUTORIAL_FIELDS_SELECTORS.map(s => ({
+      selector: s.selector,
+      title: t(`body.tutorial.fields.${s.key}Title`),
+      text: t(`body.tutorial.fields.${s.key}Text`),
+    })),
+    [t],
+  );
 
   // First-time tutorial trigger for the Body tab
   useEffect(() => {
@@ -547,7 +566,7 @@ export default function BodyTrackerPage() {
       {/* First-time tutorial — main actions */}
       {tutorialPhase === 'main' && !showAddModal && (
         <ExerciseTutorialOverlay
-          steps={BODY_TUTORIAL_MAIN}
+          steps={bodyTutorialMain}
           onFinish={() => {
             // Open Add modal and continue to field tutorial
             setEditEntry(null);
@@ -560,7 +579,7 @@ export default function BodyTrackerPage() {
       {/* First-time tutorial — body entry fields (inside modal) */}
       {tutorialPhase === 'fields' && showAddModal && (
         <ExerciseTutorialOverlay
-          steps={BODY_TUTORIAL_FIELDS}
+          steps={bodyTutorialFields}
           onFinish={() => {
             localStorage.setItem('hasSeenBodyTutorial', 'true');
             setTutorialPhase('none');
