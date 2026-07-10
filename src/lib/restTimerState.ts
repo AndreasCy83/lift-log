@@ -3,12 +3,38 @@
  * Uses timestamp-based approach for accurate countdown after app resume.
  */
 
+import { stopAllCues } from './ttsVoice';
+
 const ACTIVE_TIMERS_KEY = 'gym-active-rest-timers';
 const LAST_REST_KEY = 'gym-last-rest-seconds';
+
+/**
+ * Monotonically increasing token identifying the currently active timer
+ * "run". Every start/replace bumps this. Cue callbacks capture the runId at
+ * schedule-time and refuse to fire once it no longer matches, guaranteeing
+ * that a canceled or replaced timer can never produce a later voice cue.
+ */
+let currentRunId = 0;
+// Seed from any persisted timer so cues from a resumed session still fire.
+try {
+  const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(ACTIVE_TIMERS_KEY) : null;
+  const arr = raw ? JSON.parse(raw) : [];
+  if (Array.isArray(arr) && arr[0] && typeof arr[0].runId === 'number') {
+    currentRunId = arr[0].runId;
+  } else if (Array.isArray(arr) && arr[0]) {
+    currentRunId = 1; // legacy persisted timer without runId
+  }
+} catch {}
+export function getCurrentRunId(): number { return currentRunId; }
+export function isRunActive(runId: number | undefined): boolean {
+  return typeof runId === 'number' && runId === currentRunId && currentRunId > 0;
+}
 
 export interface ActiveRestTimer {
   /** workoutExerciseId + setIndex to identify which separator */
   id: string;
+  /** Monotonic run token; every start bumps it. Cue callbacks gate on this. */
+  runId: number;
   workoutExerciseId: string;
   afterSetIndex: number;
   totalSeconds: number;
@@ -38,15 +64,29 @@ function saveActiveTimers(timers: ActiveRestTimer[]) {
   } catch {}
 }
 
+/**
+ * Fully destroy the currently active timer session: bump the run token so
+ * any in-flight callbacks/audio bound to it become no-ops, and hard-stop any
+ * queued or already-playing cues.
+ */
+function destroyActiveRun() {
+  currentRunId += 1;
+  try { stopAllCues(); } catch {}
+}
+
 export function startRestTimer(
   workoutExerciseId: string,
   afterSetIndex: number,
   totalSeconds: number
 ): ActiveRestTimer {
   // Enforce single active timer at the workout level: latest started wins.
-  // Clear ALL existing timers regardless of exercise/set.
+  // Fully destroy any previous run before installing the new one so no old
+  // cue callback / queued audio can leak into the new session.
+  destroyActiveRun();
+  const runId = currentRunId; // fresh token for this run
   const timer: ActiveRestTimer = {
     id: `${workoutExerciseId}-${afterSetIndex}`,
+    runId,
     workoutExerciseId,
     afterSetIndex,
     totalSeconds,
@@ -59,18 +99,24 @@ export function startRestTimer(
 
 /** Clear every active rest timer (e.g. on workout finish). */
 export function clearAllRestTimers() {
+  destroyActiveRun();
   saveActiveTimers([]);
 }
 
 export function clearRestTimer(workoutExerciseId: string, afterSetIndex: number) {
-  const timers = getActiveTimers().filter(
+  const before = getActiveTimers();
+  const after = before.filter(
     t => !(t.workoutExerciseId === workoutExerciseId && t.afterSetIndex === afterSetIndex)
   );
-  saveActiveTimers(timers);
+  if (after.length !== before.length) destroyActiveRun();
+  saveActiveTimers(after);
 }
 
 export function clearAllTimersForExercise(workoutExerciseId: string) {
-  saveActiveTimers(getActiveTimers().filter(t => t.workoutExerciseId !== workoutExerciseId));
+  const before = getActiveTimers();
+  const after = before.filter(t => t.workoutExerciseId !== workoutExerciseId);
+  if (after.length !== before.length) destroyActiveRun();
+  saveActiveTimers(after);
 }
 
 export function getTimerRemaining(timer: ActiveRestTimer): number {

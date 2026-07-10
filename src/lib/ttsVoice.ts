@@ -7,6 +7,8 @@
  * is playing). Tiny edge fades (~30ms in / ~40ms out) avoid pops/clicks.
  */
 
+import { isRunActive } from './restTimerState';
+
 const SILENT_PAD_MS = 400;
 const FADE_IN_MS = 30;
 const FADE_OUT_MS = 40;
@@ -97,7 +99,13 @@ function scheduleFadeOut(audio: HTMLAudioElement, ms: number) {
   audio.addEventListener('pause', cleanup);
 }
 
-export function speakCue(text: string) {
+/**
+ * Tracks in-flight speakCue setTimeout handles so a cancel/replace can
+ * immediately clear them before the delayed audio.play() fires.
+ */
+const pendingCueTimeouts = new Set<number>();
+
+export function speakCue(text: string, runId?: number) {
   try {
     const map: Record<string, string> = {
       '10 seconds': '/audio/10secs.mp3',
@@ -119,9 +127,12 @@ export function speakCue(text: string) {
     // isn't clipped when audio hardware was idle.
     primeOutputWithSilence(SILENT_PAD_MS);
 
-    // After the silent pad, start the cue and apply tiny edge fades.
-    window.setTimeout(() => {
+    // After the silent pad, start the cue and apply tiny edge fades — but
+    // only if the timer run that scheduled this cue is still the active one.
+    const handle = window.setTimeout(() => {
+      pendingCueTimeouts.delete(handle);
       try {
+        if (typeof runId === 'number' && !isRunActive(runId)) return;
         audio.currentTime = 0;
         fadeIn(audio, FADE_IN_MS);
         scheduleFadeOut(audio, FADE_OUT_MS);
@@ -132,6 +143,7 @@ export function speakCue(text: string) {
         if (navigator.vibrate) navigator.vibrate(200);
       }
     }, SILENT_PAD_MS);
+    pendingCueTimeouts.add(handle);
   } catch {
     if (navigator.vibrate) navigator.vibrate(200);
   }
@@ -163,18 +175,18 @@ export function playFinishBeep() {
  * Used when the user finishes a workout so no callouts continue afterward.
  */
 export function stopAllCues() {
+  // Cancel any delayed cue playback that hasn't started yet.
+  try {
+    pendingCueTimeouts.forEach(h => { try { clearTimeout(h); } catch {} });
+    pendingCueTimeouts.clear();
+  } catch {}
   try {
     Object.values(audioCache).forEach(a => {
       try { a.pause(); a.currentTime = 0; a.volume = 1; } catch {}
     });
   } catch {}
-  try {
-    if (audioCtxRef.current) {
-      const ctx = audioCtxRef.current;
-      audioCtxRef.current = null;
-      ctx.close().catch(() => {});
-    }
-  } catch {}
+  // Note: keep the AudioContext alive so future timers can still play beeps
+  // without needing another user-gesture unlock.
   try {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
