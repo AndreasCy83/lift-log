@@ -15,8 +15,20 @@ const LAST_REST_KEY = 'gym-last-rest-seconds';
  * that a canceled or replaced timer can never produce a later voice cue.
  */
 let currentRunId = 0;
+// Seed from any persisted timer so cues from a resumed session still fire.
+try {
+  const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(ACTIVE_TIMERS_KEY) : null;
+  const arr = raw ? JSON.parse(raw) : [];
+  if (Array.isArray(arr) && arr[0] && typeof arr[0].runId === 'number') {
+    currentRunId = arr[0].runId;
+  } else if (Array.isArray(arr) && arr[0]) {
+    currentRunId = 1; // legacy persisted timer without runId
+  }
+} catch {}
 export function getCurrentRunId(): number { return currentRunId; }
-export function isRunActive(runId: number): boolean { return runId === currentRunId && currentRunId > 0; }
+export function isRunActive(runId: number | undefined): boolean {
+  return typeof runId === 'number' && runId === currentRunId && currentRunId > 0;
+}
 
 export interface ActiveRestTimer {
   /** workoutExerciseId + setIndex to identify which separator */
