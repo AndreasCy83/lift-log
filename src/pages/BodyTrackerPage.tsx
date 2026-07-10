@@ -566,7 +566,7 @@ export default function BodyTrackerPage() {
       {/* First-time tutorial — main actions */}
       {tutorialPhase === 'main' && !showAddModal && (
         <ExerciseTutorialOverlay
-          steps={BODY_TUTORIAL_MAIN}
+          steps={bodyTutorialMain}
           onFinish={() => {
             // Open Add modal and continue to field tutorial
             setEditEntry(null);
