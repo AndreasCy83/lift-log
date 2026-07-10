@@ -321,7 +321,33 @@
     "goals": "Goals",
     "history": "History",
     "trends": "Trends",
-    "bmi": "BMI"
+    "bmi": "BMI",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "Graphs",
+        "graphsText": "View visual trends of your weight, body fat, muscle mass and measurements over time.",
+        "historyTitle": "History",
+        "historyText": "Browse and edit every body entry you have logged.",
+        "addTitle": "Add Entry",
+        "addText": "Tap the + button to log a new body entry — weight, body fat, measurements and more.",
+        "goalsTitle": "Goals",
+        "goalsText": "Set targets for weight, body fat, muscle mass and individual measurements.",
+        "bmiTitle": "BMI & Trends",
+        "bmiText": "Check your BMI and longer-term trend lines for body composition."
+      },
+      "fields": {
+        "weightTitle": "Weight",
+        "weightText": "Spin the ruler to set your current weight. Switch units in Settings.",
+        "fatTitle": "Body Fat %",
+        "fatText": "Toggle on to log your body fat percentage for this entry.",
+        "muscleTitle": "Muscle Mass %",
+        "muscleText": "Toggle on to record your muscle mass percentage.",
+        "measurementsTitle": "More Measurements",
+        "measurementsText": "Expand to track circumference measurements like shoulders, biceps and more.",
+        "addMeasurementsTitle": "Pick Measurements",
+        "addMeasurementsText": "Add specific spots — for example shoulders or upper arms (biceps) — and log them in cm or in."
+      }
+    }
   },
   "stats": {
     "title": "Stats",
