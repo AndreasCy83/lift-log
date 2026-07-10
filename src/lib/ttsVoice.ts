@@ -178,18 +178,18 @@ export function playFinishBeep() {
  * Used when the user finishes a workout so no callouts continue afterward.
  */
 export function stopAllCues() {
+  // Cancel any delayed cue playback that hasn't started yet.
+  try {
+    pendingCueTimeouts.forEach(h => { try { clearTimeout(h); } catch {} });
+    pendingCueTimeouts.clear();
+  } catch {}
   try {
     Object.values(audioCache).forEach(a => {
       try { a.pause(); a.currentTime = 0; a.volume = 1; } catch {}
     });
   } catch {}
-  try {
-    if (audioCtxRef.current) {
-      const ctx = audioCtxRef.current;
-      audioCtxRef.current = null;
-      ctx.close().catch(() => {});
-    }
-  } catch {}
+  // Note: keep the AudioContext alive so future timers can still play beeps
+  // without needing another user-gesture unlock.
   try {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
