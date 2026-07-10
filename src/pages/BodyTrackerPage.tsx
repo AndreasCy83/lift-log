@@ -61,6 +61,23 @@ export default function BodyTrackerPage() {
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
+  const bodyTutorialMain: TutorialStep[] = useMemo(
+    () => BODY_TUTORIAL_MAIN_SELECTORS.map(s => ({
+      selector: s.selector,
+      title: t(`body.tutorial.main.${s.key}Title`),
+      text: t(`body.tutorial.main.${s.key}Text`),
+    })),
+    [t],
+  );
+  const bodyTutorialFields: TutorialStep[] = useMemo(
+    () => BODY_TUTORIAL_FIELDS_SELECTORS.map(s => ({
+      selector: s.selector,
+      title: t(`body.tutorial.fields.${s.key}Title`),
+      text: t(`body.tutorial.fields.${s.key}Text`),
+    })),
+    [t],
+  );
+
   // First-time tutorial trigger for the Body tab
   useEffect(() => {
     if (subView !== 'main') return;
