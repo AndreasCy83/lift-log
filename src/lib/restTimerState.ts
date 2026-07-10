@@ -3,8 +3,20 @@
  * Uses timestamp-based approach for accurate countdown after app resume.
  */
 
+import { stopAllCues } from './ttsVoice';
+
 const ACTIVE_TIMERS_KEY = 'gym-active-rest-timers';
 const LAST_REST_KEY = 'gym-last-rest-seconds';
+
+/**
+ * Monotonically increasing token identifying the currently active timer
+ * "run". Every start/replace bumps this. Cue callbacks capture the runId at
+ * schedule-time and refuse to fire once it no longer matches, guaranteeing
+ * that a canceled or replaced timer can never produce a later voice cue.
+ */
+let currentRunId = 0;
+export function getCurrentRunId(): number { return currentRunId; }
+export function isRunActive(runId: number): boolean { return runId === currentRunId && currentRunId > 0; }
 
 export interface ActiveRestTimer {
   /** workoutExerciseId + setIndex to identify which separator */
