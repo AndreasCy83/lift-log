@@ -7,6 +7,8 @@
  * is playing). Tiny edge fades (~30ms in / ~40ms out) avoid pops/clicks.
  */
 
+import { isRunActive } from './restTimerState';
+
 const SILENT_PAD_MS = 400;
 const FADE_IN_MS = 30;
 const FADE_OUT_MS = 40;
