@@ -92,12 +92,12 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
 
       // Voice cues - fire once (use range to avoid missing due to tick interval)
       if (rem <= 10 && rem > 9.5 && !timer.cuesFired.includes(10)) {
-        speakCue('10 seconds');
+        speakCue('10 seconds', timer.runId);
         markCueFired(timer.id, 10);
         timer.cuesFired.push(10);
       }
       if (rem <= 5 && rem > 4.5 && !timer.cuesFired.includes(5)) {
-        speakCue('5 seconds');
+        speakCue('5 seconds', timer.runId);
         markCueFired(timer.id, 5);
         timer.cuesFired.push(5);
       }
@@ -105,7 +105,7 @@ export default function SetRestTimerRow({ workoutExerciseId, afterSetIndex, rest
       if (rem <= 0) {
         if (!finishedRef.current) {
           finishedRef.current = true;
-          speakCue('Go!');
+          speakCue('Go!', timer.runId);
           playFinishBeep();
           onFinish?.();
         }
