@@ -97,7 +97,13 @@ function scheduleFadeOut(audio: HTMLAudioElement, ms: number) {
   audio.addEventListener('pause', cleanup);
 }
 
-export function speakCue(text: string) {
+/**
+ * Tracks in-flight speakCue setTimeout handles so a cancel/replace can
+ * immediately clear them before the delayed audio.play() fires.
+ */
+const pendingCueTimeouts = new Set<number>();
+
+export function speakCue(text: string, runId?: number) {
   try {
     const map: Record<string, string> = {
       '10 seconds': '/audio/10secs.mp3',
@@ -119,9 +125,17 @@ export function speakCue(text: string) {
     // isn't clipped when audio hardware was idle.
     primeOutputWithSilence(SILENT_PAD_MS);
 
-    // After the silent pad, start the cue and apply tiny edge fades.
-    window.setTimeout(() => {
+    // After the silent pad, start the cue and apply tiny edge fades — but
+    // only if the timer run that scheduled this cue is still the active one.
+    const handle = window.setTimeout(() => {
+      pendingCueTimeouts.delete(handle);
       try {
+        if (typeof runId === 'number') {
+          // Lazy import avoids a circular dep at module init.
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { isRunActive } = require('./restTimerState') as typeof import('./restTimerState');
+          if (!isRunActive(runId)) return;
+        }
         audio.currentTime = 0;
         fadeIn(audio, FADE_IN_MS);
         scheduleFadeOut(audio, FADE_OUT_MS);
@@ -132,6 +146,7 @@ export function speakCue(text: string) {
         if (navigator.vibrate) navigator.vibrate(200);
       }
     }, SILENT_PAD_MS);
+    pendingCueTimeouts.add(handle);
   } catch {
     if (navigator.vibrate) navigator.vibrate(200);
   }
