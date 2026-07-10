@@ -306,7 +306,33 @@
     "goals": "目标",
     "history": "历史",
     "trends": "趋势",
-    "bmi": "BMI"
+    "bmi": "BMI",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "图表",
+        "graphsText": "查看体重、体脂、肌肉量和围度随时间变化的可视化趋势。",
+        "historyTitle": "历史",
+        "historyText": "浏览并编辑您记录的每一条身体数据。",
+        "addTitle": "新增记录",
+        "addText": "点击 + 记录一条新的身体数据 — 体重、体脂、围度等。",
+        "goalsTitle": "目标",
+        "goalsText": "为体重、体脂、肌肉量和各项围度设定目标。",
+        "bmiTitle": "BMI 与趋势",
+        "bmiText": "查看您的 BMI 以及身体成分的长期趋势。"
+      },
+      "fields": {
+        "weightTitle": "体重",
+        "weightText": "滚动标尺设定当前体重。可在设置中切换单位。",
+        "fatTitle": "体脂率",
+        "fatText": "开启以记录本条数据的体脂百分比。",
+        "muscleTitle": "肌肉量 %",
+        "muscleText": "开启以记录肌肉量百分比。",
+        "measurementsTitle": "更多围度",
+        "measurementsText": "展开以记录肩围、臂围（肱二头肌）等围度数据。",
+        "addMeasurementsTitle": "选择围度",
+        "addMeasurementsText": "添加具体部位 — 例如肩部或上臂（肱二头肌）— 以厘米或英寸记录。"
+      }
+    }
   },
   "stats": {
     "title": "统计",

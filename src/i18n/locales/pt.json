@@ -306,7 +306,33 @@
     "goals": "Metas",
     "history": "Histórico",
     "trends": "Tendências",
-    "bmi": "IMC"
+    "bmi": "IMC",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "Gráficos",
+        "graphsText": "Veja tendências visuais de peso, gordura corporal, massa muscular e medidas ao longo do tempo.",
+        "historyTitle": "Histórico",
+        "historyText": "Percorra e edite todas as entradas corporais registradas.",
+        "addTitle": "Adicionar entrada",
+        "addText": "Toque em + para registrar uma nova entrada — peso, gordura, medidas e mais.",
+        "goalsTitle": "Metas",
+        "goalsText": "Defina alvos para peso, gordura, massa muscular e cada medida.",
+        "bmiTitle": "IMC e Tendências",
+        "bmiText": "Confira seu IMC e tendências de longo prazo da composição corporal."
+      },
+      "fields": {
+        "weightTitle": "Peso",
+        "weightText": "Gire a régua para definir seu peso atual. Mude as unidades em Configurações.",
+        "fatTitle": "Gordura corporal %",
+        "fatText": "Ative para registrar sua porcentagem de gordura corporal nesta entrada.",
+        "muscleTitle": "Massa muscular %",
+        "muscleText": "Ative para registrar sua porcentagem de massa muscular.",
+        "measurementsTitle": "Mais medidas",
+        "measurementsText": "Expanda para acompanhar circunferências como ombros, bíceps e mais.",
+        "addMeasurementsTitle": "Escolher medidas",
+        "addMeasurementsText": "Adicione locais específicos — por exemplo ombros ou braços (bíceps) — e registre em cm ou in."
+      }
+    }
   },
   "stats": {
     "title": "Estatísticas",

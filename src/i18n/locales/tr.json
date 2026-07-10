@@ -306,7 +306,33 @@
     "goals": "Hedefler",
     "history": "Geçmiş",
     "trends": "Trendler",
-    "bmi": "BKİ"
+    "bmi": "BKİ",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "Grafikler",
+        "graphsText": "Zaman içinde kilo, yağ, kas kütlesi ve ölçümlerinizin görsel eğilimlerini görün.",
+        "historyTitle": "Geçmiş",
+        "historyText": "Girdiğiniz tüm vücut kayıtlarını inceleyin ve düzenleyin.",
+        "addTitle": "Kayıt Ekle",
+        "addText": "Yeni kayıt eklemek için + tuşuna dokunun — kilo, yağ, ölçümler ve dahası.",
+        "goalsTitle": "Hedefler",
+        "goalsText": "Kilo, yağ, kas kütlesi ve ölçümler için hedef belirleyin.",
+        "bmiTitle": "VKİ ve Eğilimler",
+        "bmiText": "VKİ değerinizi ve uzun vadeli vücut kompozisyonu eğilimlerinizi görün."
+      },
+      "fields": {
+        "weightTitle": "Kilo",
+        "weightText": "Cetveli döndürerek mevcut kilonuzu ayarlayın. Birimleri Ayarlar'dan değiştirin.",
+        "fatTitle": "Yağ Oranı %",
+        "fatText": "Bu kayıt için yağ yüzdesini kaydetmek üzere açın.",
+        "muscleTitle": "Kas Kütlesi %",
+        "muscleText": "Kas kütlesi yüzdesini kaydetmek üzere açın.",
+        "measurementsTitle": "Daha Fazla Ölçüm",
+        "measurementsText": "Omuz, biceps gibi çevre ölçümlerini takip etmek için genişletin.",
+        "addMeasurementsTitle": "Ölçüm Seç",
+        "addMeasurementsText": "Belirli bölgeler ekleyin — örneğin omuz veya kol (biceps) — cm veya inç olarak kaydedin."
+      }
+    }
   },
   "stats": {
     "title": "İstatistik",

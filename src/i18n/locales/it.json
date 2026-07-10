@@ -306,7 +306,33 @@
     "goals": "Obiettivi",
     "history": "Cronologia",
     "trends": "Tendenze",
-    "bmi": "IMC"
+    "bmi": "IMC",
+    "tutorial": {
+      "main": {
+        "graphsTitle": "Grafici",
+        "graphsText": "Visualizza le tendenze di peso, massa grassa, massa muscolare e misurazioni nel tempo.",
+        "historyTitle": "Cronologia",
+        "historyText": "Sfoglia e modifica ogni voce corporea registrata.",
+        "addTitle": "Aggiungi voce",
+        "addText": "Tocca + per registrare una nuova voce — peso, massa grassa, misurazioni e altro.",
+        "goalsTitle": "Obiettivi",
+        "goalsText": "Imposta traguardi per peso, massa grassa, massa muscolare e singole misurazioni.",
+        "bmiTitle": "IMC e tendenze",
+        "bmiText": "Controlla il tuo IMC e le tendenze a lungo termine della composizione corporea."
+      },
+      "fields": {
+        "weightTitle": "Peso",
+        "weightText": "Ruota il righello per impostare il peso attuale. Cambia unità nelle Impostazioni.",
+        "fatTitle": "Massa grassa %",
+        "fatText": "Attiva per registrare la percentuale di massa grassa per questa voce.",
+        "muscleTitle": "Massa muscolare %",
+        "muscleText": "Attiva per registrare la percentuale di massa muscolare.",
+        "measurementsTitle": "Altre misurazioni",
+        "measurementsText": "Espandi per tracciare misure di circonferenza come spalle, bicipiti e altro.",
+        "addMeasurementsTitle": "Scegli misurazioni",
+        "addMeasurementsText": "Aggiungi zone specifiche — ad esempio spalle o braccia (bicipiti) — e registrale in cm o in."
+      }
+    }
   },
   "stats": {
     "title": "Statistiche",
