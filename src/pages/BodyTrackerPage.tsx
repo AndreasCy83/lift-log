@@ -579,7 +579,7 @@ export default function BodyTrackerPage() {
       {/* First-time tutorial — body entry fields (inside modal) */}
       {tutorialPhase === 'fields' && showAddModal && (
         <ExerciseTutorialOverlay
-          steps={BODY_TUTORIAL_FIELDS}
+          steps={bodyTutorialFields}
           onFinish={() => {
             localStorage.setItem('hasSeenBodyTutorial', 'true');
             setTutorialPhase('none');
