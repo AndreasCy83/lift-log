@@ -86,12 +86,12 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
       setRemaining(rem);
 
       if (rem <= 10 && rem > 9.5 && !t.cuesFired.includes(10)) {
-        speakCue('10 seconds');
+        speakCue('10 seconds', t.runId);
         markCueFired(t.id, 10);
         t.cuesFired.push(10);
       }
       if (rem <= 5 && rem > 4.5 && !t.cuesFired.includes(5)) {
-        speakCue('5 seconds');
+        speakCue('5 seconds', t.runId);
         markCueFired(t.id, 5);
         t.cuesFired.push(5);
       }
@@ -99,7 +99,7 @@ export default function FloatingRestTimer({ resolveLabel, bottomOffset = 80, for
       if (rem <= 0) {
         if (!finishedRef.current) {
           finishedRef.current = true;
-          speakCue('Go!');
+          speakCue('Go!', t.runId);
           playFinishBeep();
         }
         clearAllRestTimers();
