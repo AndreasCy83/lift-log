@@ -132,12 +132,7 @@ export function speakCue(text: string, runId?: number) {
     const handle = window.setTimeout(() => {
       pendingCueTimeouts.delete(handle);
       try {
-        if (typeof runId === 'number') {
-          // Lazy import avoids a circular dep at module init.
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const { isRunActive } = require('./restTimerState') as typeof import('./restTimerState');
-          if (!isRunActive(runId)) return;
-        }
+        if (typeof runId === 'number' && !isRunActive(runId)) return;
         audio.currentTime = 0;
         fadeIn(audio, FADE_IN_MS);
         scheduleFadeOut(audio, FADE_OUT_MS);
