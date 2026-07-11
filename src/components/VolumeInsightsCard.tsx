@@ -291,6 +291,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           />
         </button>
       )}
+      {InfoModal}
     </div>
   );
 }
