@@ -217,9 +217,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
           {InfoButton}
         </div>
-        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
-          ~{Math.round(summary.totalWeeklySets)} stimulus/wk
-        </span>
       </div>
 
 
