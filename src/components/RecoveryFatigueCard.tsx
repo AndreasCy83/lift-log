@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, ChevronDown } from 'lucide-react';
-import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue';
+import { Activity, ChevronDown, Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue;
 
 const BAND_STYLES: Record<FatigueBand, { pill: string; bar: string; glow: string }> = {
   'Low':       { pill: 'bg-primary/15 text-primary',          bar: 'bg-primary',       glow: '' },
