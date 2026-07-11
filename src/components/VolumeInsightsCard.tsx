@@ -211,15 +211,17 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
       {/* Header: title + weekly total */}
-      <div className="mb-1 flex items-center justify-between min-w-0">
+      <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="h-3.5 w-3.5 text-primary shrink-0" />
-          <h3 className="font-display text-sm font-semibold truncate">Volume</h3>
+          <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
+          {InfoButton}
         </div>
         <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
-          ~{Math.round(summary.totalWeeklySets)} sets/wk
+          ~{Math.round(summary.totalWeeklySets)} stimulus/wk
         </span>
       </div>
+
 
       {/* Total Body + status chip (summary line stays as chip to differentiate from per-row subtitles) */}
       <div className="flex items-center gap-2 py-[2px] min-w-0">
