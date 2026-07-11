@@ -14,7 +14,7 @@
  * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, ChevronDown, Info } from 'lucide-react';
+import { BarChart3, ChevronDown, Info } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -149,7 +149,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </p>
           <p>Completed working sets count; warmups are excluded, and deload sets count partially.</p>
           <p>Compound exercises can give partial credit to assisting muscles, so one set may contribute to more than one muscle group.</p>
-          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of raw sets or muscle growth.</p>
+          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of sets performed or a direct measure of muscle growth.</p>
         </div>
       </DialogContent>
     </Dialog>
@@ -186,8 +186,8 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       <div className="gym-card mt-4 !p-3 animate-fade-in">
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Activity className="h-3.5 w-3.5 text-primary" />
-            <h3 className="font-display text-sm font-semibold">Volume</h3>
+          <BarChart3 className="h-3.5 w-3.5 text-primary" />
+          <h3 className="font-display text-sm font-semibold">Volume</h3>
             {InfoButton}
           </div>
         </div>
@@ -213,13 +213,10 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       {/* Header: title + weekly total */}
       <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <Activity className="h-3.5 w-3.5 text-primary shrink-0" />
+          <BarChart3 className="h-3.5 w-3.5 text-primary shrink-0" />
           <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
           {InfoButton}
         </div>
-        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
-          ~{Math.round(summary.totalWeeklySets)} stimulus/wk
-        </span>
       </div>
 
 
