@@ -121,6 +121,40 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [revealedExpand, setRevealedExpand] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  const InfoButton = (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
+      aria-label="How Estimated Stimulus works"
+      className="-m-1 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+    >
+      <Info className="h-3 w-3" />
+    </button>
+  );
+
+  const InfoModal = (
+    <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="font-display text-base">How Estimated Stimulus works</DialogTitle>
+          <DialogDescription className="sr-only">
+            Explanation of how the Estimated Stimulus metric is calculated.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
+          <p>
+            <span className="text-foreground font-medium">Estimated Stimulus</span> is a weekly estimate of training stimulus by muscle group, based on your last 14 days of logged workouts.
+          </p>
+          <p>Completed working sets count; warmups are excluded, and deload sets count partially.</p>
+          <p>Compound exercises can give partial credit to assisting muscles, so one set may contribute to more than one muscle group.</p>
+          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of raw sets or muscle growth.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
 
   const summary = useMemo(() => computeVolumeSummary(), [refreshKey]);
   const categories = useMemo(() => getCategories(), []);
