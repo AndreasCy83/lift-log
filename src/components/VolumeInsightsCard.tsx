@@ -213,7 +213,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       {/* Header: title + weekly total */}
       <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <Activity className="h-3.5 w-3.5 text-primary shrink-0" />
+          <BarChart3 className="h-3.5 w-3.5 text-primary shrink-0" />
           <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
           {InfoButton}
         </div>
