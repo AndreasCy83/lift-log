@@ -186,11 +186,12 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       <div className="gym-card mt-4 !p-3 animate-fade-in">
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-          <BarChart3 className="h-3.5 w-3.5 text-primary" />
-          <h3 className="font-display text-sm font-semibold">Volume</h3>
+            <BarChart3 className="h-3.5 w-3.5 text-primary" />
+            <h3 className="font-display text-sm font-semibold">Estimated Stimulus</h3>
             {InfoButton}
           </div>
         </div>
+        <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
         <div className="flex items-center gap-2 py-0.5">
           <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.7)]" />
           <p className="text-xs text-foreground">No recent volume yet</p>
@@ -210,7 +211,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
 
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
-      {/* Header: title + weekly total */}
+      {/* Header: title */}
       <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <BarChart3 className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -218,6 +219,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           {InfoButton}
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
 
 
       {/* Total Body + status chip (summary line stays as chip to differentiate from per-row subtitles) */}
