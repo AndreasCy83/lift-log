@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue;
+import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue';
 
 const BAND_STYLES: Record<FatigueBand, { pill: string; bar: string; glow: string }> = {
   'Low':       { pill: 'bg-primary/15 text-primary',          bar: 'bg-primary',       glow: '' },
