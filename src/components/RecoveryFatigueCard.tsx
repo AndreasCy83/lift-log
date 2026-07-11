@@ -136,6 +136,7 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
         <div className="flex items-center gap-1.5">
           <Activity className="h-3.5 w-3.5 text-primary" />
           <h3 className="font-display text-sm font-semibold">{tr('home.recovery.title')}</h3>
+          {InfoButton}
         </div>
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
           {expanded ? tr('home.recovery.byMuscle') : topNeedsRest ? tr('home.recovery.needsRest') : tr('home.recovery.allReady')}
