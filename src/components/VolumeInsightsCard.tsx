@@ -211,7 +211,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
 
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
-      {/* Header: title + weekly total */}
+      {/* Header: title */}
       <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <BarChart3 className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -219,6 +219,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           {InfoButton}
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
 
 
       {/* Total Body + status chip (summary line stays as chip to differentiate from per-row subtitles) */}
