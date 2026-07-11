@@ -177,6 +177,7 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           />
         </button>
       )}
+      {InfoModal}
     </div>
   );
 }
