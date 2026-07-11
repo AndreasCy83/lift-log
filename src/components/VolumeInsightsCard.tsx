@@ -14,7 +14,14 @@
  * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, ChevronDown } from 'lucide-react';
+import { Activity, ChevronDown, Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   computeVolumeSummary,
   STATUS_LABEL,
