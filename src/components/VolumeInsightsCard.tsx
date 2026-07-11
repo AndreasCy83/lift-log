@@ -14,7 +14,7 @@
  * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, ChevronDown, Info } from 'lucide-react';
+import { BarChart3, ChevronDown, Info } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -149,7 +149,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </p>
           <p>Completed working sets count; warmups are excluded, and deload sets count partially.</p>
           <p>Compound exercises can give partial credit to assisting muscles, so one set may contribute to more than one muscle group.</p>
-          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of raw sets or muscle growth.</p>
+          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of sets performed or a direct measure of muscle growth.</p>
         </div>
       </DialogContent>
     </Dialog>
