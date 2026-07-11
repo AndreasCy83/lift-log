@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, ChevronDown } from 'lucide-react';
+import { Activity, ChevronDown, Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue';
 
 const BAND_STYLES: Record<FatigueBand, { pill: string; bar: string; glow: string }> = {
@@ -82,6 +89,41 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
 
   const [expanded, setExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  const InfoButton = (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
+      aria-label="How Recovery works"
+      className="-m-1 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+    >
+      <Info className="h-3 w-3" />
+    </button>
+  );
+
+  const InfoModal = (
+    <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="font-display text-base">Recovery</DialogTitle>
+          <DialogDescription className="sr-only">
+            Explanation of how the Recovery section works.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
+          <p>
+            This section estimates how much recovery time each muscle group may still need based on your recent logged training.
+          </p>
+          <p>Recovery is influenced mainly by direct work, with smaller contribution from assisting muscle involvement during compound exercises.</p>
+          <p>The status label shows estimated fatigue level, the bar shows remaining recovery progress, and the time on the right shows how long is left until that muscle is considered ready again.</p>
+          <p>Different muscle groups recover at different rates, so some areas may stay elevated longer than others.</p>
+          <p className="text-[11px] italic">This is a training guidance estimate to help with session planning and balance, not a medical or performance readiness measurement.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   useEffect(() => {
     setMounted(false);
     const t = requestAnimationFrame(() => setMounted(true));
@@ -94,6 +136,7 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
         <div className="flex items-center gap-1.5">
           <Activity className="h-3.5 w-3.5 text-primary" />
           <h3 className="font-display text-sm font-semibold">{tr('home.recovery.title')}</h3>
+          {InfoButton}
         </div>
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
           {expanded ? tr('home.recovery.byMuscle') : topNeedsRest ? tr('home.recovery.needsRest') : tr('home.recovery.allReady')}
@@ -134,6 +177,7 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           />
         </button>
       )}
+      {InfoModal}
     </div>
   );
 }
