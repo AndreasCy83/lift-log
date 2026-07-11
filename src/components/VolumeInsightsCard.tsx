@@ -186,8 +186,8 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       <div className="gym-card mt-4 !p-3 animate-fade-in">
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Activity className="h-3.5 w-3.5 text-primary" />
-            <h3 className="font-display text-sm font-semibold">Volume</h3>
+          <BarChart3 className="h-3.5 w-3.5 text-primary" />
+          <h3 className="font-display text-sm font-semibold">Volume</h3>
             {InfoButton}
           </div>
         </div>
