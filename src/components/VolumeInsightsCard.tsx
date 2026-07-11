@@ -14,7 +14,14 @@
  * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, ChevronDown } from 'lucide-react';
+import { Activity, ChevronDown, Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   computeVolumeSummary,
   STATUS_LABEL,
@@ -114,6 +121,40 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [revealedExpand, setRevealedExpand] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  const InfoButton = (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
+      aria-label="How Estimated Stimulus works"
+      className="-m-1 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+    >
+      <Info className="h-3 w-3" />
+    </button>
+  );
+
+  const InfoModal = (
+    <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="font-display text-base">How Estimated Stimulus works</DialogTitle>
+          <DialogDescription className="sr-only">
+            Explanation of how the Estimated Stimulus metric is calculated.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
+          <p>
+            <span className="text-foreground font-medium">Estimated Stimulus</span> is a weekly estimate of training stimulus by muscle group, based on your last 14 days of logged workouts.
+          </p>
+          <p>Completed working sets count; warmups are excluded, and deload sets count partially.</p>
+          <p>Compound exercises can give partial credit to assisting muscles, so one set may contribute to more than one muscle group.</p>
+          <p className="text-[11px] italic">This helps track training balance and recovery trends, but it is not a direct count of raw sets or muscle growth.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
 
   const summary = useMemo(() => computeVolumeSummary(), [refreshKey]);
   const categories = useMemo(() => getCategories(), []);
@@ -147,6 +188,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           <div className="flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5 text-primary" />
             <h3 className="font-display text-sm font-semibold">Volume</h3>
+            {InfoButton}
           </div>
         </div>
         <div className="flex items-center gap-2 py-0.5">
@@ -156,9 +198,11 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <p className="mt-0.5 text-[10px] text-muted-foreground">
           Log a workout to unlock volume insights.
         </p>
+        {InfoModal}
       </div>
     );
   }
+
 
   const collapsedRows = summary.weeklyByCategory.slice(0, COLLAPSED_ROWS);
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
@@ -167,15 +211,17 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
       {/* Header: title + weekly total */}
-      <div className="mb-1 flex items-center justify-between min-w-0">
+      <div className="mb-1 flex items-center justify-between min-w-0 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="h-3.5 w-3.5 text-primary shrink-0" />
-          <h3 className="font-display text-sm font-semibold truncate">Volume</h3>
+          <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
+          {InfoButton}
         </div>
         <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">
-          ~{Math.round(summary.totalWeeklySets)} sets/wk
+          ~{Math.round(summary.totalWeeklySets)} stimulus/wk
         </span>
       </div>
+
 
       {/* Total Body + status chip (summary line stays as chip to differentiate from per-row subtitles) */}
       <div className="flex items-center gap-2 py-[2px] min-w-0">
@@ -245,6 +291,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           />
         </button>
       )}
+      {InfoModal}
     </div>
   );
 }
