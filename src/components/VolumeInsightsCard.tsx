@@ -188,6 +188,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           <div className="flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5 text-primary" />
             <h3 className="font-display text-sm font-semibold">Volume</h3>
+            {InfoButton}
           </div>
         </div>
         <div className="flex items-center gap-2 py-0.5">
@@ -197,9 +198,11 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <p className="mt-0.5 text-[10px] text-muted-foreground">
           Log a workout to unlock volume insights.
         </p>
+        {InfoModal}
       </div>
     );
   }
+
 
   const collapsedRows = summary.weeklyByCategory.slice(0, COLLAPSED_ROWS);
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
