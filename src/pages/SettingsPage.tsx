@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Palette, Pencil } from 'lucide-react';
+import CustomThemeCreator from '@/components/CustomThemeCreator';
+import { getCustomThemes, isCustomThemeId, type CustomTheme } from '@/lib/customThemes';
 import { THEMES, THEME_BY_ID } from '@/lib/themes';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
