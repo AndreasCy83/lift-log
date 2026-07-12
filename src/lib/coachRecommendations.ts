@@ -18,7 +18,7 @@ import {
   classifyVolumeForCategory,
   type VolumeStatus,
 } from './volumeInsights';
-import { computeMuscleFatigue } from './recoveryFatigue';
+import { computeMuscleFatigue, type MuscleGroup } from './recoveryFatigue';
 import {
   summarizeExposure,
   recommendProgression,
@@ -64,6 +64,25 @@ export interface CoachSnapshot {
 const STORAGE_KEY = 'gym-coach-recs-v1';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HIGH_STATUSES = new Set<VolumeStatus>(['high', 'very_high']);
+
+/**
+ * Map primary category id -> primary muscle group used by the recovery model.
+ * Coach consults this muscle's recovery status when deciding whether to
+ * progress, hold, or rebuild. Kept intentionally narrow: only the exercise's
+ * primary target muscle drives the decision (secondary spillover is ignored
+ * here to avoid over-suppression from unrelated fatigue).
+ */
+const CATEGORY_TO_PRIMARY_MUSCLE: Record<string, MuscleGroup> = {
+  'cat-chest': 'Chest',
+  'cat-back': 'Back',
+  'cat-legs': 'Legs',
+  'cat-shoulders': 'Shoulders',
+  'cat-biceps': 'Arms',
+  'cat-triceps': 'Arms',
+  'cat-core': 'Core',
+  'cat-abs': 'Core',
+  'cat-olympic': 'Legs',
+};
 
 function parseWorkoutTs(w: Workout): number {
   const [y, m, d] = w.date.split('-').map(Number);
@@ -229,6 +248,66 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     items.push(rec);
   }
 
+  // --- Recovery integration (secondary decision layer) ---
+  // Consult the existing recovery/fatigue model for each item's primary muscle
+  // group and use it as a progression gate, confidence modifier, and tie-
+  // breaker. Rules (intentionally conservative):
+  //   * Recovery ALONE never triggers a rebuild or a set-count change.
+  //   * If primary muscle is "Very High" fatigue and the item wants to push
+  //     load/reps, demote to a Hold — the muscle isn't ready.
+  //   * If primary muscle is "High" fatigue, allow the push but drop
+  //     confidence one step and surface a caution reason.
+  //   * If the engine already routed to a rebuild/hold-under-fatigue
+  //     (deload_adjustment) and recovery is also elevated, bump confidence —
+  //     performance + recovery agree.
+  //   * Good recovery is not used to inflate confidence; normal progression
+  //     already proceeds when recovery is fine.
+  const fatigue = computeMuscleFatigue(now);
+  const fatigueByMuscle = new Map(fatigue.map((f) => [f.muscle, f]));
+  for (const it of items) {
+    const primaryCat = primaryCatByExId.get(it.exerciseId);
+    const muscle = primaryCat ? CATEGORY_TO_PRIMARY_MUSCLE[primaryCat] : undefined;
+    if (!muscle) continue;
+    const f = fatigueByMuscle.get(muscle);
+    if (!f) continue;
+    const poor = f.band === 'Very High';
+    const partial = f.band === 'High';
+    if (!poor && !partial) continue;
+
+    if (
+      it.recommendationType === 'load_progression' ||
+      it.recommendationType === 'rep_progression'
+    ) {
+      if (poor) {
+        // Gate the progression — hold at current prescription.
+        it.recommendationType = 'hold';
+        it.nextWeightKg = it.currentWeightKg;
+        it.nextRepInfo = it.currentRepInfo;
+        it.nextSets = it.currentSets;
+        it.mainAction = 'Hold steady';
+        it.confidence = 'low';
+        it.reasons = [
+          `${muscle} still recovering — hold this session before progressing`,
+        ];
+      } else {
+        // Partial recovery: allow the push, dampen confidence.
+        it.confidence = it.confidence === 'high' ? 'medium' : 'low';
+        it.reasons.push(
+          `${muscle} only partially recovered — progress conservatively`,
+        );
+      }
+    } else if (it.recommendationType === 'deload_adjustment') {
+      // Performance says rebuild; recovery agrees → stronger signal.
+      if (it.confidence === 'low') it.confidence = 'medium';
+      else if (it.confidence === 'medium') it.confidence = 'high';
+      it.reasons.push(
+        `${muscle} recovery still elevated — supports rebuilding this session`,
+      );
+    } else if (it.recommendationType === 'hold' && poor) {
+      it.reasons.push(`${muscle} still recovering`);
+    }
+  }
+
   // Filter trivial holds with no signal to reduce noise — keep only items that
   // actually change something or have a clear reason worth surfacing.
   const meaningful = items.filter((it) => {
@@ -287,8 +366,7 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     return confRank[b.confidence] - confRank[a.confidence];
   });
 
-  // --- Build deload snapshot ---
-  const fatigue = computeMuscleFatigue(now);
+  // --- Build deload snapshot (reuse the fatigue computed above) ---
 
   function snapshot(week: WeeklyCredits): WeeklyVolumeSnapshot {
     return {
