@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages } from 'lucide-react';
+import { ArrowLeft, Dumbbell, FileUp, ChevronRight, ChevronDown, Check, Weight, MessageSquare, Sparkles, Languages, Palette, Pencil } from 'lucide-react';
+import CustomThemeCreator from '@/components/CustomThemeCreator';
+import { getCustomThemes, isCustomThemeId, type CustomTheme } from '@/lib/customThemes';
 import { THEMES, THEME_BY_ID } from '@/lib/themes';
 import { Capacitor } from '@capacitor/core';
 import { getSettings, saveSettings, getProfile, saveProfile, generateId, resetExerciseDefaults, type AppSettings } from '@/lib/storage';
@@ -41,6 +43,10 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [themeExpanded, setThemeExpanded] = useState(false);
+  const [customThemes, setCustomThemes] = useState<CustomTheme[]>(() => getCustomThemes());
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [editingTheme, setEditingTheme] = useState<CustomTheme | null>(null);
+  const refreshCustomThemes = () => setCustomThemes(getCustomThemes());
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
       id: generateId(), name: '', heightCm: 175, currentWeightKg: 70,
@@ -258,8 +264,11 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
         {/* Theme */}
         <div className="gym-card !p-0 overflow-hidden">
           {(() => {
-            const current = THEME_BY_ID[settings.theme] ?? THEME_BY_ID.dark;
-            const CurrentIcon = current.icon;
+            const activeCustom = isCustomThemeId(settings.theme)
+              ? customThemes.find(c => c.id === settings.theme)
+              : null;
+            const current = activeCustom ? null : (THEME_BY_ID[settings.theme as any] ?? THEME_BY_ID.dark);
+            const CurrentIcon = current?.icon;
             return (
               <>
                 <button
@@ -267,11 +276,14 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
                   className="flex w-full items-center gap-3 px-4 py-3 text-left"
                   aria-expanded={themeExpanded}
                 >
-                  <span className="h-4 w-4 rounded-full border border-border/60 shrink-0" style={{ background: current.dot }} />
+                  <span
+                    className="h-4 w-4 rounded-full border border-border/60 shrink-0"
+                    style={{ background: activeCustom ? activeCustom.colors.primary : current!.dot }}
+                  />
                   <h3 className="font-display text-sm font-semibold flex-1">{t('settings.theme')}</h3>
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <CurrentIcon className="h-3.5 w-3.5" />
-                    {t(current.labelKey, { defaultValue: current.fallback })}
+                    {CurrentIcon ? <CurrentIcon className="h-3.5 w-3.5" /> : <Palette className="h-3.5 w-3.5" />}
+                    {activeCustom ? activeCustom.name : t(current!.labelKey, { defaultValue: current!.fallback })}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${themeExpanded ? 'rotate-180' : ''}`} />
                 </button>
@@ -279,7 +291,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
                   className={`grid transition-all duration-200 ease-out ${themeExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                 >
                   <div className="overflow-hidden">
-                    <div className="border-t border-border/60 py-1">
+                    <div className="border-t border-border/60 py-1 max-h-[60vh] overflow-y-auto">
                       {THEMES.map(meta => {
                         const Icon = meta.icon;
                         const active = settings.theme === meta.id;
@@ -296,6 +308,42 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
                           </button>
                         );
                       })}
+                      {customThemes.length > 0 && (
+                        <div className="mt-1 pt-1 border-t border-border/40">
+                          {customThemes.map(ct => {
+                            const active = settings.theme === ct.id;
+                            return (
+                              <div
+                                key={ct.id}
+                                className={`flex w-full items-center gap-3 px-4 py-2.5 transition-colors hover:bg-secondary/60 ${active ? 'bg-secondary/40' : ''}`}
+                              >
+                                <button
+                                  onClick={() => { setSettings({ ...settings, theme: ct.id as any }); setThemeExpanded(false); }}
+                                  className="flex items-center gap-3 flex-1 text-left min-w-0"
+                                >
+                                  <span
+                                    className="h-4 w-4 rounded-full border border-border/60 shrink-0"
+                                    style={{ background: ct.colors.primary }}
+                                  />
+                                  <Palette className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <span className="flex-1 text-sm truncate">{ct.name}</span>
+                                  <span className="text-[9px] uppercase tracking-wider rounded px-1.5 py-0.5 bg-primary/15 text-primary font-semibold">
+                                    Custom
+                                  </span>
+                                  {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                                </button>
+                                <button
+                                  onClick={() => { setEditingTheme(ct); setCreatorOpen(true); }}
+                                  className="p-1.5 -m-1 text-muted-foreground hover:text-foreground shrink-0"
+                                  aria-label={`Edit ${ct.name}`}
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -303,6 +351,25 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
             );
           })()}
         </div>
+
+        {/* Create custom theme */}
+        <button
+          onClick={() => { setEditingTheme(null); setCreatorOpen(true); }}
+          className="gym-card !py-3 flex w-full items-center gap-3 text-left"
+        >
+          <Palette className="h-4 w-4 text-primary shrink-0" />
+          <span className="flex-1 text-sm font-medium">Create Custom Theme</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+
+        <CustomThemeCreator
+          open={creatorOpen}
+          onClose={() => { setCreatorOpen(false); setEditingTheme(null); refreshCustomThemes(); }}
+          existing={editingTheme}
+          onApply={(id) => { setSettings({ ...settings, theme: id as any }); refreshCustomThemes(); }}
+        />
+
+
 
 
         {/* Keep screen on */}

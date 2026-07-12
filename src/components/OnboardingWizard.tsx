@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
+import { Shield, Cloud, Check, Languages, AlertTriangle, Palette } from 'lucide-react';
+import CustomThemeCreator from '@/components/CustomThemeCreator';
+import { getCustomThemes, isCustomThemeId, type CustomTheme } from '@/lib/customThemes';
 import { THEMES } from '@/lib/themes';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -33,7 +35,9 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
 
   const [language, setLanguageState] = useState<SupportedLang>('en');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode | string>('dark');
+  const [customThemes, setCustomThemes] = useState<CustomTheme[]>(() => getCustomThemes());
+  const [creatorOpen, setCreatorOpen] = useState(false);
   const [name, setName] = useState('');
   const [heightCm, setHeightCm] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
@@ -45,8 +49,8 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
     setLanguage('en');
   }, []);
 
-  const applyTheme = (t: ThemeMode) => {
-    applyThemeMode(t);
+  const applyTheme = (t: ThemeMode | string) => {
+    applyThemeMode(t as ThemeMode);
   };
 
   const persistStep = (current: number, skipped = false) => {
@@ -57,7 +61,7 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
     } else if (current === 2) {
       saveSettings({ ...settings, weightUnit });
     } else if (current === 3 && !skipped) {
-      saveSettings({ ...settings, theme });
+      saveSettings({ ...settings, theme: theme as ThemeMode });
       applyTheme(theme);
     } else if (current === 4 && !skipped) {
       const heightNum = parseFloat(heightCm);
@@ -241,7 +245,34 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
                     <span className="leading-tight text-center">{t(labelKey, { defaultValue: fallback })}</span>
                   </button>
                 ))}
+                {customThemes.map(ct => (
+                  <button
+                    key={ct.id}
+                    onClick={() => { setTheme(ct.id); applyTheme(ct.id); }}
+                    className={`flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium transition-colors ${
+                      theme === ct.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground'
+                    }`}
+                  >
+                    <span className="h-5 w-5 rounded-full border border-border/60" style={{ background: ct.colors.primary }} />
+                    <span className="leading-tight text-center truncate w-full">{ct.name}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCreatorOpen(true)}
+                  className="flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium bg-secondary/60 text-secondary-foreground border border-dashed border-border/60"
+                >
+                  <Palette className="h-5 w-5" />
+                  <span className="leading-tight text-center">Custom</span>
+                </button>
               </div>
+              <CustomThemeCreator
+                open={creatorOpen}
+                onClose={() => { setCreatorOpen(false); setCustomThemes(getCustomThemes()); }}
+                onApply={(id) => { setTheme(id); applyTheme(id); setCustomThemes(getCustomThemes()); }}
+                simplified
+              />
             </div>
           )}
 
