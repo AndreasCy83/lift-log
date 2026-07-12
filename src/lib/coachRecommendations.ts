@@ -65,6 +65,25 @@ const STORAGE_KEY = 'gym-coach-recs-v1';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HIGH_STATUSES = new Set<VolumeStatus>(['high', 'very_high']);
 
+/**
+ * Map primary category id -> primary muscle group used by the recovery model.
+ * Coach consults this muscle's recovery status when deciding whether to
+ * progress, hold, or rebuild. Kept intentionally narrow: only the exercise's
+ * primary target muscle drives the decision (secondary spillover is ignored
+ * here to avoid over-suppression from unrelated fatigue).
+ */
+const CATEGORY_TO_PRIMARY_MUSCLE: Record<string, MuscleGroup> = {
+  'cat-chest': 'Chest',
+  'cat-back': 'Back',
+  'cat-legs': 'Legs',
+  'cat-shoulders': 'Shoulders',
+  'cat-biceps': 'Arms',
+  'cat-triceps': 'Arms',
+  'cat-core': 'Core',
+  'cat-abs': 'Core',
+  'cat-olympic': 'Legs',
+};
+
 function parseWorkoutTs(w: Workout): number {
   const [y, m, d] = w.date.split('-').map(Number);
   return new Date(y, (m ?? 1) - 1, d ?? 1, 12, 0, 0).getTime();
