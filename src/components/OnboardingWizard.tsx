@@ -49,8 +49,8 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
     setLanguage('en');
   }, []);
 
-  const applyTheme = (t: ThemeMode) => {
-    applyThemeMode(t);
+  const applyTheme = (t: ThemeMode | string) => {
+    applyThemeMode(t as ThemeMode);
   };
 
   const persistStep = (current: number, skipped = false) => {
@@ -61,7 +61,7 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
     } else if (current === 2) {
       saveSettings({ ...settings, weightUnit });
     } else if (current === 3 && !skipped) {
-      saveSettings({ ...settings, theme });
+      saveSettings({ ...settings, theme: theme as ThemeMode });
       applyTheme(theme);
     } else if (current === 4 && !skipped) {
       const heightNum = parseFloat(heightCm);
