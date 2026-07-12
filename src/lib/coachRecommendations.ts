@@ -18,7 +18,7 @@ import {
   classifyVolumeForCategory,
   type VolumeStatus,
 } from './volumeInsights';
-import { computeMuscleFatigue } from './recoveryFatigue';
+import { computeMuscleFatigue, type MuscleGroup } from './recoveryFatigue';
 import {
   summarizeExposure,
   recommendProgression,
