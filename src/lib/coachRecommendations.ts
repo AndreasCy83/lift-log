@@ -366,8 +366,7 @@ export function computeCoachRecommendations(now: Date = new Date()): CoachSnapsh
     return confRank[b.confidence] - confRank[a.confidence];
   });
 
-  // --- Build deload snapshot ---
-  const fatigue = computeMuscleFatigue(now);
+  // --- Build deload snapshot (reuse the fatigue computed above) ---
 
   function snapshot(week: WeeklyCredits): WeeklyVolumeSnapshot {
     return {
