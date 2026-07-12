@@ -35,7 +35,9 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
 
   const [language, setLanguageState] = useState<SupportedLang>('en');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode | string>('dark');
+  const [customThemes, setCustomThemes] = useState<CustomTheme[]>(() => getCustomThemes());
+  const [creatorOpen, setCreatorOpen] = useState(false);
   const [name, setName] = useState('');
   const [heightCm, setHeightCm] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
