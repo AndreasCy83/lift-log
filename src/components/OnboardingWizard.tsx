@@ -245,7 +245,34 @@ export default function OnboardingWizard({ onFinish }: OnboardingWizardProps) {
                     <span className="leading-tight text-center">{t(labelKey, { defaultValue: fallback })}</span>
                   </button>
                 ))}
+                {customThemes.map(ct => (
+                  <button
+                    key={ct.id}
+                    onClick={() => { setTheme(ct.id); applyTheme(ct.id); }}
+                    className={`flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium transition-colors ${
+                      theme === ct.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground'
+                    }`}
+                  >
+                    <span className="h-5 w-5 rounded-full border border-border/60" style={{ background: ct.colors.primary }} />
+                    <span className="leading-tight text-center truncate w-full">{ct.name}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCreatorOpen(true)}
+                  className="flex flex-col items-center gap-1.5 rounded-lg py-3 px-1 text-[11px] font-medium bg-secondary/60 text-secondary-foreground border border-dashed border-border/60"
+                >
+                  <Palette className="h-5 w-5" />
+                  <span className="leading-tight text-center">Custom</span>
+                </button>
               </div>
+              <CustomThemeCreator
+                open={creatorOpen}
+                onClose={() => { setCreatorOpen(false); setCustomThemes(getCustomThemes()); }}
+                onApply={(id) => { setTheme(id); applyTheme(id); setCustomThemes(getCustomThemes()); }}
+                simplified
+              />
             </div>
           )}
 
