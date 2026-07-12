@@ -43,6 +43,10 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
   const [themeExpanded, setThemeExpanded] = useState(false);
+  const [customThemes, setCustomThemes] = useState<CustomTheme[]>(() => getCustomThemes());
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [editingTheme, setEditingTheme] = useState<CustomTheme | null>(null);
+  const refreshCustomThemes = () => setCustomThemes(getCustomThemes());
   const [profile, setProfile] = useState<UserProfile>(() =>
     getProfile() ?? {
       id: generateId(), name: '', heightCm: 175, currentWeightKg: 70,
