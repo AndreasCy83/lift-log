@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Shield, Cloud, Check, Languages, AlertTriangle } from 'lucide-react';
+import { Shield, Cloud, Check, Languages, AlertTriangle, Palette } from 'lucide-react';
+import CustomThemeCreator from '@/components/CustomThemeCreator';
+import { getCustomThemes, isCustomThemeId, type CustomTheme } from '@/lib/customThemes';
 import { THEMES } from '@/lib/themes';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
