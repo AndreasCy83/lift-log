@@ -8,11 +8,6 @@ import {
   Check,
   Trash2,
   Sparkles,
-  Snowflake,
-  Flame,
-  Contrast,
-  Feather,
-  Zap,
   Info,
 } from 'lucide-react';
 import {
@@ -20,13 +15,11 @@ import {
   getBasePreset,
   type CustomTheme,
   type CustomThemeColors,
-  type StyleAdjustment,
   createCustomThemeId,
   saveCustomTheme,
   deleteCustomTheme,
   contrastRatio,
   buildCssVars,
-  applyStyleAdjustment,
   setAccent,
   CURATED_ACCENTS,
 } from '@/lib/customThemes';
@@ -45,25 +38,19 @@ interface AdvancedField {
   label: string;
 }
 
-const ADVANCED_FIELDS: AdvancedField[] = [
+const BASIC_FIELDS: AdvancedField[] = [
   { key: 'background', label: 'App background' },
   { key: 'card', label: 'Card surface' },
   { key: 'foreground', label: 'Primary text' },
   { key: 'mutedForeground', label: 'Muted text' },
   { key: 'secondary', label: 'Secondary accent' },
+];
+
+const MORE_FIELDS: AdvancedField[] = [
   { key: 'border', label: 'Border' },
   { key: 'success', label: 'Success' },
   { key: 'warning', label: 'Warning' },
   { key: 'destructive', label: 'Error / record' },
-];
-
-const STYLE_ADJUSTMENTS: Array<{ id: StyleAdjustment; label: string; icon: any }> = [
-  { id: 'softer',         label: 'Softer',        icon: Feather },
-  { id: 'stronger',       label: 'Stronger',      icon: Zap },
-  { id: 'cooler',         label: 'Cooler',        icon: Snowflake },
-  { id: 'warmer',         label: 'Warmer',        icon: Flame },
-  { id: 'more-contrast',  label: 'More contrast', icon: Contrast },
-  { id: 'less-contrast',  label: 'Less contrast', icon: Contrast },
 ];
 
 export default function CustomThemeCreator({ open, onClose, onApply, existing, simplified }: Props) {
@@ -72,6 +59,7 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
   const [isDark, setIsDark] = useState(true);
   const [colors, setColors] = useState<CustomThemeColors>(BASE_PRESETS[0].colors);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [customPickerOpen, setCustomPickerOpen] = useState(false);
 
   useEffect(() => {
@@ -89,6 +77,7 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
       setColors(p.colors);
     }
     setAdvancedOpen(false);
+    setMoreOpen(false);
     setCustomPickerOpen(false);
   }, [open, existing]);
 
@@ -99,22 +88,21 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
     setColors(p.colors);
   };
 
-  const onStyleAdjust = (adj: StyleAdjustment) =>
-    setColors(c => applyStyleAdjustment(c, adj, isDark));
-
   const onAccent = (hex: string) =>
     setColors(c => setAccent(c, hex, isDark));
 
   const setColor = (key: keyof CustomThemeColors, v: string) =>
     setColors(c => ({ ...c, [key]: v }));
 
-  // Quiet background validation — only block on critically unreadable text.
-  const minTextContrast = useMemo(() => Math.min(
-    contrastRatio(colors.foreground, colors.background),
-    contrastRatio(colors.foreground, colors.card),
-  ), [colors]);
-  const critical = minTextContrast < 2.2;
-  const mildWarn = !critical && minTextContrast < 3.5;
+  // Only block save when text is truly unreadable on background OR card.
+  // Everything else is allowed — at most a friendly inline note.
+  const textOnBg = useMemo(() => contrastRatio(colors.foreground, colors.background), [colors]);
+  const textOnCard = useMemo(() => contrastRatio(colors.foreground, colors.card), [colors]);
+  const btnLabel = useMemo(() => contrastRatio(colors.foreground, colors.primary), [colors]);
+  const minText = Math.min(textOnBg, textOnCard);
+
+  const critical = textOnBg < 1.8 || textOnCard < 1.8;
+  const mildNote = !critical && (minText < 3.2 || btnLabel < 2.2);
 
   const canSave = name.trim().length > 0 && !critical;
 
@@ -179,7 +167,7 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             />
           </div>
 
-          {/* Step 1: Start from */}
+          {/* Base style */}
           {!existing && (
             <section className="space-y-2">
               <SectionTitle step="1" title="Choose your base style" />
@@ -208,29 +196,9 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             </section>
           )}
 
-          {/* Step 2: Style */}
+          {/* Accent */}
           <section className="space-y-2">
-            <SectionTitle step={existing ? '1' : '2'} title="Adjust the vibe" hint="One-tap tweaks" />
-            <div className="grid grid-cols-3 gap-1.5">
-              {STYLE_ADJUSTMENTS.map(s => {
-                const Icon = s.icon;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => onStyleAdjust(s.id)}
-                    className="flex flex-col items-center justify-center gap-1 rounded-lg py-2 bg-secondary text-secondary-foreground text-[10.5px] font-medium hover:bg-primary/10 hover:text-foreground transition-colors"
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Step 3: Accent */}
-          <section className="space-y-2">
-            <SectionTitle step={existing ? '2' : '3'} title="Pick your accent" />
+            <SectionTitle step={existing ? '1' : '2'} title="Pick your accent" />
             <div className="grid grid-cols-6 gap-2">
               {CURATED_ACCENTS.map(a => {
                 const active = colors.primary.toLowerCase() === a.hex.toLowerCase();
@@ -271,9 +239,9 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             )}
           </section>
 
-          {/* Step 4: Preview */}
+          {/* Preview */}
           <section className="space-y-2">
-            <SectionTitle step={existing ? '3' : '4'} title="Preview your theme" />
+            <SectionTitle step={existing ? '2' : '3'} title="Preview your theme" />
             <div
               className="rounded-xl p-3 border"
               style={{
@@ -317,21 +285,21 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
               </div>
             </div>
 
-            {mildWarn && (
+            {mildNote && (
               <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text is a little low-contrast. You can still save this theme.</span>
+                <span>This theme is bold but still usable. Some text may be slightly harder to read.</span>
               </div>
             )}
             {critical && (
               <div className="flex items-start gap-1.5 text-[10.5px] text-destructive pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text is hard to read. Try a lighter text or darker background before saving.</span>
+                <span>Text is unreadable on the background or cards. Adjust text or surface colors to save.</span>
               </div>
             )}
           </section>
 
-          {/* Step 5: Advanced */}
+          {/* Fine-tune (advanced) */}
           {!simplified && (
             <section className="space-y-2 pt-1 border-t border-border/40">
               <button
@@ -340,29 +308,42 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
                 className="w-full flex items-center gap-2 text-[11px] text-muted-foreground hover:text-foreground py-1"
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                <span className="flex-1 text-left">Fine-tune colors</span>
+                <span className="flex-1 text-left">Fine-tune colors (optional)</span>
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${advancedOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {advancedOpen && (
                 <div className="space-y-2 pt-1">
-                  {ADVANCED_FIELDS.map(f => (
-                    <div key={f.key} className="flex items-center gap-3">
-                      <label className="flex-1 text-xs">{f.label}</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors[f.key]}
-                          onChange={e => setColor(f.key, e.target.value)}
-                          className="h-8 w-8 rounded-md border border-border/60 bg-transparent p-0 cursor-pointer"
-                          aria-label={f.label}
-                        />
-                        <span className="text-[10px] font-mono text-muted-foreground w-16 text-right uppercase">
-                          {colors[f.key]}
-                        </span>
-                      </div>
-                    </div>
+                  {BASIC_FIELDS.map(f => (
+                    <ColorRow
+                      key={f.key}
+                      label={f.label}
+                      value={colors[f.key]}
+                      onChange={v => setColor(f.key, v)}
+                    />
                   ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setMoreOpen(v => !v)}
+                    className="w-full flex items-center gap-2 text-[10.5px] text-muted-foreground hover:text-foreground pt-1"
+                  >
+                    <span className="flex-1 text-left">More options</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {moreOpen && (
+                    <div className="space-y-2">
+                      {MORE_FIELDS.map(f => (
+                        <ColorRow
+                          key={f.key}
+                          label={f.label}
+                          value={colors[f.key]}
+                          onChange={v => setColor(f.key, v)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
@@ -400,6 +381,26 @@ function SectionTitle({ step, title, hint }: { step: string; title: string; hint
       </span>
       <span className="text-[11px] font-semibold text-foreground">{title}</span>
       {hint && <span className="text-[10px] text-muted-foreground">· {hint}</span>}
+    </div>
+  );
+}
+
+function ColorRow({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex items-center gap-3">
+      <label className="flex-1 text-xs">{label}</label>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className="h-8 w-8 rounded-md border border-border/60 bg-transparent p-0 cursor-pointer"
+          aria-label={label}
+        />
+        <span className="text-[10px] font-mono text-muted-foreground w-16 text-right uppercase">
+          {value}
+        </span>
+      </div>
     </div>
   );
 }
