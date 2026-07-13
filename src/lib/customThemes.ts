@@ -273,3 +273,130 @@ export const BASE_PRESETS: BaseThemePreset[] = [
 export function getBasePreset(id: string): BaseThemePreset {
   return BASE_PRESETS.find(p => p.id === id) ?? BASE_PRESETS[0];
 }
+
+// ---------- HSL manipulation & style adjustments ----------
+
+interface Hsl { h: number; s: number; l: number; }
+
+function hexToHsl(hex: string): Hsl {
+  const { r, g, b } = hexToRgb(hex);
+  const rn = r / 255, gn = g / 255, bn = b / 255;
+  const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn);
+  let h = 0; const l = (max + min) / 2;
+  const d = max - min;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  if (d !== 0) {
+    switch (max) {
+      case rn: h = ((gn - bn) / d) % 6; break;
+      case gn: h = (bn - rn) / d + 2; break;
+      case bn: h = (rn - gn) / d + 4; break;
+    }
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h, s, l };
+}
+
+function hslToHex({ h, s, l }: Hsl): string {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = h / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  let r1 = 0, g1 = 0, b1 = 0;
+  if (0 <= hp && hp < 1) [r1, g1, b1] = [c, x, 0];
+  else if (hp < 2) [r1, g1, b1] = [x, c, 0];
+  else if (hp < 3) [r1, g1, b1] = [0, c, x];
+  else if (hp < 4) [r1, g1, b1] = [0, x, c];
+  else if (hp < 5) [r1, g1, b1] = [x, 0, c];
+  else [r1, g1, b1] = [c, 0, x];
+  const m = l - c / 2;
+  return rgbToHex((r1 + m) * 255, (g1 + m) * 255, (b1 + m) * 255);
+}
+
+const clamp = (n: number, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, n));
+
+function adjust(hex: string, fn: (h: Hsl) => Hsl): string {
+  const hsl = hexToHsl(hex);
+  const next = fn(hsl);
+  return hslToHex({ h: (next.h + 360) % 360, s: clamp(next.s), l: clamp(next.l) });
+}
+
+export type StyleAdjustment =
+  | 'softer' | 'stronger'
+  | 'cooler' | 'warmer'
+  | 'more-contrast' | 'less-contrast';
+
+/** Apply a one-tap style tweak to a set of theme colors. */
+export function applyStyleAdjustment(
+  colors: CustomThemeColors,
+  adj: StyleAdjustment,
+  isDark: boolean,
+): CustomThemeColors {
+  const c = { ...colors };
+  switch (adj) {
+    case 'softer':
+      c.primary = adjust(c.primary, h => ({ ...h, s: h.s * 0.75 }));
+      c.secondary = adjust(c.secondary, h => ({ ...h, s: h.s * 0.85 }));
+      break;
+    case 'stronger':
+      c.primary = adjust(c.primary, h => ({ ...h, s: Math.min(1, h.s * 1.25 + 0.05) }));
+      c.secondary = adjust(c.secondary, h => ({ ...h, s: Math.min(1, h.s * 1.15) }));
+      break;
+    case 'cooler':
+      (['primary','secondary','background','card','border'] as const).forEach(k => {
+        c[k] = adjust(c[k], h => ({ ...h, h: h.h + 15 }));
+      });
+      break;
+    case 'warmer':
+      (['primary','secondary','background','card','border'] as const).forEach(k => {
+        c[k] = adjust(c[k], h => ({ ...h, h: h.h - 15 }));
+      });
+      break;
+    case 'more-contrast':
+      if (isDark) {
+        c.background = adjust(c.background, h => ({ ...h, l: h.l * 0.7 }));
+        c.card = adjust(c.card, h => ({ ...h, l: h.l * 0.85 }));
+        c.foreground = adjust(c.foreground, h => ({ ...h, l: Math.min(1, h.l + 0.05) }));
+      } else {
+        c.background = adjust(c.background, h => ({ ...h, l: Math.min(1, h.l + 0.03) }));
+        c.foreground = adjust(c.foreground, h => ({ ...h, l: h.l * 0.5 }));
+      }
+      break;
+    case 'less-contrast':
+      if (isDark) {
+        c.background = adjust(c.background, h => ({ ...h, l: h.l + 0.05 }));
+        c.card = adjust(c.card, h => ({ ...h, l: h.l + 0.04 }));
+        c.foreground = adjust(c.foreground, h => ({ ...h, l: h.l * 0.9 }));
+      } else {
+        c.foreground = adjust(c.foreground, h => ({ ...h, l: Math.min(0.4, h.l + 0.15) }));
+      }
+      break;
+  }
+  return c;
+}
+
+/** Curated accent swatches — friendly first-tap options. */
+export const CURATED_ACCENTS: Array<{ label: string; hex: string }> = [
+  { label: 'Green',   hex: '#22c55e' },
+  { label: 'Emerald', hex: '#10b981' },
+  { label: 'Blue',    hex: '#3b82f6' },
+  { label: 'Indigo',  hex: '#6366f1' },
+  { label: 'Violet',  hex: '#8b5cf6' },
+  { label: 'Pink',    hex: '#ec4899' },
+  { label: 'Red',     hex: '#ef4444' },
+  { label: 'Orange',  hex: '#f97316' },
+  { label: 'Amber',   hex: '#f59e0b' },
+  { label: 'Cyan',    hex: '#06b6d4' },
+  { label: 'Slate',   hex: '#94a3b8' },
+  { label: 'White',   hex: '#e6e6e6' },
+];
+
+/** Update the primary accent, keeping secondary in tonal harmony. */
+export function setAccent(colors: CustomThemeColors, hex: string, isDark: boolean): CustomThemeColors {
+  const p = hexToHsl(hex);
+  const secondary = hslToHex({
+    h: p.h,
+    s: Math.min(0.3, p.s * 0.4),
+    l: isDark ? 0.15 : 0.9,
+  });
+  return { ...colors, primary: hex, secondary };
+}

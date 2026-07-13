@@ -2,47 +2,68 @@ import { useMemo, useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, ChevronDown, AlertTriangle, Check, Trash2 } from 'lucide-react';
+import {
+  Palette,
+  ChevronDown,
+  Check,
+  Trash2,
+  Sparkles,
+  Snowflake,
+  Flame,
+  Contrast,
+  Feather,
+  Zap,
+  Info,
+} from 'lucide-react';
 import {
   BASE_PRESETS,
   getBasePreset,
   type CustomTheme,
   type CustomThemeColors,
+  type StyleAdjustment,
   createCustomThemeId,
   saveCustomTheme,
   deleteCustomTheme,
   contrastRatio,
   buildCssVars,
+  applyStyleAdjustment,
+  setAccent,
+  CURATED_ACCENTS,
 } from '@/lib/customThemes';
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  /** Called after Save & Apply with the saved theme id. */
   onApply: (themeId: string) => void;
-  /** If provided, edit this theme instead of creating new. */
   existing?: CustomTheme | null;
-  /** Simplified onboarding version hides advanced by default and removes delete. */
+  /** Onboarding version: fully hides advanced editing. */
   simplified?: boolean;
 }
 
-interface FieldSpec {
+interface AdvancedField {
   key: keyof CustomThemeColors;
   label: string;
-  advanced?: boolean;
 }
 
-const FIELDS: FieldSpec[] = [
+const ADVANCED_FIELDS: AdvancedField[] = [
   { key: 'background', label: 'App background' },
-  { key: 'card', label: 'Card / surface' },
-  { key: 'primary', label: 'Primary accent' },
-  { key: 'secondary', label: 'Secondary accent' },
+  { key: 'card', label: 'Card surface' },
   { key: 'foreground', label: 'Primary text' },
   { key: 'mutedForeground', label: 'Muted text' },
-  { key: 'border', label: 'Border', advanced: true },
-  { key: 'success', label: 'Success', advanced: true },
-  { key: 'warning', label: 'Warning', advanced: true },
-  { key: 'destructive', label: 'Error / record', advanced: true },
+  { key: 'secondary', label: 'Secondary accent' },
+  { key: 'border', label: 'Border' },
+  { key: 'success', label: 'Success' },
+  { key: 'warning', label: 'Warning' },
+  { key: 'destructive', label: 'Error / record' },
+];
+
+const STYLE_ADJUSTMENTS: Array<{ id: StyleAdjustment; label: string; icon: any }> = [
+  { id: 'softer',         label: 'Softer',        icon: Feather },
+  { id: 'stronger',       label: 'Stronger',      icon: Zap },
+  { id: 'cooler',         label: 'Cooler',        icon: Snowflake },
+  { id: 'warmer',         label: 'Warmer',        icon: Flame },
+  { id: 'more-contrast',  label: 'More contrast', icon: Contrast },
+  { id: 'less-contrast',  label: 'Less contrast', icon: Contrast },
 ];
 
 export default function CustomThemeCreator({ open, onClose, onApply, existing, simplified }: Props) {
@@ -51,6 +72,7 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
   const [isDark, setIsDark] = useState(true);
   const [colors, setColors] = useState<CustomThemeColors>(BASE_PRESETS[0].colors);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [customPickerOpen, setCustomPickerOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -60,13 +82,14 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
       setIsDark(existing.isDark);
       setColors(existing.colors);
     } else {
-      const preset = getBasePreset('dark');
+      const p = getBasePreset('dark');
       setName('');
-      setBaseId(preset.id);
-      setIsDark(preset.isDark);
-      setColors(preset.colors);
+      setBaseId(p.id);
+      setIsDark(p.isDark);
+      setColors(p.colors);
     }
     setAdvancedOpen(false);
+    setCustomPickerOpen(false);
   }, [open, existing]);
 
   const onPickBase = (id: string) => {
@@ -76,37 +99,36 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
     setColors(p.colors);
   };
 
-  const setColor = (key: keyof CustomThemeColors, v: string) => {
+  const onStyleAdjust = (adj: StyleAdjustment) =>
+    setColors(c => applyStyleAdjustment(c, adj, isDark));
+
+  const onAccent = (hex: string) =>
+    setColors(c => setAccent(c, hex, isDark));
+
+  const setColor = (key: keyof CustomThemeColors, v: string) =>
     setColors(c => ({ ...c, [key]: v }));
-  };
 
-  // ---- contrast checks ----
-  const checks = useMemo(() => {
-    const c = colors;
-    return [
-      { label: 'Text on background', ratio: contrastRatio(c.foreground, c.background) },
-      { label: 'Text on card', ratio: contrastRatio(c.foreground, c.card) },
-      { label: 'Muted on background', ratio: contrastRatio(c.mutedForeground, c.background) },
-    ];
-  }, [colors]);
-
-  const minRatio = Math.min(...checks.map(x => x.ratio));
-  const critical = minRatio < 2.5; // very unreadable
-  const warn = minRatio < 4.5;     // below WCAG AA for normal text
+  // Quiet background validation — only block on critically unreadable text.
+  const minTextContrast = useMemo(() => Math.min(
+    contrastRatio(colors.foreground, colors.background),
+    contrastRatio(colors.foreground, colors.card),
+  ), [colors]);
+  const critical = minTextContrast < 2.2;
+  const mildWarn = !critical && minTextContrast < 3.5;
 
   const canSave = name.trim().length > 0 && !critical;
 
-  // ---- live preview inline styles ----
   const previewStyle = useMemo(() => {
     const vars = buildCssVars({
       id: 'preview', name: 'preview', baseThemeId: baseId, isDark, colors,
       createdAt: '', updatedAt: '',
     });
-    // convert CSS var map into a style object
     const s: Record<string, string> = {};
     for (const [k, v] of Object.entries(vars)) s[k] = v;
     return s as React.CSSProperties;
   }, [colors, baseId, isDark]);
+
+  const cssv = (k: string) => `hsl(${(previewStyle as any)[k]})`;
 
   const handleSave = () => {
     if (!canSave) return;
@@ -133,11 +155,10 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
     onClose();
   };
 
-  const shownFields = FIELDS.filter(f => !f.advanced || advancedOpen);
-
   return (
     <Dialog open={open} onOpenChange={o => !o && onClose()}>
       <DialogContent className="max-w-md p-0 gap-0 max-h-[92vh] overflow-hidden flex flex-col">
+        {/* Header */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border/60 shrink-0">
           <Palette className="h-4 w-4 text-primary" />
           <h2 className="font-display text-sm font-semibold flex-1">
@@ -145,7 +166,7 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
           </h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
           {/* Name */}
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Theme name</label>
@@ -158,149 +179,197 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             />
           </div>
 
-          {/* Base theme */}
+          {/* Step 1: Start from */}
           {!existing && (
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Start from</label>
-              <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1">
+            <section className="space-y-2">
+              <SectionTitle step="1" title="Choose your base style" />
+              <div className="grid grid-cols-2 gap-1.5">
                 {BASE_PRESETS.map(p => {
                   const active = baseId === p.id;
                   return (
                     <button
                       key={p.id}
                       onClick={() => onPickBase(p.id)}
-                      className={`shrink-0 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium border transition-colors ${
+                      className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-[11px] font-medium border transition-colors text-left ${
                         active
-                          ? 'bg-primary text-primary-foreground border-primary'
+                          ? 'bg-primary/15 text-foreground border-primary/60'
                           : 'bg-secondary text-secondary-foreground border-transparent'
                       }`}
                     >
-                      <span
-                        className="h-3 w-3 rounded-full border border-border/50"
-                        style={{ background: p.colors.primary }}
-                      />
-                      {p.label}
+                      <span className="flex -space-x-1">
+                        <span className="h-3.5 w-3.5 rounded-full border border-border/50" style={{ background: p.colors.background }} />
+                        <span className="h-3.5 w-3.5 rounded-full border border-border/50" style={{ background: p.colors.primary }} />
+                      </span>
+                      <span className="truncate">{p.label}</span>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Live preview */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Live preview</label>
+          {/* Step 2: Style */}
+          <section className="space-y-2">
+            <SectionTitle step={existing ? '1' : '2'} title="Adjust the vibe" hint="One-tap tweaks" />
+            <div className="grid grid-cols-3 gap-1.5">
+              {STYLE_ADJUSTMENTS.map(s => {
+                const Icon = s.icon;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => onStyleAdjust(s.id)}
+                    className="flex flex-col items-center justify-center gap-1 rounded-lg py-2 bg-secondary text-secondary-foreground text-[10.5px] font-medium hover:bg-primary/10 hover:text-foreground transition-colors"
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Step 3: Accent */}
+          <section className="space-y-2">
+            <SectionTitle step={existing ? '2' : '3'} title="Pick your accent" />
+            <div className="grid grid-cols-6 gap-2">
+              {CURATED_ACCENTS.map(a => {
+                const active = colors.primary.toLowerCase() === a.hex.toLowerCase();
+                return (
+                  <button
+                    key={a.hex}
+                    onClick={() => onAccent(a.hex)}
+                    title={a.label}
+                    className={`aspect-square rounded-full border-2 transition-transform ${
+                      active ? 'border-foreground scale-110' : 'border-border/40'
+                    }`}
+                    style={{ background: a.hex }}
+                    aria-label={a.label}
+                  />
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setCustomPickerOpen(v => !v)}
+              className="text-[11px] text-muted-foreground hover:text-foreground"
+            >
+              {customPickerOpen ? 'Hide custom color' : 'Or choose a custom color'}
+            </button>
+            {customPickerOpen && (
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="color"
+                  value={colors.primary}
+                  onChange={e => onAccent(e.target.value)}
+                  className="h-9 w-12 rounded-md border border-border/60 bg-transparent p-0 cursor-pointer"
+                  aria-label="Custom accent"
+                />
+                <span className="text-[11px] font-mono text-muted-foreground uppercase">
+                  {colors.primary}
+                </span>
+              </div>
+            )}
+          </section>
+
+          {/* Step 4: Preview */}
+          <section className="space-y-2">
+            <SectionTitle step={existing ? '3' : '4'} title="Preview your theme" />
             <div
-              className="rounded-xl p-3 space-y-2.5 border"
+              className="rounded-xl p-3 border"
               style={{
                 ...previewStyle,
-                background: `hsl(${previewStyle['--background' as any]})`,
-                borderColor: `hsl(${previewStyle['--border' as any]})`,
+                background: cssv('--background'),
+                borderColor: cssv('--border'),
               }}
             >
-              {/* card */}
-              <div
-                className="rounded-lg p-2.5"
-                style={{ background: `hsl(${previewStyle['--card' as any]})`, color: `hsl(${previewStyle['--foreground' as any]})` }}
-              >
-                <div className="text-[11px] font-semibold">Bench Press</div>
-                <div className="text-[10px]" style={{ color: `hsl(${previewStyle['--muted-foreground' as any]})` }}>
-                  3 × 8 · 80 kg · Last: 2d
-                </div>
-                <div className="mt-1.5 flex items-center gap-1.5">
+              <div className="rounded-lg p-3" style={{ background: cssv('--card'), color: cssv('--foreground') }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-semibold">Bench Press</div>
+                    <div className="text-[10px]" style={{ color: cssv('--muted-foreground') }}>
+                      3 × 8 · 80 kg · Last: 2d
+                    </div>
+                  </div>
                   <span
-                    className="text-[10px] font-semibold rounded-full px-2 py-0.5"
-                    style={{ background: `hsl(${previewStyle['--primary' as any]})`, color: `hsl(${previewStyle['--primary-foreground' as any]})` }}
+                    className="text-[10px] font-semibold rounded-full px-2 py-1"
+                    style={{ background: cssv('--primary'), color: cssv('--primary-foreground') }}
                   >
                     +5 kg
                   </span>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
                   <span
                     className="text-[10px] rounded-full px-2 py-0.5"
-                    style={{ background: `hsl(${previewStyle['--secondary' as any]})`, color: `hsl(${previewStyle['--foreground' as any]})` }}
+                    style={{ background: cssv('--secondary'), color: cssv('--foreground') }}
                   >
                     Chest
                   </span>
-                </div>
-              </div>
-              {/* toggle row */}
-              <div
-                className="flex items-center justify-between rounded-lg px-2.5 py-2"
-                style={{ background: `hsl(${previewStyle['--card' as any]})`, color: `hsl(${previewStyle['--foreground' as any]})` }}
-              >
-                <span className="text-[11px]">Auto rest timer</span>
-                <span
-                  className="relative inline-block h-4 w-7 rounded-full"
-                  style={{ background: `hsl(${previewStyle['--primary' as any]})` }}
-                >
                   <span
-                    className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full"
-                    style={{ background: `hsl(${previewStyle['--primary-foreground' as any]})` }}
-                  />
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Color fields */}
-          <div className="space-y-2">
-            {shownFields.map(f => (
-              <div key={f.key} className="flex items-center gap-3">
-                <label className="flex-1 text-xs">{f.label}</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={colors[f.key]}
-                    onChange={e => setColor(f.key, e.target.value)}
-                    className="h-8 w-8 rounded-md border border-border/60 bg-transparent p-0 cursor-pointer"
-                    aria-label={f.label}
-                  />
-                  <span className="text-[10px] font-mono text-muted-foreground w-16 text-right uppercase">
-                    {colors[f.key]}
+                    className="relative inline-block h-4 w-7 rounded-full"
+                    style={{ background: cssv('--primary') }}
+                  >
+                    <span
+                      className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full"
+                      style={{ background: cssv('--primary-foreground') }}
+                    />
                   </span>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
 
-          {/* Advanced toggle */}
+            {mildWarn && (
+              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
+                <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                <span>Text is a little low-contrast. You can still save this theme.</span>
+              </div>
+            )}
+            {critical && (
+              <div className="flex items-start gap-1.5 text-[10.5px] text-destructive pl-0.5">
+                <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                <span>Text is hard to read. Try a lighter text or darker background before saving.</span>
+              </div>
+            )}
+          </section>
+
+          {/* Step 5: Advanced */}
           {!simplified && (
-            <button
-              type="button"
-              onClick={() => setAdvancedOpen(v => !v)}
-              className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground"
-            >
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${advancedOpen ? 'rotate-180' : ''}`} />
-              {advancedOpen ? 'Hide advanced' : 'More options'}
-            </button>
-          )}
+            <section className="space-y-2 pt-1 border-t border-border/40">
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen(v => !v)}
+                className="w-full flex items-center gap-2 text-[11px] text-muted-foreground hover:text-foreground py-1"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="flex-1 text-left">Fine-tune colors</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${advancedOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-          {/* Contrast warnings */}
-          {(warn || critical) && (
-            <div
-              className={`rounded-lg border p-2.5 flex gap-2 text-[11px] leading-relaxed ${
-                critical
-                  ? 'border-destructive/50 bg-destructive/10 text-destructive'
-                  : 'border-amber-500/40 bg-amber-500/10 text-amber-500'
-              }`}
-            >
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-              <div>
-                {critical
-                  ? 'Contrast is critically low. Adjust the text or background before saving.'
-                  : 'Contrast is below the recommended level. Text may be hard to read.'}
-                <div className="mt-1 space-y-0.5">
-                  {checks.map(c => (
-                    <div key={c.label} className="flex justify-between gap-2">
-                      <span>{c.label}</span>
-                      <span className="font-mono">{c.ratio.toFixed(2)}:1</span>
+              {advancedOpen && (
+                <div className="space-y-2 pt-1">
+                  {ADVANCED_FIELDS.map(f => (
+                    <div key={f.key} className="flex items-center gap-3">
+                      <label className="flex-1 text-xs">{f.label}</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={colors[f.key]}
+                          onChange={e => setColor(f.key, e.target.value)}
+                          className="h-8 w-8 rounded-md border border-border/60 bg-transparent p-0 cursor-pointer"
+                          aria-label={f.label}
+                        />
+                        <span className="text-[10px] font-mono text-muted-foreground w-16 text-right uppercase">
+                          {colors[f.key]}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
+              )}
+            </section>
           )}
         </div>
 
+        {/* Footer */}
         <div className="flex items-center gap-2 px-4 py-3 border-t border-border/60 shrink-0">
           {existing && !simplified && (
             <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive gap-1.5">
@@ -320,5 +389,17 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function SectionTitle({ step, title, hint }: { step: string; title: string; hint?: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="h-4 w-4 rounded-full bg-primary/15 text-primary text-[9px] font-bold flex items-center justify-center">
+        {step}
+      </span>
+      <span className="text-[11px] font-semibold text-foreground">{title}</span>
+      {hint && <span className="text-[10px] text-muted-foreground">· {hint}</span>}
+    </div>
   );
 }
