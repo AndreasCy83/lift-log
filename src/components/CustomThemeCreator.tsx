@@ -94,20 +94,15 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
   const setColor = (key: keyof CustomThemeColors, v: string) =>
     setColors(c => ({ ...c, [key]: v }));
 
-  // Permissive validation: only intervene when core text is genuinely unreadable.
-  // Everything else — bold, saturated, unconventional palettes — is allowed.
-  // We only check primary text vs background and vs card surface. Muted text,
-  // borders, secondary accents, and accent-vs-surface are intentionally ignored.
+  // Advisory-only: never blocks saving. The preview is the source of truth.
   const textOnBg = useMemo(() => contrastRatio(colors.foreground, colors.background), [colors]);
   const textOnCard = useMemo(() => contrastRatio(colors.foreground, colors.card), [colors]);
   const minText = Math.min(textOnBg, textOnCard);
 
-  // Only block in truly extreme cases — text nearly the same color as its surface.
-  const critical = minText < 1.35;
-  // Soft note only when readability is meaningfully compromised, never for merely bold themes.
-  const mildNote = !critical && minText < 2.2;
+  // Soft hint only — purely informational, does not affect save.
+  const mildNote = minText < 2.2;
 
-  const canSave = name.trim().length > 0 && !critical;
+  const canSave = name.trim().length > 0;
 
   const previewStyle = useMemo(() => {
     const vars = buildCssVars({
@@ -289,16 +284,9 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             </div>
 
             {mildNote && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
-                <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>This theme is bold, but still usable.</span>
-              </div>
-            )}
-            {critical && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
-                <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text and surface colors are almost identical. Nudge one of them to save.</span>
-              </div>
+              <p className="text-[10.5px] text-muted-foreground pl-0.5">
+                This theme is bold and may reduce readability in some places. Preview carefully before applying.
+              </p>
             )}
           </section>
 
