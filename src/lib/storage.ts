@@ -285,6 +285,8 @@ export function getStandaloneRoutines(): Routine[] {
 }
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
+export const JEFF_FUNDAMENTALS_PROGRAM_ID = 'program-builtin-jeff-fundamentals';
+
 export function seedBuiltInPrograms() {
   seedBuiltIn12WeekFatLossProgram();
   seedBuiltIn5DaySplitProgram();
@@ -292,6 +294,7 @@ export function seedBuiltInPrograms() {
   seedBuiltInFullBodyProgram();
   seedBuiltInArnoldPplProgram();
   seedBuiltIn4DaySplitProgram();
+  seedBuiltInJeffFundamentalsProgram();
 
   if (localStorage.getItem('builtinPrograms_ppl_v1')) return;
 
