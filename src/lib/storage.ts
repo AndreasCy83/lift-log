@@ -1053,6 +1053,187 @@ function seedBuiltIn12WeekFatLossProgram() {
   localStorage.setItem('builtinPrograms_12wkfatloss_v1', 'true');
 }
 
+/** One-time seed: insert the built-in "Jeff - Fundamentals Programs" 8-week program.
+ *  Weeks 1-4 share one workout structure and weeks 5-8 share another. All exercises
+ *  use predefined sets (reps or duration + rest). Coach precedence at runtime is
+ *  handled by the existing coachApply layer and is not affected by this seed. */
+function seedBuiltInJeffFundamentalsProgram() {
+  if (localStorage.getItem('builtinPrograms_jeff_fundamentals_v1')) return;
+
+  const PROGRAM_ID = JEFF_FUNDAMENTALS_PROGRAM_ID;
+  const programs = getPrograms();
+  if (!programs.some(p => p.id === PROGRAM_ID)) {
+    addProgram({
+      id: PROGRAM_ID,
+      name: 'Jeff - Fundamentals Programs',
+      description: '8 week fundamentals · 5 days / week',
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  // rest label → seconds (midpoint of the given range)
+  const R34 = 210; // 3-4min
+  const R23 = 150; // 2-3min
+  const R12 = 90;  // 1-2min
+
+  type ExItem = {
+    exerciseId: string;
+    sets: number;
+    reps?: number | null;
+    durationMinutes?: number | null;
+    restSeconds: number;
+    setType?: SetType | null;
+  };
+  type DayDef = { day: number; label: string; items: ExItem[] };
+
+  const rep = (exerciseId: string, sets: number, reps: number, restSeconds: number): ExItem =>
+    ({ exerciseId, sets, reps, restSeconds });
+  const dur = (exerciseId: string, sets: number, durationMinutes: number, restSeconds: number): ExItem =>
+    ({ exerciseId, sets, durationMinutes, restSeconds, setType: 'WEIGHT_TIME' });
+
+  // WEEKS 1-4 template
+  const weeks1to4: DayDef[] = [
+    { day: 1, label: 'Chest & Triceps', items: [
+      rep('ex-flat-barbell-bench-press', 3, 6, R34),
+      rep('ex-incline-dumbbell-bench-press', 3, 8, R23),
+      rep('ex-standing-cable-flyes', 3, 12, R12),
+      rep('ex-assisted-chest-dip', 3, 10, R12),
+      rep('ex-skull-crushers', 3, 12, R12),
+    ]},
+    { day: 2, label: 'Legs & Abs', items: [
+      rep('ex-back-squat', 3, 6, R34),
+      rep('ex-romanian-deadlift', 3, 8, R23),
+      rep('ex-barbell-hip-thrust', 3, 12, R23),
+      rep('ex-leg-extension', 3, 12, R12),
+      rep('ex-lying-leg-curl', 3, 12, R12),
+      rep('ex-standing-calf-raise', 2, 8, R12),
+      rep('ex-crunches-abs', 2, 12, R12),
+    ]},
+    { day: 3, label: 'Back & Biceps', items: [
+      rep('ex-reverse-grip-lat-pulldown', 3, 8, R23),
+      rep('ex-seated-row', 3, 10, R23),
+      rep('ex-chest-supported-t-bar-row', 3, 12, R23),
+      rep('ex-cable-face-pull', 3, 15, R12),
+      rep('ex-alternating-dumbbell-curl', 3, 12, R12),
+    ]},
+    { day: 4, label: 'Legs & Abs', items: [
+      rep('ex-deadlift', 3, 5, R34),
+      rep('ex-walking-lunge', 3, 10, R23),
+      rep('ex-leg-extension', 2, 15, R12),
+      rep('ex-lying-leg-curl', 2, 15, R12),
+      rep('ex-seated-hip-abduction', 3, 15, R12),
+      rep('ex-standing-calf-raise', 2, 12, R12),
+      dur('ex-plank-abs', 3, 20 / 60, R12),
+    ]},
+    { day: 5, label: 'Shoulders & Arms', items: [
+      rep('ex-overhead-press', 3, 6, R34),
+      rep('ex-dumbbell-lateral-raise', 3, 12, R12),
+      rep('ex-reverse-pec-deck', 3, 15, R12),
+      rep('ex-single-arm-rope-overhead-extension', 2, 12, R12),
+      rep('ex-single-arm-cable-curl', 2, 12, R12),
+    ]},
+  ];
+
+  // WEEKS 5-8 template
+  const weeks5to8: DayDef[] = [
+    { day: 1, label: 'Chest & Triceps', items: [
+      rep('ex-flat-barbell-bench-press', 3, 8, R34),
+      rep('ex-incline-machine-chest-press', 3, 12, R23),
+      rep('ex-pec-deck-fly', 3, 12, R12),
+      rep('ex-assisted-chest-dip', 3, 6, R12),
+      rep('ex-cable-kickback', 3, 15, R12),
+    ]},
+    { day: 2, label: 'Legs & Abs', items: [
+      rep('ex-deadlift', 3, 5, R34),
+      rep('ex-goblet-squat', 3, 12, R23),
+      rep('ex-hip-thrust', 3, 10, R23),
+      rep('ex-leg-press', 3, 12, R12),
+      rep('ex-lying-leg-curl', 3, 15, R12),
+      rep('ex-standing-calf-raise', 3, 8, R12),
+      rep('ex-bicycle-crunches-abs', 3, 12, R12),
+    ]},
+    { day: 3, label: 'Back & Biceps', items: [
+      rep('ex-lat-pull-down', 3, 6, R23),
+      rep('ex-single-arm-dumbbell-row', 3, 12, R23),
+      rep('ex-bent-over-row', 3, 12, R23),
+      rep('ex-reverse-pec-deck', 3, 15, R12),
+      rep('ex-ez-bar-curls', 3, 15, R12),
+    ]},
+    { day: 4, label: 'Legs & Abs', items: [
+      rep('ex-back-squat', 3, 8, R34),
+      rep('ex-barbell-hip-thrust', 3, 8, R23),
+      rep('ex-romanian-deadlift', 3, 12, R23),
+      rep('ex-seated-leg-curl', 3, 8, R12),
+      rep('ex-standing-calf-raise', 3, 6, R12),
+      rep('ex-hanging-leg-raise', 3, 6, R12),
+      rep('ex-seated-hip-abduction', 3, 20, R12),
+    ]},
+    { day: 5, label: 'Shoulders & Arms', items: [
+      rep('ex-seated-dumbbell-press', 3, 10, R34),
+      rep('ex-cable-lateral-raise', 3, 10, R12),
+      rep('ex-machine-reverse-fly', 3, 12, R12),
+      rep('ex-dumbbell-floor-press', 2, 15, R12),
+      rep('ex-hammer-curl', 2, 8, R12),
+    ]},
+  ];
+
+  const buildRows = (items: ExItem[]) =>
+    items.map<{ item: ExItem; rows: RoutinePredefinedRow[] }>(item => ({
+      item,
+      rows: Array.from({ length: item.sets }, () => ({
+        weightKg: null,
+        reps: item.reps ?? null,
+        distanceKm: null,
+        durationMinutes: item.durationMinutes ?? null,
+        restSeconds: item.restSeconds,
+        setTag: 'N' as SetTag,
+      })),
+    }));
+
+  const existingRoutines = getRoutines();
+
+  const seedWeek = (week: number, days: DayDef[]) => {
+    days.forEach(dayDef => {
+      const routineId = `routine-builtin-jeff-w${week}-d${dayDef.day}`;
+      if (!existingRoutines.some(r => r.id === routineId)) {
+        addRoutine({
+          id: routineId,
+          name: `Day ${dayDef.day} — ${dayDef.label}`,
+          description: `Week ${week}`,
+          isActive: true,
+          programId: PROGRAM_ID,
+        });
+      }
+      if (getExercisesForRoutine(routineId).length === 0) {
+        buildRows(dayDef.items).forEach(({ item, rows }, idx) => {
+          addRoutineExercise({
+            id: generateId(),
+            routineId,
+            exerciseId: item.exerciseId,
+            position: idx,
+            populationMode: 'predefined',
+            sets: rows.length,
+            repsMin: null,
+            repsMax: null,
+            restSeconds: item.restSeconds,
+            predefinedSetType: item.setType ?? null,
+            predefinedRows: rows,
+            supersetGroup: null,
+          });
+        });
+      }
+    });
+  };
+
+  for (let w = 1; w <= 4; w++) seedWeek(w, weeks1to4);
+  for (let w = 5; w <= 8; w++) seedWeek(w, weeks5to8);
+
+  localStorage.setItem('builtinPrograms_jeff_fundamentals_v1', 'true');
+}
+
+
+
+
 
 
 
