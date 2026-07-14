@@ -284,16 +284,9 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             </div>
 
             {mildNote && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
-                <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>This theme is bold, but still usable.</span>
-              </div>
-            )}
-            {critical && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
-                <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text and surface colors are almost identical. Nudge one of them to save.</span>
-              </div>
+              <p className="text-[10.5px] text-muted-foreground pl-0.5">
+                This theme is bold and may reduce readability in some places. Preview carefully before applying.
+              </p>
             )}
           </section>
 
