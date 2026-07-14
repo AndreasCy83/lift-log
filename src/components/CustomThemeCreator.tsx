@@ -291,13 +291,13 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             {mildNote && (
               <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>This theme is bold but still usable. Some text may be slightly harder to read.</span>
+                <span>This theme is bold, but still usable.</span>
               </div>
             )}
             {critical && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-destructive pl-0.5">
+              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text is unreadable on the background or cards. Adjust text or surface colors to save.</span>
+                <span>Text and surface colors are almost identical. Nudge one of them to save.</span>
               </div>
             )}
           </section>
