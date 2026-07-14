@@ -29,8 +29,26 @@ export default function ProgramDetailPage() {
   const refresh = () => force(n => n + 1);
 
   const program = useMemo(() => getPrograms().find(p => p.id === id), [id]);
-  const routines = useMemo(() => (id ? getRoutinesForProgram(id) : []), [id]);
+  const allProgramRoutines = useMemo(() => (id ? getRoutinesForProgram(id) : []), [id]);
   const standalone = useMemo(() => getStandaloneRoutines(), []);
+
+  // Detect a weekly-structured program: routines whose description matches "Week N".
+  // Used to render a compact week tab strip without disturbing the standard layout.
+  const weekOf = (desc: string): number | null => {
+    const m = /^Week\s+(\d+)$/i.exec((desc || '').trim());
+    return m ? parseInt(m[1], 10) : null;
+  };
+  const availableWeeks = useMemo(() => {
+    const ws = new Set<number>();
+    allProgramRoutines.forEach(r => { const w = weekOf(r.description); if (w != null) ws.add(w); });
+    return Array.from(ws).sort((a, b) => a - b);
+  }, [allProgramRoutines]);
+  const isWeekly = availableWeeks.length > 0;
+  const [selectedWeek, setSelectedWeek] = useState<number>(availableWeeks[0] ?? 1);
+  const routines = useMemo(() => {
+    if (!isWeekly) return allProgramRoutines;
+    return allProgramRoutines.filter(r => weekOf(r.description) === selectedWeek);
+  }, [allProgramRoutines, isWeekly, selectedWeek]);
 
   const [showEdit, setShowEdit] = useState(false);
   const [editName, setEditName] = useState(program?.name ?? '');
