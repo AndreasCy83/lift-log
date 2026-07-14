@@ -94,15 +94,18 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
   const setColor = (key: keyof CustomThemeColors, v: string) =>
     setColors(c => ({ ...c, [key]: v }));
 
-  // Only block save when text is truly unreadable on background OR card.
-  // Everything else is allowed — at most a friendly inline note.
+  // Permissive validation: only intervene when core text is genuinely unreadable.
+  // Everything else — bold, saturated, unconventional palettes — is allowed.
+  // We only check primary text vs background and vs card surface. Muted text,
+  // borders, secondary accents, and accent-vs-surface are intentionally ignored.
   const textOnBg = useMemo(() => contrastRatio(colors.foreground, colors.background), [colors]);
   const textOnCard = useMemo(() => contrastRatio(colors.foreground, colors.card), [colors]);
-  const btnLabel = useMemo(() => contrastRatio(colors.foreground, colors.primary), [colors]);
   const minText = Math.min(textOnBg, textOnCard);
 
-  const critical = textOnBg < 1.8 || textOnCard < 1.8;
-  const mildNote = !critical && (minText < 3.2 || btnLabel < 2.2);
+  // Only block in truly extreme cases — text nearly the same color as its surface.
+  const critical = minText < 1.35;
+  // Soft note only when readability is meaningfully compromised, never for merely bold themes.
+  const mildNote = !critical && minText < 2.2;
 
   const canSave = name.trim().length > 0 && !critical;
 
@@ -288,13 +291,13 @@ export default function CustomThemeCreator({ open, onClose, onApply, existing, s
             {mildNote && (
               <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>This theme is bold but still usable. Some text may be slightly harder to read.</span>
+                <span>This theme is bold, but still usable.</span>
               </div>
             )}
             {critical && (
-              <div className="flex items-start gap-1.5 text-[10.5px] text-destructive pl-0.5">
+              <div className="flex items-start gap-1.5 text-[10.5px] text-muted-foreground pl-0.5">
                 <Info className="h-3 w-3 mt-0.5 shrink-0" />
-                <span>Text is unreadable on the background or cards. Adjust text or surface colors to save.</span>
+                <span>Text and surface colors are almost identical. Nudge one of them to save.</span>
               </div>
             )}
           </section>
