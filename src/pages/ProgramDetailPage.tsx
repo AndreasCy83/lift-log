@@ -29,8 +29,26 @@ export default function ProgramDetailPage() {
   const refresh = () => force(n => n + 1);
 
   const program = useMemo(() => getPrograms().find(p => p.id === id), [id]);
-  const routines = useMemo(() => (id ? getRoutinesForProgram(id) : []), [id]);
+  const allProgramRoutines = useMemo(() => (id ? getRoutinesForProgram(id) : []), [id]);
   const standalone = useMemo(() => getStandaloneRoutines(), []);
+
+  // Detect a weekly-structured program: routines whose description matches "Week N".
+  // Used to render a compact week tab strip without disturbing the standard layout.
+  const weekOf = (desc: string): number | null => {
+    const m = /^Week\s+(\d+)$/i.exec((desc || '').trim());
+    return m ? parseInt(m[1], 10) : null;
+  };
+  const availableWeeks = useMemo(() => {
+    const ws = new Set<number>();
+    allProgramRoutines.forEach(r => { const w = weekOf(r.description); if (w != null) ws.add(w); });
+    return Array.from(ws).sort((a, b) => a - b);
+  }, [allProgramRoutines]);
+  const isWeekly = availableWeeks.length > 0;
+  const [selectedWeek, setSelectedWeek] = useState<number>(availableWeeks[0] ?? 1);
+  const routines = useMemo(() => {
+    if (!isWeekly) return allProgramRoutines;
+    return allProgramRoutines.filter(r => weekOf(r.description) === selectedWeek);
+  }, [allProgramRoutines, isWeekly, selectedWeek]);
 
   const [showEdit, setShowEdit] = useState(false);
   const [editName, setEditName] = useState(program?.name ?? '');
@@ -140,19 +158,41 @@ export default function ProgramDetailPage() {
       </header>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
+        {isWeekly && (
+          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {availableWeeks.map(w => (
+              <button
+                key={w}
+                onClick={() => setSelectedWeek(w)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border ${
+                  selectedWeek === w
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-secondary/40 text-muted-foreground border-border/60 hover:bg-secondary/70'
+                }`}
+              >
+                Week {w}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             {t('programs.workoutDaysHeader', { count: routines.length })}
           </h2>
           <div className="flex gap-1.5">
-            <Button size="sm" variant="outline" onClick={() => setShowAddExisting(true)} className="h-8 text-xs">
-              {t('programs.attach')}
-            </Button>
-            <Button size="sm" onClick={() => setShowCreate(true)} className="h-8 gap-1 rounded-full bg-primary text-primary-foreground text-xs">
-              <Plus className="h-3.5 w-3.5" /> {t('programs.new')}
-            </Button>
+            {!isWeekly && (
+              <Button size="sm" variant="outline" onClick={() => setShowAddExisting(true)} className="h-8 text-xs">
+                {t('programs.attach')}
+              </Button>
+            )}
+            {!isWeekly && (
+              <Button size="sm" onClick={() => setShowCreate(true)} className="h-8 gap-1 rounded-full bg-primary text-primary-foreground text-xs">
+                <Plus className="h-3.5 w-3.5" /> {t('programs.new')}
+              </Button>
+            )}
           </div>
         </div>
+
 
         {routines.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
