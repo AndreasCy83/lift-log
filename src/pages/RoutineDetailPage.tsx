@@ -39,6 +39,43 @@ export default function RoutineDetailPage() {
   const [setupTotal, setSetupTotal] = useState(0);
   const dragId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [supersetTarget, setSupersetTarget] = useState<RoutineExercise | null>(null);
+
+  const handleSupersetSave = (memberIds: string[]) => {
+    if (!supersetTarget || !id) return;
+    if (memberIds.length === 0) {
+      // Dissolve — remove supersetTarget from group.
+      const updates = planRemoveFromGroup(routineExercises, supersetTarget.id);
+      updates.forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      refresh();
+      return;
+    }
+    const existingGid = supersetTarget.supersetGroupId ?? undefined;
+    // Clear any members currently in this group but not in the new selection.
+    if (existingGid) {
+      const current = routineExercises.filter((r) => r.supersetGroupId === existingGid).map((r) => r.id);
+      const removed = current.filter((cid) => !memberIds.includes(cid));
+      removed.forEach((rid) => {
+        planRemoveFromGroup(routineExercises, rid).forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      });
+    }
+    // Also break any OTHER group memberships for the picked exercises.
+    memberIds.forEach((mid) => {
+      const item = routineExercises.find((r) => r.id === mid);
+      if (item?.supersetGroupId && item.supersetGroupId !== existingGid) {
+        planRemoveFromGroup(routineExercises, mid).forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      }
+    });
+    // Rebuild the group.
+    const fresh = getExercisesForRoutine(id);
+    const { updates, groupId } = planCreateGroup(fresh, memberIds, { groupId: existingGid });
+    updates.forEach((u) => updateRoutineExercise(u as RoutineExercise));
+    if (groupId) {
+      const post = getExercisesForRoutine(id);
+      reorderRoutineExercises(id, contiguousOrderedIds(post, groupId));
+    }
+    refresh();
+  };
 
   if (!routine || !id) return <div className="p-4">Routine not found</div>;
 
