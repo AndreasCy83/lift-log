@@ -127,6 +127,17 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
     notes: `From ${routine.name}`,
   });
 
+  // Fresh group IDs so the workout does not share IDs with the routine template.
+  const groupIdMap = new Map<string, string>();
+  const remapGroupId = (gid: string | null | undefined): string | null => {
+    if (!gid) return null;
+    const existing = groupIdMap.get(gid);
+    if (existing) return existing;
+    const fresh = generateId();
+    groupIdMap.set(gid, fresh);
+    return fresh;
+  };
+
   entries.forEach((re, idx) => {
     const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
     const weId = generateId();
@@ -139,6 +150,10 @@ export function createWorkoutFromRoutine(routine: Routine, date: Date): string {
       position: idx,
       notes: '',
       defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
+      supersetGroupId: remapGroupId(re.supersetGroupId),
+      supersetOrder: re.supersetGroupId ? (re.supersetOrder ?? idx) : null,
+      groupType: re.supersetGroupId ? (re.groupType ?? null) : null,
+      restMode: re.supersetGroupId ? (re.restMode ?? 'afterRound') : null,
     });
 
     if (mode === 'blank') {
