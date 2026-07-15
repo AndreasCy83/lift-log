@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, GripVertical, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, Pencil, Link2 } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, getCategories,
   addRoutineExercise, removeRoutineExercise, updateRoutineExercise,
@@ -11,6 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import type { RoutineExercise, RoutinePopulationMode } from '@/types/fitness';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import RoutineExerciseSetupSheet from '@/components/RoutineExerciseSetupSheet';
+import SupersetPickerDialog from '@/components/SupersetPickerDialog';
+import SupersetGroupRail from '@/components/SupersetGroupRail';
+import {
+  planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
+} from '@/lib/supersets';
 import { useExerciseName } from '@/i18n/exerciseNames';
 
 const MODE_SHORT: Record<RoutinePopulationMode, string> = {
