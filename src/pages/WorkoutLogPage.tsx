@@ -492,10 +492,31 @@ export default function WorkoutLogPage() {
     checkGoalCompletions();
 
     if (!wasCompleted && nextCompleted) {
+      // Compute superset next-target BEFORE gating rest (uses fresh data).
+      const freshWEs = getExercisesForWorkout(workout.id);
+      const setsByWE: Record<string, WorkoutSet[]> = {};
+      freshWEs.forEach((we) => { setsByWE[we.id] = getSetsForWorkoutExercise(we.id); });
+      const next = computeSupersetNextTarget(freshWEs, setsByWE, s.workoutExerciseId, s.setIndex);
+      if (next) {
+        setNextTargetWeId(next.workoutExerciseId);
+        if (getSmartSupersetAdvance()) {
+          setExpandedExercise(next.workoutExerciseId);
+          setTimeout(() => {
+            const el = document.querySelector<HTMLElement>(`[data-we-id="${next.workoutExerciseId}"]`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 50);
+        }
+      } else {
+        setNextTargetWeId(null);
+      }
+
       const settings = getSettings();
       if (!settings.autoStartRestTimer) return;
       const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
       if (!we) return;
+      // Default group rest mode is 'afterRound' — suppress per-set rest inside
+      // a group until the round completes across all group members.
+      if (!isRoundComplete(freshWEs, setsByWE, s.workoutExerciseId, s.setIndex)) return;
       const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
       if (restSec && restSec > 0) {
         startRestTimer(we.id, s.setIndex, restSec);
@@ -503,6 +524,38 @@ export default function WorkoutLogPage() {
         forceUpdate(n => n + 1);
       }
     }
+  };
+
+  const handleSupersetSave = (memberIds: string[]) => {
+    if (!supersetTarget || !workout) return;
+    if (memberIds.length === 0) {
+      const updates = planRemoveFromGroup(workoutExercises, supersetTarget.id);
+      updates.forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      refresh();
+      return;
+    }
+    const existingGid = supersetTarget.supersetGroupId ?? undefined;
+    if (existingGid) {
+      const current = workoutExercises.filter((w) => w.supersetGroupId === existingGid).map((w) => w.id);
+      const removed = current.filter((cid) => !memberIds.includes(cid));
+      removed.forEach((rid) => {
+        planRemoveFromGroup(workoutExercises, rid).forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      });
+    }
+    memberIds.forEach((mid) => {
+      const item = workoutExercises.find((w) => w.id === mid);
+      if (item?.supersetGroupId && item.supersetGroupId !== existingGid) {
+        planRemoveFromGroup(workoutExercises, mid).forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      }
+    });
+    const fresh = getExercisesForWorkout(workout.id);
+    const { updates, groupId } = planCreateGroup(fresh, memberIds, { groupId: existingGid });
+    updates.forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+    if (groupId) {
+      const post = getExercisesForWorkout(workout.id);
+      reorderWorkoutExercises(workout.id, contiguousOrderedIds(post, groupId));
+    }
+    refresh();
   };
 
   const handleDeleteSet = (id: string) => {
