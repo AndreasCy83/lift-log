@@ -87,19 +87,32 @@ import {
 
 // Tutorial steps are built inside the component to read from i18n.
 
-function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
+function SortableExerciseCard({ id, groupPos, isNextTarget, children }: {
+  id: string;
+  groupPos: import('@/lib/supersets').GroupPosition | null;
+  isNextTarget?: boolean;
+  children: React.ReactNode;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 50 : undefined,
-    position: isDragging ? 'relative' : undefined,
+    position: 'relative',
     boxShadow: isDragging ? '0 12px 30px hsl(var(--background) / 0.6)' : undefined,
     scale: isDragging ? '1.02' : undefined,
     touchAction: isDragging ? 'none' : 'auto',
   };
   return (
-    <div ref={setNodeRef} style={style} className="gym-card" {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-we-id={id}
+      className={`gym-card ${groupPos ? 'pl-4' : ''} ${isNextTarget ? 'ring-2 ring-primary' : ''}`}
+      {...attributes}
+      {...listeners}
+    >
+      <SupersetGroupRail position={groupPos} />
       {children}
     </div>
   );
