@@ -65,6 +65,9 @@ export interface Workout {
   durationSeconds?: number | null;
 }
 
+export type SupersetGroupType = 'superset' | 'circuit';
+export type SupersetRestMode = 'afterRound' | 'perExercise';
+
 export interface WorkoutExercise {
   id: string;
   workoutId: string;
@@ -72,6 +75,11 @@ export interface WorkoutExercise {
   position: number;
   notes: string;
   defaultRestSeconds?: number | null;
+  /** Grouping metadata for superset/circuit. Absent = ungrouped. */
+  supersetGroupId?: string | null;
+  supersetOrder?: number | null;
+  groupType?: SupersetGroupType | null;
+  restMode?: SupersetRestMode | null;
 }
 
 export type SetTag = 'N' | 'W' | 'D' | 'F'; // Normal, Warmup, Dropset, Failure
