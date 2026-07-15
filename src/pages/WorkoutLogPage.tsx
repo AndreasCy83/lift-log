@@ -78,6 +78,12 @@ import {
   markCoachAppliedToWE,
 } from '@/lib/coachApply';
 import { Sparkles } from 'lucide-react';
+import SupersetPickerDialog from '@/components/SupersetPickerDialog';
+import SupersetGroupRail from '@/components/SupersetGroupRail';
+import {
+  planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
+  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance,
+} from '@/lib/supersets';
 
 // Tutorial steps are built inside the component to read from i18n.
 
