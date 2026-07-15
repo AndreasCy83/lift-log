@@ -47,7 +47,14 @@ export default function SupersetPickerDialog({
   const [selected, setSelected] = useState<string[]>(initialSelected);
   useEffect(() => { setSelected(initialSelected); }, [initialSelected, open]);
 
-  const labels = useMemo(() => computeGroupLabels(items as unknown as { position: number; supersetGroupId?: string | null }[]), [items]);
+  const labels = useMemo(() => {
+    const fake = items.map((it, i) => ({
+      id: it.id,
+      position: i,
+      supersetGroupId: it.supersetGroupId ?? null,
+    })) as unknown as import('@/lib/supersets').GroupableItem[];
+    return computeGroupLabels(fake);
+  }, [items]);
 
   const toggle = (id: string) => {
     if (id === currentId) return; // current always in
