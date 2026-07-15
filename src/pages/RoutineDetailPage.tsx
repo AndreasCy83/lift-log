@@ -241,7 +241,9 @@ export default function RoutineDetailPage() {
         {routineExercises.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">Add exercises to your routine</p>
         ) : (
-          routineExercises.map((re, idx) => (
+          routineExercises.map((re, idx) => {
+            const gpos = getGroupPosition(routineExercises, re);
+            return (
             <div
               key={re.id}
               draggable
@@ -249,8 +251,9 @@ export default function RoutineDetailPage() {
               onDragOver={(e) => handleDragOver(e, re.id)}
               onDrop={() => handleDrop(re.id)}
               onDragEnd={() => { dragId.current = null; setDragOverId(null); }}
-              className={`gym-card flex items-center gap-2 ${dragOverId === re.id ? 'ring-2 ring-primary' : ''}`}
+              className={`gym-card relative flex items-center gap-2 ${gpos ? 'pl-4' : ''} ${dragOverId === re.id ? 'ring-2 ring-primary' : ''}`}
             >
+              <SupersetGroupRail position={gpos} />
               <button
                 onClick={() => move(re.id, -1)}
                 disabled={idx === 0}
@@ -263,6 +266,14 @@ export default function RoutineDetailPage() {
                 <div className="text-sm font-medium truncate">{getExerciseName(re.exerciseId)}</div>
                 <div className="text-xs text-muted-foreground truncate">{summary(re)}</div>
               </button>
+              <button
+                onClick={() => setSupersetTarget(re)}
+                className={`p-1 ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                aria-label={gpos ? 'Edit superset' : 'Create superset'}
+                title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+              >
+                <Link2 className="h-4 w-4" />
+              </button>
               <button onClick={() => setEditing(re)} className="p-1 text-muted-foreground hover:text-primary" aria-label="Edit">
                 <Pencil className="h-4 w-4" />
               </button>
@@ -270,9 +281,25 @@ export default function RoutineDetailPage() {
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
-          ))
+            );
+          })
         )}
       </div>
+
+      {supersetTarget && (
+        <SupersetPickerDialog
+          open={!!supersetTarget}
+          onOpenChange={(o) => { if (!o) setSupersetTarget(null); }}
+          currentId={supersetTarget.id}
+          items={routineExercises.map((r) => ({
+            id: r.id,
+            name: getExerciseName(r.exerciseId),
+            categoryName: getCategoryName(r.exerciseId),
+            supersetGroupId: r.supersetGroupId ?? null,
+          }))}
+          onSave={handleSupersetSave}
+        />
+      )}
 
       {editing && (
         <RoutineExerciseSetupSheet
