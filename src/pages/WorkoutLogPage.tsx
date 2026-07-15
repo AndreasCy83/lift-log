@@ -893,8 +893,14 @@ export default function WorkoutLogPage() {
           const exSetType = ex?.setType ?? 'WEIGHT_REPS';
           const pr = getPersonalRecord(we.exerciseId);
 
+          const gpos = getGroupPosition(workoutExercises, we);
           return (
-            <SortableExerciseCard key={we.id} id={we.id}>
+            <SortableExerciseCard
+              key={we.id}
+              id={we.id}
+              groupPos={gpos}
+              isNextTarget={nextTargetWeId === we.id}
+            >
               <div className="mb-2">
                 {/* Row 1: exercise title only — full width */}
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="w-full text-left">
