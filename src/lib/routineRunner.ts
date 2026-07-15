@@ -214,6 +214,15 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
   });
 
   const createdWeIds: Array<{ weId: string; exerciseId: string }> = [];
+  const appendGroupIdMap = new Map<string, string>();
+  const remapAppendGid = (gid: string | null | undefined): string | null => {
+    if (!gid) return null;
+    const existing = appendGroupIdMap.get(gid);
+    if (existing) return existing;
+    const fresh = generateId();
+    appendGroupIdMap.set(gid, fresh);
+    return fresh;
+  };
 
   entries.forEach((re, idx) => {
     const master: Exercise | undefined = allExercises.find(e => e.id === re.exerciseId);
@@ -227,6 +236,10 @@ export function appendRoutineToWorkout(routine: Routine, workoutId: string): num
       position: startPos + idx,
       notes: '',
       defaultRestSeconds: re.restSeconds ?? master?.defaultRestSeconds ?? null,
+      supersetGroupId: remapAppendGid(re.supersetGroupId),
+      supersetOrder: re.supersetGroupId ? (re.supersetOrder ?? idx) : null,
+      groupType: re.supersetGroupId ? (re.groupType ?? null) : null,
+      restMode: re.supersetGroupId ? (re.restMode ?? 'afterRound') : null,
     });
     createdWeIds.push({ weId, exerciseId: re.exerciseId });
 
