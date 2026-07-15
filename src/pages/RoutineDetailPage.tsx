@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, GripVertical, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, Pencil, Link2 } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, getCategories,
   addRoutineExercise, removeRoutineExercise, updateRoutineExercise,
@@ -11,6 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import type { RoutineExercise, RoutinePopulationMode } from '@/types/fitness';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
 import RoutineExerciseSetupSheet from '@/components/RoutineExerciseSetupSheet';
+import SupersetPickerDialog from '@/components/SupersetPickerDialog';
+import SupersetGroupRail from '@/components/SupersetGroupRail';
+import {
+  planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
+} from '@/lib/supersets';
 import { useExerciseName } from '@/i18n/exerciseNames';
 
 const MODE_SHORT: Record<RoutinePopulationMode, string> = {
@@ -34,6 +39,43 @@ export default function RoutineDetailPage() {
   const [setupTotal, setSetupTotal] = useState(0);
   const dragId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [supersetTarget, setSupersetTarget] = useState<RoutineExercise | null>(null);
+
+  const handleSupersetSave = (memberIds: string[]) => {
+    if (!supersetTarget || !id) return;
+    if (memberIds.length === 0) {
+      // Dissolve — remove supersetTarget from group.
+      const updates = planRemoveFromGroup(routineExercises, supersetTarget.id);
+      updates.forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      refresh();
+      return;
+    }
+    const existingGid = supersetTarget.supersetGroupId ?? undefined;
+    // Clear any members currently in this group but not in the new selection.
+    if (existingGid) {
+      const current = routineExercises.filter((r) => r.supersetGroupId === existingGid).map((r) => r.id);
+      const removed = current.filter((cid) => !memberIds.includes(cid));
+      removed.forEach((rid) => {
+        planRemoveFromGroup(routineExercises, rid).forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      });
+    }
+    // Also break any OTHER group memberships for the picked exercises.
+    memberIds.forEach((mid) => {
+      const item = routineExercises.find((r) => r.id === mid);
+      if (item?.supersetGroupId && item.supersetGroupId !== existingGid) {
+        planRemoveFromGroup(routineExercises, mid).forEach((u) => updateRoutineExercise(u as RoutineExercise));
+      }
+    });
+    // Rebuild the group.
+    const fresh = getExercisesForRoutine(id);
+    const { updates, groupId } = planCreateGroup(fresh, memberIds, { groupId: existingGid });
+    updates.forEach((u) => updateRoutineExercise(u as RoutineExercise));
+    if (groupId) {
+      const post = getExercisesForRoutine(id);
+      reorderRoutineExercises(id, contiguousOrderedIds(post, groupId));
+    }
+    refresh();
+  };
 
   if (!routine || !id) return <div className="p-4">Routine not found</div>;
 
@@ -199,7 +241,9 @@ export default function RoutineDetailPage() {
         {routineExercises.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">Add exercises to your routine</p>
         ) : (
-          routineExercises.map((re, idx) => (
+          routineExercises.map((re, idx) => {
+            const gpos = getGroupPosition(routineExercises, re);
+            return (
             <div
               key={re.id}
               draggable
@@ -207,8 +251,9 @@ export default function RoutineDetailPage() {
               onDragOver={(e) => handleDragOver(e, re.id)}
               onDrop={() => handleDrop(re.id)}
               onDragEnd={() => { dragId.current = null; setDragOverId(null); }}
-              className={`gym-card flex items-center gap-2 ${dragOverId === re.id ? 'ring-2 ring-primary' : ''}`}
+              className={`gym-card relative flex items-center gap-2 ${gpos ? 'pl-4' : ''} ${dragOverId === re.id ? 'ring-2 ring-primary' : ''}`}
             >
+              <SupersetGroupRail position={gpos} />
               <button
                 onClick={() => move(re.id, -1)}
                 disabled={idx === 0}
@@ -221,6 +266,14 @@ export default function RoutineDetailPage() {
                 <div className="text-sm font-medium truncate">{getExerciseName(re.exerciseId)}</div>
                 <div className="text-xs text-muted-foreground truncate">{summary(re)}</div>
               </button>
+              <button
+                onClick={() => setSupersetTarget(re)}
+                className={`p-1 ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                aria-label={gpos ? 'Edit superset' : 'Create superset'}
+                title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+              >
+                <Link2 className="h-4 w-4" />
+              </button>
               <button onClick={() => setEditing(re)} className="p-1 text-muted-foreground hover:text-primary" aria-label="Edit">
                 <Pencil className="h-4 w-4" />
               </button>
@@ -228,9 +281,25 @@ export default function RoutineDetailPage() {
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
-          ))
+            );
+          })
         )}
       </div>
+
+      {supersetTarget && (
+        <SupersetPickerDialog
+          open={!!supersetTarget}
+          onOpenChange={(o) => { if (!o) setSupersetTarget(null); }}
+          currentId={supersetTarget.id}
+          items={routineExercises.map((r) => ({
+            id: r.id,
+            name: getExerciseName(r.exerciseId),
+            categoryName: getCategoryName(r.exerciseId),
+            supersetGroupId: r.supersetGroupId ?? null,
+          }))}
+          onSave={handleSupersetSave}
+        />
+      )}
 
       {editing && (
         <RoutineExerciseSetupSheet

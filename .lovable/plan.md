@@ -1,56 +1,89 @@
-## Goal
-Localize all user-facing strings on the Home screen using the existing `react-i18next` setup. No dependency changes, no other screens touched.
+# Superset Support — Routines + Live Workouts
 
-## Scope (files)
-- `src/pages/HomePage.tsx` — main Home screen
-- `src/components/RecoveryFatigueCard.tsx` — embedded on Home
-- `src/i18n/locales/*.json` (all 10) — extend `home` namespace
+## Model
+Group exercises by a shared `supersetGroupId`. 2 = superset, 3+ = circuit. Grouping is metadata only — sets, history, stats, PRs, Coach logic remain unchanged.
 
-## Strings to translate on Home
-Header: `Fit Log X` (brand — keep as-is), `Start Workout`
-Calendar: weekday short labels (Mon–Sun), `Show 3 weeks`, `Show full month`, month range separator
-Selected day card: `Today`, `No workout logged`, `View Workout →`, `Copy Workout`, `Move this Workout`, `exercise/exercises` (pluralized), `Duration:`, `Vol:`, `Reps:`, `Sets:`, `Dist:`, `Time:`
-Muscle Group Breakdown: `Muscle Group Breakdown` + category names already come from seed data (NOT translated per seed rule)
-Delete dialog: `Delete Workout`, description, `Yes`, `No`
-Copy dialog: `Copy Workout`, `Select a date to copy this workout to.`, `Copy to {{date}}`
-Move dialog: `Move Workout`, `Select a date to move this workout to.`, `Move to {{date}}`
-RecoveryFatigueCard: card title + band labels (`Low`, `Moderate`, `High`, `Very High` short forms) + `Ready` label — only translate the visible chrome shown in the card header/legend, keep computed muscle names as-is (seeded).
+## Data model changes
 
-## Key structure (added under existing `home.*`)
-```
-home: {
-  brand, startWorkout, today, noWorkoutLogged, viewWorkout,
-  showThreeWeeks, showFullMonth,
-  exercise_one, exercise_other,
-  duration, vol, reps, sets, dist, time,
-  muscleGroupBreakdown,
-  weekdays: { mon, tue, wed, thu, fri, sat, sun },
-  actions: { copyWorkout, moveWorkout },
-  delete: { title, description, yes, no },
-  copy: { title, description, cta },
-  move: { title, description, cta },
-  recovery: { title, ready, bandLow, bandModerate, bandHigh, bandVeryHigh }
-}
-```
-Uses i18next plural suffix (`_one`/`_other`) for the exercise count.
+**`src/types/fitness.ts`**
+Add to `RoutineExercise` and `WorkoutExercise`:
+- `supersetGroupId?: string | null`
+- `supersetLabel?: string | null`   (e.g. `SS1`, `C1`, auto-derived)
+- `supersetOrder?: number | null`   (position inside group)
+- `groupType?: 'superset' | 'circuit' | null`
+- `restMode?: 'afterRound' | 'perExercise' | null`
 
-## Implementation
-1. Extend `home` namespace in `en.json` with all keys above.
-2. Add translated equivalents in the other 9 locale files (fr, it, pt, ru, tr, zh, hi, ar, ja). Brand name kept in Latin. Arabic strings stay logical-order; RTL already wired globally.
-3. In `HomePage.tsx`: add `const { t } = useTranslation();`, replace every literal string above. Pluralize via `t('home.exercise', { count })`. Interpolate dates via `t('home.copy.cta', { date: format(...) })`.
-4. Replace `WEEKDAYS` constant with a `useMemo` that reads from `t`.
-5. In `RecoveryFatigueCard.tsx`: thread `useTranslation` and translate header + band pills + `Ready` label only. Muscle names stay as computed (seed-derived).
-6. No styling changes beyond letting flex items truncate (already in place) — verify in Arabic and Russian (long words).
+Existing `RoutineExercise.supersetGroup` (already present, unused) will be reused as `supersetGroupId` — rename via alias to avoid churn.
 
-## Out of scope
-- Routines / Programs / Workout / Body / Stats screens
-- Seed/exercise/category/program/routine names
-- i18n dependency versions or init code
-- Any business logic, storage, navigation
+Migration: absent fields → treated as ungrouped. Idempotent.
 
-## QA checklist
-- Switch language in Settings → Home updates immediately
-- Arabic: layout mirrors via existing `dir="rtl"` on `<html>`
-- Missing keys fall back to English (already configured via `fallbackLng: 'en'`)
-- Pluralization renders correctly for 0/1/many exercises
-- No layout overflow in long-string locales (ru/de-style words)
+## Storage (`src/lib/storage.ts`)
+- Persist new fields transparently (existing spread-based writes already carry unknown keys — verify and adjust).
+- Add helpers:
+  - `groupExercisesIntoSuperset(ids: string[], parent: 'routine'|'workout')`
+  - `addExerciseToSuperset(exerciseRowId, groupId)`
+  - `removeExerciseFromSuperset(exerciseRowId)` — auto-dissolves if group drops below 2, recomputes `groupType`.
+  - `relabelGroups(parentId)` — assigns SS1/SS2/C1 by first-appearance order.
+
+## Routine runner (`src/lib/routineRunner.ts`)
+When creating a workout from a routine (`createWorkoutFromRoutine` + `appendRoutineToWorkout`):
+1. Copy `supersetGroupId/supersetOrder/groupType/restMode` from `RoutineExercise` → `WorkoutExercise`. Generate fresh group IDs per workout to avoid cross-referencing routine ids.
+2. Preserve linear `position` order — grouped items are already adjacent because routine builder keeps them adjacent.
+3. Populate sets exactly as today (predefined / copy_previous / blank).
+4. Run `applyPendingOverrideOnCreate` last, unchanged — Coach override still runs per-exercise, does not touch grouping fields.
+
+## Routine builder (`src/pages/RoutineDetailPage.tsx`)
+- Multi-select mode: long-press or "Select" toggle → checkboxes → "Create superset" action.
+- Per-row overflow menu: `Create superset with…`, `Add to superset`, `Remove from superset`, `Reorder within group`.
+- On group create: assign new `supersetGroupId`, order 0..n, groupType by count, snap grouped rows adjacent in `position` order.
+- Visual: shared left rail (2px accent), compact `SS1`/`C1` chip on first row.
+
+## Live workout UI (`src/pages/WorkoutLogPage.tsx`)
+- Same grouping controls as routine builder.
+- Round-by-round progression:
+  - On set completion in grouped exercise, compute next target = next exercise in group with an incomplete set at current round; wrap to first exercise, next round.
+  - Setting `smartSupersetAdvance` (localStorage flag, default ON) controls auto-scroll/focus vs. highlight-only.
+- Rest timer: default `afterRound` — suppress per-set rest start inside a group until the round completes; then start rest using the last completed set's rest.
+
+## Coach precedence (unchanged behavior, verified)
+`applyPendingOverrideOnCreate` continues to:
+- match by `exerciseId`
+- overwrite working sets only (skip `setTag === 'W'`, skip `isCompleted`)
+- not modify `supersetGroupId` / `supersetOrder` / `groupType` on the WorkoutExercise
+- preserve per-set rep pattern logic already in `coachApply.ts`
+
+No changes needed to Coach files. Add a test asserting grouping fields survive Coach apply.
+
+## UI components
+- `src/components/SupersetGroupRail.tsx` — visual rail + label chip. Reused in routine detail and workout log.
+- Extend `RoutineExerciseSetupSheet` only if group membership editing is exposed there (kept out for MVP; managed at list level).
+
+## Tests
+- `src/lib/routineRunner.superset.test.ts` — routine with SS preserves grouping in created workout.
+- `src/lib/coachApply.superset.test.ts` — Coach apply keeps grouping fields and warm-up rows intact.
+- `src/lib/workoutProgression.superset.test.ts` — round-by-round next-target logic (A1→B1→A2→B2; unequal set counts; completed sets skipped).
+- `src/lib/routineRunner.sameDayRebuild.test.ts` — rebuilding same-day workout preserves both grouping and Coach override.
+
+## Execution model summary
+- Rounds are computed from `setIndex` position within each grouped exercise's incomplete sets (not from raw indices), so unequal set counts degrade gracefully.
+- Once a grouped exercise runs out of remaining sets, it's skipped; remaining group members continue round-by-round until all done.
+- Grouping is purely a UI/navigation/rest concern; storage, stats, PRs, recovery, and Coach see only individual completed sets — identical semantics to today.
+
+## Coach precedence model
+1. Routine-run populates sets (predefined / copy_previous / blank).
+2. Grouping fields copied from routine → workout.
+3. `applyPendingOverrideOnCreate` runs last per exercise, overwriting non-warmup, non-completed working sets only. Grouping fields are never touched.
+4. Same-day rebuild deletes and recreates the workout via the same path → both Coach override and grouping reappear deterministically.
+
+## Files to change
+- `src/types/fitness.ts`
+- `src/lib/storage.ts` (helpers + persistence check)
+- `src/lib/routineRunner.ts` (copy grouping fields, fresh group ids)
+- `src/lib/supersetProgression.ts` (new — pure logic)
+- `src/pages/RoutineDetailPage.tsx` (group controls + visual rail)
+- `src/pages/WorkoutLogPage.tsx` (group controls + smart advance + rest suppression)
+- `src/components/SupersetGroupRail.tsx` (new)
+- `src/hooks/useWorkoutSession.ts` (integrate progression + rest gating)
+- Tests as listed above.
+
+No changes to `coachApply.ts`, stats, recovery, PR, or backup code.

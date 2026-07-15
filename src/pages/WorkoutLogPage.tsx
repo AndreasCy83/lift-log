@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play, Youtube } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play, Youtube, Link2 } from 'lucide-react';
 import { Browser } from '@capacitor/browser';
 import { format } from 'date-fns';
 import {
@@ -78,22 +78,41 @@ import {
   markCoachAppliedToWE,
 } from '@/lib/coachApply';
 import { Sparkles } from 'lucide-react';
+import SupersetPickerDialog from '@/components/SupersetPickerDialog';
+import SupersetGroupRail from '@/components/SupersetGroupRail';
+import {
+  planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
+  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance,
+} from '@/lib/supersets';
 
 // Tutorial steps are built inside the component to read from i18n.
 
-function SortableExerciseCard({ id, children }: { id: string; children: React.ReactNode }) {
+function SortableExerciseCard({ id, groupPos, isNextTarget, children }: {
+  id: string;
+  groupPos: import('@/lib/supersets').GroupPosition | null;
+  isNextTarget?: boolean;
+  children: React.ReactNode;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 50 : undefined,
-    position: isDragging ? 'relative' : undefined,
+    position: 'relative',
     boxShadow: isDragging ? '0 12px 30px hsl(var(--background) / 0.6)' : undefined,
     scale: isDragging ? '1.02' : undefined,
     touchAction: isDragging ? 'none' : 'auto',
   };
   return (
-    <div ref={setNodeRef} style={style} className="gym-card" {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-we-id={id}
+      className={`gym-card ${groupPos ? 'pl-4' : ''} ${isNextTarget ? 'ring-2 ring-primary' : ''}`}
+      {...attributes}
+      {...listeners}
+    >
+      <SupersetGroupRail position={groupPos} />
       {children}
     </div>
   );
@@ -172,6 +191,9 @@ export default function WorkoutLogPage() {
   const [supportCount, setSupportCount] = useState(0);
   // Warning shown when user taps Finish but has meaningful pending (untoggled) sets.
   const [incompleteWarnOpen, setIncompleteWarnOpen] = useState(false);
+  // Superset picker target (WorkoutExercise being grouped).
+  const [supersetTarget, setSupersetTarget] = useState<WorkoutExercise | null>(null);
+  const [nextTargetWeId, setNextTargetWeId] = useState<string | null>(null);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
@@ -483,10 +505,31 @@ export default function WorkoutLogPage() {
     checkGoalCompletions();
 
     if (!wasCompleted && nextCompleted) {
+      // Compute superset next-target BEFORE gating rest (uses fresh data).
+      const freshWEs = getExercisesForWorkout(workout.id);
+      const setsByWE: Record<string, WorkoutSet[]> = {};
+      freshWEs.forEach((we) => { setsByWE[we.id] = getSetsForWorkoutExercise(we.id); });
+      const next = computeSupersetNextTarget(freshWEs, setsByWE, s.workoutExerciseId, s.setIndex);
+      if (next) {
+        setNextTargetWeId(next.workoutExerciseId);
+        if (getSmartSupersetAdvance()) {
+          setExpandedExercise(next.workoutExerciseId);
+          setTimeout(() => {
+            const el = document.querySelector<HTMLElement>(`[data-we-id="${next.workoutExerciseId}"]`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 50);
+        }
+      } else {
+        setNextTargetWeId(null);
+      }
+
       const settings = getSettings();
       if (!settings.autoStartRestTimer) return;
       const we = workoutExercises.find(x => x.id === s.workoutExerciseId);
       if (!we) return;
+      // Default group rest mode is 'afterRound' — suppress per-set rest inside
+      // a group until the round completes across all group members.
+      if (!isRoundComplete(freshWEs, setsByWE, s.workoutExerciseId, s.setIndex)) return;
       const restSec = updated.restSeconds ?? we.defaultRestSeconds ?? null;
       if (restSec && restSec > 0) {
         startRestTimer(we.id, s.setIndex, restSec);
@@ -494,6 +537,38 @@ export default function WorkoutLogPage() {
         forceUpdate(n => n + 1);
       }
     }
+  };
+
+  const handleSupersetSave = (memberIds: string[]) => {
+    if (!supersetTarget || !workout) return;
+    if (memberIds.length === 0) {
+      const updates = planRemoveFromGroup(workoutExercises, supersetTarget.id);
+      updates.forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      refresh();
+      return;
+    }
+    const existingGid = supersetTarget.supersetGroupId ?? undefined;
+    if (existingGid) {
+      const current = workoutExercises.filter((w) => w.supersetGroupId === existingGid).map((w) => w.id);
+      const removed = current.filter((cid) => !memberIds.includes(cid));
+      removed.forEach((rid) => {
+        planRemoveFromGroup(workoutExercises, rid).forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      });
+    }
+    memberIds.forEach((mid) => {
+      const item = workoutExercises.find((w) => w.id === mid);
+      if (item?.supersetGroupId && item.supersetGroupId !== existingGid) {
+        planRemoveFromGroup(workoutExercises, mid).forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+      }
+    });
+    const fresh = getExercisesForWorkout(workout.id);
+    const { updates, groupId } = planCreateGroup(fresh, memberIds, { groupId: existingGid });
+    updates.forEach((u) => updateWorkoutExercise(u as WorkoutExercise));
+    if (groupId) {
+      const post = getExercisesForWorkout(workout.id);
+      reorderWorkoutExercises(workout.id, contiguousOrderedIds(post, groupId));
+    }
+    refresh();
   };
 
   const handleDeleteSet = (id: string) => {
@@ -818,8 +893,14 @@ export default function WorkoutLogPage() {
           const exSetType = ex?.setType ?? 'WEIGHT_REPS';
           const pr = getPersonalRecord(we.exerciseId);
 
+          const gpos = getGroupPosition(workoutExercises, we);
           return (
-            <SortableExerciseCard key={we.id} id={we.id}>
+            <SortableExerciseCard
+              key={we.id}
+              id={we.id}
+              groupPos={gpos}
+              isNextTarget={nextTargetWeId === we.id}
+            >
               <div className="mb-2">
                 {/* Row 1: exercise title only — full width */}
                 <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="w-full text-left">
@@ -893,6 +974,13 @@ export default function WorkoutLogPage() {
                       data-tutorial={isTutorialTarget ? 'exercise-youtube' : undefined}
                     >
                       <Youtube className="h-[16px] w-[16px] text-red-600 fill-white" strokeWidth={2.25} />
+                    </button>
+                    <button
+                      onClick={() => setSupersetTarget(we)}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+                    >
+                      <Link2 className="h-[16px] w-[16px]" />
                     </button>
                     <button
                       onClick={() => setDeleteExerciseTarget(we.id)}
@@ -1294,6 +1382,21 @@ export default function WorkoutLogPage() {
           workoutExerciseId={coachDialogTarget.weId}
           weightUnit={globalWeightUnit}
           onApplied={() => forceUpdate(n => n + 1)}
+        />
+      )}
+
+      {supersetTarget && (
+        <SupersetPickerDialog
+          open={!!supersetTarget}
+          onOpenChange={(o) => { if (!o) setSupersetTarget(null); }}
+          currentId={supersetTarget.id}
+          items={workoutExercises.map((w) => ({
+            id: w.id,
+            name: getExName(w.exerciseId),
+            categoryName: getCatName(w.exerciseId),
+            supersetGroupId: w.supersetGroupId ?? null,
+          }))}
+          onSave={handleSupersetSave}
         />
       )}
 
