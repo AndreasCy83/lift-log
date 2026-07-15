@@ -976,6 +976,13 @@ export default function WorkoutLogPage() {
                       <Youtube className="h-[16px] w-[16px] text-red-600 fill-white" strokeWidth={2.25} />
                     </button>
                     <button
+                      onClick={() => setSupersetTarget(we)}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+                    >
+                      <Link2 className="h-[16px] w-[16px]" />
+                    </button>
+                    <button
                       onClick={() => setDeleteExerciseTarget(we.id)}
                       className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
                       title={t('workout.tooltips.removeExercise')}
