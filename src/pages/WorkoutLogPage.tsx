@@ -178,6 +178,9 @@ export default function WorkoutLogPage() {
   const [supportCount, setSupportCount] = useState(0);
   // Warning shown when user taps Finish but has meaningful pending (untoggled) sets.
   const [incompleteWarnOpen, setIncompleteWarnOpen] = useState(false);
+  // Superset picker target (WorkoutExercise being grouped).
+  const [supersetTarget, setSupersetTarget] = useState<WorkoutExercise | null>(null);
+  const [nextTargetWeId, setNextTargetWeId] = useState<string | null>(null);
 
   // Live workout session timer (independent from rest timer)
   const session = useWorkoutSession(workout?.id ?? null);
