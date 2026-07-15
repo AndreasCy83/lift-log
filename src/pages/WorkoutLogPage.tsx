@@ -1385,6 +1385,21 @@ export default function WorkoutLogPage() {
         />
       )}
 
+      {supersetTarget && (
+        <SupersetPickerDialog
+          open={!!supersetTarget}
+          onOpenChange={(o) => { if (!o) setSupersetTarget(null); }}
+          currentId={supersetTarget.id}
+          items={workoutExercises.map((w) => ({
+            id: w.id,
+            name: getExName(w.exerciseId),
+            categoryName: getCatName(w.exerciseId),
+            supersetGroupId: w.supersetGroupId ?? null,
+          }))}
+          onSave={handleSupersetSave}
+        />
+      )}
+
       <AlertDialog open={!!repeatTarget} onOpenChange={(open) => !open && setRepeatTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
