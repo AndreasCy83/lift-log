@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -26,35 +26,43 @@ interface Props {
 }
 
 /**
- * Simple picker for building/editing a superset or circuit. The user checks
- * additional exercises to group with the current exercise. Grouping is one
- * membership per exercise: an exercise already in another group will be
- * moved into this group.
+ * Superset / circuit picker. Local draft selection is initialized ONCE per
+ * dialog open (on the false→true transition of `open`). After that the
+ * draft is the source of truth until the user presses Save, Remove, or
+ * closes the dialog — parent re-renders (workout timer ticks, prop
+ * identity changes, etc.) never overwrite in-progress selection.
  */
 export default function SupersetPickerDialog({
   open, onOpenChange, currentId, items, onSave,
 }: Props) {
   const currentGroupId = items.find((x) => x.id === currentId)?.supersetGroupId ?? null;
-  const initialSelected = useMemo(() => {
-    if (currentGroupId) {
-      return items
-        .filter((x) => x.supersetGroupId === currentGroupId)
-        .map((x) => x.id);
-    }
-    return [currentId];
-  }, [items, currentGroupId, currentId]);
 
-  const [selected, setSelected] = useState<string[]>(initialSelected);
-  useEffect(() => { setSelected(initialSelected); }, [initialSelected, open]);
+  const [selected, setSelected] = useState<string[]>([currentId]);
+  // Snapshot items at open time so labels/UI don't churn while user edits.
+  const [snapshot, setSnapshot] = useState<SupersetPickerItem[]>(items);
+  const wasOpen = useRef(false);
+
+  useEffect(() => {
+    if (open && !wasOpen.current) {
+      // Dialog just opened — seed from current membership exactly once.
+      const seed = currentGroupId
+        ? items.filter((x) => x.supersetGroupId === currentGroupId).map((x) => x.id)
+        : [currentId];
+      setSelected(seed);
+      setSnapshot(items);
+    }
+    wasOpen.current = open;
+  }, [open, currentGroupId, currentId, items]);
+
 
   const labels = useMemo(() => {
-    const fake = items.map((it, i) => ({
+    const fake = snapshot.map((it, i) => ({
       id: it.id,
       position: i,
       supersetGroupId: it.supersetGroupId ?? null,
     })) as unknown as import('@/lib/supersets').GroupableItem[];
     return computeGroupLabels(fake);
-  }, [items]);
+  }, [snapshot]);
 
   const toggle = (id: string) => {
     if (id === currentId) return; // current always in
@@ -64,7 +72,7 @@ export default function SupersetPickerDialog({
   const size = selected.length;
   const kind = size >= 3 ? 'Circuit' : size === 2 ? 'Superset' : 'None';
 
-  const others = items.filter((x) => x.id !== currentId);
+  const others = snapshot.filter((x) => x.id !== currentId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
