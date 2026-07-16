@@ -126,6 +126,7 @@ export default function WorkoutLogPage() {
     { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
     { selector: '[data-tutorial="exercise-coach"]', title: t('workout.tutorial.coach.title'), text: t('workout.tutorial.coach.text') },
     { selector: '[data-tutorial="exercise-youtube"]', title: t('workout.tutorial.youtube.title'), text: t('workout.tutorial.youtube.text') },
+    { selector: '[data-tutorial="exercise-superset"]', title: t('workout.tutorial.superset.title'), text: t('workout.tutorial.superset.text') },
     { selector: '[data-tutorial="set-tag"]', title: t('workout.tutorial.setTag.title'), text: t('workout.tutorial.setTag.text') },
     { selector: '[data-tutorial="set-rest"]', title: t('workout.tutorial.setRest.title'), text: t('workout.tutorial.setRest.text') },
     { selector: '[data-tutorial="set-toggle"]', title: t('workout.tutorial.toggle.title'), text: t('workout.tutorial.toggle.text') },
@@ -979,6 +980,7 @@ export default function WorkoutLogPage() {
                       onClick={() => setSupersetTarget(we)}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                       title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+                      data-tutorial={isTutorialTarget ? 'exercise-superset' : undefined}
                     >
                       <Link2 className="h-[16px] w-[16px]" />
                     </button>

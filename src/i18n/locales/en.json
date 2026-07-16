@@ -282,6 +282,10 @@
         "title": "YouTube Form Check",
         "text": "Tap here to search YouTube for how to perform this exercise correctly."
       },
+      "superset": {
+        "title": "Superset / Circuit",
+        "text": "Tap here to group this exercise with others into a superset or circuit. You'll alternate between them round by round."
+      },
       "timer": {
         "title": "Global Timer",
         "text": "Tap here to set a default rest timer that applies to all sets for this exercise."
