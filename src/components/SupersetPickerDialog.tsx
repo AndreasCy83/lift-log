@@ -56,13 +56,13 @@ export default function SupersetPickerDialog({
 
 
   const labels = useMemo(() => {
-    const fake = items.map((it, i) => ({
+    const fake = snapshot.map((it, i) => ({
       id: it.id,
       position: i,
       supersetGroupId: it.supersetGroupId ?? null,
     })) as unknown as import('@/lib/supersets').GroupableItem[];
     return computeGroupLabels(fake);
-  }, [items]);
+  }, [snapshot]);
 
   const toggle = (id: string) => {
     if (id === currentId) return; // current always in
@@ -72,7 +72,7 @@ export default function SupersetPickerDialog({
   const size = selected.length;
   const kind = size >= 3 ? 'Circuit' : size === 2 ? 'Superset' : 'None';
 
-  const others = items.filter((x) => x.id !== currentId);
+  const others = snapshot.filter((x) => x.id !== currentId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
