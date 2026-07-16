@@ -267,6 +267,10 @@
         "title": "YouTube Form Kontrolü",
         "text": "Bu egzersizi doğru şekilde nasıl yapacağınızı YouTube'da aramak için buraya dokunun."
       },
+      "superset": {
+        "title": "Süperset / Devre",
+        "text": "Bu egzersizi diğerleriyle süperset veya devre olarak gruplamak için buraya dokunun. Tur tur aralarında geçiş yaparsınız."
+      },
       "timer": {
         "title": "Genel Zamanlayıcı",
         "text": "Bu egzersizin tüm setleri için geçerli olan varsayılan dinlenme zamanlayıcısını ayarlamak için buraya dokunun."

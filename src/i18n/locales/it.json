@@ -267,6 +267,10 @@
         "title": "Verifica YouTube",
         "text": "Tocca qui per cercare su YouTube come eseguire correttamente questo esercizio."
       },
+      "superset": {
+        "title": "Superset / Circuito",
+        "text": "Tocca qui per raggruppare questo esercizio con altri in un superset o circuito. Li alternerai giro per giro."
+      },
       "timer": {
         "title": "Timer globale",
         "text": "Tocca qui per impostare un timer di riposo predefinito per tutte le serie di questo esercizio."
