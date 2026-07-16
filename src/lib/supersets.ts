@@ -45,25 +45,65 @@ export function groupMembers<T extends GroupableItem>(items: T[], groupId: strin
  * order in the linear list.
  */
 export function computeGroupLabels<T extends GroupableItem>(items: T[]): Map<string, string> {
+  return new Map(
+    Array.from(computeGroupMeta(items).entries()).map(([gid, m]) => [gid, m.label]),
+  );
+}
+
+export interface GroupMeta {
+  label: string;
+  colorIndex: number;
+  type: SupersetGroupType;
+  size: number;
+}
+
+/**
+ * Compute label + deterministic color index per group. Color index cycles
+ * through a fixed palette (see GROUP_COLOR_PALETTE) based on first-appearance
+ * order across ALL groups in the list — so every member of a group shares
+ * the same identity, and sibling groups differ.
+ */
+export function computeGroupMeta<T extends GroupableItem>(items: T[]): Map<string, GroupMeta> {
   const sorted = [...items].sort((a, b) => a.position - b.position);
-  const labels = new Map<string, string>();
+  const out = new Map<string, GroupMeta>();
   let ss = 0;
   let c = 0;
-  const seen = new Set<string>();
+  let colorIdx = 0;
   for (const it of sorted) {
     const gid = it.supersetGroupId;
-    if (!gid || seen.has(gid)) continue;
-    seen.add(gid);
+    if (!gid || out.has(gid)) continue;
     const size = items.filter((x) => x.supersetGroupId === gid).length;
-    if (size >= 3) {
-      c += 1;
-      labels.set(gid, `C${c}`);
-    } else if (size === 2) {
-      ss += 1;
-      labels.set(gid, `SS${ss}`);
-    }
+    if (size < 2) continue;
+    let label: string;
+    let type: SupersetGroupType;
+    if (size >= 3) { c += 1; label = `C${c}`; type = 'circuit'; }
+    else { ss += 1; label = `SS${ss}`; type = 'superset'; }
+    out.set(gid, { label, colorIndex: colorIdx, type, size });
+    colorIdx += 1;
   }
-  return labels;
+  return out;
+}
+
+/**
+ * Palette of distinct group identities. Each entry is a self-contained set
+ * of Tailwind classes for the rail bar, label chip background, and label
+ * text — so every group renders as a coherent color unit.
+ */
+export const GROUP_COLOR_PALETTE: {
+  rail: string; chipBg: string; chipText: string; ring: string;
+}[] = [
+  { rail: 'bg-sky-400',     chipBg: 'bg-sky-400/20',     chipText: 'text-sky-300',     ring: 'ring-sky-400/40' },
+  { rail: 'bg-fuchsia-400', chipBg: 'bg-fuchsia-400/20', chipText: 'text-fuchsia-300', ring: 'ring-fuchsia-400/40' },
+  { rail: 'bg-amber-400',   chipBg: 'bg-amber-400/20',   chipText: 'text-amber-300',   ring: 'ring-amber-400/40' },
+  { rail: 'bg-emerald-400', chipBg: 'bg-emerald-400/20', chipText: 'text-emerald-300', ring: 'ring-emerald-400/40' },
+  { rail: 'bg-rose-400',    chipBg: 'bg-rose-400/20',    chipText: 'text-rose-300',    ring: 'ring-rose-400/40' },
+  { rail: 'bg-violet-400',  chipBg: 'bg-violet-400/20',  chipText: 'text-violet-300',  ring: 'ring-violet-400/40' },
+  { rail: 'bg-cyan-400',    chipBg: 'bg-cyan-400/20',    chipText: 'text-cyan-300',    ring: 'ring-cyan-400/40' },
+  { rail: 'bg-lime-400',    chipBg: 'bg-lime-400/20',    chipText: 'text-lime-300',    ring: 'ring-lime-400/40' },
+];
+
+export function paletteForIndex(i: number) {
+  return GROUP_COLOR_PALETTE[i % GROUP_COLOR_PALETTE.length];
 }
 
 export interface GroupPosition {
@@ -73,6 +113,7 @@ export interface GroupPosition {
   size: number;
   label: string;
   type: SupersetGroupType;
+  colorIndex: number;
 }
 
 /** Return position info for a single item within its group, or null when ungrouped/invalid. */
@@ -83,16 +124,16 @@ export function getGroupPosition<T extends GroupableItem>(items: T[], item: T): 
   if (members.length < 2) return null;
   const idx = members.findIndex((m) => m.id === item.id);
   if (idx < 0) return null;
-  const labels = computeGroupLabels(items);
-  const type = getGroupType(members.length);
-  if (!type) return null;
+  const meta = computeGroupMeta(items).get(gid);
+  if (!meta) return null;
   return {
     index: idx,
     isFirst: idx === 0,
     isLast: idx === members.length - 1,
     size: members.length,
-    label: labels.get(gid) ?? (type === 'circuit' ? 'C?' : 'SS?'),
-    type,
+    label: meta.label,
+    type: meta.type,
+    colorIndex: meta.colorIndex,
   };
 }
 
