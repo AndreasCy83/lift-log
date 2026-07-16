@@ -980,6 +980,7 @@ export default function WorkoutLogPage() {
                       onClick={() => setSupersetTarget(we)}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                       title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
+                      data-tutorial={isTutorialTarget ? 'exercise-superset' : undefined}
                     >
                       <Link2 className="h-[16px] w-[16px]" />
                     </button>
