@@ -904,28 +904,31 @@ export default function WorkoutLogPage() {
               isNextTarget={nextTargetWeId === we.id}
             >
               <div className="mb-2">
-                {/* Row 1: exercise title only — full width */}
-                <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="w-full text-left">
-                  <div className="flex items-center gap-2">
-                    <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
-                    {isWECoachApplied(we.id) && (
-                      <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium px-1.5 py-0.5">
-                        <Sparkles className="h-2.5 w-2.5" />
-                        Coach
-                      </span>
-                    )}
-                  </div>
-                  {isWECoachApplied(we.id) && (() => {
-                    const p = getCoachAppliedToWE(we.id);
-                    if (!p) return null;
-                    return (
-                      <div className="text-[10px] text-muted-foreground mt-0.5 truncate">
-                        Coach: {p.sets} × {p.repInfo}
-                        {p.weightKg != null ? ` @ ${p.weightKg} kg` : ''}
-                      </div>
-                    );
-                  })()}
-                </button>
+                {/* Row 1: thumbnail + exercise title */}
+                <div className="flex items-start gap-2">
+                  {ex && <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9 mt-0.5" />}
+                  <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center gap-2">
+                      <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
+                      {isWECoachApplied(we.id) && (
+                        <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium px-1.5 py-0.5">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          Coach
+                        </span>
+                      )}
+                    </div>
+                    {isWECoachApplied(we.id) && (() => {
+                      const p = getCoachAppliedToWE(we.id);
+                      if (!p) return null;
+                      return (
+                        <div className="text-[10px] text-muted-foreground mt-0.5 truncate">
+                          Coach: {p.sets} × {p.repInfo}
+                          {p.weightKg != null ? ` @ ${p.weightKg} kg` : ''}
+                        </div>
+                      );
+                    })()}
+                  </button>
+                </div>
                 {/* Row 2: action buttons left, muscle group right */}
                 <div className="flex items-center justify-between gap-2 mt-1">
                   <div className="flex items-center gap-1 shrink-0">
