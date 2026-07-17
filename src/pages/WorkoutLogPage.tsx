@@ -47,6 +47,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Textarea } from '@/components/ui/textarea';
 import RestTimer from '@/components/RestTimer';
 import ExerciseSelectionScreen from '@/components/ExerciseSelectionScreen';
+import ExerciseThumbnail from '@/components/ExerciseThumbnail';
 import ExerciseDetailPanel from '@/components/ExerciseDetailPanel';
 import DynamicSetInputs, { SetColumnHeaders } from '@/components/DynamicSetInputs';
 import ExerciseStatsDialog from '@/components/ExerciseStatsDialog';
