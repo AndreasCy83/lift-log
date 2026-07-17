@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
+import ExerciseThumbnail from './ExerciseThumbnail';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { useExerciseName } from '@/i18n/exerciseNames';
 
@@ -194,6 +195,7 @@ export default function ExerciseSelectionScreen({ onSelect, onClose }: Props) {
                 <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground shrink-0">
                   {SET_TYPE_ICONS[ex.setType]}
                 </div>
+                <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9" />
 
                 <div className="flex-1">
                   <span className="text-sm font-medium">{tExName(ex)}</span>

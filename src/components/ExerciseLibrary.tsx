@@ -9,6 +9,7 @@ import { SET_TYPE_LABELS } from '@/types/fitness';
 import type { Exercise } from '@/types/fitness';
 import CustomExerciseForm from '@/components/CustomExerciseForm';
 import ExerciseDetailDialog from '@/components/ExerciseDetailDialog';
+import ExerciseThumbnail from '@/components/ExerciseThumbnail';
 import { useExerciseName } from '@/i18n/exerciseNames';
 
 interface Props {
@@ -130,6 +131,7 @@ export default function ExerciseLibrary({ onClose }: Props) {
                 className="h-8 w-1 rounded-full shrink-0"
                 style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
               />
+              <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{tExName(ex)}</p>
                 <p className="text-[10px] text-muted-foreground">
