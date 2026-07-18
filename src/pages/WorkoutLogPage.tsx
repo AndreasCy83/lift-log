@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Timer, BarChart3, Trophy, CopyPlus, Check, Pause, Play, Youtube, Link2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Timer, StickyNote, BarChart3, Trophy, CopyPlus, Check, Pause, Play, Youtube, Link2 } from 'lucide-react';
 import { Browser } from '@capacitor/browser';
 import { format } from 'date-fns';
 import {
