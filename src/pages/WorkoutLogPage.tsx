@@ -122,7 +122,6 @@ function SortableExerciseCard({ id, groupPos, isNextTarget, children }: {
 export default function WorkoutLogPage() {
   const { t } = useTranslation();
   const TUTORIAL_STEPS: TutorialStep[] = useMemo(() => [
-    { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
     { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
     { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
     { selector: '[data-tutorial="exercise-coach"]', title: t('workout.tutorial.coach.title'), text: t('workout.tutorial.coach.text') },
