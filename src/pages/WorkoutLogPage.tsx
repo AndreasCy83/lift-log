@@ -122,7 +122,6 @@ function SortableExerciseCard({ id, groupPos, isNextTarget, children }: {
 export default function WorkoutLogPage() {
   const { t } = useTranslation();
   const TUTORIAL_STEPS: TutorialStep[] = useMemo(() => [
-    { selector: '[data-tutorial="exercise-notes"]', title: t('workout.tutorial.notes.title'), text: t('workout.tutorial.notes.text') },
     { selector: '[data-tutorial="exercise-goals"]', title: t('workout.tutorial.goals.title'), text: t('workout.tutorial.goals.text') },
     { selector: '[data-tutorial="exercise-stats"]', title: t('workout.tutorial.stats.title'), text: t('workout.tutorial.stats.text') },
     { selector: '[data-tutorial="exercise-coach"]', title: t('workout.tutorial.coach.title'), text: t('workout.tutorial.coach.text') },
@@ -907,7 +906,7 @@ export default function WorkoutLogPage() {
                 {/* Row 1: identity — thumbnail + title (compact, vertically centered) */}
                 <div className="flex items-center gap-3">
                   {ex && <ExerciseThumbnail exerciseName={ex.name} />}
-                  <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left">
+                  <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left flex flex-col justify-center">
                     <div className="flex items-center gap-2">
                       <div className="font-display text-sm font-semibold truncate leading-tight">{getExName(we.exerciseId)}</div>
                       {isWECoachApplied(we.id) && (
@@ -928,18 +927,11 @@ export default function WorkoutLogPage() {
                       );
                     })()}
                   </button>
+                  <span className="text-[11px] rounded-full bg-secondary px-3 py-1.5 text-muted-foreground shrink-0 inline-flex items-center">{getCatName(we.exerciseId)}</span>
                 </div>
-                {/* Row 2: action buttons left, muscle group right */}
-                <div className="flex items-center justify-between gap-2 mt-1">
+                {/* Row 2: action buttons */}
+                <div className="flex flex-wrap items-center gap-2 mt-2">
                   <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
-                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                      title={t('workout.tooltips.exerciseNote')}
-                      data-tutorial={isTutorialTarget ? 'exercise-notes' : undefined}
-                    >
-                      <StickyNote className="h-[16px] w-[16px]" />
-                    </button>
                     <button
                       onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
@@ -996,7 +988,6 @@ export default function WorkoutLogPage() {
                       <Trash2 className="h-[16px] w-[16px]" />
                     </button>
                   </div>
-                  <span className="text-[11px] rounded-full bg-secondary px-3 py-1.5 text-muted-foreground shrink-0 inline-flex items-center">{getCatName(we.exerciseId)}</span>
                 </div>
               </div>
               {noteExpanded === we.id && (
