@@ -904,12 +904,12 @@ export default function WorkoutLogPage() {
               isNextTarget={nextTargetWeId === we.id}
             >
               <div className="mb-2">
-                {/* Row 1: thumbnail + exercise title */}
-                <div className="flex items-start gap-2">
-                  {ex && <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9 mt-0.5" />}
+                {/* Row 1: identity — thumbnail + title (compact, vertically centered) */}
+                <div className="flex items-center gap-3">
+                  {ex && <ExerciseThumbnail exerciseName={ex.name} />}
                   <button onClick={() => setExpandedExercise(isExpanded ? null : we.id)} className="flex-1 min-w-0 text-left">
                     <div className="flex items-center gap-2">
-                      <div className="font-display text-sm font-semibold truncate">{getExName(we.exerciseId)}</div>
+                      <div className="font-display text-sm font-semibold truncate leading-tight">{getExName(we.exerciseId)}</div>
                       {isWECoachApplied(we.id) && (
                         <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-medium px-1.5 py-0.5">
                           <Sparkles className="h-2.5 w-2.5" />

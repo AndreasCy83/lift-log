@@ -10,9 +10,9 @@ interface Props {
 }
 
 /**
- * Lightweight preview modal. Shows the animated GIF at a larger size.
- * If the GIF fails to load, falls back to the static image; if both fail,
- * shows a soft placeholder so the modal never renders broken.
+ * Lightweight preview modal. Shows the animated GIF at a larger size with
+ * minimal chrome so the media dominates. Falls back to static image, then
+ * to a soft placeholder — never renders broken.
  */
 export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName, media }: Props) {
   const [gifFailed, setGifFailed] = useState(false);
@@ -20,23 +20,25 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-4">
-        <DialogHeader>
-          <DialogTitle className="font-display text-base">{exerciseName}</DialogTitle>
+      <DialogContent className="max-w-sm p-3 gap-2">
+        <DialogHeader className="px-1">
+          <DialogTitle className="font-display text-sm font-semibold truncate pr-6">
+            {exerciseName}
+          </DialogTitle>
         </DialogHeader>
-        <div className="mt-2 flex items-center justify-center rounded-lg bg-secondary/60 overflow-hidden aspect-square">
+        <div className="flex items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden aspect-square">
           {!gifFailed ? (
             <img
               src={media.gifUrl}
               alt={`${exerciseName} demonstration`}
-              className="max-h-full max-w-full object-contain"
+              className="h-full w-full object-contain"
               onError={() => setGifFailed(true)}
             />
           ) : !imgFailed ? (
             <img
               src={media.imageUrl}
               alt={exerciseName}
-              className="max-h-full max-w-full object-contain"
+              className="h-full w-full object-contain"
               onError={() => setImgFailed(true)}
             />
           ) : (
