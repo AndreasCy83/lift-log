@@ -293,6 +293,40 @@ export default function RoutinesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Rename routine dialog */}
+      <Dialog open={!!renameRoutine} onOpenChange={open => { if (!open) setRenameRoutine(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('routines.renameTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              autoFocus
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              placeholder={t('routines.createRoutineNamePh')}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setRenameRoutine(null)}>{t('routines.cancel')}</Button>
+              <Button
+                disabled={!renameValue.trim() || (renameRoutine ? renameValue.trim() === renameRoutine.name : true)}
+                onClick={() => {
+                  if (!renameRoutine) return;
+                  const name = renameValue.trim();
+                  if (!name || name === renameRoutine.name) { setRenameRoutine(null); return; }
+                  updateRoutine({ ...renameRoutine, name });
+                  setRenameRoutine(null);
+                  refresh();
+                }}
+                className="bg-primary text-primary-foreground"
+              >
+                {t('routines.save')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
