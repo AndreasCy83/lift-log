@@ -181,7 +181,7 @@ export default function RoutinesPage() {
                         {p.description && <p className="mt-0.5 text-xs text-muted-foreground/70 line-clamp-2 break-words">{p.description}</p>}
                         <p className="mt-1 text-xs text-muted-foreground/70 truncate">{t('programs.workoutDays', { count })}</p>
                       </button>
-                      <div className="flex shrink-0 items-center gap-0.5">
+                      <div className="flex shrink-0 items-center gap-0">
                         <button
                           type="button"
                           aria-label={p.isFavorite ? t('programs.unfavorite') : t('programs.favorite')}
