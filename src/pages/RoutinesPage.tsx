@@ -5,6 +5,7 @@ import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRi
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
   getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
+  toggleRoutineFavorite, updateRoutine,
   getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
