@@ -107,6 +107,7 @@ export interface Routine {
   isActive: boolean;
   /** Optional parent program. Null/undefined means a standalone routine. */
   programId?: string | null;
+  isFavorite?: boolean;
 }
 
 export interface Program {

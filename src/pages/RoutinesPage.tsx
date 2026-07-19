@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight, Star } from 'lucide-react';
+import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRight, Star, Pencil } from 'lucide-react';
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
   getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
+  toggleRoutineFavorite, updateRoutine,
   getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
@@ -34,10 +35,14 @@ export default function RoutinesPage() {
     return [...favs, ...rest];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
-  const standaloneRoutines = useMemo(() => getStandaloneRoutines(), []);
-  const allRoutines = useMemo(() => getRoutines(), []);
-  // re-read each render via deps on force
-  void allRoutines;
+  const standaloneRoutines = useMemo(() => {
+    const all = getStandaloneRoutines();
+    const favs: Routine[] = [];
+    const rest: Routine[] = [];
+    all.forEach(r => (r.isFavorite ? favs : rest).push(r));
+    return [...favs, ...rest];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick]);
 
   const [tab, setTab] = useState<Tab>('programs');
 
@@ -50,6 +55,8 @@ export default function RoutinesPage() {
   const [newProgramDesc, setNewProgramDesc] = useState('');
 
   const [logToDateRoutine, setLogToDateRoutine] = useState<Routine | null>(null);
+  const [renameRoutine, setRenameRoutine] = useState<Routine | null>(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const handleCreateRoutine = () => {
     if (!newRoutineName.trim()) return;
@@ -230,6 +237,20 @@ export default function RoutinesPage() {
                         <p className="mt-1 text-xs text-muted-foreground/70">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
                       <div className="flex shrink-0 items-center gap-0.5">
+                        <button
+                          type="button"
+                          aria-label={r.isFavorite ? t('routines.unfavorite') : t('routines.favorite')}
+                          aria-pressed={!!r.isFavorite}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRoutineFavorite(r.id);
+                            try { (navigator as any).vibrate?.(15); } catch {}
+                            refresh();
+                          }}
+                          className="inline-flex h-8 w-8 items-center justify-center text-muted-foreground active:scale-90 transition-transform"
+                        >
+                          <Star className={`h-4 w-4 transition-colors ${r.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                        </button>
                         <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="h-8 w-8 p-0 text-primary">
                           <Play className="h-4 w-4" />
                         </Button>
@@ -240,6 +261,7 @@ export default function RoutinesPage() {
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { setRenameValue(r.name); setRenameRoutine(r); }}><Pencil className="h-4 w-4 mr-2" /> {t('routines.actions.rename')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -268,6 +290,40 @@ export default function RoutinesPage() {
                 if (date && logToDateRoutine) handleLogRoutine(logToDateRoutine, date);
               }}
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rename routine dialog */}
+      <Dialog open={!!renameRoutine} onOpenChange={open => { if (!open) setRenameRoutine(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('routines.renameTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              autoFocus
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              placeholder={t('routines.createRoutineNamePh')}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setRenameRoutine(null)}>{t('routines.cancel')}</Button>
+              <Button
+                disabled={!renameValue.trim() || (renameRoutine ? renameValue.trim() === renameRoutine.name : true)}
+                onClick={() => {
+                  if (!renameRoutine) return;
+                  const name = renameValue.trim();
+                  if (!name || name === renameRoutine.name) { setRenameRoutine(null); return; }
+                  updateRoutine({ ...renameRoutine, name });
+                  setRenameRoutine(null);
+                  refresh();
+                }}
+                className="bg-primary text-primary-foreground"
+              >
+                {t('routines.save')}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

@@ -120,7 +120,6 @@
       "coachText": "Offline training suggestions for your next session — small load, rep or deload tweaks. Tap Apply to write the recommendation straight into your next workout."
     }
   },
-
   "routines": {
     "title": "Routines",
     "tabs": {
@@ -147,11 +146,14 @@
       "logToDate": "Log to Date",
       "duplicate": "Duplicate",
       "delete": "Delete",
-      "removeFromProgram": "Remove from program"
+      "removeFromProgram": "Remove from program",
+      "rename": "Rename routine"
     },
     "logToDateTitle": "Log \"{{name}}\" to Date",
     "logToDateHint": "Pick a date to copy this routine as a workout:",
-    "copySuffix": "(Copy)"
+    "copySuffix": "(Copy)",
+    "renameTitle": "Rename routine",
+    "cancel": "Cancel"
   },
   "workout": {
     "start": "Start",

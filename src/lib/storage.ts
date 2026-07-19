@@ -251,6 +251,11 @@ export function updateRoutine(r: Routine) {
   if (idx >= 0) all[idx] = r;
   saveRoutines(all);
 }
+export function toggleRoutineFavorite(id: string) {
+  const all = getRoutines();
+  const idx = all.findIndex(x => x.id === id);
+  if (idx >= 0) { all[idx].isFavorite = !all[idx].isFavorite; saveRoutines(all); }
+}
 export function deleteRoutine(id: string) {
   saveRoutines(getRoutines().filter(r => r.id !== id));
   saveRoutineExercises(getRoutineExercises().filter(re => re.routineId !== id));
