@@ -230,13 +230,13 @@ export default function RoutinesPage() {
                 const routineExercises = getExercisesForRoutine(r.id);
                 return (
                   <div key={r.id} className="gym-card">
-                    <div className="flex items-start justify-between gap-2">
-                      <button onClick={() => navigate(`/routine/${r.id}`)} className="flex-1 min-w-0 text-left">
-                        <h3 className="font-display min-w-0 font-semibold truncate">{r.name}</h3>
-                        {r.description && <p className="mt-0.5 truncate text-xs text-muted-foreground/70">{r.description}</p>}
-                        <p className="mt-1 text-xs text-muted-foreground/70">{t('routines.exercises', { count: routineExercises.length })}</p>
+                    <div className="flex items-start justify-between gap-1.5">
+                      <button onClick={() => navigate(`/routine/${r.id}`)} className="min-w-0 flex-1 text-left">
+                        <h3 className="font-display font-semibold text-[15px] leading-snug line-clamp-2 break-words">{r.name}</h3>
+                        {r.description && <p className="mt-0.5 text-xs text-muted-foreground/70 line-clamp-2 break-words">{r.description}</p>}
+                        <p className="mt-1 text-xs text-muted-foreground/70 truncate">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
-                      <div className="flex shrink-0 items-center gap-0.5">
+                      <div className="flex shrink-0 items-center gap-0">
                         <button
                           type="button"
                           aria-label={r.isFavorite ? t('routines.unfavorite') : t('routines.favorite')}
