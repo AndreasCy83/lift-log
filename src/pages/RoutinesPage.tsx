@@ -172,14 +172,14 @@ export default function RoutinesPage() {
                 const count = getRoutinesForProgram(p.id).length;
                 return (
                   <div key={p.id} className="gym-card">
-                    <div className="flex items-start justify-between gap-2">
-                      <button onClick={() => navigate(`/program/${p.id}`)} className="flex-1 min-w-0 text-left">
-                        <div className="flex items-center gap-1.5">
-                          <Layers className="h-4 w-4 shrink-0 text-primary/80" />
-                          <h3 className="font-display flex-1 min-w-0 font-semibold truncate">{p.name}</h3>
+                    <div className="flex items-start justify-between gap-1.5">
+                      <button onClick={() => navigate(`/program/${p.id}`)} className="min-w-0 flex-1 text-left">
+                        <div className="flex items-start gap-1.5">
+                          <Layers className="h-4 w-4 shrink-0 mt-0.5 text-primary/80" />
+                          <h3 className="font-display min-w-0 flex-1 font-semibold text-[15px] leading-snug line-clamp-2 break-words">{p.name}</h3>
                         </div>
-                        {p.description && <p className="mt-0.5 truncate text-xs text-muted-foreground/70">{p.description}</p>}
-                        <p className="mt-1 text-xs text-muted-foreground/70">{t('programs.workoutDays', { count })}</p>
+                        {p.description && <p className="mt-0.5 text-xs text-muted-foreground/70 line-clamp-2 break-words">{p.description}</p>}
+                        <p className="mt-1 text-xs text-muted-foreground/70 truncate">{t('programs.workoutDays', { count })}</p>
                       </button>
                       <div className="flex shrink-0 items-center gap-0.5">
                         <button
