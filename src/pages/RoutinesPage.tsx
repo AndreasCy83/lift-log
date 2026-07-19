@@ -237,6 +237,20 @@ export default function RoutinesPage() {
                         <p className="mt-1 text-xs text-muted-foreground/70">{t('routines.exercises', { count: routineExercises.length })}</p>
                       </button>
                       <div className="flex shrink-0 items-center gap-0.5">
+                        <button
+                          type="button"
+                          aria-label={r.isFavorite ? t('routines.unfavorite') : t('routines.favorite')}
+                          aria-pressed={!!r.isFavorite}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRoutineFavorite(r.id);
+                            try { (navigator as any).vibrate?.(15); } catch {}
+                            refresh();
+                          }}
+                          className="inline-flex h-8 w-8 items-center justify-center text-muted-foreground active:scale-90 transition-transform"
+                        >
+                          <Star className={`h-4 w-4 transition-colors ${r.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                        </button>
                         <Button size="sm" variant="ghost" onClick={() => handleLogRoutine(r)} className="h-8 w-8 p-0 text-primary">
                           <Play className="h-4 w-4" />
                         </Button>
@@ -247,6 +261,7 @@ export default function RoutinesPage() {
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { setRenameValue(r.name); setRenameRoutine(r); }}><Pencil className="h-4 w-4 mr-2" /> {t('routines.actions.rename')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
