@@ -35,10 +35,14 @@ export default function RoutinesPage() {
     return [...favs, ...rest];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
-  const standaloneRoutines = useMemo(() => getStandaloneRoutines(), []);
-  const allRoutines = useMemo(() => getRoutines(), []);
-  // re-read each render via deps on force
-  void allRoutines;
+  const standaloneRoutines = useMemo(() => {
+    const all = getStandaloneRoutines();
+    const favs: Routine[] = [];
+    const rest: Routine[] = [];
+    all.forEach(r => (r.isFavorite ? favs : rest).push(r));
+    return [...favs, ...rest];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick]);
 
   const [tab, setTab] = useState<Tab>('programs');
 
