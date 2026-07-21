@@ -240,8 +240,11 @@ export default function RoutinesPage() {
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => openLogToDateProgram(p)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('programs.actions.logToDate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicateProgram(p)}><Copy className="h-4 w-4 mr-2" /> {t('programs.actions.duplicate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { setRenameProgramValue(p.name); setRenameProgram(p); }}><Pencil className="h-4 w-4 mr-2" /> {t('programs.actions.rename')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDeleteProgram(p.id)} className="text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" /> {t('programs.deleteProgram')}
+                              <Trash2 className="h-4 w-4 mr-2" /> {t('programs.actions.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
