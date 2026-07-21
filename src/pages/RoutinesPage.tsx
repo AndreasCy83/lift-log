@@ -364,6 +364,65 @@ export default function RoutinesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Pick routine from program dialog */}
+      <Dialog open={!!logToDateProgram} onOpenChange={open => { if (!open) setLogToDateProgram(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('programs.pickRoutineTitle')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">{t('programs.pickRoutineHint', { name: logToDateProgram?.name ?? '' })}</p>
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {logToDateProgram && getRoutinesForProgram(logToDateProgram.id).length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">{t('programs.noRoutinesToLog')}</p>
+            ) : (
+              logToDateProgram && getRoutinesForProgram(logToDateProgram.id).map(r => (
+                <button
+                  key={r.id}
+                  onClick={() => { setLogToDateProgram(null); setLogToDateRoutine(r); }}
+                  className="w-full rounded-lg border border-border bg-card/50 p-3 text-left text-sm font-medium hover:bg-card active:scale-[0.99] transition"
+                >
+                  {r.name}
+                </button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rename program dialog */}
+      <Dialog open={!!renameProgram} onOpenChange={open => { if (!open) setRenameProgram(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('programs.renameTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              autoFocus
+              value={renameProgramValue}
+              onChange={e => setRenameProgramValue(e.target.value)}
+              placeholder={t('programs.namePlaceholder')}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setRenameProgram(null)}>{t('programs.cancel')}</Button>
+              <Button
+                disabled={!renameProgramValue.trim() || (renameProgram ? renameProgramValue.trim() === renameProgram.name : true)}
+                onClick={() => {
+                  if (!renameProgram) return;
+                  const name = renameProgramValue.trim();
+                  if (!name || name === renameProgram.name) { setRenameProgram(null); return; }
+                  updateProgram({ ...renameProgram, name });
+                  setRenameProgram(null);
+                  refresh();
+                }}
+                className="bg-primary text-primary-foreground"
+              >
+                {t('programs.save')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
