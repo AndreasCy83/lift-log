@@ -5,7 +5,7 @@ import { Plus, MoreVertical, Play, Trash2, Copy, CalendarPlus, Layers, ChevronRi
 import {
   getRoutines, getExercisesForRoutine, getExercises, deleteRoutine, generateId, addRoutine, addRoutineExercise,
   getPrograms, addProgram, deleteProgram, getRoutinesForProgram, getStandaloneRoutines, toggleProgramFavorite,
-  toggleRoutineFavorite, updateRoutine,
+  toggleRoutineFavorite, updateRoutine, updateProgram,
   getWorkoutByDate,
 } from '@/lib/storage';
 import { createWorkoutFromRoutine } from '@/lib/routineRunner';
@@ -58,6 +58,10 @@ export default function RoutinesPage() {
   const [renameRoutine, setRenameRoutine] = useState<Routine | null>(null);
   const [renameValue, setRenameValue] = useState('');
 
+  const [logToDateProgram, setLogToDateProgram] = useState<Program | null>(null);
+  const [renameProgram, setRenameProgram] = useState<Program | null>(null);
+  const [renameProgramValue, setRenameProgramValue] = useState('');
+
   const handleCreateRoutine = () => {
     if (!newRoutineName.trim()) return;
     const routine: Routine = {
@@ -91,12 +95,32 @@ export default function RoutinesPage() {
     deleteProgram(id); refresh();
   };
 
-  const handleDuplicate = (r: Routine) => {
-    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} ${t('routines.copySuffix')}` };
+  const duplicateRoutineInto = (r: Routine, overrides: Partial<Routine> = {}): Routine => {
+    const newRoutine: Routine = { ...r, id: generateId(), name: overrides.name ?? `${r.name} ${t('routines.copySuffix')}`, ...overrides };
     addRoutine(newRoutine);
     getExercisesForRoutine(r.id).forEach(re => {
       const { id: _i, routineId: _r, ...rest } = re;
       addRoutineExercise({ ...rest, id: generateId(), routineId: newRoutine.id });
+    });
+    return newRoutine;
+  };
+
+  const handleDuplicate = (r: Routine) => {
+    duplicateRoutineInto(r);
+    refresh();
+  };
+
+  const handleDuplicateProgram = (p: Program) => {
+    const newProgram: Program = {
+      ...p,
+      id: generateId(),
+      name: `${p.name} ${t('programs.copySuffix')}`,
+      createdAt: new Date().toISOString(),
+      isFavorite: false,
+    };
+    addProgram(newProgram);
+    getRoutinesForProgram(p.id).forEach(r => {
+      duplicateRoutineInto(r, { name: r.name, programId: newProgram.id, isFavorite: false });
     });
     refresh();
   };
@@ -104,9 +128,19 @@ export default function RoutinesPage() {
   const handleLogRoutine = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
     setLogToDateRoutine(null);
+    setLogToDateProgram(null);
     const w = getWorkoutByDate(dateStr);
     if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
+  };
+
+  const openLogToDateProgram = (p: Program) => {
+    const routines = getRoutinesForProgram(p.id);
+    if (routines.length === 1) {
+      setLogToDateRoutine(routines[0]);
+    } else {
+      setLogToDateProgram(p);
+    }
   };
 
   return (
@@ -206,8 +240,11 @@ export default function RoutinesPage() {
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => openLogToDateProgram(p)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('programs.actions.logToDate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicateProgram(p)}><Copy className="h-4 w-4 mr-2" /> {t('programs.actions.duplicate')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { setRenameProgramValue(p.name); setRenameProgram(p); }}><Pencil className="h-4 w-4 mr-2" /> {t('programs.actions.rename')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDeleteProgram(p.id)} className="text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" /> {t('programs.deleteProgram')}
+                              <Trash2 className="h-4 w-4 mr-2" /> {t('programs.actions.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -322,6 +359,65 @@ export default function RoutinesPage() {
                 className="bg-primary text-primary-foreground"
               >
                 {t('routines.save')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pick routine from program dialog */}
+      <Dialog open={!!logToDateProgram} onOpenChange={open => { if (!open) setLogToDateProgram(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('programs.pickRoutineTitle')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">{t('programs.pickRoutineHint', { name: logToDateProgram?.name ?? '' })}</p>
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {logToDateProgram && getRoutinesForProgram(logToDateProgram.id).length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">{t('programs.noRoutinesToLog')}</p>
+            ) : (
+              logToDateProgram && getRoutinesForProgram(logToDateProgram.id).map(r => (
+                <button
+                  key={r.id}
+                  onClick={() => { setLogToDateProgram(null); setLogToDateRoutine(r); }}
+                  className="w-full rounded-lg border border-border bg-card/50 p-3 text-left text-sm font-medium hover:bg-card active:scale-[0.99] transition"
+                >
+                  {r.name}
+                </button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rename program dialog */}
+      <Dialog open={!!renameProgram} onOpenChange={open => { if (!open) setRenameProgram(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-base">{t('programs.renameTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              autoFocus
+              value={renameProgramValue}
+              onChange={e => setRenameProgramValue(e.target.value)}
+              placeholder={t('programs.namePlaceholder')}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setRenameProgram(null)}>{t('programs.cancel')}</Button>
+              <Button
+                disabled={!renameProgramValue.trim() || (renameProgram ? renameProgramValue.trim() === renameProgram.name : true)}
+                onClick={() => {
+                  if (!renameProgram) return;
+                  const name = renameProgramValue.trim();
+                  if (!name || name === renameProgram.name) { setRenameProgram(null); return; }
+                  updateProgram({ ...renameProgram, name });
+                  setRenameProgram(null);
+                  refresh();
+                }}
+                className="bg-primary text-primary-foreground"
+              >
+                {t('programs.save')}
               </Button>
             </div>
           </div>

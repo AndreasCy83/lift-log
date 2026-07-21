@@ -447,7 +447,21 @@
     "attachExisting": "Attach existing routine",
     "noStandaloneToAttach": "No standalone routines to attach.",
     "deleteRoutineConfirm": "Delete this routine?",
-    "logToDateTitle": "Log \"{{name}}\" to date"
+    "logToDateTitle": "Log \"{{name}}\" to date",
+    "actions": {
+      "logToDate": "Log to Date",
+      "duplicate": "Duplicate",
+      "rename": "Rename Program",
+      "delete": "Delete"
+    },
+    "renameTitle": "Rename program",
+    "namePlaceholder": "Program name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "copySuffix": "(Copy)",
+    "pickRoutineTitle": "Pick a workout day",
+    "pickRoutineHint": "Choose which routine from \"{{name}}\" to log:",
+    "noRoutinesToLog": "This program has no routines to log yet."
   },
   "exerciseGoals": {
     "titlePrefix": "Goals",
