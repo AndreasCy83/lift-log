@@ -95,12 +95,32 @@ export default function RoutinesPage() {
     deleteProgram(id); refresh();
   };
 
-  const handleDuplicate = (r: Routine) => {
-    const newRoutine: Routine = { ...r, id: generateId(), name: `${r.name} ${t('routines.copySuffix')}` };
+  const duplicateRoutineInto = (r: Routine, overrides: Partial<Routine> = {}): Routine => {
+    const newRoutine: Routine = { ...r, id: generateId(), name: overrides.name ?? `${r.name} ${t('routines.copySuffix')}`, ...overrides };
     addRoutine(newRoutine);
     getExercisesForRoutine(r.id).forEach(re => {
       const { id: _i, routineId: _r, ...rest } = re;
       addRoutineExercise({ ...rest, id: generateId(), routineId: newRoutine.id });
+    });
+    return newRoutine;
+  };
+
+  const handleDuplicate = (r: Routine) => {
+    duplicateRoutineInto(r);
+    refresh();
+  };
+
+  const handleDuplicateProgram = (p: Program) => {
+    const newProgram: Program = {
+      ...p,
+      id: generateId(),
+      name: `${p.name} ${t('programs.copySuffix')}`,
+      createdAt: new Date().toISOString(),
+      isFavorite: false,
+    };
+    addProgram(newProgram);
+    getRoutinesForProgram(p.id).forEach(r => {
+      duplicateRoutineInto(r, { name: r.name, programId: newProgram.id, isFavorite: false });
     });
     refresh();
   };
@@ -108,9 +128,19 @@ export default function RoutinesPage() {
   const handleLogRoutine = (r: Routine, date: Date = new Date()) => {
     const dateStr = createWorkoutFromRoutine(r, date);
     setLogToDateRoutine(null);
+    setLogToDateProgram(null);
     const w = getWorkoutByDate(dateStr);
     if (w) startSession(w.id);
     navigate(`/workout/${dateStr}`);
+  };
+
+  const openLogToDateProgram = (p: Program) => {
+    const routines = getRoutinesForProgram(p.id);
+    if (routines.length === 1) {
+      setLogToDateRoutine(routines[0]);
+    } else {
+      setLogToDateProgram(p);
+    }
   };
 
   return (
