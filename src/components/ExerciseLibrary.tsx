@@ -5,8 +5,12 @@ import { getCategoryColor } from '@/lib/categoryColors';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SET_TYPE_LABELS } from '@/types/fitness';
-import type { Exercise } from '@/types/fitness';
+import type { Exercise, SetType, WeightUnit } from '@/types/fitness';
 import CustomExerciseForm from '@/components/CustomExerciseForm';
 import ExerciseDetailDialog from '@/components/ExerciseDetailDialog';
 import ExerciseThumbnail from '@/components/ExerciseThumbnail';
@@ -168,46 +172,143 @@ export default function ExerciseLibrary({ onClose }: Props) {
 
       {/* Edit dialog */}
       <Dialog open={!!editExercise} onOpenChange={(o) => { if (!o) setEditExercise(null); }}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="font-display text-base">Edit Exercise</DialogTitle>
           </DialogHeader>
-          {editExercise && (
-            <div className="space-y-3">
-              <div>
-                <label className="text-[10px] uppercase text-muted-foreground">Name</label>
-                <Input value={editExercise.name} onChange={e => setEditExercise({ ...editExercise, name: e.target.value })} className="bg-secondary border-0" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] uppercase text-muted-foreground">Default Sets</label>
-                  <Input type="number" value={editExercise.defaultSets ?? ''} onChange={e => setEditExercise({ ...editExercise, defaultSets: parseInt(e.target.value) || null })} className="bg-secondary border-0" />
+          {editExercise && (() => {
+            const st = editExercise.setType;
+            const showWeight = st === 'WEIGHT_REPS' || st === 'WEIGHT_TIME' || st === 'WEIGHT_ONLY';
+            const showReps = st === 'WEIGHT_REPS' || st === 'REPS_DISTANCE' || st === 'REPS_TIME';
+            const sets = editExercise.defaultSets ?? 3;
+            const rest = editExercise.defaultRestSeconds ?? 90;
+            const setTypes: SetType[] = ['WEIGHT_REPS', 'WEIGHT_TIME', 'REPS_DISTANCE', 'REPS_TIME', 'WEIGHT_ONLY'];
+            return (
+              <>
+                <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                  {/* Name */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Name *</Label>
+                    <Input value={editExercise.name} onChange={e => setEditExercise({ ...editExercise, name: e.target.value })} placeholder="Exercise name" />
+                  </div>
+
+                  {/* Muscle Group */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Muscle Group *</Label>
+                    <Select value={editExercise.categoryId} onValueChange={v => setEditExercise({ ...editExercise, categoryId: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {categories.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Set Type */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Set Type *</Label>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {setTypes.map(t => (
+                        <button
+                          key={t}
+                          onClick={() => {
+                            const nextType: Exercise['type'] = (t === 'REPS_DISTANCE' || t === 'REPS_TIME') ? 'CARDIO' : 'RESISTANCE';
+                            setEditExercise({ ...editExercise, setType: t, type: nextType });
+                          }}
+                          className={`text-left px-3 py-2 rounded-lg text-sm transition-colors border ${
+                            st === t
+                              ? 'bg-primary/15 border-primary/40 text-foreground'
+                              : 'border-border hover:bg-secondary text-muted-foreground'
+                          }`}
+                        >
+                          {SET_TYPE_LABELS[t]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Weight Unit */}
+                  {showWeight && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">Weight Unit</Label>
+                      <div className="flex gap-2">
+                        {(['kg', 'lb'] as WeightUnit[]).map(u => (
+                          <button
+                            key={u}
+                            onClick={() => setEditExercise({ ...editExercise, weightUnit: u })}
+                            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${
+                              editExercise.weightUnit === u
+                                ? 'bg-primary/15 border-primary/40 text-foreground'
+                                : 'border-border hover:bg-secondary text-muted-foreground'
+                            }`}
+                          >
+                            {u.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Default Sets */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Default Sets</Label>
+                    <div className="flex items-center gap-3">
+                      <Button variant="outline" size="sm" onClick={() => setEditExercise({ ...editExercise, defaultSets: Math.max(1, sets - 1) })}>-</Button>
+                      <span className="text-lg font-bold w-8 text-center">{sets}</span>
+                      <Button variant="outline" size="sm" onClick={() => setEditExercise({ ...editExercise, defaultSets: Math.min(10, sets + 1) })}>+</Button>
+                    </div>
+                  </div>
+
+                  {/* Default Reps */}
+                  {showReps && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">Default Reps Range</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          value={editExercise.defaultRepsMin ?? ''}
+                          onChange={e => setEditExercise({ ...editExercise, defaultRepsMin: parseInt(e.target.value) || 0 })}
+                          className="w-20 text-center"
+                        />
+                        <span className="text-muted-foreground">—</span>
+                        <Input
+                          type="number"
+                          value={editExercise.defaultRepsMax ?? ''}
+                          onChange={e => setEditExercise({ ...editExercise, defaultRepsMax: parseInt(e.target.value) || 0 })}
+                          className="w-20 text-center"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Default Rest */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Default Rest: {rest}s</Label>
+                    <Slider
+                      value={[rest]}
+                      onValueChange={v => setEditExercise({ ...editExercise, defaultRestSeconds: v[0] })}
+                      min={30} max={300} step={15}
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>30s</span><span>300s</span>
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Notes (form cues, tips)</Label>
+                    <Textarea value={editExercise.notes} onChange={e => setEditExercise({ ...editExercise, notes: e.target.value })} placeholder="Optional notes..." rows={2} />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-[10px] uppercase text-muted-foreground">Rest (sec)</label>
-                  <Input type="number" value={editExercise.defaultRestSeconds ?? ''} onChange={e => setEditExercise({ ...editExercise, defaultRestSeconds: parseInt(e.target.value) || null })} className="bg-secondary border-0" />
+
+                <div className="flex gap-2 pt-3 border-t border-border mt-3">
+                  <Button variant="ghost" className="flex-1" onClick={() => setEditExercise(null)}>Cancel</Button>
+                  <Button className="flex-1" onClick={handleSaveEdit} disabled={!editExercise.name.trim()}>Save</Button>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] uppercase text-muted-foreground">Reps Min</label>
-                  <Input type="number" value={editExercise.defaultRepsMin ?? ''} onChange={e => setEditExercise({ ...editExercise, defaultRepsMin: parseInt(e.target.value) || null })} className="bg-secondary border-0" />
-                </div>
-                <div>
-                  <label className="text-[10px] uppercase text-muted-foreground">Reps Max</label>
-                  <Input type="number" value={editExercise.defaultRepsMax ?? ''} onChange={e => setEditExercise({ ...editExercise, defaultRepsMax: parseInt(e.target.value) || null })} className="bg-secondary border-0" />
-                </div>
-              </div>
-              <div>
-                <label className="text-[10px] uppercase text-muted-foreground">Notes</label>
-                <Input value={editExercise.notes} onChange={e => setEditExercise({ ...editExercise, notes: e.target.value })} className="bg-secondary border-0" />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={handleSaveEdit} size="sm" className="flex-1">Save</Button>
-                <Button onClick={() => setEditExercise(null)} size="sm" variant="outline" className="flex-1">Cancel</Button>
-              </div>
-            </div>
-          )}
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>
