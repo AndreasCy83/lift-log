@@ -215,6 +215,21 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
+  // Build intensity map for the 7 supported muscle categories.
+  const mapIntensities = useMemo(() => {
+    const out: Partial<Record<MuscleMapCategory, MuscleIntensity>> = {};
+    const supported = new Set<string>(MUSCLE_MAP_CATEGORIES);
+    for (const row of summary.weeklyByCategory) {
+      if (supported.has(row.categoryId)) {
+        out[row.categoryId as MuscleMapCategory] = statusToIntensity(row.status);
+      }
+    }
+    return out;
+  }, [summary]);
+
+  // Expanded content height: muscle map (~150) + rows (~36 each) + paddings.
+  const expandedMaxHeight = 168 + hiddenRows.length * 36 + 16;
+
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
       {/* Header: title */}
