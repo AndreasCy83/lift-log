@@ -31,6 +31,12 @@ import {
 } from '@/lib/volumeInsights';
 import { getCategories } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
+import MuscleMap, {
+  MUSCLE_MAP_CATEGORIES,
+  statusToIntensity,
+  type MuscleMapCategory,
+  type MuscleIntensity,
+} from '@/components/MuscleMap';
 
 interface Props {
   refreshKey?: number;
