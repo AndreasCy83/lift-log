@@ -271,19 +271,49 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         ))}
       </div>
 
-      {/* Expandable hidden rows */}
+      {/* Expandable: muscle map + hidden per-muscle rows */}
       {hiddenCount > 0 && (
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${hiddenRows.length * 36 + 8}px` : '0px',
+            maxHeight: expanded ? `${expandedMaxHeight}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
-              : 'max-height 260ms ease-out, opacity 220ms ease-out',
+              : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="space-y-0.5 pt-1">
+          {/* Compact muscle map summary — appears first inside expanded content */}
+          <div className="mt-2 rounded-lg border border-border/40 bg-background/40 p-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                Muscle map
+              </span>
+              <span className="text-[9px] text-muted-foreground/70">Last 14 days</span>
+            </div>
+            <MuscleMap intensities={mapIntensities} className="mx-auto h-32 w-full" />
+            {/* Intensity legend */}
+            <div className="mt-1 flex items-center justify-center gap-2 text-[8.5px] text-muted-foreground/80">
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm" style={{ background: 'hsl(152 60% 42% / 0.7)' }} />
+                Low
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm" style={{ background: 'hsl(48 90% 55% / 0.8)' }} />
+                Moderate
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm" style={{ background: 'hsl(28 90% 55% / 0.85)' }} />
+                High
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm" style={{ background: 'hsl(0 78% 55% / 0.9)' }} />
+                Very high
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-0.5 pt-2">
             {hiddenRows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
