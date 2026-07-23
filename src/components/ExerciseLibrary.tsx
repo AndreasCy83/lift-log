@@ -37,7 +37,23 @@ export default function ExerciseLibrary({ onClose }: Props) {
   const [search, setSearch] = useState('');
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [detailTab, setDetailTab] = useState<'history' | 'stats' | 'goals'>('history');
   const [editExercise, setEditExercise] = useState<Exercise | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Exercise | null>(null);
+
+  const openDetail = (ex: Exercise, tab: 'history' | 'stats' | 'goals') => {
+    setDetailTab(tab);
+    setSelectedExercise(ex);
+  };
+
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    const all = getExercises().filter(e => e.id !== deleteTarget.id);
+    saveExercises(all);
+    setExercises(all);
+    toast({ title: 'Exercise deleted', description: deleteTarget.name });
+    setDeleteTarget(null);
+  };
 
   const filtered = useMemo(() => {
     let list = exercises;
