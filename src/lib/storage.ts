@@ -260,6 +260,15 @@ export function deleteRoutine(id: string) {
   saveRoutines(getRoutines().filter(r => r.id !== id));
   saveRoutineExercises(getRoutineExercises().filter(re => re.routineId !== id));
 }
+/** Reorder standalone routines to match the given id order. Preserves program-associated routines. */
+export function reorderStandaloneRoutines(orderedIds: string[]) {
+  const all = getRoutines();
+  const byId = new Map(all.map(r => [r.id, r]));
+  const orderedStandalone = orderedIds.map(id => byId.get(id)).filter((r): r is Routine => !!r && !r.programId);
+  const seen = new Set(orderedStandalone.map(r => r.id));
+  const remaining = all.filter(r => !seen.has(r.id));
+  saveRoutines([...orderedStandalone, ...remaining]);
+}
 
 // Programs
 export function getPrograms(): Program[] { return get<Program[]>(STORAGE_KEYS.programs, []); }
@@ -287,6 +296,16 @@ export function getRoutinesForProgram(programId: string): Routine[] {
 }
 export function getStandaloneRoutines(): Routine[] {
   return getRoutines().filter(r => !r.programId);
+}
+
+/** Reorder programs to match the given id order. */
+export function reorderPrograms(orderedIds: string[]) {
+  const all = getPrograms();
+  const byId = new Map(all.map(p => [p.id, p]));
+  const ordered = orderedIds.map(id => byId.get(id)).filter((p): p is Program => !!p);
+  const seen = new Set(ordered.map(p => p.id));
+  const remaining = all.filter(p => !seen.has(p.id));
+  savePrograms([...ordered, ...remaining]);
 }
 
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */

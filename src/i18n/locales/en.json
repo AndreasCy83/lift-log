@@ -153,7 +153,13 @@
     "logToDateHint": "Pick a date to copy this routine as a workout:",
     "copySuffix": "(Copy)",
     "renameTitle": "Rename routine",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "reorder": "Reorder",
+    "done": "Done",
+    "reorderHint": "Drag handles to reorder. Use arrows for precise moves.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "dragHandle": "Drag to reorder"
   },
   "workout": {
     "start": "Start",
