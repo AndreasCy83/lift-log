@@ -11,11 +11,17 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   exercise: Exercise | null;
+  initialTab?: 'history' | 'stats' | 'goals';
 }
 
-export default function ExerciseDetailDialog({ open, onOpenChange, exercise }: Props) {
-  const [tab, setTab] = useState('history');
+export default function ExerciseDetailDialog({ open, onOpenChange, exercise, initialTab = 'history' }: Props) {
+  const [tab, setTab] = useState<string>(initialTab);
   const tExName = useExerciseName();
+
+  // Sync tab when opening with a specific initialTab
+  useEffect(() => {
+    if (open) setTab(initialTab);
+  }, [open, initialTab]);
 
   if (!exercise) return null;
   const displayName = tExName(exercise);
