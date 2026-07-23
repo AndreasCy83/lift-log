@@ -31,12 +31,6 @@ import {
 } from '@/lib/volumeInsights';
 import { getCategories } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
-import MuscleMap, {
-  MUSCLE_MAP_CATEGORIES,
-  statusToIntensity,
-  type MuscleMapCategory,
-  type MuscleIntensity,
-} from '@/components/MuscleMap';
 
 interface Props {
   refreshKey?: number;
@@ -215,21 +209,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
-  // Build intensity map for the 7 supported muscle categories.
-  const mapIntensities = useMemo(() => {
-    const out: Partial<Record<MuscleMapCategory, MuscleIntensity>> = {};
-    const supported = new Set<string>(MUSCLE_MAP_CATEGORIES);
-    for (const row of summary.weeklyByCategory) {
-      if (supported.has(row.categoryId)) {
-        out[row.categoryId as MuscleMapCategory] = statusToIntensity(row.status);
-      }
-    }
-    return out;
-  }, [summary]);
-
-  // Expanded content height: large anatomical map (~430) + rows (~30 each) + paddings.
-  const expandedMaxHeight = 460 + hiddenRows.length * 30 + 32;
-
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
       {/* Header: title */}
@@ -271,54 +250,19 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         ))}
       </div>
 
-      {/* Expandable: LARGE anatomical muscle map (dominant) + hidden per-muscle rows */}
+      {/* Expandable hidden rows */}
       {hiddenCount > 0 && (
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${expandedMaxHeight}px` : '0px',
+            maxHeight: expanded ? `${hiddenRows.length * 36 + 8}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
-              : 'max-height 380ms ease-out, opacity 260ms ease-out',
+              : 'max-height 260ms ease-out, opacity 220ms ease-out',
           }}
         >
-          {/* Dominant anatomical map — the visual centerpiece of the expanded state */}
-          <div className="mt-3 rounded-xl border border-border/50 bg-gradient-to-b from-background/60 to-background/30 p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground/80">
-                Muscle Map
-              </span>
-              <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70">
-                Last 14 days
-              </span>
-            </div>
-            <MuscleMap
-              intensities={mapIntensities}
-              className="mx-auto block h-[380px] w-full"
-            />
-            {/* Intensity legend */}
-            <div className="mt-2 flex items-center justify-center gap-3 text-[9px] uppercase tracking-wider text-muted-foreground/80">
-              <span className="flex items-center gap-1">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: 'hsl(152 62% 44% / 0.85)' }} />
-                Low
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: 'hsl(48 90% 55% / 0.9)' }} />
-                Mod
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: 'hsl(28 92% 55% / 0.92)' }} />
-                High
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: 'hsl(0 80% 56% / 0.95)' }} />
-                Very high
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-0.5 pt-3">
+          <div className="space-y-0.5 pt-1">
             {hiddenRows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
@@ -334,7 +278,6 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </div>
         </div>
       )}
-
 
       {hiddenCount > 0 && (
         <button
