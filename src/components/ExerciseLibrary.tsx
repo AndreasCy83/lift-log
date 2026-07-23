@@ -1,10 +1,17 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, Search, Plus, Star, Pencil, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Star, Pencil, MoreVertical, History, BarChart3, Target, Trash2 } from 'lucide-react';
 import { getExercises, getCategories, saveExercises, toggleFavorite, getExerciseUsageFrequency } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
@@ -15,6 +22,7 @@ import CustomExerciseForm from '@/components/CustomExerciseForm';
 import ExerciseDetailDialog from '@/components/ExerciseDetailDialog';
 import ExerciseThumbnail from '@/components/ExerciseThumbnail';
 import { useExerciseName } from '@/i18n/exerciseNames';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   onClose: () => void;
