@@ -260,6 +260,15 @@ export function deleteRoutine(id: string) {
   saveRoutines(getRoutines().filter(r => r.id !== id));
   saveRoutineExercises(getRoutineExercises().filter(re => re.routineId !== id));
 }
+/** Reorder standalone routines to match the given id order. Preserves program-associated routines. */
+export function reorderStandaloneRoutines(orderedIds: string[]) {
+  const all = getRoutines();
+  const byId = new Map(all.map(r => [r.id, r]));
+  const orderedStandalone = orderedIds.map(id => byId.get(id)).filter((r): r is Routine => !!r && !r.programId);
+  const seen = new Set(orderedStandalone.map(r => r.id));
+  const remaining = all.filter(r => !seen.has(r.id));
+  saveRoutines([...orderedStandalone, ...remaining]);
+}
 
 // Programs
 export function getPrograms(): Program[] { return get<Program[]>(STORAGE_KEYS.programs, []); }
