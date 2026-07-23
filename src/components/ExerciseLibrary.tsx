@@ -1,10 +1,17 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, Search, Plus, Star, Pencil, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Star, Pencil, MoreVertical, History, BarChart3, Target, Trash2 } from 'lucide-react';
 import { getExercises, getCategories, saveExercises, toggleFavorite, getExerciseUsageFrequency } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
@@ -15,6 +22,7 @@ import CustomExerciseForm from '@/components/CustomExerciseForm';
 import ExerciseDetailDialog from '@/components/ExerciseDetailDialog';
 import ExerciseThumbnail from '@/components/ExerciseThumbnail';
 import { useExerciseName } from '@/i18n/exerciseNames';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   onClose: () => void;
@@ -29,7 +37,23 @@ export default function ExerciseLibrary({ onClose }: Props) {
   const [search, setSearch] = useState('');
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [detailTab, setDetailTab] = useState<'history' | 'stats' | 'goals'>('history');
   const [editExercise, setEditExercise] = useState<Exercise | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Exercise | null>(null);
+
+  const openDetail = (ex: Exercise, tab: 'history' | 'stats' | 'goals') => {
+    setDetailTab(tab);
+    setSelectedExercise(ex);
+  };
+
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    const all = getExercises().filter(e => e.id !== deleteTarget.id);
+    saveExercises(all);
+    setExercises(all);
+    toast({ title: 'Exercise deleted', description: deleteTarget.name });
+    setDeleteTarget(null);
+  };
 
   const filtered = useMemo(() => {
     let list = exercises;
@@ -126,36 +150,72 @@ export default function ExerciseLibrary({ onClose }: Props) {
         {/* Exercise list */}
         <div className="space-y-1">
           {filtered.map(ex => (
-            <button
+            <div
               key={ex.id}
-              onClick={() => setSelectedExercise(ex)}
-              className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-secondary group"
+              className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary"
             >
-              <div
-                className="h-8 w-1 rounded-full shrink-0"
-                style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
-              />
-              <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{tExName(ex)}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {getCatName(ex.categoryId)} · {SET_TYPE_LABELS[ex.setType]}
-                </p>
+              <button
+                onClick={() => openDetail(ex, 'history')}
+                className="flex items-center gap-3 flex-1 min-w-0 text-left"
+              >
+                <div
+                  className="h-10 w-1 rounded-full shrink-0"
+                  style={{ backgroundColor: getCategoryColor(ex.categoryId) }}
+                />
+                <ExerciseThumbnail exerciseName={ex.name} className="h-9 w-9" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium leading-snug line-clamp-2 break-words">{tExName(ex)}</p>
+                  <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                    {getCatName(ex.categoryId)} · {SET_TYPE_LABELS[ex.setType]}
+                  </p>
+                </div>
+              </button>
+              <div className="flex items-center shrink-0">
+                <button
+                  onClick={(e) => handleToggleFavorite(ex.id, e)}
+                  className="p-1.5 text-muted-foreground hover:text-yellow-500"
+                  aria-label="Favorite"
+                >
+                  <Star className={`h-4 w-4 ${ex.isFavorite ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setEditExercise({ ...ex }); }}
+                  className="p-1.5 text-muted-foreground hover:text-foreground"
+                  aria-label="Edit"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-1.5 text-muted-foreground hover:text-foreground"
+                      aria-label="More actions"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuItem onClick={() => openDetail(ex, 'history')}>
+                      <History className="h-4 w-4 mr-2" /> History
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => openDetail(ex, 'stats')}>
+                      <BarChart3 className="h-4 w-4 mr-2" /> Stats
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => openDetail(ex, 'goals')}>
+                      <Target className="h-4 w-4 mr-2" /> Goals
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => setDeleteTarget(ex)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" /> Delete Exercise
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <button
-                onClick={(e) => handleToggleFavorite(ex.id, e)}
-                className="p-1 text-muted-foreground hover:text-yellow-500"
-              >
-                <Star className={`h-4 w-4 ${ex.isFavorite ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); setEditExercise({ ...ex }); }}
-                className="p-1 text-muted-foreground hover:text-foreground"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-            </button>
+            </div>
           ))}
           {filtered.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-8">No exercises found</p>
@@ -168,7 +228,26 @@ export default function ExerciseLibrary({ onClose }: Props) {
         open={!!selectedExercise}
         onOpenChange={(o) => { if (!o) setSelectedExercise(null); }}
         exercise={selectedExercise}
+        initialTab={detailTab}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Exercise?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <span className="font-semibold text-foreground">{deleteTarget?.name}</span>? This cannot be undone. Existing workout history is preserved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Yes, delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Edit dialog */}
       <Dialog open={!!editExercise} onOpenChange={(o) => { if (!o) setEditExercise(null); }}>
