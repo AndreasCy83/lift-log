@@ -298,6 +298,16 @@ export function getStandaloneRoutines(): Routine[] {
   return getRoutines().filter(r => !r.programId);
 }
 
+/** Reorder programs to match the given id order. */
+export function reorderPrograms(orderedIds: string[]) {
+  const all = getPrograms();
+  const byId = new Map(all.map(p => [p.id, p]));
+  const ordered = orderedIds.map(id => byId.get(id)).filter((p): p is Program => !!p);
+  const seen = new Set(ordered.map(p => p.id));
+  const remaining = all.filter(p => !seen.has(p.id));
+  savePrograms([...ordered, ...remaining]);
+}
+
 /** One-time seed: insert the built-in "PPL" program with Push/Pull/Legs routines. */
 export const JEFF_FUNDAMENTALS_PROGRAM_ID = 'program-builtin-jeff-fundamentals';
 
