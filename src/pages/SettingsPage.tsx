@@ -136,7 +136,10 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col pb-24">
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
+    >
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <button onClick={() => navigate('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
@@ -147,6 +150,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
       </header>
 
       <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-4">
+
         {/* Profile */}
         <div className="gym-card space-y-3">
           <h3 className="font-display text-sm font-semibold">{t('settings.profile')}</h3>
