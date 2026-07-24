@@ -749,17 +749,17 @@ export default function WorkoutLogPage() {
     <div className="flex min-h-screen flex-col" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}>
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg flex-col gap-1">
-          {/* Row 1: back, title, timer, rest timer, finish */}
-          <div className="flex items-center gap-2">
-            <button onClick={() => requestLeave('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
+          {/* Row 1: back, timer, rest timer, finish */}
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => requestLeave('/')} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary shrink-0">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="min-w-0 flex-1">
-              <h1 className="font-display text-base font-bold leading-tight truncate">{t('workout.title')}</h1>
+              <p className="text-[11px] text-muted-foreground leading-tight truncate">{format(new Date(date), 'EEE, MMM d')}</p>
             </div>
             {/* Live workout session timer (independent from rest timer) */}
             {(session.isRunning || session.isPaused) ? (
-              <div className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-mono tabular-nums ${session.isPaused ? 'border-muted-foreground/40 text-muted-foreground' : 'border-primary/40 text-primary'}`}>
+              <div className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-mono tabular-nums shrink-0 ${session.isPaused ? 'border-muted-foreground/40 text-muted-foreground' : 'border-primary/40 text-primary'}`}>
                 <Timer className="h-3.5 w-3.5" />
                 <span>{formatHMS(session.elapsedSec)}</span>
                 <button
@@ -772,8 +772,7 @@ export default function WorkoutLogPage() {
                 </button>
               </div>
             ) : (!isFreshWorkout && typeof workout.durationSeconds === 'number' && workout.durationSeconds > 0) ? (
-              // Restored existing-day view: compact timer display + play to resume.
-              <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground">
+              <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground shrink-0">
                 <Timer className="h-3.5 w-3.5" />
                 <span>{formatHMS(workout.durationSeconds)}</span>
                 <button
@@ -786,7 +785,7 @@ export default function WorkoutLogPage() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground">
+              <div className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs font-mono tabular-nums text-muted-foreground shrink-0">
                 <Timer className="h-3.5 w-3.5" />
                 <span>00:00:00</span>
                 <button
@@ -799,16 +798,12 @@ export default function WorkoutLogPage() {
                 </button>
               </div>
             )}
-            <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2" title={t('workout.timers.restTimer')}>
+            <Button size="sm" variant="ghost" onClick={() => setShowTimer(!showTimer)} className="text-primary px-2 shrink-0" title={t('workout.timers.restTimer')}>
               <Timer className="h-4 w-4" />
             </Button>
-            <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground">
+            <Button size="sm" onClick={handleFinishWorkout} className="rounded-full bg-primary text-primary-foreground shrink-0">
               {t('workout.finish')}
             </Button>
-          </div>
-          {/* Row 2: date only */}
-          <div className="pl-9">
-            <p className="text-[11px] text-muted-foreground leading-tight">{format(new Date(date), 'EEE, MMM d')}</p>
           </div>
         </div>
       </header>
