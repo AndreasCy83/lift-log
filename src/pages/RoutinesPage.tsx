@@ -226,13 +226,14 @@ export default function RoutinesPage() {
               <>
                 {tabHasItems && (
                   <Button
-                    size="sm"
+                    size="icon"
                     variant="ghost"
                     onClick={() => setReorderMode(true)}
-                    className="gap-1.5 rounded-full"
+                    className="h-9 w-9 shrink-0 rounded-full"
                     aria-label={t('routines.reorder')}
+                    title={t('routines.reorder')}
                   >
-                    <ArrowUpDown className="h-4 w-4" /> {t('routines.reorder')}
+                    <ArrowUpDown className="h-4 w-4" />
                   </Button>
                 )}
                 {tab === 'programs' ? (
