@@ -925,8 +925,15 @@ export default function WorkoutLogPage() {
                   <span className="text-[11px] rounded-full bg-secondary px-3 py-1.5 text-muted-foreground shrink-0 inline-flex items-center">{getCatName(we.exerciseId)}</span>
                 </div>
                 {/* Row 2: action buttons */}
-                <div className="flex flex-wrap items-center gap-2 mt-2">
-                  <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-1 min-w-0 flex-wrap">
+                    <button
+                      onClick={() => setNoteExpanded(noteExpanded === we.id ? null : we.id)}
+                      className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${we.notes ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={t('workout.tooltips.exerciseNotes') as string}
+                    >
+                      <StickyNote className="h-[16px] w-[16px]" />
+                    </button>
                     <button
                       onClick={() => setGoalsExercise({ id: we.exerciseId, name: getExName(we.exerciseId), weightUnit: ex?.weightUnit ?? 'kg' })}
                       className={`h-8 w-8 inline-flex items-center justify-center rounded-md bg-secondary/60 hover:bg-secondary transition-colors ${getGoalsForExercise(we.exerciseId).length > 0 ? 'text-purple-500' : 'text-muted-foreground hover:text-foreground'}`}
@@ -975,14 +982,14 @@ export default function WorkoutLogPage() {
                     >
                       <Link2 className="h-[16px] w-[16px]" />
                     </button>
-                    <button
-                      onClick={() => setDeleteExerciseTarget(we.id)}
-                      className="h-8 w-8 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
-                      title={t('workout.tooltips.removeExercise')}
-                    >
-                      <Trash2 className="h-[16px] w-[16px]" />
-                    </button>
                   </div>
+                  <button
+                    onClick={() => setDeleteExerciseTarget(we.id)}
+                    className="ml-auto h-8 w-8 inline-flex items-center justify-center rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors shrink-0"
+                    title={t('workout.tooltips.removeExercise')}
+                  >
+                    <Trash2 className="h-[16px] w-[16px]" />
+                  </button>
                 </div>
               </div>
               {noteExpanded === we.id && (
