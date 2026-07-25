@@ -17,6 +17,9 @@ import {
   planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
 } from '@/lib/supersets';
 import { useExerciseName } from '@/i18n/exerciseNames';
+import ExerciseThumbnail from '@/components/ExerciseThumbnail';
+import { getExerciseMedia } from '@/lib/exerciseMedia';
+import { Dumbbell } from 'lucide-react';
 
 const MODE_SHORT: Record<RoutinePopulationMode, string> = {
   copy_previous: 'Copy previous',
