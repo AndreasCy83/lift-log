@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Exercise, SetType } from '@/types/fitness';
 import CustomExerciseForm from './CustomExerciseForm';
 import ExerciseThumbnail from './ExerciseThumbnail';
+import { getExerciseMedia } from '@/lib/exerciseMedia';
 import { getCategoryColor } from '@/lib/categoryColors';
 import { useExerciseName } from '@/i18n/exerciseNames';
 
