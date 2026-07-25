@@ -246,6 +246,8 @@ export default function RoutineDetailPage() {
         ) : (
           routineExercises.map((re, idx) => {
             const gpos = getGroupPosition(routineExercises, re);
+            const exName = getExerciseName(re.exerciseId);
+            const hasMedia = !!getExerciseMedia(exName);
             return (
             <div
               key={re.id}
@@ -260,27 +262,34 @@ export default function RoutineDetailPage() {
               <button
                 onClick={() => move(re.id, -1)}
                 disabled={idx === 0}
-                className="p-1 text-muted-foreground disabled:opacity-30 cursor-grab active:cursor-grabbing"
+                className="p-1 text-muted-foreground disabled:opacity-30 cursor-grab active:cursor-grabbing shrink-0"
                 aria-label="Drag to reorder"
               >
                 <GripVertical className="h-4 w-4" />
               </button>
+              {hasMedia ? (
+                <ExerciseThumbnail exerciseName={exName} className="h-10 w-10 shrink-0" />
+              ) : (
+                <div className="h-10 w-10 shrink-0 rounded-[10px] bg-secondary/70 ring-1 ring-inset ring-border/70 flex items-center justify-center">
+                  <Dumbbell className="h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
               <button onClick={() => setEditing(re)} className="flex-1 min-w-0 text-left">
-                <div className="text-sm font-medium truncate">{getExerciseName(re.exerciseId)}</div>
-                <div className="text-xs text-muted-foreground truncate">{summary(re)}</div>
+                <div className="text-sm font-medium leading-snug line-clamp-2 break-words">{exName}</div>
+                <div className="text-xs text-muted-foreground leading-snug line-clamp-2 break-words mt-0.5">{summary(re)}</div>
               </button>
               <button
                 onClick={() => setSupersetTarget(re)}
-                className={`p-1 ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                className={`p-1 shrink-0 ${gpos ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
                 aria-label={gpos ? 'Edit superset' : 'Create superset'}
                 title={gpos ? `Edit ${gpos.label}` : 'Create superset'}
               >
                 <Link2 className="h-4 w-4" />
               </button>
-              <button onClick={() => setEditing(re)} className="p-1 text-muted-foreground hover:text-primary" aria-label="Edit">
+              <button onClick={() => setEditing(re)} className="p-1 shrink-0 text-muted-foreground hover:text-primary" aria-label="Edit">
                 <Pencil className="h-4 w-4" />
               </button>
-              <button onClick={() => handleRemove(re.id)} className="p-1 text-muted-foreground hover:text-destructive" aria-label="Remove">
+              <button onClick={() => handleRemove(re.id)} className="p-1 shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remove">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
