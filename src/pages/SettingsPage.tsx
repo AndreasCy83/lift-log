@@ -1,3 +1,4 @@
+import SocialFollowButtons from '@/components/SocialFollowButtons';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -529,6 +530,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
             <span>{t('settings.sendFeedback')}</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
+          <SocialFollowButtons />
           <p className="text-[10px] text-muted-foreground text-center">{t('settings.feedbackHint')}</p>
         </div>
 
