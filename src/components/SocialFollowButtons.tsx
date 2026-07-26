@@ -44,10 +44,14 @@ function SocialLinkButton({ href, label, icon, ariaLabel }: SocialLinkButtonProp
   );
 }
 
-export default function SocialFollowButtons() {
+interface SocialFollowButtonsProps {
+  label?: string;
+}
+
+export default function SocialFollowButtons({ label = 'Follow us' }: SocialFollowButtonsProps) {
   return (
     <div className="space-y-2">
-      <p className="text-[10px] uppercase text-muted-foreground font-medium">Follow us</p>
+      <p className="text-[10px] uppercase text-muted-foreground font-medium">{label}</p>
       <div className="flex flex-wrap gap-2">
         <SocialLinkButton
           href={SOCIAL_LINKS.instagram.url}

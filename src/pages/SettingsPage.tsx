@@ -530,7 +530,7 @@ export default function SettingsPage({ onResetTutorials }: SettingsPageProps) {
             <span>{t('settings.sendFeedback')}</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
-          <SocialFollowButtons />
+          <SocialFollowButtons label={t('settings.followUs')} />
           <p className="text-[10px] text-muted-foreground text-center">{t('settings.feedbackHint')}</p>
         </div>
 
