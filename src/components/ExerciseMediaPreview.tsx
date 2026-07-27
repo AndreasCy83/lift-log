@@ -83,7 +83,7 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
         </div>
 
         {stats && stats.totalSets > 0 ? (
-          <div className="grid grid-cols-2 gap-1.5 mt-0.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {tiles.map(t => (
               <div
                 key={t.label}
