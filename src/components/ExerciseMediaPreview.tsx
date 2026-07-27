@@ -20,18 +20,20 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
   const [gifFailed, setGifFailed] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
 
-  const { stats, unit, dw } = useMemo(() => {
+  const { stats, unit, dw, categoryName } = useMemo(() => {
     const settings = getSettings();
     const globalWeightUnit = settings.weightUnit;
     const unitLabel = weightUnitLabel(globalWeightUnit);
     const toDisp = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
-    if (!open) return { stats: null as null | ReturnType<typeof computeStats>, unit: unitLabel, dw: toDisp };
+    if (!open) return { stats: null as null | ReturnType<typeof computeStats>, unit: unitLabel, dw: toDisp, categoryName: null as string | null };
 
+    const categories = getCategories();
     const ex = getExercises().find(e => e.name.toLowerCase() === exerciseName.trim().toLowerCase());
-    if (!ex) return { stats: null, unit: unitLabel, dw: toDisp };
+    if (!ex) return { stats: null, unit: unitLabel, dw: toDisp, categoryName: null };
     const history = getExerciseHistory(ex.id);
-    return { stats: computeStats(history), unit: unitLabel, dw: toDisp };
+    const categoryName = categories.find(c => c.id === ex.categoryId)?.name ?? null;
+    return { stats: computeStats(history), unit: unitLabel, dw: toDisp, categoryName };
   }, [open, exerciseName]);
 
   const fmt = (v: number | null | undefined) =>
