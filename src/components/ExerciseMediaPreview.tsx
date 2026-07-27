@@ -57,12 +57,17 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm p-3 pt-2 gap-1">
-        <DialogHeader className="px-1 pb-0">
+        <DialogHeader className="px-1 pb-0 space-y-0">
           <DialogTitle className="font-display text-sm font-semibold truncate pr-6">
             {exerciseName}
           </DialogTitle>
+          {categoryName && (
+            <div className="text-[11px] text-muted-foreground leading-tight mt-0.5 pr-6">
+              {categoryName}
+            </div>
+          )}
         </DialogHeader>
-        <div className="mx-auto flex h-[216px] w-[216px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
+        <div className="mx-auto flex h-[240px] w-[240px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
           {!gifFailed ? (
             <img
               src={media.gifUrl}
