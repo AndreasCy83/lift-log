@@ -54,13 +54,13 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-3 gap-2">
-        <DialogHeader className="px-1">
+      <DialogContent className="max-w-sm p-3 pt-2 gap-1.5">
+        <DialogHeader className="px-1 pb-0">
           <DialogTitle className="font-display text-sm font-semibold truncate pr-6">
             {exerciseName}
           </DialogTitle>
         </DialogHeader>
-        <div className="mx-auto flex h-[180px] w-[180px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
+        <div className="mx-auto flex h-[200px] w-[200px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
           {!gifFailed ? (
             <img
               src={media.gifUrl}
@@ -83,11 +83,11 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
         </div>
 
         {stats && stats.totalSets > 0 ? (
-          <div className="grid grid-cols-2 gap-2 mt-1">
+          <div className="grid grid-cols-2 gap-1.5 mt-0.5">
             {tiles.map(t => (
               <div
                 key={t.label}
-                className="rounded-lg bg-secondary/50 ring-1 ring-inset ring-border/50 px-2.5 py-2 text-center"
+                className="rounded-lg bg-secondary/50 ring-1 ring-inset ring-border/50 px-2 py-1.5 text-center"
               >
                 <div className="font-display text-sm font-bold text-primary leading-tight truncate">
                   {t.value}
