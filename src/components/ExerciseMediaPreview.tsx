@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { ExerciseMedia } from '@/lib/exerciseMedia';
-import { getExercises, getExerciseHistory, getSettings } from '@/lib/storage';
+import { getCategories, getExercises, getExerciseHistory, getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 
 interface Props {
@@ -20,18 +20,20 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
   const [gifFailed, setGifFailed] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
 
-  const { stats, unit, dw } = useMemo(() => {
+  const { stats, unit, dw, categoryName } = useMemo(() => {
     const settings = getSettings();
     const globalWeightUnit = settings.weightUnit;
     const unitLabel = weightUnitLabel(globalWeightUnit);
     const toDisp = (v: number) => toDisplayWeight(v, globalWeightUnit) ?? v;
 
-    if (!open) return { stats: null as null | ReturnType<typeof computeStats>, unit: unitLabel, dw: toDisp };
+    if (!open) return { stats: null as null | ReturnType<typeof computeStats>, unit: unitLabel, dw: toDisp, categoryName: null as string | null };
 
+    const categories = getCategories();
     const ex = getExercises().find(e => e.name.toLowerCase() === exerciseName.trim().toLowerCase());
-    if (!ex) return { stats: null, unit: unitLabel, dw: toDisp };
+    if (!ex) return { stats: null, unit: unitLabel, dw: toDisp, categoryName: null };
     const history = getExerciseHistory(ex.id);
-    return { stats: computeStats(history), unit: unitLabel, dw: toDisp };
+    const categoryName = categories.find(c => c.id === ex.categoryId)?.name ?? null;
+    return { stats: computeStats(history), unit: unitLabel, dw: toDisp, categoryName };
   }, [open, exerciseName]);
 
   const fmt = (v: number | null | undefined) =>
@@ -55,12 +57,17 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm p-3 pt-2 gap-1">
-        <DialogHeader className="px-1 pb-0">
+        <DialogHeader className="px-1 pb-0 space-y-0">
           <DialogTitle className="font-display text-sm font-semibold truncate pr-6">
             {exerciseName}
           </DialogTitle>
+          {categoryName && (
+            <div className="text-[11px] text-muted-foreground leading-tight mt-0.5 pr-6">
+              {categoryName}
+            </div>
+          )}
         </DialogHeader>
-        <div className="mx-auto flex h-[216px] w-[216px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
+        <div className="mx-auto flex h-[240px] w-[240px] items-center justify-center rounded-xl bg-secondary/60 ring-1 ring-inset ring-border/60 overflow-hidden">
           {!gifFailed ? (
             <img
               src={media.gifUrl}
