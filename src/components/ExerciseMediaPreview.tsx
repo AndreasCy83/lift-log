@@ -56,14 +56,16 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-3 pt-2 gap-1">
-        <DialogHeader className="px-1 pb-0 space-y-0">
-          <DialogTitle className="font-display text-base font-bold truncate pr-6">
+      <DialogContent className="max-w-sm p-3 pt-1.5 gap-1">
+        <DialogHeader className="px-1 pb-0 space-y-0 text-center">
+          <DialogTitle className="font-display text-lg font-bold truncate pr-6 text-foreground">
             {exerciseName}
           </DialogTitle>
           {categoryName && (
-            <div className="text-xs font-medium text-muted-foreground leading-tight mt-0.5 pr-6">
-              {categoryName}
+            <div className="inline-flex justify-center mt-1 pr-6">
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary ring-1 ring-inset ring-primary/20">
+                {categoryName}
+              </span>
             </div>
           )}
         </DialogHeader>
