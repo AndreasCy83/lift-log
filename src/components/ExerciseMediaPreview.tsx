@@ -62,8 +62,8 @@ export default function ExerciseMediaPreview({ open, onOpenChange, exerciseName,
             {exerciseName}
           </DialogTitle>
           {categoryName && (
-            <div className="inline-flex justify-center mt-1 pr-6">
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary ring-1 ring-inset ring-primary/20">
+            <div className="inline-flex justify-center mt-1.5 pr-6">
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary ring-1 ring-inset ring-primary/20">
                 {categoryName}
               </span>
             </div>
