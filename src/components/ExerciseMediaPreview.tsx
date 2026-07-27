@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { ExerciseMedia } from '@/lib/exerciseMedia';
-import { getExercises, getExerciseHistory, getSettings } from '@/lib/storage';
+import { getCategories, getExercises, getExerciseHistory, getSettings } from '@/lib/storage';
 import { toDisplayWeight, weightUnitLabel } from '@/lib/units';
 
 interface Props {
