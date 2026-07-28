@@ -40,8 +40,9 @@ interface Props {
 
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
-/** Height reserved for the front/back anatomical map inside the expanded card. */
-const MAP_HEIGHT = 230;
+/** Vertical budget reserved for the front/back anatomical map when expanded. */
+const MAP_HEIGHT = 320;
+
 
 
 /** Subtitle (under-name) text color per status. Lighter than chip styles. */
@@ -274,9 +275,10 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
               : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="pt-2" style={{ height: MAP_HEIGHT }}>
+          <div className="pt-2 pb-1">
             <MuscleMap values={mapValues} scale={0.62} />
           </div>
+
           <div className="space-y-0.5 pt-1">
 
             {hiddenRows.map((row, i) => (
