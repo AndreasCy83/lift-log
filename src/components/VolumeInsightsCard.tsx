@@ -40,6 +40,9 @@ interface Props {
 
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
+/** Height reserved for the front/back anatomical map inside the expanded card. */
+const MAP_HEIGHT = 230;
+
 
 /** Subtitle (under-name) text color per status. Lighter than chip styles. */
 const STATUS_SUBTITLE_CLASS: Record<VolumeStatus, string> = {
@@ -259,19 +262,23 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         ))}
       </div>
 
-      {/* Expandable hidden rows */}
+      {/* Expandable: anatomical map + hidden rows */}
       {hiddenCount > 0 && (
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${hiddenRows.length * 36 + 8}px` : '0px',
+            maxHeight: expanded ? `${hiddenRows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
-              : 'max-height 260ms ease-out, opacity 220ms ease-out',
+              : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
+          <div className="pt-2" style={{ height: MAP_HEIGHT }}>
+            <MuscleMap values={mapValues} scale={0.62} />
+          </div>
           <div className="space-y-0.5 pt-1">
+
             {hiddenRows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
