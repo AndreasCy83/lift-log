@@ -13,6 +13,13 @@
     "test:watch": "vitest",
     "postinstall": "npx patch-package"
   },
+  "overrides": {
+    "tar": "^7.5.22"
+  },
+  "resolutions": {
+    "tar": "^7.5.22"
+  },
+
   "dependencies": {
     "@capacitor/app": "^8.0.1",
     "@capacitor/browser": "^8.0.3",
@@ -72,6 +79,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.61.1",
     "react-i18next": "15",
+    "react-muscle-highlighter": "^1.2.0",
     "react-resizable-panels": "^2.1.9",
     "react-router-dom": "^6.30.1",
     "recharts": "^2.15.4",

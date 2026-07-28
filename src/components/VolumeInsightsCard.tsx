@@ -31,6 +31,8 @@ import {
 } from '@/lib/volumeInsights';
 import { getCategories } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
+import MuscleMap from '@/components/MuscleMap';
+
 
 interface Props {
   refreshKey?: number;
@@ -38,6 +40,10 @@ interface Props {
 
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
+/** Vertical budget reserved for the front/back anatomical map when expanded. */
+const MAP_HEIGHT = 320;
+
+
 
 /** Subtitle (under-name) text color per status. Lighter than chip styles. */
 const STATUS_SUBTITLE_CLASS: Record<VolumeStatus, string> = {
@@ -209,6 +215,13 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
+  // categoryId -> normalized intensity (0..1) for the anatomical map
+  const mapValues: Record<string, number> = {};
+  for (const row of summary.weeklyByCategory) {
+    mapValues[row.categoryId] = Math.min(1, row.weeklySets / BAR_MAX);
+  }
+
+
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
       {/* Header: title */}
@@ -234,36 +247,42 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         </span>
       </div>
 
-      {/* Top muscle row (collapsed always visible) */}
-      <div className="mt-1 space-y-0.5">
-        {collapsedRows.map((row, i) => (
-          <MuscleRow
-            key={row.categoryId}
-            categoryId={row.categoryId}
-            name={catName(row.categoryId)}
-            weeklySets={row.weeklySets}
-            status={row.status}
-            filled={mounted}
-            reduced={reduced}
-            delayMs={i * 50}
-          />
-        ))}
-      </div>
+      {/* Collapsed state: only top muscle row */}
+      {!expanded && (
+        <div className="mt-1 space-y-0.5">
+          {collapsedRows.map((row, i) => (
+            <MuscleRow
+              key={row.categoryId}
+              categoryId={row.categoryId}
+              name={catName(row.categoryId)}
+              weeklySets={row.weeklySets}
+              status={row.status}
+              filled={mounted}
+              reduced={reduced}
+              delayMs={i * 50}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Expandable hidden rows */}
+      {/* Expandable: anatomical map above all muscle rows */}
       {hiddenCount > 0 && (
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${hiddenRows.length * 36 + 8}px` : '0px',
+            maxHeight: expanded ? `${summary.weeklyByCategory.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
-              : 'max-height 260ms ease-out, opacity 220ms ease-out',
+              : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
+          <div className="pt-2 pb-1">
+            <MuscleMap values={mapValues} scale={0.62} />
+          </div>
+
           <div className="space-y-0.5 pt-1">
-            {hiddenRows.map((row, i) => (
+            {summary.weeklyByCategory.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
                 categoryId={row.categoryId}
