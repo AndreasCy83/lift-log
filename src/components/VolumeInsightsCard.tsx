@@ -31,6 +31,8 @@ import {
 } from '@/lib/volumeInsights';
 import { getCategories } from '@/lib/storage';
 import { getCategoryColor } from '@/lib/categoryColors';
+import MuscleMap from '@/components/MuscleMap';
+
 
 interface Props {
   refreshKey?: number;
@@ -208,6 +210,13 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const collapsedRows = summary.weeklyByCategory.slice(0, COLLAPSED_ROWS);
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
+
+  // categoryId -> normalized intensity (0..1) for the anatomical map
+  const mapValues: Record<string, number> = {};
+  for (const row of summary.weeklyByCategory) {
+    mapValues[row.categoryId] = Math.min(1, row.weeklySets / BAR_MAX);
+  }
+
 
   return (
     <div className="gym-card mt-4 !p-3 animate-fade-in">
