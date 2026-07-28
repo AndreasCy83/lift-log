@@ -13,6 +13,13 @@
     "test:watch": "vitest",
     "postinstall": "npx patch-package"
   },
+  "overrides": {
+    "tar": "^7.5.22"
+  },
+  "resolutions": {
+    "tar": "^7.5.22"
+  },
+
   "dependencies": {
     "@capacitor/app": "^8.0.1",
     "@capacitor/browser": "^8.0.3",
