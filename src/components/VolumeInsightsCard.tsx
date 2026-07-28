@@ -247,28 +247,30 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         </span>
       </div>
 
-      {/* Top muscle row (collapsed always visible) */}
-      <div className="mt-1 space-y-0.5">
-        {collapsedRows.map((row, i) => (
-          <MuscleRow
-            key={row.categoryId}
-            categoryId={row.categoryId}
-            name={catName(row.categoryId)}
-            weeklySets={row.weeklySets}
-            status={row.status}
-            filled={mounted}
-            reduced={reduced}
-            delayMs={i * 50}
-          />
-        ))}
-      </div>
+      {/* Collapsed state: only top muscle row */}
+      {!expanded && (
+        <div className="mt-1 space-y-0.5">
+          {collapsedRows.map((row, i) => (
+            <MuscleRow
+              key={row.categoryId}
+              categoryId={row.categoryId}
+              name={catName(row.categoryId)}
+              weeklySets={row.weeklySets}
+              status={row.status}
+              filled={mounted}
+              reduced={reduced}
+              delayMs={i * 50}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Expandable: anatomical map + hidden rows */}
+      {/* Expandable: anatomical map above all muscle rows */}
       {hiddenCount > 0 && (
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${hiddenRows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
+            maxHeight: expanded ? `${summary.weeklyByCategory.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
@@ -280,8 +282,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </div>
 
           <div className="space-y-0.5 pt-1">
-
-            {hiddenRows.map((row, i) => (
+            {summary.weeklyByCategory.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
                 categoryId={row.categoryId}
