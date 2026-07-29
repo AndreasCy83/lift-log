@@ -43,6 +43,11 @@ export interface HighlightPart {
 /**
  * Expand a `categoryId -> value (0..1)` map into per-slug highlight entries.
  *
+ * Visual intensity encoding (hue identity is always preserved):
+ *  - opacity    ramps 0.30 -> 1.00 with stimulus
+ *  - lightness  ramps -10% -> +8% around the base category color
+ *  - saturation gains up to +10% at the top of the range
+ *
  * @param values   normalized intensity per FitLogX category (0..1)
  * @param colorFor resolves the base color for a category
  * @param minAlpha lowest opacity applied to a category with a value > 0
@@ -50,7 +55,7 @@ export interface HighlightPart {
 export function buildHighlightData(
   values: Record<string, number>,
   colorFor: (categoryId: string) => string,
-  minAlpha = 0.28,
+  minAlpha = 0.3,
 ): HighlightPart[] {
   const out: HighlightPart[] = [];
   const seen = new Set<MuscleSlug>();
@@ -61,7 +66,8 @@ export function buildHighlightData(
 
     const v = Math.min(1, Math.max(0, raw));
     const alpha = minAlpha + (1 - minAlpha) * v;
-    const color = withAlpha(colorFor(categoryId), alpha);
+    const base = adjustHslIntensity(colorFor(categoryId), v);
+    const color = withAlpha(base, alpha);
 
     for (const slug of slugs) {
       if (seen.has(slug)) continue;
@@ -72,6 +78,28 @@ export function buildHighlightData(
 
   return out;
 }
+
+/**
+ * Nudge lightness/saturation of an `hsl(h, s%, l%)` color by stimulus level,
+ * keeping the hue (category identity) untouched.
+ * Non-hsl inputs are returned unchanged.
+ */
+export function adjustHslIntensity(color: string, v: number): string {
+  const c = color.trim();
+  const m = /^hsl\(\s*([\d.]+)(deg)?\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)$/i.exec(c);
+  if (!m) return c;
+
+  const h = parseFloat(m[1]);
+  const s = parseFloat(m[3]);
+  const l = parseFloat(m[4]);
+
+  const t = Math.min(1, Math.max(0, v));
+  const newL = Math.min(92, Math.max(8, l + (-10 + 18 * t)));
+  const newS = Math.min(100, s + 10 * t);
+
+  return `hsl(${h}, ${Math.round(newS * 10) / 10}%, ${Math.round(newL * 10) / 10}%)`;
+}
+
 
 /**
  * Apply an alpha channel to a color string.
