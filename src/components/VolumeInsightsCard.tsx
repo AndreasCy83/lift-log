@@ -41,7 +41,7 @@ interface Props {
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
 /** Vertical budget reserved for the front/back anatomical map when expanded. */
-const MAP_HEIGHT = 320;
+const MAP_HEIGHT = 400;
 
 
 
