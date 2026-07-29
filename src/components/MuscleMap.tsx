@@ -39,7 +39,7 @@ export default function MuscleMap({
     side === 'both' ? ['front', 'back'] : [side];
 
   return (
-    <div className={`flex w-full items-end justify-center gap-2 ${className}`}>
+    <div className={`flex w-full items-end justify-center gap-1 ${className}`}>
       {sides.map(s => (
         <div key={s} className="flex min-w-0 flex-1 flex-col items-center">
           <Body
@@ -52,7 +52,7 @@ export default function MuscleMap({
             defaultStroke="hsl(var(--border))"
             defaultStrokeWidth={0.4}
           />
-          <span className="mt-0.5 text-[9px] font-medium uppercase tracking-wider text-muted-foreground/70">
+          <span className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/70">
             {s}
           </span>
         </div>

@@ -41,7 +41,7 @@ interface Props {
 const COLLAPSED_ROWS = 1;
 const BAR_MAX = 20;
 /** Vertical budget reserved for the front/back anatomical map when expanded. */
-const MAP_HEIGHT = 320;
+const MAP_HEIGHT = 400;
 
 
 
@@ -277,8 +277,8 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
               : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="pt-2 pb-1">
-            <MuscleMap values={mapValues} scale={0.62} />
+          <div className="py-1">
+            <MuscleMap values={mapValues} scale={0.85} />
           </div>
 
           <div className="space-y-0.5 pt-1">
