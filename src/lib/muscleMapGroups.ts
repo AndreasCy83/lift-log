@@ -80,6 +80,28 @@ export function buildHighlightData(
 }
 
 /**
+ * Nudge lightness/saturation of an `hsl(h, s%, l%)` color by stimulus level,
+ * keeping the hue (category identity) untouched.
+ * Non-hsl inputs are returned unchanged.
+ */
+export function adjustHslIntensity(color: string, v: number): string {
+  const c = color.trim();
+  const m = /^hsl\(\s*([\d.]+)(deg)?\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)$/i.exec(c);
+  if (!m) return c;
+
+  const h = parseFloat(m[1]);
+  const s = parseFloat(m[3]);
+  const l = parseFloat(m[4]);
+
+  const t = Math.min(1, Math.max(0, v));
+  const newL = Math.min(92, Math.max(8, l + (-10 + 18 * t)));
+  const newS = Math.min(100, s + 10 * t);
+
+  return `hsl(${h}, ${Math.round(newS * 10) / 10}%, ${Math.round(newL * 10) / 10}%)`;
+}
+
+
+/**
  * Apply an alpha channel to a color string.
  * Supports `hsl(...)`, `rgb(...)` and `#rrggbb`; falls back to the input.
  */
