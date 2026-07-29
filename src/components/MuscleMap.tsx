@@ -52,9 +52,6 @@ export default function MuscleMap({
             defaultStroke="hsl(var(--border))"
             defaultStrokeWidth={0.4}
           />
-          <span className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/70">
-            {s}
-          </span>
         </div>
       ))}
     </div>

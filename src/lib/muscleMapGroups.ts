@@ -43,6 +43,11 @@ export interface HighlightPart {
 /**
  * Expand a `categoryId -> value (0..1)` map into per-slug highlight entries.
  *
+ * Visual intensity encoding (hue identity is always preserved):
+ *  - opacity    ramps 0.30 -> 1.00 with stimulus
+ *  - lightness  ramps -10% -> +8% around the base category color
+ *  - saturation gains up to +10% at the top of the range
+ *
  * @param values   normalized intensity per FitLogX category (0..1)
  * @param colorFor resolves the base color for a category
  * @param minAlpha lowest opacity applied to a category with a value > 0
@@ -50,7 +55,7 @@ export interface HighlightPart {
 export function buildHighlightData(
   values: Record<string, number>,
   colorFor: (categoryId: string) => string,
-  minAlpha = 0.28,
+  minAlpha = 0.3,
 ): HighlightPart[] {
   const out: HighlightPart[] = [];
   const seen = new Set<MuscleSlug>();
@@ -61,7 +66,8 @@ export function buildHighlightData(
 
     const v = Math.min(1, Math.max(0, raw));
     const alpha = minAlpha + (1 - minAlpha) * v;
-    const color = withAlpha(colorFor(categoryId), alpha);
+    const base = adjustHslIntensity(colorFor(categoryId), v);
+    const color = withAlpha(base, alpha);
 
     for (const slug of slugs) {
       if (seen.has(slug)) continue;
