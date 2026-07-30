@@ -40,19 +40,30 @@ export interface HighlightPart {
   slug: MuscleSlug;
   color: string;
   styles?: { fill?: string; stroke?: string; strokeWidth?: number };
+  /** Soft outer halo, rendered by MuscleMap as a CSS drop-shadow filter. */
+  glow?: { color: string; blur: number; layers: number };
 }
 
 /**
  * Per-status visual band.
  *  - alpha / dl (lightness delta) / ds (saturation delta) shape the fill
- *  - glow (halo stroke) is ONLY defined for the two high-end states
+ *  - glow is ONLY defined for the high-end states
+ *
+ * NOTE: stroke widths / blur radii are expressed in the body SVG's *user
+ * units* (viewBox 724x1448 painted at ~200x400 CSS px), so they are ~3.6x
+ * larger than the equivalent CSS pixel value.
  */
 interface StatusBand {
   alpha: number;
   dl: number;
   ds: number;
+  /** Halo stroke alpha (in user units, see note above). */
   glowAlpha?: number;
   glowWidth?: number;
+  /** Outer soft blur radius, user units. */
+  glowBlur?: number;
+  /** How many stacked drop-shadows (builds intensity without widening). */
+  glowLayers?: number;
 }
 
 export const STATUS_BANDS: Record<VolumeStatus, StatusBand | null> = {
@@ -60,15 +71,15 @@ export const STATUS_BANDS: Record<VolumeStatus, StatusBand | null> = {
   below:       { alpha: 0.26, dl: -16, ds: -30 },      // clearly dimmed
   maintenance: { alpha: 0.5,  dl: -7,  ds: -12 },      // softer than normal
   productive:  { alpha: 0.8,  dl: 0,   ds: 0 },        // clean category color
-  progressive: { alpha: 0.92, dl: 6,   ds: 6, glowAlpha: 0.32, glowWidth: 1.6 },
-  high:        { alpha: 0.98, dl: 11,  ds: 9, glowAlpha: 0.46, glowWidth: 2.6 },
-  very_high:   { alpha: 1,    dl: 14,  ds: 10, glowAlpha: 0.55, glowWidth: 3.2 },
+  progressive: { alpha: 0.94, dl: 8,  ds: 8,  glowAlpha: 0.55, glowWidth: 7,  glowBlur: 9,  glowLayers: 2 },
+  high:        { alpha: 0.99, dl: 13, ds: 10, glowAlpha: 0.7,  glowWidth: 10, glowBlur: 14, glowLayers: 3 },
+  very_high:   { alpha: 1,    dl: 16, ds: 12, glowAlpha: 0.8,  glowWidth: 12, glowBlur: 18, glowLayers: 3 },
 };
 
 /**
  * Expand a `categoryId -> VolumeStatus` map into per-slug highlight entries.
  * Hue (category identity) is always preserved — only opacity, lightness,
- * saturation and an optional halo stroke change.
+ * saturation and an optional halo change.
  */
 export function buildHighlightData(
   statuses: Record<string, VolumeStatus>,
@@ -85,21 +96,30 @@ export function buildHighlightData(
     const base = adjustHsl(colorFor(categoryId), band.dl, band.ds);
     const fill = withAlpha(base, band.alpha);
     const styles: HighlightPart['styles'] = { fill };
+    let glow: HighlightPart['glow'];
 
     if (band.glowAlpha && band.glowWidth) {
-      styles.stroke = withAlpha(adjustHsl(colorFor(categoryId), band.dl + 12, band.ds), band.glowAlpha);
+      // Same hue, lifted a little: reads as a halo, never as a new color.
+      const halo = adjustHsl(colorFor(categoryId), band.dl + 14, band.ds);
+      styles.stroke = withAlpha(halo, band.glowAlpha);
       styles.strokeWidth = band.glowWidth;
+      glow = {
+        color: withAlpha(halo, Math.min(1, band.glowAlpha + 0.1)),
+        blur: band.glowBlur ?? band.glowWidth * 1.5,
+        layers: band.glowLayers ?? 2,
+      };
     }
 
     for (const slug of slugs) {
       if (seen.has(slug)) continue;
       seen.add(slug);
-      out.push({ slug, color: fill, styles });
+      out.push({ slug, color: fill, styles, glow });
     }
   }
 
   return out;
 }
+
 
 /**
  * Nudge lightness/saturation of an `hsl(h, s%, l%)` color, keeping the hue
