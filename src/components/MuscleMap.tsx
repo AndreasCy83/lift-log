@@ -1,19 +1,19 @@
 /**
  * Reusable front/back anatomical muscle map.
  *
- * Purely presentational: it receives a `categoryId -> intensity (0..1)` map and
- * paints the matching anatomy using the FitLogX category colors. Intended for
- * Estimated Stimulus first, and reusable as-is for Recovery later (just pass
- * fatigue values instead of volume values).
+ * Purely presentational: it receives a `categoryId -> VolumeStatus` map and
+ * paints the matching anatomy using the FitLogX category colors, dimming
+ * lower statuses and adding a restrained halo for the high-end states.
  */
 import { useMemo } from 'react';
 import Body from 'react-muscle-highlighter';
 import { buildHighlightData } from '@/lib/muscleMapGroups';
 import { getCategoryColor } from '@/lib/categoryColors';
+import type { VolumeStatus } from '@/lib/volumeInsights';
 
 export interface MuscleMapProps {
-  /** categoryId -> normalized intensity 0..1 */
-  values: Record<string, number>;
+  /** categoryId -> Estimated Stimulus status */
+  statuses: Record<string, VolumeStatus>;
   /** Resolve a base color for a category. Defaults to the app category colors. */
   colorFor?: (categoryId: string) => string;
   /** Which view(s) to render. */
@@ -24,15 +24,15 @@ export interface MuscleMapProps {
 }
 
 export default function MuscleMap({
-  values,
+  statuses,
   colorFor = getCategoryColor,
   side = 'both',
   scale = 0.7,
   className = '',
 }: MuscleMapProps) {
   const data = useMemo(
-    () => buildHighlightData(values, colorFor),
-    [values, colorFor],
+    () => buildHighlightData(statuses, colorFor),
+    [statuses, colorFor],
   );
 
   const sides: Array<'front' | 'back'> =

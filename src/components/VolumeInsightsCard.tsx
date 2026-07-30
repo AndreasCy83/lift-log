@@ -215,10 +215,10 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
   const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
-  // categoryId -> normalized intensity (0..1) for the anatomical map
-  const mapValues: Record<string, number> = {};
+  // categoryId -> Estimated Stimulus status for the anatomical map
+  const mapStatuses: Record<string, VolumeStatus> = {};
   for (const row of summary.weeklyByCategory) {
-    mapValues[row.categoryId] = Math.min(1, row.weeklySets / BAR_MAX);
+    mapStatuses[row.categoryId] = row.status;
   }
 
 
@@ -278,7 +278,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           }}
         >
           <div className="py-1">
-            <MuscleMap values={mapValues} scale={0.85} />
+            <MuscleMap statuses={mapStatuses} scale={0.85} />
           </div>
 
           <div className="space-y-0.5 pt-1">
