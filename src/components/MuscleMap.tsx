@@ -5,7 +5,7 @@
  * paints the matching anatomy using the FitLogX category colors, dimming
  * lower statuses and adding a restrained halo for the high-end states.
  */
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import Body from 'react-muscle-highlighter';
 import { buildHighlightData } from '@/lib/muscleMapGroups';
 import { getCategoryColor } from '@/lib/categoryColors';
@@ -35,11 +35,35 @@ export default function MuscleMap({
     [statuses, colorFor],
   );
 
+  // Unique scope so the injected glow CSS never leaks to other maps.
+  const scope = `mm-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
+
+  /**
+   * The highlighter library only forwards fill/stroke/strokeWidth to each
+   * <path id={slug}>, so a real halo is impossible through props alone.
+   * We add it with a scoped stylesheet that applies stacked drop-shadows
+   * (SVG filter lengths resolve in the body's user-unit space) to the
+   * paths of the glowing slugs only.
+   */
+  const glowCss = useMemo(() => {
+    const rules: string[] = [];
+    for (const part of data) {
+      if (!part.glow) continue;
+      const { color, blur, layers } = part.glow;
+      const shadow = Array.from({ length: layers })
+        .map((_, i) => `drop-shadow(0 0 ${blur * (i + 1) * 0.6}px ${color})`)
+        .join(' ');
+      rules.push(`.${scope} path[id="${part.slug}"]{filter:${shadow};}`);
+    }
+    return rules.join('\n');
+  }, [data, scope]);
+
   const sides: Array<'front' | 'back'> =
     side === 'both' ? ['front', 'back'] : [side];
 
   return (
-    <div className={`flex w-full items-end justify-center gap-1 ${className}`}>
+    <div className={`${scope} flex w-full items-end justify-center gap-1 ${className}`}>
+      {glowCss && <style>{glowCss}</style>}
       {sides.map(s => (
         <div key={s} className="flex min-w-0 flex-1 flex-col items-center">
           <Body
@@ -57,3 +81,4 @@ export default function MuscleMap({
     </div>
   );
 }
+
