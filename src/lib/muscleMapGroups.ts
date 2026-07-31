@@ -41,8 +41,25 @@ export interface HighlightPart {
   color: string;
   styles?: { fill?: string; stroke?: string; strokeWidth?: number };
   /** Soft outer halo, rendered by MuscleMap as a CSS drop-shadow filter. */
-  glow?: { color: string; blur: number; layers: number };
+  glow?: {
+    color: string;
+    blur: number;
+    layers: number;
+    /** Gentle breathing animation intensity for extreme states. */
+    pulse?: 'subtle' | 'strong';
+  };
 }
+
+/**
+ * Per-category glow damping. Large regions (legs) cover far more pixels, so
+ * an identical halo reads as much stronger. Scale their halo down so glow
+ * strength communicates *status*, not surface area.
+ */
+export const CATEGORY_GLOW_SCALE: Record<string, { alpha: number; width: number; blur: number }> = {
+  'cat-legs': { alpha: 0.55, width: 0.55, blur: 0.5 },
+  'cat-back': { alpha: 0.85, width: 0.85, blur: 0.85 },
+};
+
 
 /**
  * Per-status visual band.
