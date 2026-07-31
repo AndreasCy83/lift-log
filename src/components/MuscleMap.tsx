@@ -46,17 +46,28 @@ export default function MuscleMap({
    * paths of the glowing slugs only.
    */
   const glowCss = useMemo(() => {
-    const rules: string[] = [];
+    const rules: string[] = [
+      `@keyframes ${scope}-breathe-strong{0%,100%{opacity:.72}50%{opacity:1}}`,
+      `@keyframes ${scope}-breathe-subtle{0%,100%{opacity:.88}50%{opacity:1}}`,
+    ];
     for (const part of data) {
       if (!part.glow) continue;
-      const { color, blur, layers } = part.glow;
+      const { color, blur, layers, pulse } = part.glow;
       const shadow = Array.from({ length: layers })
         .map((_, i) => `drop-shadow(0 0 ${blur * (i + 1) * 0.6}px ${color})`)
         .join(' ');
-      rules.push(`.${scope} path[id="${part.slug}"]{filter:${shadow};}`);
+      const anim = pulse
+        ? `animation:${scope}-breathe-${pulse} ${pulse === 'strong' ? '2.4s' : '3s'} ease-in-out infinite;`
+        : '';
+      rules.push(`.${scope} path[id="${part.slug}"]{filter:${shadow};${anim}}`);
     }
+    // Motion safeguard: no breathing when the user prefers reduced motion.
+    rules.push(
+      `@media (prefers-reduced-motion: reduce){.${scope} path{animation:none !important;}}`,
+    );
     return rules.join('\n');
   }, [data, scope]);
+
 
   const sides: Array<'front' | 'back'> =
     side === 'both' ? ['front', 'back'] : [side];
