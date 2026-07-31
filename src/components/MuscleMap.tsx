@@ -5,7 +5,7 @@
  * paints the matching anatomy using the FitLogX category colors, dimming
  * lower statuses and adding a restrained halo for the high-end states.
  */
-import { useId, useMemo } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import Body from 'react-muscle-highlighter';
 import { buildHighlightData } from '@/lib/muscleMapGroups';
 import { getCategoryColor } from '@/lib/categoryColors';
@@ -78,15 +78,41 @@ export default function MuscleMap({
     rules.push(
       `@media (prefers-reduced-motion: reduce){.${scope} path{animation:none !important;}}`,
     );
+    // Perf: while scrolling, drop the animation entirely (static halo stays,
+    // since the base rule keeps the drop-shadow filter).
+    rules.push(`.${scope}.mm-scrolling path{animation:none !important;}`);
     return rules.join('\n');
   }, [data, scope]);
 
+  /**
+   * Android WebView repaints animated SVG filters on every scroll frame.
+   * Pause the breathing while the user scrolls, resume shortly after.
+   */
+  const [scrolling, setScrolling] = useState(false);
+  useEffect(() => {
+    let timer: number | undefined;
+    const onScroll = () => {
+      setScrolling(true);
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => setScrolling(false), 180);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    window.addEventListener('touchmove', onScroll, { passive: true, capture: true });
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
+      window.removeEventListener('touchmove', onScroll, { capture: true } as EventListenerOptions);
+    };
+  }, []);
 
   const sides: Array<'front' | 'back'> =
     side === 'both' ? ['front', 'back'] : [side];
 
   return (
-    <div className={`${scope} flex w-full items-end justify-center gap-1 ${className}`}>
+    <div
+      className={`${scope} ${scrolling ? 'mm-scrolling' : ''} flex w-full items-end justify-center gap-1 ${className}`}
+      style={{ contain: 'paint', backfaceVisibility: 'hidden' }}
+    >
       {glowCss && <style>{glowCss}</style>}
       {sides.map(s => (
         <div key={s} className="flex min-w-0 flex-1 flex-col items-center">
