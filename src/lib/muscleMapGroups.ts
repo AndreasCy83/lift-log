@@ -47,6 +47,11 @@ export interface HighlightPart {
     layers: number;
     /** Gentle breathing animation intensity for extreme states. */
     pulse?: 'subtle' | 'strong';
+    /**
+     * Breathing amplitude 0..1 — how far opacity/brightness swing during the
+     * pulse. Higher = more clearly visible breathing.
+     */
+    pulseAmount?: number;
   };
 }
 
@@ -54,10 +59,26 @@ export interface HighlightPart {
  * Per-category glow damping. Large regions (legs) cover far more pixels, so
  * an identical halo reads as much stronger. Scale their halo down so glow
  * strength communicates *status*, not surface area.
+ *
+ * `pulse` additionally scales the breathing amplitude per category so smaller
+ * regions (chest) still read as clearly alive.
  */
-export const CATEGORY_GLOW_SCALE: Record<string, { alpha: number; width: number; blur: number }> = {
-  'cat-legs': { alpha: 0.55, width: 0.55, blur: 0.5 },
-  'cat-back': { alpha: 0.85, width: 0.85, blur: 0.85 },
+export const CATEGORY_GLOW_SCALE: Record<
+  string,
+  { alpha: number; width: number; blur: number; pulse?: number }
+> = {
+  // Legs cover the most pixels — keep them clearly high-stimulus but far less
+  // dominant than before.
+  'cat-legs': { alpha: 0.3, width: 0.3, blur: 0.28, pulse: 0.85 },
+  'cat-back': { alpha: 0.75, width: 0.75, blur: 0.75, pulse: 1 },
+  // Chest is a small region: lift the halo and breathing so it reads clearly.
+  'cat-chest': { alpha: 1.15, width: 1.2, blur: 1.2, pulse: 1.35 },
+};
+
+/** Base breathing amplitude per pulse intensity (0..1). */
+export const PULSE_BASE_AMOUNT: Record<'subtle' | 'strong', number> = {
+  subtle: 0.3,
+  strong: 0.45,
 };
 
 
