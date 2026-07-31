@@ -47,6 +47,11 @@ export interface HighlightPart {
     layers: number;
     /** Gentle breathing animation intensity for extreme states. */
     pulse?: 'subtle' | 'strong';
+    /**
+     * Breathing amplitude 0..1 — how far opacity/brightness swing during the
+     * pulse. Higher = more clearly visible breathing.
+     */
+    pulseAmount?: number;
   };
 }
 
@@ -54,10 +59,26 @@ export interface HighlightPart {
  * Per-category glow damping. Large regions (legs) cover far more pixels, so
  * an identical halo reads as much stronger. Scale their halo down so glow
  * strength communicates *status*, not surface area.
+ *
+ * `pulse` additionally scales the breathing amplitude per category so smaller
+ * regions (chest) still read as clearly alive.
  */
-export const CATEGORY_GLOW_SCALE: Record<string, { alpha: number; width: number; blur: number }> = {
-  'cat-legs': { alpha: 0.55, width: 0.55, blur: 0.5 },
-  'cat-back': { alpha: 0.85, width: 0.85, blur: 0.85 },
+export const CATEGORY_GLOW_SCALE: Record<
+  string,
+  { alpha: number; width: number; blur: number; pulse?: number }
+> = {
+  // Legs cover the most pixels — keep them clearly high-stimulus but far less
+  // dominant than before.
+  'cat-legs': { alpha: 0.3, width: 0.3, blur: 0.28, pulse: 0.85 },
+  'cat-back': { alpha: 0.75, width: 0.75, blur: 0.75, pulse: 1 },
+  // Chest is a small region: lift the halo and breathing so it reads clearly.
+  'cat-chest': { alpha: 1.15, width: 1.2, blur: 1.2, pulse: 1.35 },
+};
+
+/** Base breathing amplitude per pulse intensity (0..1). */
+export const PULSE_BASE_AMOUNT: Record<'subtle' | 'strong', number> = {
+  subtle: 0.3,
+  strong: 0.45,
 };
 
 
@@ -116,22 +137,26 @@ export function buildHighlightData(
     let glow: HighlightPart['glow'];
 
     if (band.glowAlpha && band.glowWidth) {
-      const scale = CATEGORY_GLOW_SCALE[categoryId] ?? { alpha: 1, width: 1, blur: 1 };
+      const scale = CATEGORY_GLOW_SCALE[categoryId] ?? { alpha: 1, width: 1, blur: 1, pulse: 1 };
       // Same hue, lifted a little: reads as a halo, never as a new color.
       const halo = adjustHsl(colorFor(categoryId), band.dl + 14, band.ds);
       const alpha = band.glowAlpha * scale.alpha;
       styles.stroke = withAlpha(halo, alpha);
       styles.strokeWidth = band.glowWidth * scale.width;
+      const pulse =
+        status === 'high' || status === 'very_high'
+          ? ('strong' as const)
+          : status === 'progressive'
+            ? ('subtle' as const)
+            : undefined;
       glow = {
         color: withAlpha(halo, Math.min(1, alpha + 0.1)),
         blur: (band.glowBlur ?? band.glowWidth * 1.5) * scale.blur,
         layers: band.glowLayers ?? 2,
-        pulse:
-          status === 'high' || status === 'very_high'
-            ? 'strong'
-            : status === 'progressive'
-              ? 'subtle'
-              : undefined,
+        pulse,
+        pulseAmount: pulse
+          ? Math.min(0.6, PULSE_BASE_AMOUNT[pulse] * (scale.pulse ?? 1))
+          : undefined,
       };
     }
 
