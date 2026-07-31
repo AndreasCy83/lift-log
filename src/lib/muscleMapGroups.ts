@@ -116,16 +116,25 @@ export function buildHighlightData(
     let glow: HighlightPart['glow'];
 
     if (band.glowAlpha && band.glowWidth) {
+      const scale = CATEGORY_GLOW_SCALE[categoryId] ?? { alpha: 1, width: 1, blur: 1 };
       // Same hue, lifted a little: reads as a halo, never as a new color.
       const halo = adjustHsl(colorFor(categoryId), band.dl + 14, band.ds);
-      styles.stroke = withAlpha(halo, band.glowAlpha);
-      styles.strokeWidth = band.glowWidth;
+      const alpha = band.glowAlpha * scale.alpha;
+      styles.stroke = withAlpha(halo, alpha);
+      styles.strokeWidth = band.glowWidth * scale.width;
       glow = {
-        color: withAlpha(halo, Math.min(1, band.glowAlpha + 0.1)),
-        blur: band.glowBlur ?? band.glowWidth * 1.5,
+        color: withAlpha(halo, Math.min(1, alpha + 0.1)),
+        blur: (band.glowBlur ?? band.glowWidth * 1.5) * scale.blur,
         layers: band.glowLayers ?? 2,
+        pulse:
+          status === 'high' || status === 'very_high'
+            ? 'strong'
+            : status === 'progressive'
+              ? 'subtle'
+              : undefined,
       };
     }
+
 
     for (const slug of slugs) {
       if (seen.has(slug)) continue;
