@@ -86,22 +86,31 @@ export default function MuscleMap({
 
   /**
    * Android WebView repaints animated SVG filters on every scroll frame.
-   * Pause the breathing while the user scrolls, resume shortly after.
+   * Pause the breathing immediately on any user interaction (scroll, touch,
+   * drag) and only resume after 2 seconds of idle time. The static glow
+   * remains visible the entire time because the base drop-shadow filter is
+   * not tied to the animation.
    */
-  const [scrolling, setScrolling] = useState(false);
+  const [idle, setIdle] = useState(true);
   useEffect(() => {
     let timer: number | undefined;
-    const onScroll = () => {
-      setScrolling(true);
+    const IDLE_BUFFER_MS = 2000;
+
+    const onInteraction = () => {
+      setIdle(false);
       if (timer) window.clearTimeout(timer);
-      timer = window.setTimeout(() => setScrolling(false), 180);
+      timer = window.setTimeout(() => setIdle(true), IDLE_BUFFER_MS);
     };
-    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
-    window.addEventListener('touchmove', onScroll, { passive: true, capture: true });
+
+    const events = ['scroll', 'touchstart', 'touchmove', 'pointermove', 'mousemove'];
+    events.forEach(name =>
+      window.addEventListener(name, onInteraction, { passive: true, capture: true }),
+    );
     return () => {
       if (timer) window.clearTimeout(timer);
-      window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
-      window.removeEventListener('touchmove', onScroll, { capture: true } as EventListenerOptions);
+      events.forEach(name =>
+        window.removeEventListener(name, onInteraction, { capture: true } as EventListenerOptions),
+      );
     };
   }, []);
 
