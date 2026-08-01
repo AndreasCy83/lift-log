@@ -14,7 +14,7 @@
  * prefers-reduced-motion.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BarChart3, ChevronDown, Info } from 'lucide-react';
+import { BarChart3, ChevronDown, Info, PersonStanding } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -230,6 +230,14 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           <BarChart3 className="h-3.5 w-3.5 text-primary shrink-0" />
           <h3 className="font-display text-sm font-semibold truncate">Estimated Stimulus</h3>
           {InfoButton}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+            aria-label="Open muscle map"
+            className="-m-1 shrink-0 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            <PersonStanding className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
       <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
