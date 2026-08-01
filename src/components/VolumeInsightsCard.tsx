@@ -234,7 +234,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
             type="button"
             onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
             aria-label="Open muscle map"
-            className="-m-1 shrink-0 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+            className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border/60 bg-secondary/80 text-muted-foreground shadow-sm shadow-black/10 backdrop-blur-sm transition-all hover:bg-secondary hover:text-foreground active:scale-95 active:bg-muted"
           >
             <PersonStanding className="h-3.5 w-3.5" />
           </button>
