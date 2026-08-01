@@ -68,12 +68,13 @@ export const CATEGORY_GLOW_SCALE: Record<
   { alpha: number; width: number; blur: number; pulse?: number }
 > = {
   // Legs cover the most pixels — keep them clearly high-stimulus but far less
-  // dominant than before.
-  'cat-legs': { alpha: 0.3, width: 0.3, blur: 0.28, pulse: 0.85 },
-  'cat-back': { alpha: 0.75, width: 0.75, blur: 0.75, pulse: 1 },
-  // Chest is a small region: lift the halo and breathing so it reads clearly.
-  'cat-chest': { alpha: 1.15, width: 1.2, blur: 1.2, pulse: 1.35 },
+  // dominant than before. Values are ~10% softer than the previous tuning.
+  'cat-legs': { alpha: 0.27, width: 0.27, blur: 0.252, pulse: 0.765 },
+  'cat-back': { alpha: 0.675, width: 0.675, blur: 0.675, pulse: 0.9 },
+  // Chest is a small region: still lifted, but ~10% softer than before.
+  'cat-chest': { alpha: 1.035, width: 1.08, blur: 1.08, pulse: 1.215 },
 };
+
 
 /** Base breathing amplitude per pulse intensity (0..1). */
 export const PULSE_BASE_AMOUNT: Record<'subtle' | 'strong', number> = {
