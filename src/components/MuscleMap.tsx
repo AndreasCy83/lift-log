@@ -119,7 +119,7 @@ export default function MuscleMap({
 
   return (
     <div
-      className={`${scope} ${scrolling ? 'mm-scrolling' : ''} flex w-full items-end justify-center gap-1 ${className}`}
+      className={`${scope} ${!idle ? 'mm-scrolling' : ''} flex w-full items-end justify-center gap-1 ${className}`}
       style={{ contain: 'paint', backfaceVisibility: 'hidden' }}
     >
       {glowCss && <style>{glowCss}</style>}
