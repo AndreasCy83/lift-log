@@ -3,41 +3,42 @@
  *
  * Architecture:
  *   exercise (matched by canonical seedData name)
- *     -> reference ID (from Exercisereference.xlsx, "Table id gif ref" column)
- *     -> zero-padded to 4 digits ("refId")
+ *     -> reference ID (from final_list.xlsx, "Table id (gif ref)" column)
+ *        NOTE: the reference ID is a 4-character TEXT code. Leading zeros are
+ *        significant ("0041", "0151", "0597") and must never be stripped or
+ *        coerced to a number.
  *     -> deterministic media paths:
  *          /exercise-pics/{refId}.jpg
  *          /exercise-gifs/{refId}.gif
  *
  * Only exercises present in EXERCISE_MEDIA_MAP have media. All lookups are
  * exact (case-insensitive on the exercise name) — no fuzzy matching at runtime.
- *
- * Scaling later: extend EXERCISE_MEDIA_MAP with the remaining rows from
- * Exercisereference.xlsx (generate it offline from the sheet, then paste).
  */
 
 import { EXERCISE_MEDIA_MAP } from '@/data/exerciseMediaMap';
 
 /** Lowercased index built once for O(1) exact lookups. */
-const LOWER_INDEX: Record<string, number> = (() => {
-  const idx: Record<string, number> = {};
+const LOWER_INDEX: Record<string, string> = (() => {
+  const idx: Record<string, string> = {};
   for (const [name, id] of Object.entries(EXERCISE_MEDIA_MAP)) {
     idx[name.trim().toLowerCase()] = id;
   }
   return idx;
 })();
 
-/** Zero-pad a numeric reference ID to a 4-digit string ("0597"). */
-export function padRefId(refId: number): string {
-  return String(refId).padStart(4, '0');
+/**
+ * Normalize a reference code to the canonical 4-character text form.
+ * Accepts already-padded codes ("0597") and pads short ones ("597" -> "0597").
+ */
+export function padRefId(refId: string): string {
+  return String(refId).trim().padStart(4, '0');
 }
 
 /** Case-insensitive exact lookup on the canonical exercise name. */
-function lookupRefId(exerciseName: string): number | null {
+function lookupRefId(exerciseName: string): string | null {
   if (!exerciseName) return null;
   return LOWER_INDEX[exerciseName.trim().toLowerCase()] ?? null;
 }
-
 
 export interface ExerciseMedia {
   refId: string;
