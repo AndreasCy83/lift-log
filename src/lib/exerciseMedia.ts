@@ -16,11 +16,16 @@
  * Exercisereference.xlsx (generate it offline from the sheet, then paste).
  */
 
-/** Raw numeric reference ID -> exercise name (as found in seedData). */
-const EXERCISE_MEDIA_MAP: Record<string, number> = {
-  // First test entry — validated end-to-end.
-  'Seated Hip Abduction': 597,
-};
+import { EXERCISE_MEDIA_MAP } from '@/data/exerciseMediaMap';
+
+/** Lowercased index built once for O(1) exact lookups. */
+const LOWER_INDEX: Record<string, number> = (() => {
+  const idx: Record<string, number> = {};
+  for (const [name, id] of Object.entries(EXERCISE_MEDIA_MAP)) {
+    idx[name.trim().toLowerCase()] = id;
+  }
+  return idx;
+})();
 
 /** Zero-pad a numeric reference ID to a 4-digit string ("0597"). */
 export function padRefId(refId: number): string {
@@ -30,12 +35,9 @@ export function padRefId(refId: number): string {
 /** Case-insensitive exact lookup on the canonical exercise name. */
 function lookupRefId(exerciseName: string): number | null {
   if (!exerciseName) return null;
-  const key = exerciseName.trim().toLowerCase();
-  for (const [name, id] of Object.entries(EXERCISE_MEDIA_MAP)) {
-    if (name.toLowerCase() === key) return id;
-  }
-  return null;
+  return LOWER_INDEX[exerciseName.trim().toLowerCase()] ?? null;
 }
+
 
 export interface ExerciseMedia {
   refId: string;
