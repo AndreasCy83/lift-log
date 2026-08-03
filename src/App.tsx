@@ -67,7 +67,9 @@ function ThemeInit() {
     cleanupUuidCategories();
     migrateCategoryIds();
     reseedMissingExercises();
+    pruneRemovedExercises();
     seedBuiltInPrograms();
+
 
     const settings = getSettings();
     applyTheme(settings.theme);
