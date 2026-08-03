@@ -112,6 +112,31 @@ export function migrateCategoryIds() {
   localStorage.setItem('categoryIdsMigrated_v1', 'true');
 }
 
+// One-time cleanup: drop duplicate seeded exercises removed from the library.
+// Exact-name matching only; user-created exercises with other names are untouched.
+const REMOVED_SEED_EXERCISE_NAMES = [
+  'Cable Woodchopper (High-to-Low)',
+  'Cable Woodchopper (Low-to-High)',
+  'Commando Pull-Up',
+  'Dance Intervals',
+  'Dancing',
+  'Deck Plank',
+  'Hanging Windshield Wipers',
+  'Machine Rear-Delt Fly',
+  'V-Ups',
+];
+
+export function pruneRemovedExercises() {
+  if (localStorage.getItem('removedDuplicateExercises_v1')) return;
+  const exs = getExercises();
+  const removeNames = new Set(REMOVED_SEED_EXERCISE_NAMES);
+  const kept = exs.filter(ex => !removeNames.has(ex.name.trim()));
+  if (kept.length !== exs.length) saveExercises(kept);
+  localStorage.setItem('removedDuplicateExercises_v1', 'true');
+}
+
+
+
 // Re-seed: insert any missing DEFAULT_EXERCISES by ID
 export function reseedMissingExercises() {
   const exs = getExercises();
