@@ -186,7 +186,9 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
 
   const summary = useMemo(() => computeVolumeSummary(), [refreshKey]);
   const categories = useMemo(() => getCategories(), []);
-  const catName = (id: string) => categories.find(c => c.id === id)?.name ?? id;
+  const catName = (id: string) =>
+    categories.find(c => c.id === id)?.name ?? GROUP_FALLBACK_NAME[id] ?? id;
+
 
   // First-mount bar fill animation trigger
   useEffect(() => {
