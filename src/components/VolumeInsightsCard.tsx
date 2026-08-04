@@ -265,11 +265,18 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           Total Body
         </span>
         <span
-          className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[summary.totalStatus]}`}
+          className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[isEmpty ? 'below' : summary.totalStatus]}`}
         >
-          {STATUS_LABEL[summary.totalStatus]}
+          {STATUS_LABEL[isEmpty ? 'below' : summary.totalStatus]}
         </span>
       </div>
+
+      {isEmpty && (
+        <p className="mt-0.5 text-[10px] text-muted-foreground">
+          Log a workout to start seeing your stimulus insights.
+        </p>
+      )}
+
 
       {/* Collapsed state: only top muscle row */}
       {!expanded && (
