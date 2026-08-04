@@ -43,6 +43,28 @@ const BAR_MAX = 20;
 /** Vertical budget reserved for the front/back anatomical map when expanded. */
 const MAP_HEIGHT = 400;
 
+/** The 7 visible FitLogX muscle groups, always shown in the empty state. */
+const EMPTY_GROUPS = [
+  'cat-chest',
+  'cat-back',
+  'cat-shoulders',
+  'cat-biceps',
+  'cat-triceps',
+  'cat-legs',
+  'cat-abs',
+] as const;
+
+/** Display fallbacks in case a group is missing from stored categories. */
+const GROUP_FALLBACK_NAME: Record<string, string> = {
+  'cat-chest': 'Chest',
+  'cat-back': 'Back',
+  'cat-shoulders': 'Shoulders',
+  'cat-biceps': 'Biceps',
+  'cat-triceps': 'Triceps',
+  'cat-legs': 'Legs',
+  'cat-abs': 'Abs',
+};
+
 
 
 /** Subtitle (under-name) text color per status. Lighter than chip styles. */
