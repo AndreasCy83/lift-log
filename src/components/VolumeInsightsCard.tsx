@@ -187,39 +187,33 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
     };
   }, [expanded]);
 
-  if (!summary.hasAny) {
-    return (
-      <div className="gym-card mt-4 !p-3 animate-fade-in">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <BarChart3 className="h-3.5 w-3.5 text-primary" />
-            <h3 className="font-display text-sm font-semibold">Estimated Stimulus</h3>
-            {InfoButton}
-          </div>
-        </div>
-        <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
-        <div className="flex items-center gap-2 py-0.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.7)]" />
-          <p className="text-xs text-foreground">No recent volume yet</p>
-        </div>
-        <p className="mt-0.5 text-[10px] text-muted-foreground">
-          Log a workout to unlock volume insights.
-        </p>
-        {InfoModal}
-      </div>
-    );
-  }
+  /**
+   * Empty state: no qualifying stimulus data in the window.
+   * Instead of collapsing the card, we render the full structure with all 7
+   * visible muscle groups at a neutral low state (0 sets, "below" band) so the
+   * map + rows still teach what the feature tracks. The "below" band carries no
+   * glow/pulse, so the map renders dim and static.
+   */
+  const isEmpty = !summary.hasAny;
 
+  const rows = isEmpty
+    ? EMPTY_GROUPS.map(categoryId => ({
+        categoryId,
+        weeklySets: 0,
+        status: 'below' as VolumeStatus,
+      }))
+    : summary.weeklyByCategory;
 
-  const collapsedRows = summary.weeklyByCategory.slice(0, COLLAPSED_ROWS);
-  const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
+  const collapsedRows = rows.slice(0, COLLAPSED_ROWS);
+  const hiddenRows = rows.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
   // categoryId -> Estimated Stimulus status for the anatomical map
   const mapStatuses: Record<string, VolumeStatus> = {};
-  for (const row of summary.weeklyByCategory) {
+  for (const row of rows) {
     mapStatuses[row.categoryId] = row.status;
   }
+
 
 
   return (
