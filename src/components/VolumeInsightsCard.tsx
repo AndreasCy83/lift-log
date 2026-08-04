@@ -43,6 +43,28 @@ const BAR_MAX = 20;
 /** Vertical budget reserved for the front/back anatomical map when expanded. */
 const MAP_HEIGHT = 400;
 
+/** The 7 visible FitLogX muscle groups, always shown in the empty state. */
+const EMPTY_GROUPS = [
+  'cat-chest',
+  'cat-back',
+  'cat-shoulders',
+  'cat-biceps',
+  'cat-triceps',
+  'cat-legs',
+  'cat-abs',
+] as const;
+
+/** Display fallbacks in case a group is missing from stored categories. */
+const GROUP_FALLBACK_NAME: Record<string, string> = {
+  'cat-chest': 'Chest',
+  'cat-back': 'Back',
+  'cat-shoulders': 'Shoulders',
+  'cat-biceps': 'Biceps',
+  'cat-triceps': 'Triceps',
+  'cat-legs': 'Legs',
+  'cat-abs': 'Abs',
+};
+
 
 
 /** Subtitle (under-name) text color per status. Lighter than chip styles. */
@@ -164,7 +186,9 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
 
   const summary = useMemo(() => computeVolumeSummary(), [refreshKey]);
   const categories = useMemo(() => getCategories(), []);
-  const catName = (id: string) => categories.find(c => c.id === id)?.name ?? id;
+  const catName = (id: string) =>
+    categories.find(c => c.id === id)?.name ?? GROUP_FALLBACK_NAME[id] ?? id;
+
 
   // First-mount bar fill animation trigger
   useEffect(() => {
@@ -187,39 +211,33 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
     };
   }, [expanded]);
 
-  if (!summary.hasAny) {
-    return (
-      <div className="gym-card mt-4 !p-3 animate-fade-in">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <BarChart3 className="h-3.5 w-3.5 text-primary" />
-            <h3 className="font-display text-sm font-semibold">Estimated Stimulus</h3>
-            {InfoButton}
-          </div>
-        </div>
-        <p className="text-[10px] text-muted-foreground/60 mb-1">Based on last 14 days</p>
-        <div className="flex items-center gap-2 py-0.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.7)]" />
-          <p className="text-xs text-foreground">No recent volume yet</p>
-        </div>
-        <p className="mt-0.5 text-[10px] text-muted-foreground">
-          Log a workout to unlock volume insights.
-        </p>
-        {InfoModal}
-      </div>
-    );
-  }
+  /**
+   * Empty state: no qualifying stimulus data in the window.
+   * Instead of collapsing the card, we render the full structure with all 7
+   * visible muscle groups at a neutral low state (0 sets, "below" band) so the
+   * map + rows still teach what the feature tracks. The "below" band carries no
+   * glow/pulse, so the map renders dim and static.
+   */
+  const isEmpty = !summary.hasAny;
 
+  const rows = isEmpty
+    ? EMPTY_GROUPS.map(categoryId => ({
+        categoryId,
+        weeklySets: 0,
+        status: 'below' as VolumeStatus,
+      }))
+    : summary.weeklyByCategory;
 
-  const collapsedRows = summary.weeklyByCategory.slice(0, COLLAPSED_ROWS);
-  const hiddenRows = summary.weeklyByCategory.slice(COLLAPSED_ROWS);
+  const collapsedRows = rows.slice(0, COLLAPSED_ROWS);
+  const hiddenRows = rows.slice(COLLAPSED_ROWS);
   const hiddenCount = hiddenRows.length;
 
   // categoryId -> Estimated Stimulus status for the anatomical map
   const mapStatuses: Record<string, VolumeStatus> = {};
-  for (const row of summary.weeklyByCategory) {
+  for (const row of rows) {
     mapStatuses[row.categoryId] = row.status;
   }
+
 
 
   return (
@@ -249,11 +267,18 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           Total Body
         </span>
         <span
-          className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[summary.totalStatus]}`}
+          className={`inline-flex rounded-full px-1.5 py-[1px] text-[8px] font-medium uppercase tracking-wider tabular-nums opacity-80 ${STATUS_CHIP_CLASS[isEmpty ? 'below' : summary.totalStatus]}`}
         >
-          {STATUS_LABEL[summary.totalStatus]}
+          {STATUS_LABEL[isEmpty ? 'below' : summary.totalStatus]}
         </span>
       </div>
+
+      {isEmpty && (
+        <p className="mt-0.5 text-[10px] text-muted-foreground">
+          Log a workout to start seeing your stimulus insights.
+        </p>
+      )}
+
 
       {/* Collapsed state: only top muscle row */}
       {!expanded && (
@@ -278,7 +303,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${summary.weeklyByCategory.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
+            maxHeight: expanded ? `${rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
@@ -290,7 +315,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </div>
 
           <div className="space-y-0.5 pt-1">
-            {summary.weeklyByCategory.map((row, i) => (
+            {rows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
                 categoryId={row.categoryId}
