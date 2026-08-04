@@ -301,7 +301,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${summary.weeklyByCategory.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
+            maxHeight: expanded ? `${rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
@@ -313,7 +313,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
           </div>
 
           <div className="space-y-0.5 pt-1">
-            {summary.weeklyByCategory.map((row, i) => (
+            {rows.map((row, i) => (
               <MuscleRow
                 key={row.categoryId}
                 categoryId={row.categoryId}
