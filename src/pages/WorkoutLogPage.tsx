@@ -83,7 +83,7 @@ import SupersetPickerDialog from '@/components/SupersetPickerDialog';
 import SupersetGroupRail from '@/components/SupersetGroupRail';
 import {
   planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
-  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance,
+  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance, groupMembers,
 } from '@/lib/supersets';
 
 // Tutorial steps are built inside the component to read from i18n.
