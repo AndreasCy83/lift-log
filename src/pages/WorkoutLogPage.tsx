@@ -57,7 +57,7 @@ import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
 import FloatingRestTimer from '@/components/FloatingRestTimer';
-import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
+import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers, getCurrentRestTimer, REST_TIMERS_CHANGED_EVENT } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
 import { isMeaningfulPendingSet, getMissingRequiredFields, canCompleteSet } from '@/lib/setCompletion';
