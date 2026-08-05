@@ -20,6 +20,10 @@ import { createWorkoutFromRoutine } from '@/lib/routineRunner';
 import { startSession } from '@/lib/workoutSession';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -76,6 +80,7 @@ export default function RoutinesPage() {
   const [logToDateRoutine, setLogToDateRoutine] = useState<Routine | null>(null);
   const [renameRoutine, setRenameRoutine] = useState<Routine | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [deleteRoutineTarget, setDeleteRoutineTarget] = useState<Routine | null>(null);
 
   const [logToDateProgram, setLogToDateProgram] = useState<Program | null>(null);
   const [renameProgram, setRenameProgram] = useState<Program | null>(null);
@@ -490,7 +495,7 @@ export default function RoutinesPage() {
                             <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => { setRenameValue(r.name); setRenameRoutine(r); }}><Pencil className="h-4 w-4 mr-2" /> {t('routines.actions.rename')}</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDeleteRoutineTarget(r)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -614,6 +619,38 @@ export default function RoutinesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete routine confirmation */}
+      <AlertDialog open={!!deleteRoutineTarget} onOpenChange={open => { if (!open) setDeleteRoutineTarget(null); }}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-base">
+              {t('routines.deleteDialog.title', 'Delete routine?')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('routines.deleteDialog.message', {
+                name: deleteRoutineTarget?.name ?? '',
+                defaultValue: 'Are you sure you want to delete "{{name}}"? This cannot be undone.',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteRoutineTarget(null)}>
+              {t('common.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!deleteRoutineTarget) return;
+                handleDeleteRoutine(deleteRoutineTarget.id);
+                setDeleteRoutineTarget(null);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
