@@ -615,6 +615,38 @@ export default function RoutinesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete routine confirmation */}
+      <AlertDialog open={!!deleteRoutineTarget} onOpenChange={open => { if (!open) setDeleteRoutineTarget(null); }}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-base">
+              {t('routines.deleteDialog.title', 'Delete routine?')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('routines.deleteDialog.message', {
+                name: deleteRoutineTarget?.name ?? '',
+                defaultValue: 'Are you sure you want to delete "{{name}}"? This cannot be undone.',
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteRoutineTarget(null)}>
+              {t('common.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!deleteRoutineTarget) return;
+                handleDeleteRoutine(deleteRoutineTarget.id);
+                setDeleteRoutineTarget(null);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
