@@ -1101,11 +1101,34 @@ export default function WorkoutLogPage() {
                     };
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     const restSec = s.restSeconds ?? we.defaultRestSeconds ?? null;
+                    const isNextPrimary = nextSetHighlight.primary === s.id;
+                    const isNextLinked = !isNextPrimary && nextSetHighlight.linked.has(s.id);
 
                     return (
-                    <div key={s.id} data-set-id={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}>
-                        <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                    <div key={s.id} data-set-id={s.id} className="relative">
+                      {(isNextPrimary || isNextLinked) && (
+                        <span
+                          className={`pointer-events-none absolute -top-2 right-1 z-10 rounded-full px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider ${
+                            isNextPrimary
+                              ? 'bg-primary text-primary-foreground shadow-[0_0_8px_hsl(var(--primary)/0.6)]'
+                              : 'bg-primary/25 text-primary'
+                          }`}
+                        >
+                          {isNextPrimary ? t('workout.upNext', 'Up next') : t('workout.next', 'Next')}
+                        </span>
+                      )}
+                      <div
+                        className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-all duration-300 ${
+                          isNextPrimary
+                            ? 'next-set-primary bg-primary/10 ring-2 ring-primary/70'
+                            : isNextLinked
+                              ? 'next-set-linked bg-primary/[0.06] ring-1 ring-primary/35'
+                              : s.isCompleted ? 'bg-green-500/5' : ''
+                        }`}
+                        style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}
+                      >
+                        <div className={`text-xs ${isNextPrimary ? 'text-primary font-bold' : 'text-muted-foreground'}`}>{s.setIndex + 1}</div>
+
                         <div className="flex justify-center">
                           <button
                             onClick={() => setSetNoteOpen(setNoteOpen === s.id ? null : s.id)}
