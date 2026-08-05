@@ -76,6 +76,7 @@ export default function RoutinesPage() {
   const [logToDateRoutine, setLogToDateRoutine] = useState<Routine | null>(null);
   const [renameRoutine, setRenameRoutine] = useState<Routine | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [deleteRoutineTarget, setDeleteRoutineTarget] = useState<Routine | null>(null);
 
   const [logToDateProgram, setLogToDateProgram] = useState<Program | null>(null);
   const [renameProgram, setRenameProgram] = useState<Program | null>(null);
