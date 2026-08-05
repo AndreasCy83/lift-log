@@ -258,6 +258,14 @@ export default function WorkoutLogPage() {
     return () => window.removeEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
   }, []);
 
+  // Keep the "next set" highlight in sync with rest-timer changes (start/pause/finish).
+  useEffect(() => {
+    const onTimers = () => forceUpdate(n => n + 1);
+    window.addEventListener(REST_TIMERS_CHANGED_EVENT, onTimers);
+    return () => window.removeEventListener(REST_TIMERS_CHANGED_EVENT, onTimers);
+  }, []);
+
+
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
     const sets = getSetsForWorkoutExercise(we.id);
