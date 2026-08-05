@@ -57,7 +57,7 @@ import RestTimerEditorSheet from '@/components/RestTimerEditorSheet';
 import ExerciseRestTimerSheet from '@/components/ExerciseRestTimerSheet';
 import ExerciseTutorialOverlay, { type TutorialStep } from '@/components/ExerciseTutorialOverlay';
 import FloatingRestTimer from '@/components/FloatingRestTimer';
-import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers } from '@/lib/restTimerState';
+import { startRestTimer, clearAllTimersForExercise, getActiveTimers, clearAllRestTimers, getCurrentRestTimer, REST_TIMERS_CHANGED_EVENT } from '@/lib/restTimerState';
 import RestTimerNative from '@/lib/RestTimerNative';
 import { stopAllCues } from '@/lib/ttsVoice';
 import { isMeaningfulPendingSet, getMissingRequiredFields, canCompleteSet } from '@/lib/setCompletion';
@@ -83,7 +83,7 @@ import SupersetPickerDialog from '@/components/SupersetPickerDialog';
 import SupersetGroupRail from '@/components/SupersetGroupRail';
 import {
   planCreateGroup, planRemoveFromGroup, contiguousOrderedIds, getGroupPosition,
-  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance,
+  isRoundComplete, computeSupersetNextTarget, getSmartSupersetAdvance, groupMembers,
 } from '@/lib/supersets';
 
 // Tutorial steps are built inside the component to read from i18n.
@@ -257,6 +257,46 @@ export default function WorkoutLogPage() {
     window.addEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
     return () => window.removeEventListener(REQUEST_LEAVE_WORKOUT_EVENT, onLeaveReq);
   }, []);
+
+  // Keep the "next set" highlight in sync with rest-timer changes (start/pause/finish).
+  useEffect(() => {
+    const onTimers = () => forceUpdate(n => n + 1);
+    window.addEventListener(REST_TIMERS_CHANGED_EVENT, onTimers);
+    return () => window.removeEventListener(REST_TIMERS_CHANGED_EVENT, onTimers);
+  }, []);
+
+  /**
+   * While a rest timer is running, resolve which set the user should perform next.
+   * - primary: next incomplete set of the exercise whose timer is active
+   * - linked: next incomplete set of each other member of the same superset group
+   * Recomputed on every render (updateKey / timer events drive re-renders).
+   */
+  const nextSetHighlight = ((): { primary: string | null; linked: Set<string> } => {
+    const empty = { primary: null as string | null, linked: new Set<string>() };
+    void updateKey;
+    const timer = getCurrentRestTimer();
+    if (!timer) return empty;
+    const activeWE = workoutExercises.find(w => w.id === timer.workoutExerciseId);
+    if (!activeWE) return empty;
+    const firstIncomplete = (weId: string, afterIdx?: number): string | null => {
+      const pending = getSetsForWorkoutExercise(weId)
+        .filter(s => !s.isCompleted)
+        .sort((a, b) => a.setIndex - b.setIndex);
+      const pick = afterIdx != null ? (pending.find(s => s.setIndex > afterIdx) ?? pending[0]) : pending[0];
+      return pick?.id ?? null;
+    };
+    const primary = firstIncomplete(activeWE.id, timer.afterSetIndex);
+    const linked = new Set<string>();
+    if (activeWE.supersetGroupId) {
+      groupMembers(workoutExercises, activeWE.supersetGroupId).forEach(m => {
+        if (m.id === activeWE.id) return;
+        const id = firstIncomplete(m.id);
+        if (id) linked.add(id);
+      });
+    }
+    return { primary, linked };
+  })();
+
 
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
@@ -1061,11 +1101,34 @@ export default function WorkoutLogPage() {
                     };
                     const nextTag: Record<SetTag, SetTag> = { N: 'W', W: 'D', D: 'F', F: 'N' };
                     const restSec = s.restSeconds ?? we.defaultRestSeconds ?? null;
+                    const isNextPrimary = nextSetHighlight.primary === s.id;
+                    const isNextLinked = !isNextPrimary && nextSetHighlight.linked.has(s.id);
 
                     return (
-                    <div key={s.id} data-set-id={s.id}>
-                      <div className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-colors ${s.isCompleted ? 'bg-green-500/5' : ''}`} style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}>
-                        <div className="text-xs text-muted-foreground">{s.setIndex + 1}</div>
+                    <div key={s.id} data-set-id={s.id} className="relative">
+                      {(isNextPrimary || isNextLinked) && (
+                        <span
+                          className={`pointer-events-none absolute -top-2 right-1 z-10 rounded-full px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider ${
+                            isNextPrimary
+                              ? 'bg-primary text-primary-foreground shadow-[0_0_8px_hsl(var(--primary)/0.6)]'
+                              : 'bg-primary/25 text-primary'
+                          }`}
+                        >
+                          {isNextPrimary ? t('workout.upNext', 'Up next') : t('workout.next', 'Next')}
+                        </span>
+                      )}
+                      <div
+                        className={`grid gap-1 items-center px-1 py-1 rounded-lg transition-all duration-300 ${
+                          isNextPrimary
+                            ? 'next-set-primary bg-primary/10 ring-2 ring-primary/70'
+                            : isNextLinked
+                              ? 'next-set-linked bg-primary/[0.06] ring-1 ring-primary/35'
+                              : s.isCompleted ? 'bg-green-500/5' : ''
+                        }`}
+                        style={{ gridTemplateColumns: '1.2rem 1rem 1.8rem 0.35rem minmax(0,3.1rem) minmax(0,3.1rem) minmax(0,2.4rem) 0.4rem 1.6rem 1.25rem 2rem' }}
+                      >
+                        <div className={`text-xs ${isNextPrimary ? 'text-primary font-bold' : 'text-muted-foreground'}`}>{s.setIndex + 1}</div>
+
                         <div className="flex justify-center">
                           <button
                             onClick={() => setSetNoteOpen(setNoteOpen === s.id ? null : s.id)}
