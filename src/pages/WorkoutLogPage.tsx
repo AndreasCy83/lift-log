@@ -265,6 +265,38 @@ export default function WorkoutLogPage() {
     return () => window.removeEventListener(REST_TIMERS_CHANGED_EVENT, onTimers);
   }, []);
 
+  /**
+   * While a rest timer is running, resolve which set the user should perform next.
+   * - primary: next incomplete set of the exercise whose timer is active
+   * - linked: next incomplete set of each other member of the same superset group
+   * Recomputed on every render (updateKey / timer events drive re-renders).
+   */
+  const nextSetHighlight = ((): { primary: string | null; linked: Set<string> } => {
+    const empty = { primary: null as string | null, linked: new Set<string>() };
+    void updateKey;
+    const timer = getCurrentRestTimer();
+    if (!timer) return empty;
+    const activeWE = workoutExercises.find(w => w.id === timer.workoutExerciseId);
+    if (!activeWE) return empty;
+    const firstIncomplete = (weId: string, afterIdx?: number): string | null => {
+      const pending = getSetsForWorkoutExercise(weId)
+        .filter(s => !s.isCompleted)
+        .sort((a, b) => a.setIndex - b.setIndex);
+      const pick = afterIdx != null ? (pending.find(s => s.setIndex > afterIdx) ?? pending[0]) : pending[0];
+      return pick?.id ?? null;
+    };
+    const primary = firstIncomplete(activeWE.id, timer.afterSetIndex);
+    const linked = new Set<string>();
+    if (activeWE.supersetGroupId) {
+      groupMembers(workoutExercises, activeWE.supersetGroupId).forEach(m => {
+        if (m.id === activeWE.id) return;
+        const id = firstIncomplete(m.id);
+        if (id) linked.add(id);
+      });
+    }
+    return { primary, linked };
+  })();
+
 
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
   const getRestForSet = useCallback((we: WorkoutExercise, setIndex: number): number | null => {
