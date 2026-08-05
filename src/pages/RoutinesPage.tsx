@@ -491,7 +491,7 @@ export default function RoutinesPage() {
                             <DropdownMenuItem onClick={() => setLogToDateRoutine(r)}><CalendarPlus className="h-4 w-4 mr-2" /> {t('routines.actions.logToDate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDuplicate(r)}><Copy className="h-4 w-4 mr-2" /> {t('routines.actions.duplicate')}</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => { setRenameValue(r.name); setRenameRoutine(r); }}><Pencil className="h-4 w-4 mr-2" /> {t('routines.actions.rename')}</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDeleteRoutine(r.id)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDeleteRoutineTarget(r)} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" /> {t('routines.actions.delete')}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
