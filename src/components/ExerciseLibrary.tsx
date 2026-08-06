@@ -113,7 +113,7 @@ export default function ExerciseLibrary({ onClose }: Props) {
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-3 space-y-3">
+      <div className="mx-auto w-full max-w-lg flex-1 px-4 pt-4 space-y-3">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
