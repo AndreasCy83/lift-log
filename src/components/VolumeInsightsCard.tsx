@@ -303,20 +303,22 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
+            maxHeight: expanded ? `${expandedHeight ?? rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
               : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="py-1">
-            <MuscleMap statuses={mapStatuses} scale={0.85} />
-          </div>
+          <div ref={expandContentRef} className="pb-3">
+            <div className="py-1">
+              <MuscleMap statuses={mapStatuses} scale={0.85} />
+            </div>
 
-          <div className="space-y-0.5 pt-1">
-            {rows.map((row, i) => (
-              <MuscleRow
+            <div className="space-y-0.5 pt-1">
+              {rows.map((row, i) => (
+                <MuscleRow
+
                 key={row.categoryId}
                 categoryId={row.categoryId}
                 name={catName(row.categoryId)}
