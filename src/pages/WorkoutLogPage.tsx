@@ -266,36 +266,98 @@ export default function WorkoutLogPage() {
   }, []);
 
   /**
-   * While a rest timer is running, resolve which set the user should perform next.
-   * - primary: next incomplete set of the exercise whose timer is active
+   * Resolve which set the user should perform next, independent of whether a
+   * rest timer is running.
+   * - primary: the single next actionable set in the workout flow
    * - linked: next incomplete set of each other member of the same superset group
    * Recomputed on every render (updateKey / timer events drive re-renders).
    */
   const nextSetHighlight = ((): { primary: string | null; linked: Set<string> } => {
     const empty = { primary: null as string | null, linked: new Set<string>() };
     void updateKey;
-    const timer = getCurrentRestTimer();
-    if (!timer) return empty;
-    const activeWE = workoutExercises.find(w => w.id === timer.workoutExerciseId);
-    if (!activeWE) return empty;
-    const firstIncomplete = (weId: string, afterIdx?: number): string | null => {
-      const pending = getSetsForWorkoutExercise(weId)
-        .filter(s => !s.isCompleted)
-        .sort((a, b) => a.setIndex - b.setIndex);
+
+    const ordered = [...workoutExercises].sort((a, b) => a.position - b.position);
+    if (ordered.length === 0) return empty;
+
+    const setsByWE: Record<string, WorkoutSet[]> = {};
+    ordered.forEach(we => { setsByWE[we.id] = getSetsForWorkoutExercise(we.id); });
+
+    const pendingSets = (weId: string) =>
+      (setsByWE[weId] ?? []).filter(s => !s.isCompleted).sort((a, b) => a.setIndex - b.setIndex);
+
+    const firstIncompleteId = (weId: string, afterIdx?: number): string | null => {
+      const pending = pendingSets(weId);
       const pick = afterIdx != null ? (pending.find(s => s.setIndex > afterIdx) ?? pending[0]) : pending[0];
       return pick?.id ?? null;
     };
-    const primary = firstIncomplete(activeWE.id, timer.afterSetIndex);
+
+    /** First exercise (in flow order) that still has an incomplete set, starting at index `from`. */
+    const nextExerciseWithWork = (from: number): WorkoutExercise | null => {
+      for (let i = from; i < ordered.length; i += 1) {
+        if (pendingSets(ordered[i].id).length > 0) return ordered[i];
+      }
+      for (let i = 0; i < from; i += 1) {
+        if (pendingSets(ordered[i].id).length > 0) return ordered[i];
+      }
+      return null;
+    };
+
+    let primaryWeId: string | null = null;
+    let primarySetId: string | null = null;
+
+    const timer = getCurrentRestTimer();
+    const activeWE = timer ? ordered.find(w => w.id === timer.workoutExerciseId) ?? null : null;
+
+    if (timer && activeWE) {
+      // Superset: hop to the linked exercise's set for this round.
+      if (activeWE.supersetGroupId) {
+        const target = computeSupersetNextTarget(ordered, setsByWE, activeWE.id, timer.afterSetIndex);
+        if (target) {
+          const s = (setsByWE[target.workoutExerciseId] ?? []).find(x => x.setIndex === target.setIndex);
+          if (s && !s.isCompleted) {
+            primaryWeId = target.workoutExerciseId;
+            primarySetId = s.id;
+          }
+        }
+      }
+      if (!primarySetId) {
+        const sameEx = firstIncompleteId(activeWE.id, timer.afterSetIndex);
+        if (sameEx) {
+          primaryWeId = activeWE.id;
+          primarySetId = sameEx;
+        }
+      }
+      if (!primarySetId) {
+        // Exercise finished — move to the next exercise in sequence.
+        const idx = ordered.findIndex(w => w.id === activeWE.id);
+        const nextWE = nextExerciseWithWork(idx + 1);
+        if (nextWE) {
+          primaryWeId = nextWE.id;
+          primarySetId = firstIncompleteId(nextWE.id);
+        }
+      }
+    } else {
+      const nextWE = nextExerciseWithWork(0);
+      if (nextWE) {
+        primaryWeId = nextWE.id;
+        primarySetId = firstIncompleteId(nextWE.id);
+      }
+    }
+
+    if (!primarySetId || !primaryWeId) return empty;
+
     const linked = new Set<string>();
-    if (activeWE.supersetGroupId) {
-      groupMembers(workoutExercises, activeWE.supersetGroupId).forEach(m => {
-        if (m.id === activeWE.id) return;
-        const id = firstIncomplete(m.id);
+    const primaryWE = ordered.find(w => w.id === primaryWeId);
+    if (primaryWE?.supersetGroupId) {
+      groupMembers(ordered, primaryWE.supersetGroupId).forEach(m => {
+        if (m.id === primaryWE.id) return;
+        const id = firstIncompleteId(m.id);
         if (id) linked.add(id);
       });
     }
-    return { primary, linked };
+    return { primary: primarySetId, linked };
   })();
+
 
 
   /** Get rest seconds for a specific set: per-set override > exercise default > null */
