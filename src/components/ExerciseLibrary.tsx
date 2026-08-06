@@ -97,7 +97,10 @@ export default function ExerciseLibrary({ onClose }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col pb-20">
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
+    >
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-lg px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <button onClick={onClose} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary">
@@ -148,7 +151,7 @@ export default function ExerciseLibrary({ onClose }: Props) {
         </div>
 
         {/* Exercise list */}
-        <div className="space-y-1">
+        <div className="space-y-1 pb-6">
           {filtered.map(ex => (
             <div
               key={ex.id}
