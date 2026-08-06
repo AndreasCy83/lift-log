@@ -318,20 +318,21 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
             <div className="space-y-0.5 pt-1">
               {rows.map((row, i) => (
                 <MuscleRow
-
-                key={row.categoryId}
-                categoryId={row.categoryId}
-                name={catName(row.categoryId)}
-                weeklySets={row.weeklySets}
-                status={row.status}
-                filled={revealedExpand}
-                reduced={reduced}
-                delayMs={i * 55}
-              />
-            ))}
+                  key={row.categoryId}
+                  categoryId={row.categoryId}
+                  name={catName(row.categoryId)}
+                  weeklySets={row.weeklySets}
+                  status={row.status}
+                  filled={revealedExpand}
+                  reduced={reduced}
+                  delayMs={i * 55}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
+
 
       {hiddenCount > 0 && (
         <button
