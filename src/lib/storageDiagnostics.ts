@@ -87,11 +87,14 @@ export function logStorageDiagnostics(installIdKey: string): void {
   console.log('[FitLogX][storage-diagnostics]', snapshot);
 
   if (suspiciousFreshInstall) {
+    // Informational only - this is the EXPECTED signature of Android Auto Backup
+    // / device-transfer restoring the user's own data. Nothing is wiped here.
     // eslint-disable-next-line no-console
-    console.warn(
-      '[FitLogX][storage-diagnostics] Pre-existing data found with NO install id. ' +
-      'This is the Android Auto Backup / device-transfer restore signature - ' +
-      'verify android:allowBackup="false" and the backup rule XMLs in the merged manifest.'
+    console.info(
+      '[FitLogX][storage-diagnostics] Data present with no install id. ' +
+      'This most likely means Android backup / device transfer restored the ' +
+      'user\'s previous local data. Data is kept as-is (never auto-cleared).'
     );
   }
+
 }
