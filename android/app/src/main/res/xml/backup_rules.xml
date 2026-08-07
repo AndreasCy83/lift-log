@@ -4,17 +4,16 @@
   Android WebView's localStorage (app_webview/...) plus a few SharedPreferences
   written by Capacitor plugins.
 
-  Android Auto Backup (API 23-30, android:fullBackupContent) would otherwise
-  upload that data to Google's backup transport and silently restore it after an
-  uninstall + reinstall - which is exactly the "old data on a clean install" bug.
-  Backup/restore for FitLogX must be explicit (JSON export/import in Settings),
-  so every data location is excluded here.
+  Android Auto Backup (API 23-30, android:fullBackupContent) is INTENTIONALLY
+  ENABLED so a user can restore their data after reinstalling FitLogX or moving
+  to a new Android device. Nothing user-created is excluded here.
+
+  Only volatile caches are excluded, because restoring them is useless and can
+  ship stale web assets to a new install.
 -->
 <full-backup-content>
-    <!-- WebView storage: localStorage / IndexedDB / cookies live here -->
-    <exclude domain="database" />
-    <exclude domain="sharedpref" />
-    <exclude domain="file" />
-    <exclude domain="external" />
-    <exclude domain="root" />
+    <!-- Caches only. WebView localStorage/IndexedDB and SharedPreferences are backed up. -->
+    <exclude domain="file" path="cache/" />
+    <exclude domain="file" path="code_cache/" />
+    <exclude domain="external" path="cache/" />
 </full-backup-content>
