@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FitLogX is a local-only app: all workout history and profile data live in the
+  Android WebView's localStorage (app_webview/...) plus a few SharedPreferences
+  written by Capacitor plugins.
+
+  Android Auto Backup (API 23-30, android:fullBackupContent) would otherwise
+  upload that data to Google's backup transport and silently restore it after an
+  uninstall + reinstall - which is exactly the "old data on a clean install" bug.
+  Backup/restore for FitLogX must be explicit (JSON export/import in Settings),
+  so every data location is excluded here.
+-->
+<full-backup-content>
+    <!-- WebView storage: localStorage / IndexedDB / cookies live here -->
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="file" />
+    <exclude domain="external" />
+    <exclude domain="root" />
+</full-backup-content>
