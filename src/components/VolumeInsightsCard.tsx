@@ -197,6 +197,19 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
     return () => cancelAnimationFrame(id);
   }, [refreshKey]);
 
+  // Measure the expandable content so it never gets clipped on small/Android screens
+  const expandContentRef = useRef<HTMLDivElement | null>(null);
+  const [expandedHeight, setExpandedHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = expandContentRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const measure = () => setExpandedHeight(el.scrollHeight + 8);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [expanded, refreshKey]);
+
   // Trigger reveal animation for newly shown rows after expand
   const expandTimer = useRef<number | null>(null);
   useEffect(() => {
@@ -210,6 +223,7 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
       if (expandTimer.current) window.clearTimeout(expandTimer.current);
     };
   }, [expanded]);
+
 
   /**
    * Empty state: no qualifying stimulus data in the window.
@@ -303,33 +317,36 @@ export default function VolumeInsightsCard({ refreshKey }: Props) {
         <div
           className="overflow-hidden"
           style={{
-            maxHeight: expanded ? `${rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
+            maxHeight: expanded ? `${expandedHeight ?? rows.length * 36 + 8 + MAP_HEIGHT}px` : '0px',
             opacity: expanded ? 1 : 0,
             transition: reduced
               ? 'none'
               : 'max-height 320ms ease-out, opacity 220ms ease-out',
           }}
         >
-          <div className="py-1">
-            <MuscleMap statuses={mapStatuses} scale={0.85} />
-          </div>
+          <div ref={expandContentRef} className="pb-3">
+            <div className="py-1">
+              <MuscleMap statuses={mapStatuses} scale={0.85} />
+            </div>
 
-          <div className="space-y-0.5 pt-1">
-            {rows.map((row, i) => (
-              <MuscleRow
-                key={row.categoryId}
-                categoryId={row.categoryId}
-                name={catName(row.categoryId)}
-                weeklySets={row.weeklySets}
-                status={row.status}
-                filled={revealedExpand}
-                reduced={reduced}
-                delayMs={i * 55}
-              />
-            ))}
+            <div className="space-y-0.5 pt-1">
+              {rows.map((row, i) => (
+                <MuscleRow
+                  key={row.categoryId}
+                  categoryId={row.categoryId}
+                  name={catName(row.categoryId)}
+                  weeklySets={row.weeklySets}
+                  status={row.status}
+                  filled={revealedExpand}
+                  reduced={reduced}
+                  delayMs={i * 55}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
+
 
       {hiddenCount > 0 && (
         <button
