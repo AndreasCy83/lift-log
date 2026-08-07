@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import { useCallback, useEffect, useState } from "react";
 import { getSettings, migrateCategoryIds, cleanupUuidCategories, reseedMissingExercises, pruneRemovedExercises, seedBuiltInPrograms } from "@/lib/storage";
 import { applyTheme } from "@/lib/applyTheme";
+import { logStorageDiagnostics } from "@/lib/storageDiagnostics";
 import { checkPendingBackup } from "@/lib/autoBackup";
 import { initBilling } from "@/lib/billing";
 import { preloadAudioCues } from "@/lib/ttsVoice";
@@ -64,6 +65,10 @@ function resetTutorialStorage() {
 
 function ThemeInit() {
   useEffect(() => {
+    // Dev/debug-only, privacy-safe snapshot of local storage state before any
+    // migration touches it. No-ops in production builds.
+    logStorageDiagnostics(INSTALL_ID_KEY);
+
     cleanupUuidCategories();
     migrateCategoryIds();
     reseedMissingExercises();
