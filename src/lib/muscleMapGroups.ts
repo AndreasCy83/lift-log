@@ -214,3 +214,51 @@ export function withAlpha(color: string, alpha: number): string {
 
   return c;
 }
+
+/* ------------------------------------------------------------------------- *
+ * Recovery mode
+ *
+ * The Recovery map speaks a different visual language than Estimated
+ * Stimulus: flat readiness colors (red / yellow / green), no glow, no pulse.
+ * ------------------------------------------------------------------------- */
+
+export type RecoveryState = 'notReady' | 'partial' | 'ready' | 'unknown';
+
+/** Calm, dark-UI friendly readiness colors (no neon, no glow). */
+export const RECOVERY_COLORS: Record<RecoveryState, string> = {
+  notReady: 'hsl(0, 62%, 50%)',    // red    — needs more recovery
+  partial:  'hsl(43, 85%, 52%)',   // yellow — partially recovered
+  ready:    'hsl(150, 55%, 44%)',  // green  — recovered
+  unknown:  'hsl(210, 8%, 42%)',   // neutral — no data yet
+};
+
+const RECOVERY_ALPHA: Record<RecoveryState, number> = {
+  notReady: 0.85,
+  partial: 0.78,
+  ready: 0.62,
+  unknown: 0.32,
+};
+
+/**
+ * Expand a `categoryId -> RecoveryState` map into per-slug highlight entries.
+ * Intentionally glow-free so Recovery never reads louder than Stimulus.
+ */
+export function buildRecoveryHighlightData(
+  states: Record<string, RecoveryState>,
+): HighlightPart[] {
+  const out: HighlightPart[] = [];
+  const seen = new Set<MuscleSlug>();
+
+  for (const [categoryId, state] of Object.entries(states)) {
+    const slugs = CATEGORY_TO_SLUGS[categoryId];
+    if (!slugs) continue;
+    const fill = withAlpha(RECOVERY_COLORS[state], RECOVERY_ALPHA[state]);
+    for (const slug of slugs) {
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      out.push({ slug, color: fill, styles: { fill } });
+    }
+  }
+
+  return out;
+}
