@@ -2,23 +2,34 @@
 // Uses only completed (toggled) non-warmup sets within the last 96 hours.
 import { getWorkouts, getExercises, getExercisesForWorkout, getSetsForWorkoutExercise } from './storage';
 
-export type MuscleGroup = 'Chest' | 'Back' | 'Legs' | 'Shoulders' | 'Arms' | 'Core';
+export type MuscleGroup = 'Chest' | 'Back' | 'Legs' | 'Shoulders' | 'Biceps' | 'Triceps' | 'Abs';
 
-export const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
+export const MUSCLE_GROUPS: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Biceps', 'Triceps', 'Abs'];
+
+/** Visible muscle group -> FitLogX category id (used by the recovery muscle map). */
+export const MUSCLE_TO_CATEGORY: Record<MuscleGroup, string> = {
+  Chest: 'cat-chest',
+  Back: 'cat-back',
+  Legs: 'cat-legs',
+  Shoulders: 'cat-shoulders',
+  Biceps: 'cat-biceps',
+  Triceps: 'cat-triceps',
+  Abs: 'cat-abs',
+};
 
 // Map category IDs to muscle groups with a share weight.
 // Each category contributes to a primary muscle (1.0) and optional secondaries.
 const CATEGORY_TO_MUSCLES: Record<string, Partial<Record<MuscleGroup, number>>> = {
-  'cat-chest':     { Chest: 1.0, Shoulders: 0.25, Arms: 0.10 },
-  'cat-back':      { Back: 1.0, Arms: 0.25 },
-  'cat-legs':      { Legs: 1.0, Core: 0.10 },
-  'cat-shoulders': { Shoulders: 1.0, Arms: 0.10 },
-  'cat-biceps':    { Arms: 1.0, Back: 0.10 },
-  'cat-triceps':   { Arms: 1.0, Chest: 0.10 },
-  'cat-core':      { Core: 1.0 },
-  'cat-abs':       { Core: 1.0 },
-  'cat-olympic':   { Legs: 1.0, Back: 0.33, Shoulders: 0.25, Core: 0.10 },
-  'cat-cardio':    { Legs: 0.5, Core: 0.10 },
+  'cat-chest':     { Chest: 1.0, Shoulders: 0.25, Triceps: 0.10 },
+  'cat-back':      { Back: 1.0, Biceps: 0.25 },
+  'cat-legs':      { Legs: 1.0, Abs: 0.10 },
+  'cat-shoulders': { Shoulders: 1.0, Triceps: 0.10 },
+  'cat-biceps':    { Biceps: 1.0, Back: 0.10 },
+  'cat-triceps':   { Triceps: 1.0, Chest: 0.10 },
+  'cat-core':      { Abs: 1.0 },
+  'cat-abs':       { Abs: 1.0 },
+  'cat-olympic':   { Legs: 1.0, Back: 0.33, Shoulders: 0.25, Abs: 0.10 },
+  'cat-cardio':    { Legs: 0.5, Abs: 0.10 },
 };
 
 // Isolation exercises: name-keyword match → muscle-only mapping (overrides category spillover).
@@ -35,19 +46,19 @@ const ISOLATION_OVERRIDES: { match: string; muscles: Partial<Record<MuscleGroup,
   { match: 'reverse fly',    muscles: { Shoulders: 1.0 } },
   { match: 'face pull',      muscles: { Shoulders: 1.0, Back: 0.33 } },
   { match: 'shrug',          muscles: { Back: 1.0 } },
-  { match: 'bicep curl',     muscles: { Arms: 1.0 } },
-  { match: 'preacher curl',  muscles: { Arms: 1.0 } },
-  { match: 'hammer curl',    muscles: { Arms: 1.0 } },
-  { match: 'tricep',         muscles: { Arms: 1.0 } },
-  { match: 'pushdown',       muscles: { Arms: 1.0 } },
-  { match: 'skull crusher',  muscles: { Arms: 1.0 } },
-  { match: 'ab ',            muscles: { Core: 1.0 } },
-  { match: 'crunch',         muscles: { Core: 1.0 } },
-  { match: 'plank',          muscles: { Core: 1.0 } },
-  { match: 'sit up',         muscles: { Core: 1.0 } },
-  { match: 'sit-up',         muscles: { Core: 1.0 } },
-  { match: 'leg raise',      muscles: { Core: 1.0 } },
-  { match: 'prayer',         muscles: { Core: 1.0 } },
+  { match: 'bicep curl',     muscles: { Biceps: 1.0 } },
+  { match: 'preacher curl',  muscles: { Biceps: 1.0 } },
+  { match: 'hammer curl',    muscles: { Biceps: 1.0 } },
+  { match: 'tricep',         muscles: { Triceps: 1.0 } },
+  { match: 'pushdown',       muscles: { Triceps: 1.0 } },
+  { match: 'skull crusher',  muscles: { Triceps: 1.0 } },
+  { match: 'ab ',            muscles: { Abs: 1.0 } },
+  { match: 'crunch',         muscles: { Abs: 1.0 } },
+  { match: 'plank',          muscles: { Abs: 1.0 } },
+  { match: 'sit up',         muscles: { Abs: 1.0 } },
+  { match: 'sit-up',         muscles: { Abs: 1.0 } },
+  { match: 'leg raise',      muscles: { Abs: 1.0 } },
+  { match: 'prayer',         muscles: { Abs: 1.0 } },
   { match: 'pec deck',       muscles: { Chest: 1.0 } },
   { match: 'chest fly',      muscles: { Chest: 1.0 } },
   { match: 'cable fly',      muscles: { Chest: 1.0 } },
@@ -140,10 +151,10 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
 
   // raw fatigue contributions per muscle (already decayed) + raw-by-age for projection
   const rawByMuscle: Record<MuscleGroup, { raw: number; ageHours: number }[]> = {
-    Chest: [], Back: [], Legs: [], Shoulders: [], Arms: [], Core: [],
+    Chest: [], Back: [], Legs: [], Shoulders: [], Biceps: [], Triceps: [], Abs: [],
   };
   const weeklyCount: Record<MuscleGroup, number> = {
-    Chest: 0, Back: 0, Legs: 0, Shoulders: 0, Arms: 0, Core: 0,
+    Chest: 0, Back: 0, Legs: 0, Shoulders: 0, Biceps: 0, Triceps: 0, Abs: 0,
   };
 
   const nowMs = now.getTime();
@@ -203,8 +214,9 @@ export function computeMuscleFatigue(now: Date = new Date()): MuscleFatigue[] {
       Back: 73,
       Legs: 72,
       Shoulders: 48,
-      Arms: 48, // biceps/triceps both 48h
-      Core: 24, // abs/core
+      Biceps: 48,
+      Triceps: 48,
+      Abs: 24,
     };
     const remainingHours = Math.min(rawRemaining, MAX_RECOVERY_HOURS[m]);
     // "Original" total recovery window = remaining + time elapsed since most-recent contribution.
