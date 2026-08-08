@@ -175,8 +175,8 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           {InfoButton}
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
-            aria-label="Open recovery muscle map"
+            onClick={(e) => { e.stopPropagation(); setExpanded(e => !e); }}
+            aria-label={expanded ? 'Collapse recovery muscle map' : 'Open recovery muscle map'}
             className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg border border-primary/30 bg-primary/15 text-primary shadow-[0_0_10px_hsl(var(--primary)/0.22)] backdrop-blur-sm transition-all hover:bg-primary/25 hover:text-primary hover:shadow-[0_0_14px_hsl(var(--primary)/0.32)] hover:border-primary/40 active:scale-95 active:bg-primary/20"
           >
             <PersonStanding className="h-3.5 w-3.5" />
