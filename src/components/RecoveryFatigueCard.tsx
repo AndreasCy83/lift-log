@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, ChevronDown, Info } from 'lucide-react';
+import { Activity, ChevronDown, Info, PersonStanding } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,23 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { computeMuscleFatigue, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue';
+import { computeMuscleFatigue, MUSCLE_TO_CATEGORY, type MuscleFatigue, type FatigueBand } from '@/lib/recoveryFatigue';
+import MuscleMap from '@/components/MuscleMap';
+import { RECOVERY_COLORS, type RecoveryState } from '@/lib/muscleMapGroups';
+
+/**
+ * Recovery readiness -> map color state.
+ *  red    = still needs meaningful recovery time (High / Very High fatigue)
+ *  yellow = partially recovered (some time left, or Moderate fatigue)
+ *  green  = ready to train again
+ *  grey   = no logged data for this group yet
+ */
+function recoveryStateFor(m: MuscleFatigue): RecoveryState {
+  if (m.originalHours <= 0 && m.score <= 0) return 'unknown';
+  if (m.remainingHours <= 0) return 'ready';
+  if (m.band === 'High' || m.band === 'Very High') return 'notReady';
+  return 'partial';
+}
 
 const BAND_STYLES: Record<FatigueBand, { pill: string; bar: string; glow: string }> = {
   'Low':       { pill: 'bg-primary/15 text-primary',          bar: 'bg-primary',       glow: '' },
@@ -89,6 +105,26 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
 
   const [expanded, setExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const expandContentRef = useRef<HTMLDivElement | null>(null);
+  const [expandedHeight, setExpandedHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = expandContentRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const measure = () => setExpandedHeight(el.scrollHeight + 8);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [expanded, refreshKey, tick]);
+
+  // categoryId -> readiness state for the anatomical recovery map. Always
+  // covers all 7 visible groups, so the map renders even with no data.
+  const mapRecovery: Record<string, RecoveryState> = {};
+  for (const m of sorted) {
+    const cat = MUSCLE_TO_CATEGORY[m.muscle];
+    if (cat) mapRecovery[cat] = recoveryStateFor(m);
+  }
+  const hasLoggedData = sorted.some(m => m.score > 0);
   const [infoOpen, setInfoOpen] = useState(false);
 
   const InfoButton = (
@@ -137,6 +173,14 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           <Activity className="h-3.5 w-3.5 text-primary" />
           <h3 className="font-display text-sm font-semibold">{tr('home.recovery.title')}</h3>
           {InfoButton}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+            aria-label="Open recovery muscle map"
+            className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-lg border border-primary/30 bg-primary/15 text-primary shadow-[0_0_10px_hsl(var(--primary)/0.22)] backdrop-blur-sm transition-all hover:bg-primary/25 hover:text-primary hover:shadow-[0_0_14px_hsl(var(--primary)/0.32)] hover:border-primary/40 active:scale-95 active:bg-primary/20"
+          >
+            <PersonStanding className="h-3.5 w-3.5" />
+          </button>
         </div>
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground/60">
           {expanded ? tr('home.recovery.byMuscle') : topNeedsRest ? tr('home.recovery.needsRest') : tr('home.recovery.allReady')}
@@ -149,20 +193,48 @@ export default function RecoveryFatigueCard({ refreshKey }: Props) {
           <p className="text-xs text-foreground">{tr('home.recovery.allMuscleGroupsReady')}</p>
         </div>
       ) : (
-        <div className="divide-y divide-border/40">
-          {top.map((m, i) => <Row key={m.muscle} m={m} i={i} mounted={mounted} bandLabels={bandLabels} />)}
-        </div>
+        !expanded && (
+          <div className="divide-y divide-border/40">
+            {top.map((m, i) => <Row key={m.muscle} m={m} i={i} mounted={mounted} bandLabels={bandLabels} />)}
+          </div>
+        )
       )}
 
       <div
         className="overflow-hidden transition-all duration-300 ease-out"
         style={{
-          maxHeight: expanded ? `${rest.length * 28 + 8}px` : '0px',
+          maxHeight: expanded ? `${expandedHeight ?? sorted.length * 28 + 420}px` : '0px',
           opacity: expanded ? 1 : 0,
         }}
       >
-        <div className="divide-y divide-border/40 border-t border-border/40 mt-0.5 pt-0.5">
-          {rest.map((m, i) => <Row key={m.muscle} m={m} i={i} mounted={mounted && expanded} bandLabels={bandLabels} />)}
+        <div ref={expandContentRef} className="pb-2">
+          <div className="py-1">
+            <MuscleMap recovery={mapRecovery} scale={0.85} />
+          </div>
+
+          {/* Readiness legend */}
+          <div className="mb-1 flex items-center justify-center gap-3">
+            {([
+              ['ready', tr('home.recovery.legendReady', 'Ready')],
+              ['partial', tr('home.recovery.legendPartial', 'Partial')],
+              ['notReady', tr('home.recovery.legendNotReady', 'Recovering')],
+            ] as [RecoveryState, string][]).map(([state, label]) => (
+              <span key={state} className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-muted-foreground/70">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: RECOVERY_COLORS[state] }} />
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {!hasLoggedData && (
+            <p className="mb-1 text-center text-[10px] text-muted-foreground">
+              Log a workout to start seeing your recovery insights.
+            </p>
+          )}
+
+          <div className="divide-y divide-border/40 border-t border-border/40 mt-0.5 pt-0.5">
+            {sorted.map((m, i) => <Row key={m.muscle} m={m} i={i} mounted={mounted && expanded} bandLabels={bandLabels} />)}
+          </div>
         </div>
       </div>
 

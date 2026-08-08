@@ -77,10 +77,10 @@ const CATEGORY_TO_PRIMARY_MUSCLE: Record<string, MuscleGroup> = {
   'cat-back': 'Back',
   'cat-legs': 'Legs',
   'cat-shoulders': 'Shoulders',
-  'cat-biceps': 'Arms',
-  'cat-triceps': 'Arms',
-  'cat-core': 'Core',
-  'cat-abs': 'Core',
+  'cat-biceps': 'Biceps',
+  'cat-triceps': 'Triceps',
+  'cat-core': 'Abs',
+  'cat-abs': 'Abs',
   'cat-olympic': 'Legs',
 };
 

@@ -7,13 +7,18 @@
  */
 import { useEffect, useId, useMemo, useState } from 'react';
 import Body from 'react-muscle-highlighter';
-import { buildHighlightData } from '@/lib/muscleMapGroups';
+import { buildHighlightData, buildRecoveryHighlightData, type RecoveryState } from '@/lib/muscleMapGroups';
 import { getCategoryColor } from '@/lib/categoryColors';
 import type { VolumeStatus } from '@/lib/volumeInsights';
 
 export interface MuscleMapProps {
-  /** categoryId -> Estimated Stimulus status */
-  statuses: Record<string, VolumeStatus>;
+  /** categoryId -> Estimated Stimulus status (stimulus mode) */
+  statuses?: Record<string, VolumeStatus>;
+  /**
+   * categoryId -> recovery readiness state. When provided the map switches to
+   * Recovery mode: flat red/yellow/green readiness colors, no glow, no pulse.
+   */
+  recovery?: Record<string, RecoveryState>;
   /** Resolve a base color for a category. Defaults to the app category colors. */
   colorFor?: (categoryId: string) => string;
   /** Which view(s) to render. */
@@ -25,14 +30,18 @@ export interface MuscleMapProps {
 
 export default function MuscleMap({
   statuses,
+  recovery,
   colorFor = getCategoryColor,
   side = 'both',
   scale = 0.7,
   className = '',
 }: MuscleMapProps) {
   const data = useMemo(
-    () => buildHighlightData(statuses, colorFor),
-    [statuses, colorFor],
+    () =>
+      recovery
+        ? buildRecoveryHighlightData(recovery)
+        : buildHighlightData(statuses ?? {}, colorFor),
+    [recovery, statuses, colorFor],
   );
 
   // Unique scope so the injected glow CSS never leaks to other maps.
